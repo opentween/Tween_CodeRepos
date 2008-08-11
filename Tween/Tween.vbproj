@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{41B54F21-5442-47D4-80F0-872D56D9E1FD}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <StartupObject>Tween.My.MyApplication</StartupObject>
+    <RootNamespace>Tween</RootNamespace>
+    <AssemblyName>Tween</AssemblyName>
+    <MyType>WindowsForms</MyType>
+    <ApplicationIcon>Resources\4b.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>
+    </DocumentationFile>
+    <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>
+    </DocumentationFile>
+    <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</NoWarn>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Drawing" />
+    <Import Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ApplicationEvents.vb" />
+    <Compile Include="DetailsListView.Designer.vb">
+      <DependentUpon>DetailsListView.vb</DependentUpon>
+    </Compile>
+    <Compile Include="DetailsListView.vb" />
+    <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="My Project\Application.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Resources.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="MySocket.vb" />
+    <Compile Include="OpenURL.Designer.vb">
+      <DependentUpon>OpenURL.vb</DependentUpon>
+    </Compile>
+    <Compile Include="OpenURL.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SearchWord.Designer.vb">
+      <DependentUpon>SearchWord.vb</DependentUpon>
+    </Compile>
+    <Compile Include="SearchWord.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Setting.Designer.vb">
+      <DependentUpon>Setting.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Setting.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TabDialog.Designer.vb">
+      <DependentUpon>TabDialog.vb</DependentUpon>
+    </Compile>
+    <Compile Include="TabDialog.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TabsDialog.Designer.vb">
+      <DependentUpon>TabsDialog.vb</DependentUpon>
+    </Compile>
+    <Compile Include="TabsDialog.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TwConfig.vb" />
+    <Compile Include="Tween.Designer.vb">
+      <DependentUpon>Tween.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Tween.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TweenAboutBox.Designer.vb">
+      <DependentUpon>TweenAboutBox.vb</DependentUpon>
+    </Compile>
+    <Compile Include="TweenAboutBox.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Twitter.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OpenURL.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>OpenURL.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SearchWord.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SearchWord.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Setting.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Setting.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TabDialog.resx">
+      <DependentUpon>TabDialog.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TabsDialog.resx">
+      <DependentUpon>TabsDialog.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tween.resx">
+      <DependentUpon>Tween.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TweenAboutBox.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>TweenAboutBox.vb</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="My Project\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\2b.ico" />
+    <None Include="Resources\re.ico" />
+    <None Include="Resources\4b.ico" />
+    <None Include="Resources\4y.ico" />
+    <None Include="Resources\4r.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\1o.ico" />
+    <Content Include="Resources\5o.ico" />
+    <Content Include="Resources\6b.ico" />
+    <Content Include="Resources\6o.ico" />
+    <None Include="Resources\ChangeLog.txt" />
+    <Content Include="Resources\re2.ico" />
+    <Content Include="Resources\re3.ico" />
+    <Content Include="Resources\re4.ico" />
+    <None Include="Resources\3b.ico" />
+    <None Include="Resources\5r.ico" />
+    <None Include="Resources\5y.ico" />
+    <None Include="Resources\5b.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
