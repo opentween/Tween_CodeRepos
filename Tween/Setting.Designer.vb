@@ -173,6 +173,7 @@ Partial Class Setting
         '
         'Cancel
         '
+        Me.Cancel.CausesValidation = False
         Me.Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
         Me.Cancel.Location = New System.Drawing.Point(650, 503)
         Me.Cancel.Name = "Cancel"
