@@ -1222,7 +1222,7 @@ Public Class TweenMain
             args.status = StatusText.Text.Trim + " " + SettingDialog.Status.Trim
         End If
 
-        Dim regex As New Regex("([^A-Za-z0-9@_:]|^)(get|g|fav|follow|f|on|off|stop|quit|leave|l|whois|w|nudge|n|stats|invite|track|untrack|tracks|tracking|d)([^A-Za-z0-9_:]|$)", RegexOptions.IgnoreCase)
+        Dim regex As New Regex("([^A-Za-z0-9@_:;\-]|^)(get|g|fav|follow|f|on|off|stop|quit|leave|l|whois|w|nudge|n|stats|invite|track|untrack|tracks|tracking|d)([^A-Za-z0-9_:\-]|$)", RegexOptions.IgnoreCase)
         Dim regex2 As New Regex("https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+")
         Dim regex3 As New Regex("^\S*\*[^A-Za-z0-9]")
         Dim regex4 As New Regex("\*\S*\s\S+\s")
