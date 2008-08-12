@@ -1216,7 +1216,7 @@ Public Class TweenMain
         args.page = 0
         args.endPage = 0
         args.type = WORKERTYPE.PostMessage
-        If StatusText.Text.StartsWith("D ") = True Then
+        If (StatusText.Text.StartsWith("D ") = True) Or (My.Computer.Keyboard.ShiftKeyDown = True) Then
             args.status = StatusText.Text.Trim
         Else
             args.status = StatusText.Text.Trim + " " + SettingDialog.Status.Trim
