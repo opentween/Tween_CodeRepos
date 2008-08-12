@@ -28,6 +28,7 @@ Partial Class SearchWord
         Me.SWordText = New System.Windows.Forms.TextBox
         Me.Label1 = New System.Windows.Forms.Label
         Me.CheckBox8 = New System.Windows.Forms.CheckBox
+        Me.CheckBox1 = New System.Windows.Forms.CheckBox
         Me.TableLayoutPanel1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -92,6 +93,17 @@ Partial Class SearchWord
         Me.CheckBox8.Text = "英大小文字を区別"
         Me.CheckBox8.UseVisualStyleBackColor = True
         '
+        'CheckBox1
+        '
+        Me.CheckBox1.AutoSize = True
+        Me.CheckBox1.Enabled = False
+        Me.CheckBox1.Location = New System.Drawing.Point(118, 53)
+        Me.CheckBox1.Name = "CheckBox1"
+        Me.CheckBox1.Size = New System.Drawing.Size(72, 16)
+        Me.CheckBox1.TabIndex = 33
+        Me.CheckBox1.Text = "正規表現"
+        Me.CheckBox1.UseVisualStyleBackColor = True
+        '
         'SearchWord
         '
         Me.AcceptButton = Me.OK_Button
@@ -99,6 +111,7 @@ Partial Class SearchWord
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.Cancel_Button
         Me.ClientSize = New System.Drawing.Size(435, 76)
+        Me.Controls.Add(Me.CheckBox1)
         Me.Controls.Add(Me.CheckBox8)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.SWordText)
@@ -121,5 +134,6 @@ Partial Class SearchWord
     Friend WithEvents SWordText As System.Windows.Forms.TextBox
     Friend WithEvents Label1 As System.Windows.Forms.Label
     Friend WithEvents CheckBox8 As System.Windows.Forms.CheckBox
+    Friend WithEvents CheckBox1 As System.Windows.Forms.CheckBox
 
 End Class
