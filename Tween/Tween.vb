@@ -3396,17 +3396,34 @@ Public Class TweenMain
 
         toIdx = myList.Items.Count - 1
 RETRY:
-        For idx As Integer = cidx To toIdx
-            If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word) > -1 Then
-                For Each itm As ListViewItem In myList.SelectedItems
-                    itm.Selected = False
-                Next
-                myList.Items(idx).Selected = True
-                myList.Items(idx).Focused = True
-                myList.EnsureVisible(idx)
-                Exit Sub
-            End If
-        Next
+        If SearchDialog.CheckSearchCaseSensitive.Checked = True Then
+            ' 通常検索（CaseSensitive）
+            For idx As Integer = cidx To toIdx
+                If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word, StringComparison.CurrentCulture) > -1 Then
+                    For Each itm As ListViewItem In myList.SelectedItems
+                        itm.Selected = False
+                    Next
+                    myList.Items(idx).Selected = True
+                    myList.Items(idx).Focused = True
+                    myList.EnsureVisible(idx)
+                    Exit Sub
+                End If
+            Next
+        Else
+            ' 通常検索（IgnoreCase）
+            For idx As Integer = cidx To toIdx
+                If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word, StringComparison.CurrentCultureIgnoreCase) > -1 Then
+                    For Each itm As ListViewItem In myList.SelectedItems
+                        itm.Selected = False
+                    Next
+                    myList.Items(idx).Selected = True
+                    myList.Items(idx).Focused = True
+                    myList.EnsureVisible(idx)
+                    Exit Sub
+                End If
+            Next
+
+        End If
 
         If fnd = False Then
             If cidx > 0 And toIdx > -1 Then
@@ -3444,17 +3461,33 @@ RETRY:
 
         toIdx = myList.Items.Count - 1
 RETRY:
-        For idx As Integer = cidx To toIdx
-            If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word) > -1 Then
-                For Each itm As ListViewItem In myList.SelectedItems
-                    itm.Selected = False
-                Next
-                myList.Items(idx).Selected = True
-                myList.Items(idx).Focused = True
-                myList.EnsureVisible(idx)
-                Exit Sub
-            End If
-        Next
+        If SearchDialog.CheckSearchCaseSensitive.Checked = True Then
+            ' 通常検索（CaseSensitive）
+            For idx As Integer = cidx To toIdx
+                If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word, StringComparison.CurrentCulture) > -1 Then
+                    For Each itm As ListViewItem In myList.SelectedItems
+                        itm.Selected = False
+                    Next
+                    myList.Items(idx).Selected = True
+                    myList.Items(idx).Focused = True
+                    myList.EnsureVisible(idx)
+                    Exit Sub
+                End If
+            Next
+        Else
+            ' 通常検索（IgnoreCase）
+            For idx As Integer = cidx To toIdx
+                If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word, StringComparison.CurrentCultureIgnoreCase) > -1 Then
+                    For Each itm As ListViewItem In myList.SelectedItems
+                        itm.Selected = False
+                    Next
+                    myList.Items(idx).Selected = True
+                    myList.Items(idx).Focused = True
+                    myList.EnsureVisible(idx)
+                    Exit Sub
+                End If
+            Next
+        End If
 
         If fnd = False Then
             If cidx > 0 And toIdx > -1 Then

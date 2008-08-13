@@ -27,7 +27,7 @@ Partial Class SearchWord
         Me.Cancel_Button = New System.Windows.Forms.Button
         Me.SWordText = New System.Windows.Forms.TextBox
         Me.Label1 = New System.Windows.Forms.Label
-        Me.CheckBox8 = New System.Windows.Forms.CheckBox
+        Me.CheckSearchCaseSensitive = New System.Windows.Forms.CheckBox
         Me.CheckBox1 = New System.Windows.Forms.CheckBox
         Me.TableLayoutPanel1.SuspendLayout()
         Me.SuspendLayout()
@@ -82,16 +82,15 @@ Partial Class SearchWord
         Me.Label1.TabIndex = 2
         Me.Label1.Text = "検索する文字列(&N)"
         '
-        'CheckBox8
+        'CheckSearchCaseSensitive
         '
-        Me.CheckBox8.AutoSize = True
-        Me.CheckBox8.Enabled = False
-        Me.CheckBox8.Location = New System.Drawing.Point(118, 31)
-        Me.CheckBox8.Name = "CheckBox8"
-        Me.CheckBox8.Size = New System.Drawing.Size(117, 16)
-        Me.CheckBox8.TabIndex = 32
-        Me.CheckBox8.Text = "英大小文字を区別"
-        Me.CheckBox8.UseVisualStyleBackColor = True
+        Me.CheckSearchCaseSensitive.AutoSize = True
+        Me.CheckSearchCaseSensitive.Location = New System.Drawing.Point(118, 31)
+        Me.CheckSearchCaseSensitive.Name = "CheckSearchCaseSensitive"
+        Me.CheckSearchCaseSensitive.Size = New System.Drawing.Size(117, 16)
+        Me.CheckSearchCaseSensitive.TabIndex = 32
+        Me.CheckSearchCaseSensitive.Text = "英大小文字を区別"
+        Me.CheckSearchCaseSensitive.UseVisualStyleBackColor = True
         '
         'CheckBox1
         '
@@ -112,7 +111,7 @@ Partial Class SearchWord
         Me.CancelButton = Me.Cancel_Button
         Me.ClientSize = New System.Drawing.Size(435, 76)
         Me.Controls.Add(Me.CheckBox1)
-        Me.Controls.Add(Me.CheckBox8)
+        Me.Controls.Add(Me.CheckSearchCaseSensitive)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.SWordText)
         Me.Controls.Add(Me.TableLayoutPanel1)
@@ -133,7 +132,7 @@ Partial Class SearchWord
     Friend WithEvents Cancel_Button As System.Windows.Forms.Button
     Friend WithEvents SWordText As System.Windows.Forms.TextBox
     Friend WithEvents Label1 As System.Windows.Forms.Label
-    Friend WithEvents CheckBox8 As System.Windows.Forms.CheckBox
+    Friend WithEvents CheckSearchCaseSensitive As System.Windows.Forms.CheckBox
     Friend WithEvents CheckBox1 As System.Windows.Forms.CheckBox
 
 End Class
