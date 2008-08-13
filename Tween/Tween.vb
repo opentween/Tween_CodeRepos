@@ -3397,32 +3397,73 @@ Public Class TweenMain
         toIdx = myList.Items.Count - 1
 RETRY:
         If SearchDialog.CheckSearchCaseSensitive.Checked = True Then
-            ' 通常検索（CaseSensitive）
-            For idx As Integer = cidx To toIdx
-                If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word, StringComparison.CurrentCulture) > -1 Then
-                    For Each itm As ListViewItem In myList.SelectedItems
-                        itm.Selected = False
+            If SearchDialog.CheckSearchRegex.Checked = True Then
+                ' 正規表現検索（CaseSensitive）
+                Dim _search As Regex
+                Try
+                    _search = New Regex(_word)
+                    For idx As Integer = cidx To toIdx
+                        If ((_search.IsMatch(myList.Items(idx).SubItems(1).Text) = True) Or (_search.IsMatch(myList.Items(idx).SubItems(2).Text) = True) Or (_search.IsMatch(myList.Items(idx).SubItems(4).Text) = True)) Then
+                            For Each itm As ListViewItem In myList.SelectedItems
+                                itm.Selected = False
+                            Next
+                            myList.Items(idx).Selected = True
+                            myList.Items(idx).Focused = True
+                            myList.EnsureVisible(idx)
+                            Exit Sub
+                        End If
                     Next
-                    myList.Items(idx).Selected = True
-                    myList.Items(idx).Focused = True
-                    myList.EnsureVisible(idx)
+                Catch Err As ArgumentException
+                    MsgBox("正規表現パターンが間違っています。", MsgBoxStyle.Critical)
                     Exit Sub
-                End If
-            Next
+                End Try
+            Else
+                ' 通常検索（CaseSensitive）
+                For idx As Integer = cidx To toIdx
+                    If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word, StringComparison.CurrentCulture) > -1 Then
+                        For Each itm As ListViewItem In myList.SelectedItems
+                            itm.Selected = False
+                        Next
+                        myList.Items(idx).Selected = True
+                        myList.Items(idx).Focused = True
+                        myList.EnsureVisible(idx)
+                        Exit Sub
+                    End If
+                Next
+            End If
         Else
-            ' 通常検索（IgnoreCase）
-            For idx As Integer = cidx To toIdx
-                If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word, StringComparison.CurrentCultureIgnoreCase) > -1 Then
-                    For Each itm As ListViewItem In myList.SelectedItems
-                        itm.Selected = False
+            If SearchDialog.CheckSearchRegex.Checked = True Then
+                ' 正規表現検索（IgnoreCase）
+                Try
+                    For idx As Integer = cidx To toIdx
+                        If ((Regex.IsMatch(myList.Items(idx).SubItems(1).Text, _word, RegexOptions.IgnoreCase) = True) Or (Regex.IsMatch(myList.Items(idx).SubItems(2).Text, _word, RegexOptions.IgnoreCase) = True) Or (Regex.IsMatch(myList.Items(idx).SubItems(4).Text, _word, RegexOptions.IgnoreCase) = True)) Then
+                            For Each itm As ListViewItem In myList.SelectedItems
+                                itm.Selected = False
+                            Next
+                            myList.Items(idx).Selected = True
+                            myList.Items(idx).Focused = True
+                            myList.EnsureVisible(idx)
+                            Exit Sub
+                        End If
                     Next
-                    myList.Items(idx).Selected = True
-                    myList.Items(idx).Focused = True
-                    myList.EnsureVisible(idx)
+                Catch Err As ArgumentException
+                    MsgBox("正規表現パターンが間違っています。", MsgBoxStyle.Critical)
                     Exit Sub
-                End If
-            Next
-
+                End Try
+            Else
+                ' 通常検索（IgnoreCase）
+                For idx As Integer = cidx To toIdx
+                    If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word, StringComparison.CurrentCultureIgnoreCase) > -1 Then
+                        For Each itm As ListViewItem In myList.SelectedItems
+                            itm.Selected = False
+                        Next
+                        myList.Items(idx).Selected = True
+                        myList.Items(idx).Focused = True
+                        myList.EnsureVisible(idx)
+                        Exit Sub
+                    End If
+                Next
+            End If
         End If
 
         If fnd = False Then
@@ -3462,31 +3503,73 @@ RETRY:
         toIdx = myList.Items.Count - 1
 RETRY:
         If SearchDialog.CheckSearchCaseSensitive.Checked = True Then
-            ' 通常検索（CaseSensitive）
-            For idx As Integer = cidx To toIdx
-                If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word, StringComparison.CurrentCulture) > -1 Then
-                    For Each itm As ListViewItem In myList.SelectedItems
-                        itm.Selected = False
+            If SearchDialog.CheckSearchRegex.Checked = True Then
+                ' 正規表現検索（CaseSensitive）
+                Dim _search As Regex
+                Try
+                    _search = New Regex(_word)
+                    For idx As Integer = cidx To toIdx
+                        If ((_search.IsMatch(myList.Items(idx).SubItems(1).Text) = True) Or (_search.IsMatch(myList.Items(idx).SubItems(2).Text) = True) Or (_search.IsMatch(myList.Items(idx).SubItems(4).Text) = True)) Then
+                            For Each itm As ListViewItem In myList.SelectedItems
+                                itm.Selected = False
+                            Next
+                            myList.Items(idx).Selected = True
+                            myList.Items(idx).Focused = True
+                            myList.EnsureVisible(idx)
+                            Exit Sub
+                        End If
                     Next
-                    myList.Items(idx).Selected = True
-                    myList.Items(idx).Focused = True
-                    myList.EnsureVisible(idx)
+                Catch Err As ArgumentException
+                    MsgBox("正規表現パターンが間違っています。", MsgBoxStyle.Critical)
                     Exit Sub
-                End If
-            Next
+                End Try
+            Else
+                ' 通常検索（CaseSensitive）
+                For idx As Integer = cidx To toIdx
+                    If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word, StringComparison.CurrentCulture) > -1 Then
+                        For Each itm As ListViewItem In myList.SelectedItems
+                            itm.Selected = False
+                        Next
+                        myList.Items(idx).Selected = True
+                        myList.Items(idx).Focused = True
+                        myList.EnsureVisible(idx)
+                        Exit Sub
+                    End If
+                Next
+            End If
         Else
-            ' 通常検索（IgnoreCase）
-            For idx As Integer = cidx To toIdx
-                If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word, StringComparison.CurrentCultureIgnoreCase) > -1 Then
-                    For Each itm As ListViewItem In myList.SelectedItems
-                        itm.Selected = False
+            If SearchDialog.CheckSearchRegex.Checked = True Then
+                ' 正規表現検索（IgnoreCase）
+                Try
+                    For idx As Integer = cidx To toIdx
+                        If ((Regex.IsMatch(myList.Items(idx).SubItems(1).Text, _word, RegexOptions.IgnoreCase) = True) Or (Regex.IsMatch(myList.Items(idx).SubItems(2).Text, _word, RegexOptions.IgnoreCase) = True) Or (Regex.IsMatch(myList.Items(idx).SubItems(4).Text, _word, RegexOptions.IgnoreCase) = True)) Then
+                            For Each itm As ListViewItem In myList.SelectedItems
+                                itm.Selected = False
+                            Next
+                            myList.Items(idx).Selected = True
+                            myList.Items(idx).Focused = True
+                            myList.EnsureVisible(idx)
+                            Exit Sub
+                        End If
                     Next
-                    myList.Items(idx).Selected = True
-                    myList.Items(idx).Focused = True
-                    myList.EnsureVisible(idx)
+                Catch Err As ArgumentException
+                    MsgBox("正規表現パターンが間違っています。", MsgBoxStyle.Critical)
                     Exit Sub
-                End If
-            Next
+                End Try
+            Else
+                ' 通常検索（IgnoreCase）
+                For idx As Integer = cidx To toIdx
+                    If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word, StringComparison.CurrentCultureIgnoreCase) > -1 Then
+                        For Each itm As ListViewItem In myList.SelectedItems
+                            itm.Selected = False
+                        Next
+                        myList.Items(idx).Selected = True
+                        myList.Items(idx).Focused = True
+                        myList.EnsureVisible(idx)
+                        Exit Sub
+                    End If
+                Next
+            End If
         End If
 
         If fnd = False Then
@@ -3524,19 +3607,85 @@ RETRY:
 
         toIdx = 0
 RETRY:
-        If myList.Items.Count > 0 Then
-            For idx As Integer = cidx To toIdx Step -1
-                If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word) > -1 Then
-                    For Each itm As ListViewItem In myList.SelectedItems
-                        itm.Selected = False
-                    Next
-                    myList.Items(idx).Selected = True
-                    myList.Items(idx).Focused = True
-                    myList.EnsureVisible(idx)
+        If SearchDialog.CheckSearchCaseSensitive.Checked = True Then
+            If SearchDialog.CheckSearchRegex.Checked = True Then
+                ' 正規表現検索（CaseSensitive）
+                Dim _search As Regex
+                Try
+                    _search = New Regex(_word)
+                    If myList.Items.Count > 0 Then
+                        For idx As Integer = cidx To toIdx Step -1
+                            If ((_search.IsMatch(myList.Items(idx).SubItems(1).Text) = True) Or (_search.IsMatch(myList.Items(idx).SubItems(2).Text) = True) Or (_search.IsMatch(myList.Items(idx).SubItems(4).Text) = True)) Then
+                                For Each itm As ListViewItem In myList.SelectedItems
+                                    itm.Selected = False
+                                Next
+                                myList.Items(idx).Selected = True
+                                myList.Items(idx).Focused = True
+                                myList.EnsureVisible(idx)
+                                Exit Sub
+                            End If
+                        Next
+                    End If
+                Catch Err As ArgumentException
+                    MsgBox("正規表現パターンが間違っています。", MsgBoxStyle.Critical)
                     Exit Sub
+                End Try
+            Else
+                ' 通常検索（CaseSensitive）
+                If myList.Items.Count > 0 Then
+                    For idx As Integer = cidx To toIdx Step -1
+                        If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word) > -1 Then
+                            For Each itm As ListViewItem In myList.SelectedItems
+                                itm.Selected = False
+                            Next
+                            myList.Items(idx).Selected = True
+                            myList.Items(idx).Focused = True
+                            myList.EnsureVisible(idx)
+                            Exit Sub
+                        End If
+                    Next
                 End If
-            Next
+            End If
+        Else
+            If SearchDialog.CheckSearchRegex.Checked = True Then
+                ' 正規表現検索（IgnoreCase）
+                Try
+                    If myList.Items.Count > 0 Then
+                        For idx As Integer = cidx To toIdx Step -1
+                            If ((Regex.IsMatch(myList.Items(idx).SubItems(1).Text, _word, RegexOptions.IgnoreCase) = True) Or (Regex.IsMatch(myList.Items(idx).SubItems(2).Text, _word, RegexOptions.IgnoreCase) = True) Or (Regex.IsMatch(myList.Items(idx).SubItems(4).Text, _word, RegexOptions.IgnoreCase) = True)) Then
+                                For Each itm As ListViewItem In myList.SelectedItems
+                                    itm.Selected = False
+                                Next
+                                myList.Items(idx).Selected = True
+                                myList.Items(idx).Focused = True
+                                myList.EnsureVisible(idx)
+                                Exit Sub
+                            End If
+                        Next
+                    End If
+                Catch Err As ArgumentException
+                    MsgBox("正規表現パターンが間違っています。", MsgBoxStyle.Critical)
+                    Exit Sub
+                End Try
+            Else
+                ' 通常検索（CaseSensitive）
+                If myList.Items.Count > 0 Then
+                    For idx As Integer = cidx To toIdx Step -1
+                        If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word, StringComparison.CurrentCultureIgnoreCase) > -1 Then
+                            For Each itm As ListViewItem In myList.SelectedItems
+                                itm.Selected = False
+                            Next
+                            myList.Items(idx).Selected = True
+                            myList.Items(idx).Focused = True
+                            myList.EnsureVisible(idx)
+                            Exit Sub
+                        End If
+                    Next
+                End If
+            End If
         End If
+
+
 
         If fnd = False Then
             If cidx > 0 And toIdx > -1 Then

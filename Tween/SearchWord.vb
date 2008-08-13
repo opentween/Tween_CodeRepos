@@ -25,6 +25,4 @@ Public Class SearchWord
         SWordText.SelectAll()
         SWordText.Focus()
     End Sub
-
-
 End Class
