@@ -34,6 +34,7 @@
     Private _hubServer As String
     Private _browserpath As String
     Private _MyCheckReply As Boolean
+    Private _MyUseRecommendStatus As Boolean
 
     Public Enum LogUnitEnum
         Minute
@@ -128,6 +129,7 @@
             _hubServer = HubServerDomain.Text.Trim
             _browserpath = BrowserPathText.Text.Trim
             _MyCheckReply = CheckboxReply.Checked
+            _MyUseRecommendStatus = CheckUseRecommendStatus.Checked
         Catch ex As Exception
             MessageBox.Show("設定値に誤りがあります。")
             Me.DialogResult = Windows.Forms.DialogResult.Cancel
@@ -202,6 +204,7 @@
         HubServerDomain.Text = _hubServer
         BrowserPathText.Text = _browserpath
         CheckboxReply.Checked = _MyCheckReply
+        CheckUseRecommendStatus.Checked = _MyUseRecommendStatus
     End Sub
 
     Private Sub TimelinePeriod_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles TimelinePeriod.Validating
@@ -739,6 +742,15 @@
         End Set
     End Property
 
+    Public Property UseRecommendStatus() As Boolean
+        Get
+            Return _MyUseRecommendStatus
+        End Get
+        Set(ByVal value As Boolean)
+            _MyUseRecommendStatus = value
+        End Set
+    End Property
+
     Public Property HubServer() As String
         Get
             Return _hubServer
@@ -764,4 +776,11 @@
         End Set
     End Property
 
+    Private Sub CheckUseRecommendStatus_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CheckUseRecommendStatus.CheckedChanged
+        If CheckUseRecommendStatus.Checked = True Then
+            StatusText.Enabled = False
+        Else
+            StatusText.Enabled = True
+        End If
+    End Sub
 End Class

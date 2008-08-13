@@ -288,6 +288,7 @@ Public Class TweenMain
         SettingDialog.HubServer = _section.HubServer
         SettingDialog.BrowserPath = _section.BrowserPath
         SettingDialog.CheckReply = _section.CheckReply
+        SettingDialog.UseRecommendStatus = _section.UseRecommendStatus
 
         'ユーザー名、パスワードが未設定なら設定画面を表示（初回起動時など）
         If _username = "" Or _password = "" Then
@@ -1218,7 +1219,12 @@ Public Class TweenMain
         args.type = WORKERTYPE.PostMessage
         If (StatusText.Text.StartsWith("D ") = True) Or (My.Computer.Keyboard.ShiftKeyDown = True) Then
             args.status = StatusText.Text.Trim
+        ElseIf SettingDialog.UseRecommendStatus() = True Then
+            ' 推奨ステータスを使用する
+            Dim statregex As New Regex("^0*")
+            args.status = StatusText.Text.Trim + " [TWNv" + statregex.Replace(My.Application.Info.Version.Major.ToString + My.Application.Info.Version.Minor.ToString + My.Application.Info.Version.Build.ToString + My.Application.Info.Version.Revision.ToString, "") + "]"
         Else
+            ' テキストボックスに入力されている文字列を使用する
             args.status = StatusText.Text.Trim + " " + SettingDialog.Status.Trim
         End If
 
@@ -4380,6 +4386,7 @@ RETRY:
             _section.HubServer = SettingDialog.HubServer
             _section.BrowserPath = SettingDialog.BrowserPath
             _section.CheckReply = SettingDialog.CheckReply
+            _section.UseRecommendStatus = SettingDialog.UseRecommendStatus
 
             Dim tmpList As TweenCustomControl.DetailsListView = Nothing
             For Each myTab As TabPage In ListTab.TabPages

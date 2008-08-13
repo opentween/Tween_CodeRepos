@@ -92,7 +92,7 @@ Partial Class Setting
         Me.ColorDialog1 = New System.Windows.Forms.ColorDialog
         Me.cmbNameBalloon = New System.Windows.Forms.ComboBox
         Me.Label10 = New System.Windows.Forms.Label
-        Me.CheckBox1 = New System.Windows.Forms.CheckBox
+        Me.CheckUseRecommendStatus = New System.Windows.Forms.CheckBox
         Me.CheckBox2 = New System.Windows.Forms.CheckBox
         Me.Label21 = New System.Windows.Forms.Label
         Me.ComboBox1 = New System.Windows.Forms.ComboBox
@@ -786,16 +786,15 @@ Partial Class Setting
         Me.Label10.TabIndex = 24
         Me.Label10.Text = "新着バルーンのユーザー名"
         '
-        'CheckBox1
+        'CheckUseRecommendStatus
         '
-        Me.CheckBox1.AutoSize = True
-        Me.CheckBox1.Enabled = False
-        Me.CheckBox1.Location = New System.Drawing.Point(372, 438)
-        Me.CheckBox1.Name = "CheckBox1"
-        Me.CheckBox1.Size = New System.Drawing.Size(207, 16)
-        Me.CheckBox1.TabIndex = 52
-        Me.CheckBox1.Text = "推奨ステータスを使用する[TWNv○○]"
-        Me.CheckBox1.UseVisualStyleBackColor = True
+        Me.CheckUseRecommendStatus.AutoSize = True
+        Me.CheckUseRecommendStatus.Location = New System.Drawing.Point(372, 438)
+        Me.CheckUseRecommendStatus.Name = "CheckUseRecommendStatus"
+        Me.CheckUseRecommendStatus.Size = New System.Drawing.Size(207, 16)
+        Me.CheckUseRecommendStatus.TabIndex = 52
+        Me.CheckUseRecommendStatus.Text = "推奨ステータスを使用する[TWNv○○]"
+        Me.CheckUseRecommendStatus.UseVisualStyleBackColor = True
         '
         'CheckBox2
         '
@@ -1144,7 +1143,7 @@ Partial Class Setting
         Me.Controls.Add(Me.Label23)
         Me.Controls.Add(Me.Label21)
         Me.Controls.Add(Me.CheckBox2)
-        Me.Controls.Add(Me.CheckBox1)
+        Me.Controls.Add(Me.CheckUseRecommendStatus)
         Me.Controls.Add(Me.cmbNameBalloon)
         Me.Controls.Add(Me.Label10)
         Me.Controls.Add(Me.GroupBox1)
@@ -1256,7 +1255,7 @@ Partial Class Setting
     Friend WithEvents Button1 As System.Windows.Forms.Button
     Friend WithEvents Label18 As System.Windows.Forms.Label
     Friend WithEvents Label19 As System.Windows.Forms.Label
-    Friend WithEvents CheckBox1 As System.Windows.Forms.CheckBox
+    Friend WithEvents CheckUseRecommendStatus As System.Windows.Forms.CheckBox
     Friend WithEvents CheckBox2 As System.Windows.Forms.CheckBox
     Friend WithEvents Label21 As System.Windows.Forms.Label
     Friend WithEvents ComboBox1 As System.Windows.Forms.ComboBox
