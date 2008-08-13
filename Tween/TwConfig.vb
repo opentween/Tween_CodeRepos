@@ -1358,6 +1358,16 @@ Public NotInheritable Class ListSection
         End Set
     End Property
 
+    <ConfigurationProperty("userecommendstatus", DefaultValue:=False)> _
+    Public Property UseRecommendStatus() As Boolean
+        Get
+            Return CBool(Me("userecommendstatus"))
+        End Get
+        Set(ByVal value As Boolean)
+            Me("userecommendstatus") = value
+        End Set
+    End Property
+
     <ConfigurationProperty("hubserver", DefaultValue:="twitter.com")> _
     Public Property HubServer() As String
         Get
