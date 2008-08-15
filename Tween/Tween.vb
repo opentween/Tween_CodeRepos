@@ -33,7 +33,7 @@ Public Class TweenMain
     Private _postCounter As Integer = 0 '取得発言数カウンタ（カウントしているが未使用。タブ別カウンタに変更＆未読数カウントとして未読アイコン表示パフォーマンスUPできるように改善したい）
     Private TIconList As ImageList      '発言詳細部用アイコン画像リスト
     Private TIconSmallList As ImageList 'リスト表示用アイコン画像リスト
-    Private _iconSz As Integer          'アイコンサイズ（現在は16、26、48の3種類。将来直接数字指定可能とする）
+    Private _iconSz As Integer          'アイコンサイズ（現在は16、24、48の3種類。将来直接数字指定可能とする）
     Private NIconAt As Icon             'At.ico             タスクトレイアイコン：通常時
     Private NIconAtRed As Icon          'AtRed.ico          タスクトレイアイコン：通信エラー時
     Private NIconAtSmoke As Icon        'AtSmoke.ico        タスクトレイアイコン：オフライン時
@@ -4038,6 +4038,7 @@ RETRY:
 
     Private Sub ListTab_KeyDown(ByVal sender As System.Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles ListTab.KeyDown
         If e.Alt = False And e.Control = False And e.Shift = False Then
+            ' ModifierKeyが押されていない場合
             If e.KeyCode = Keys.N Or e.KeyCode = Keys.Right Then
                 e.Handled = True
                 e.SuppressKeyPress = True
@@ -4085,6 +4086,7 @@ RETRY:
         End If
         _anchorFlag = False
         If e.Alt = False And e.Control = True And e.Shift = False Then
+            ' CTRLキーが押されている場合
             If e.KeyCode = Keys.Home Or e.KeyCode = Keys.End Then
                 'Call ColorizeList(False)
                 TimerColorize.Stop()
@@ -4098,6 +4100,7 @@ RETRY:
             End If
         End If
         If e.Alt = False And e.Control = False And e.Shift = True Then
+            ' SHIFTキーが押されている場合
             If e.KeyCode = Keys.H Then
                 e.Handled = True
                 e.SuppressKeyPress = True
@@ -4123,6 +4126,19 @@ RETRY:
                 e.SuppressKeyPress = True
                 Call MoveMiddle()
             End If
+
+            ' お気に入り前後ジャンプ(SHIFT+N←/P→)
+            If e.KeyCode = Keys.N Or e.KeyCode = Keys.Right Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                Call GoNextFav()
+            End If
+            If e.KeyCode = Keys.P Or e.KeyCode = Keys.Left Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                Call GoPreviousFav()
+            End If
+
         End If
         If e.Alt = False Then
             If e.KeyCode = Keys.J Then
@@ -4171,6 +4187,58 @@ RETRY:
                 End Try
             End If
         End If
+    End Sub
+
+    Private Sub GoNextFav()
+        TimerColorize.Stop()
+        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        If MyList.SelectedItems.Count = 0 Then Exit Sub
+
+        Dim user As String = MyList.SelectedItems(0).SubItems(4).Text
+        Dim fIdx As Integer = MyList.SelectedItems(0).Index + 1
+        If fIdx > MyList.Items.Count - 1 Then Exit Sub
+
+        For idx As Integer = fIdx To MyList.Items.Count - 1
+            If MyList.Items(idx).SubItems(9).Text = "True" Then
+                For Each itm As ListViewItem In MyList.SelectedItems
+                    itm.Selected = False
+                Next
+                MyList.Items(idx).Selected = True
+                MyList.Items(idx).Focused = True
+                'MyList.EnsureVisible(MyList.Items.Count - 1)
+                MyList.EnsureVisible(idx)
+                MyList.Update()
+                'Call ColorizeList(True)
+                TimerColorize.Start()
+                Exit For
+            End If
+        Next
+    End Sub
+
+    Private Sub GoPreviousFav()
+        TimerColorize.Stop()
+        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        If MyList.SelectedItems.Count = 0 Then Exit Sub
+
+        Dim user As String = MyList.SelectedItems(0).SubItems(4).Text
+        Dim fIdx As Integer = MyList.SelectedItems(0).Index - 1
+        If fIdx < 0 Then Exit Sub
+
+        For idx As Integer = fIdx To 0 Step -1
+            If MyList.Items(idx).SubItems(9).Text = "True" Then
+                For Each itm As ListViewItem In MyList.SelectedItems
+                    itm.Selected = False
+                Next
+                MyList.Items(idx).Selected = True
+                MyList.Items(idx).Focused = True
+                'MyList.EnsureVisible(MyList.Items.Count - 1)
+                MyList.EnsureVisible(idx)
+                MyList.Update()
+                'Call ColorizeList(True)
+                TimerColorize.Start()
+                Exit For
+            End If
+        Next
     End Sub
 
     Private Sub GoNextPost()
