@@ -3857,15 +3857,16 @@ RETRY:
 
         If _iconSz = 0 Then Exit Sub
 
-        'If _iconSz <> 48 Then
-        For Each key As String In TIconList.Images.Keys
-            Dim img2 As New Bitmap(sz, sz)
-            Dim g As Graphics = Graphics.FromImage(img2)
+        If _iconSz <> 48 Then
+            For Each key As String In TIconList.Images.Keys
+                Dim img2 As New Bitmap(sz, sz)
+                Dim g As Graphics = Graphics.FromImage(img2)
 
-            g.InterpolationMode = Drawing2D.InterpolationMode.Default
-            g.DrawImage(TIconList.Images(key), 0, 0, sz, sz)
-            TIconSmallList.Images.Add(key, img2)
-        Next
+                g.InterpolationMode = Drawing2D.InterpolationMode.Default
+                g.DrawImage(TIconList.Images(key), 0, 0, sz, sz)
+                TIconSmallList.Images.Add(key, img2)
+            Next
+        End If
         'Else
         '    For Each key As String In TIconList.Images.Keys
         '        TIconSmallList.Images.Add(key, TIconList.Images(key).Clone)
