@@ -1368,6 +1368,16 @@ Public NotInheritable Class ListSection
         End Set
     End Property
 
+    <ConfigurationProperty("dispusername", DefaultValue:=False)> _
+    Public Property DispUsername() As Boolean
+        Get
+            Return CBool(Me("dispusername"))
+        End Get
+        Set(ByVal value As Boolean)
+            Me("dispusername") = value
+        End Set
+    End Property
+
     <ConfigurationProperty("hubserver", DefaultValue:="twitter.com")> _
     Public Property HubServer() As String
         Get
