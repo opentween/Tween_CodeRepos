@@ -125,6 +125,8 @@ Partial Class Setting
         Me.BrowserPathText = New System.Windows.Forms.TextBox
         Me.Label44 = New System.Windows.Forms.Label
         Me.CheckboxReply = New System.Windows.Forms.CheckBox
+        Me.CheckDispUsername = New System.Windows.Forms.CheckBox
+        Me.Label46 = New System.Windows.Forms.Label
         Me.GroupBox1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -164,7 +166,7 @@ Partial Class Setting
         'Save
         '
         Me.Save.DialogResult = System.Windows.Forms.DialogResult.OK
-        Me.Save.Location = New System.Drawing.Point(569, 503)
+        Me.Save.Location = New System.Drawing.Point(570, 532)
         Me.Save.Name = "Save"
         Me.Save.Size = New System.Drawing.Size(75, 23)
         Me.Save.TabIndex = 58
@@ -175,7 +177,7 @@ Partial Class Setting
         '
         Me.Cancel.CausesValidation = False
         Me.Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.Cancel.Location = New System.Drawing.Point(650, 503)
+        Me.Cancel.Location = New System.Drawing.Point(651, 532)
         Me.Cancel.Name = "Cancel"
         Me.Cancel.Size = New System.Drawing.Size(75, 23)
         Me.Cancel.TabIndex = 59
@@ -1104,13 +1106,34 @@ Partial Class Setting
         Me.CheckboxReply.Text = "Replyも同時にチェック"
         Me.CheckboxReply.UseVisualStyleBackColor = True
         '
+        'CheckDispUsername
+        '
+        Me.CheckDispUsername.AutoSize = True
+        Me.CheckDispUsername.Location = New System.Drawing.Point(181, 536)
+        Me.CheckDispUsername.Name = "CheckDispUsername"
+        Me.CheckDispUsername.Size = New System.Drawing.Size(109, 16)
+        Me.CheckDispUsername.TabIndex = 67
+        Me.CheckDispUsername.Text = "ユーザー名を表示"
+        Me.CheckDispUsername.UseVisualStyleBackColor = True
+        '
+        'Label46
+        '
+        Me.Label46.AutoSize = True
+        Me.Label46.Location = New System.Drawing.Point(12, 537)
+        Me.Label46.Name = "Label46"
+        Me.Label46.Size = New System.Drawing.Size(122, 12)
+        Me.Label46.TabIndex = 66
+        Me.Label46.Text = "タイトルバーとツールチップ"
+        '
         'Setting
         '
         Me.AcceptButton = Me.Save
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.Cancel
-        Me.ClientSize = New System.Drawing.Size(737, 538)
+        Me.ClientSize = New System.Drawing.Size(740, 565)
+        Me.Controls.Add(Me.Label46)
+        Me.Controls.Add(Me.CheckDispUsername)
         Me.Controls.Add(Me.CheckboxReply)
         Me.Controls.Add(Me.BrowserPathText)
         Me.Controls.Add(Me.Label44)
@@ -1291,4 +1314,6 @@ Partial Class Setting
     Friend WithEvents BrowserPathText As System.Windows.Forms.TextBox
     Friend WithEvents Label44 As System.Windows.Forms.Label
     Friend WithEvents CheckboxReply As System.Windows.Forms.CheckBox
+    Friend WithEvents CheckDispUsername As System.Windows.Forms.CheckBox
+    Friend WithEvents Label46 As System.Windows.Forms.Label
 End Class

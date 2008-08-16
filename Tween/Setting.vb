@@ -35,6 +35,8 @@
     Private _browserpath As String
     Private _MyCheckReply As Boolean
     Private _MyUseRecommendStatus As Boolean
+    Private _MyDispUsername As Boolean
+    Private __dispusername_changed As Boolean
 
     Public Enum LogUnitEnum
         Minute
@@ -130,6 +132,17 @@
             _browserpath = BrowserPathText.Text.Trim
             _MyCheckReply = CheckboxReply.Checked
             _MyUseRecommendStatus = CheckUseRecommendStatus.Checked
+            _MyDispUsername = CheckDispUsername.Checked
+
+            If __dispusername_changed = True Then
+                If _MyDispUsername = True Then
+                    TweenMain.Text = _MyuserID + " - Tween"
+                    TweenMain.NotifyIcon1.Text = _MyuserID + " - Tween"
+                Else
+                    TweenMain.Text = "Tween"
+                    TweenMain.NotifyIcon1.Text = "Tween"
+                End If
+            End If
         Catch ex As Exception
             MessageBox.Show("設定値に誤りがあります。")
             Me.DialogResult = Windows.Forms.DialogResult.Cancel
@@ -205,6 +218,16 @@
         BrowserPathText.Text = _browserpath
         CheckboxReply.Checked = _MyCheckReply
         CheckUseRecommendStatus.Checked = _MyUseRecommendStatus
+        CheckDispUsername.Checked = _MyDispUsername
+
+        If _MyDispUsername = True Then
+            TweenMain.Text = _MyuserID + " - Tween"
+            TweenMain.NotifyIcon1.Text = _MyuserID + " - Tween"
+        Else
+            TweenMain.Text = "Tween"
+            TweenMain.NotifyIcon1.Text = "Tween"
+        End If
+
     End Sub
 
     Private Sub TimelinePeriod_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles TimelinePeriod.Validating
@@ -750,6 +773,14 @@
             _MyUseRecommendStatus = value
         End Set
     End Property
+    Public Property DispUsername() As Boolean
+        Get
+            Return _MyDispUsername
+        End Get
+        Set(ByVal value As Boolean)
+            _MyDispUsername = value
+        End Set
+    End Property
 
     Public Property HubServer() As String
         Get
@@ -782,5 +813,9 @@
         Else
             StatusText.Enabled = True
         End If
+    End Sub
+
+    Private Sub CheckDispUsername_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CheckDispUsername.CheckedChanged
+        __dispusername_changed = True
     End Sub
 End Class

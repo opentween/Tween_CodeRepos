@@ -289,6 +289,7 @@ Public Class TweenMain
         SettingDialog.BrowserPath = _section.BrowserPath
         SettingDialog.CheckReply = _section.CheckReply
         SettingDialog.UseRecommendStatus = _section.UseRecommendStatus
+        SettingDialog.DispUsername = _section.DispUsername
 
         'ユーザー名、パスワードが未設定なら設定画面を表示（初回起動時など）
         If _username = "" Or _password = "" Then
@@ -384,6 +385,11 @@ Public Class TweenMain
         'PostedText.RemoveLinks()
         NameLabel.Text = ""                 '発言詳細部名前ラベル初期化
         DateTimeLabel.Text = ""             '発言詳細部日時ラベル初期化
+
+        If SettingDialog.DispUsername = True Then
+            Me.Text = _username + " - Tween"
+            NotifyIcon1.Text = _username + " - Tween"
+        End If
 
         '<<<<<<<<タブ関連>>>>>>>
         'Recentタブ
@@ -4638,6 +4644,7 @@ RETRY:
             _section.BrowserPath = SettingDialog.BrowserPath
             _section.CheckReply = SettingDialog.CheckReply
             _section.UseRecommendStatus = SettingDialog.UseRecommendStatus
+            _section.DispUsername = SettingDialog.DispUsername
 
             Dim tmpList As TweenCustomControl.DetailsListView = Nothing
             For Each myTab As TabPage In ListTab.TabPages
