@@ -47,10 +47,16 @@ Public Class TabsDialog
     End Sub
 
     Private Sub TabList_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TabList.DoubleClick
-        If TabList.SelectedIndex > -1 Then
-            Me.DialogResult = System.Windows.Forms.DialogResult.OK
-            Me.Close()
+        If TabList.SelectedItem = Nothing Then
+            Exit Sub
         End If
+
+        If TabList.IndexFromPoint(TabList.PointToClient(Control.MousePosition)) = ListBox.NoMatches Then
+            Exit Sub
+        End If
+
+        Me.DialogResult = System.Windows.Forms.DialogResult.OK
+        Me.Close()
     End Sub
 
     Private Sub TabsDialog_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
