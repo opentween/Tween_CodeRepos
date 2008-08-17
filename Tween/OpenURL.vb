@@ -49,11 +49,11 @@ Public Class OpenURL
             Exit Sub
         End If
 
-        If UrlList.IndexFromPoint(UrlList.PointToClient(MousePosition)) = -1 Then
+        If UrlList.IndexFromPoint(UrlList.PointToClient(Control.MousePosition)) = ListBox.NoMatches Then
             Exit Sub
         End If
 
-        If UrlList.Items(UrlList.IndexFromPoint(UrlList.PointToClient(MousePosition))) = Nothing Then
+        If UrlList.Items(UrlList.IndexFromPoint(UrlList.PointToClient(Control.MousePosition))) = Nothing Then
             Exit Sub
         End If
         Call OK_Button_Click(sender, e)
