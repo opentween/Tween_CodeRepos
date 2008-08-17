@@ -1226,6 +1226,7 @@ Partial Class Setting
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "Setting"
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "設定"
         Me.TopMost = True
         Me.GroupBox1.ResumeLayout(False)
