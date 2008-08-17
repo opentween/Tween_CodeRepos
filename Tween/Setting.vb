@@ -814,7 +814,4 @@
         End If
     End Sub
 
-    '    Private Sub CheckDispUsername_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CheckDispUsername.CheckedChanged
-    '       __dispusername_changed = True
-    '  End Sub
 End Class
