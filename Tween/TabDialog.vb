@@ -466,7 +466,7 @@ Public Class FilterDialog
             Exit Sub
         End If
 
-        If ListFilters.IndexFromPoint(ListFilters.PointToClient(Control.MousePosition)) = -1 Then
+        If ListFilters.IndexFromPoint(ListFilters.PointToClient(Control.MousePosition)) = ListBox.NoMatches Then
             Exit Sub
         End If
 
