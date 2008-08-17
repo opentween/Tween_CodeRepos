@@ -466,11 +466,11 @@ Public Class FilterDialog
             Exit Sub
         End If
 
-        If ListFilters.IndexFromPoint(ListFilters.PointToClient(MousePosition)) = -1 Then
+        If ListFilters.IndexFromPoint(ListFilters.PointToClient(Control.MousePosition)) = -1 Then
             Exit Sub
         End If
 
-        If ListFilters.Items(ListFilters.IndexFromPoint(ListFilters.PointToClient(MousePosition))) = Nothing Then
+        If ListFilters.Items(ListFilters.IndexFromPoint(ListFilters.PointToClient(Control.MousePosition))) = Nothing Then
             Exit Sub
         End If
         Call ButtonEdit_Click(sender, e)
