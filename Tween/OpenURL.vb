@@ -43,4 +43,19 @@ Public Class OpenURL
             UrlList.SelectedIndex = 0
         End If
     End Sub
+
+    Private Sub UrlList_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UrlList.DoubleClick
+        If UrlList.SelectedItem = Nothing Then
+            Exit Sub
+        End If
+
+        If UrlList.IndexFromPoint(UrlList.PointToClient(MousePosition)) = -1 Then
+            Exit Sub
+        End If
+
+        If UrlList.Items(UrlList.IndexFromPoint(UrlList.PointToClient(MousePosition))) = Nothing Then
+            Exit Sub
+        End If
+        Call OK_Button_Click(sender, e)
+    End Sub
 End Class

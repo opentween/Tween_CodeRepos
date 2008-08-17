@@ -462,6 +462,17 @@ Public Class FilterDialog
     End Sub
 
     Private Sub ListFilters_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ListFilters.DoubleClick
+        If ListFilters.SelectedItem = Nothing Then
+            Exit Sub
+        End If
+
+        If ListFilters.IndexFromPoint(ListFilters.PointToClient(MousePosition)) = -1 Then
+            Exit Sub
+        End If
+
+        If ListFilters.Items(ListFilters.IndexFromPoint(ListFilters.PointToClient(MousePosition))) = Nothing Then
+            Exit Sub
+        End If
         Call ButtonEdit_Click(sender, e)
     End Sub
 End Class

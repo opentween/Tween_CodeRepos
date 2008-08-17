@@ -43,7 +43,7 @@ Partial Class OpenURL
         Me.TableLayoutPanel2.RowCount = 2
         Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
         Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40.0!))
-        Me.TableLayoutPanel2.Size = New System.Drawing.Size(424, 192)
+        Me.TableLayoutPanel2.Size = New System.Drawing.Size(424, 194)
         Me.TableLayoutPanel2.TabIndex = 2
         '
         'TableLayoutPanel1
@@ -54,7 +54,7 @@ Partial Class OpenURL
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
         Me.TableLayoutPanel1.Controls.Add(Me.OK_Button, 0, 0)
         Me.TableLayoutPanel1.Controls.Add(Me.Cancel_Button, 1, 0)
-        Me.TableLayoutPanel1.Location = New System.Drawing.Point(275, 162)
+        Me.TableLayoutPanel1.Location = New System.Drawing.Point(275, 164)
         Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
         Me.TableLayoutPanel1.RowCount = 1
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
@@ -88,7 +88,7 @@ Partial Class OpenURL
         Me.UrlList.ItemHeight = 12
         Me.UrlList.Location = New System.Drawing.Point(3, 3)
         Me.UrlList.Name = "UrlList"
-        Me.UrlList.Size = New System.Drawing.Size(418, 136)
+        Me.UrlList.Size = New System.Drawing.Size(418, 148)
         Me.UrlList.TabIndex = 2
         '
         'OpenURL
@@ -97,7 +97,7 @@ Partial Class OpenURL
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.Cancel_Button
-        Me.ClientSize = New System.Drawing.Size(424, 192)
+        Me.ClientSize = New System.Drawing.Size(424, 194)
         Me.ControlBox = False
         Me.Controls.Add(Me.TableLayoutPanel2)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
