@@ -460,4 +460,8 @@ Public Class FilterDialog
             End If
         End If
     End Sub
+
+    Private Sub ListFilters_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ListFilters.DoubleClick
+        Call ButtonEdit_Click(sender, e)
+    End Sub
 End Class
