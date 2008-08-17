@@ -290,6 +290,8 @@ Public Class TweenMain
         SettingDialog.CheckReply = _section.CheckReply
         SettingDialog.UseRecommendStatus = _section.UseRecommendStatus
         SettingDialog.DispUsername = _section.DispUsername
+        SettingDialog.DispLatestPost = _section.DispLatestPost
+
 
         'ユーザー名、パスワードが未設定なら設定画面を表示（初回起動時など）
         If _username = "" Or _password = "" Then
@@ -321,6 +323,9 @@ Public Class TweenMain
             _clAtFromTarget = SettingDialog.ColorAtFromTarget
             '他の設定項目は、随時設定画面で保持している値を読み出して使用
         End If
+
+        SetMainWindowTitle()
+        SetNotifyIconText()
 
         'ウィンドウ設定
         Me.WindowState = FormWindowState.Normal     '通常状態
@@ -386,10 +391,8 @@ Public Class TweenMain
         NameLabel.Text = ""                 '発言詳細部名前ラベル初期化
         DateTimeLabel.Text = ""             '発言詳細部日時ラベル初期化
 
-        If SettingDialog.DispUsername = True Then
-            Me.Text = _username + " - Tween"
-            NotifyIcon1.Text = _username + " - Tween"
-        End If
+        SetMainWindowTitle()
+        SetNotifyIconText()
 
         '<<<<<<<<タブ関連>>>>>>>
         'Recentタブ
@@ -1758,10 +1761,10 @@ Public Class TweenMain
                     NotifyIcon1.Icon = NIconAtRed
                 Else
                     StatusLabel.Text = "POST完了"
-                    Me.Text = "Tween  " + StatusText.Text
-                    StatusText.Text = ""
+                     StatusText.Text = ""
                     _history.Add("")
                     _hisIdx = _history.Count - 1
+                    SetMainWindowTitle()
                 End If
 
                 args.page = 1
@@ -4645,6 +4648,7 @@ RETRY:
             _section.CheckReply = SettingDialog.CheckReply
             _section.UseRecommendStatus = SettingDialog.UseRecommendStatus
             _section.DispUsername = SettingDialog.DispUsername
+            _section.DispLatestPost = SettingDialog.DispLatestPost
 
             Dim tmpList As TweenCustomControl.DetailsListView = Nothing
             For Each myTab As TabPage In ListTab.TabPages
@@ -5379,10 +5383,10 @@ RETRY:
                     NotifyIcon1.Icon = NIconAtRed
                 Else
                     StatusLabel.Text = "POST完了"
-                    Me.Text = "Tween  " + StatusText.Text
                     StatusText.Text = ""
                     _history.Add("")
                     _hisIdx = _history.Count - 1
+                    SetMainWindowTitle()
                 End If
 
                 args.page = 1
@@ -5697,6 +5701,32 @@ RETRY:
             End If
         Next
     End Sub
+    Friend Sub SetMainWindowTitle()
+        If SettingDialog.DispUsername = True Then
+            'ユーザー名表示あり
+            If SettingDialog.DispLatestPost = True And _history IsNot Nothing And _hisIdx > 0 Then
+                ' ポスト表示設定でヒストリがある場合最新のヒストリから引っ張って設定
+                Me.Text = _username + " - Tween  " + _history(_hisIdx - 1)
+            Else
+                Me.Text = _username + " - Tween"
+            End If
+        Else
+            'ユーザー名表示なし
+            If SettingDialog.DispLatestPost = True And _history IsNot Nothing And _hisIdx > 0 Then
+                ' ポスト表示設定でヒストリがある場合最新のヒストリから引っ張って設定
+                Me.Text = "Tween  " + _history(_hisIdx - 1)
+            Else
+                Me.Text = "Tween"
+            End If
+        End If
+    End Sub
+    Friend Sub SetNotifyIconText()
+        If SettingDialog.DispUsername = True Then
+            NotifyIcon1.Text = _username + " - Tween"
+        Else
+            NotifyIcon1.Text = "Tween"
+        End If
+    End Sub
 End Class
 
 Public Class TabStructure
@@ -5869,4 +5899,5 @@ Public Class ListViewItemComparer
         '結果を返す
         Return result
     End Function
+
 End Class

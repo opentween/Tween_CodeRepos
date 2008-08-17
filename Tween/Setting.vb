@@ -36,7 +36,7 @@
     Private _MyCheckReply As Boolean
     Private _MyUseRecommendStatus As Boolean
     Private _MyDispUsername As Boolean
-    Private __dispusername_changed As Boolean
+    Private _MyDispLatestPost As Boolean
 
     Public Enum LogUnitEnum
         Minute
@@ -133,16 +133,11 @@
             _MyCheckReply = CheckboxReply.Checked
             _MyUseRecommendStatus = CheckUseRecommendStatus.Checked
             _MyDispUsername = CheckDispUsername.Checked
+            _MyDispLatestPost = CheckDispLatestPost.Checked
 
-            If __dispusername_changed = True Then
-                If _MyDispUsername = True Then
-                    TweenMain.Text = _MyuserID + " - Tween"
-                    TweenMain.NotifyIcon1.Text = _MyuserID + " - Tween"
-                Else
-                    TweenMain.Text = "Tween"
-                    TweenMain.NotifyIcon1.Text = "Tween"
-                End If
-            End If
+            TweenMain.SetMainWindowTitle()
+            TweenMain.SetNotifyIconText()
+
         Catch ex As Exception
             MessageBox.Show("設定値に誤りがあります。")
             Me.DialogResult = Windows.Forms.DialogResult.Cancel
@@ -219,14 +214,10 @@
         CheckboxReply.Checked = _MyCheckReply
         CheckUseRecommendStatus.Checked = _MyUseRecommendStatus
         CheckDispUsername.Checked = _MyDispUsername
+        CheckDispLatestPost.Checked = _MyDispLatestPost
 
-        If _MyDispUsername = True Then
-            TweenMain.Text = _MyuserID + " - Tween"
-            TweenMain.NotifyIcon1.Text = _MyuserID + " - Tween"
-        Else
-            TweenMain.Text = "Tween"
-            TweenMain.NotifyIcon1.Text = "Tween"
-        End If
+        TweenMain.SetMainWindowTitle()
+        TweenMain.SetNotifyIconText()
 
     End Sub
 
@@ -781,6 +772,14 @@
             _MyDispUsername = value
         End Set
     End Property
+    Public Property DispLatestPost() As Boolean
+        Get
+            Return _MyDispLatestPost
+        End Get
+        Set(ByVal value As Boolean)
+            _MyDispLatestPost = value
+        End Set
+    End Property
 
     Public Property HubServer() As String
         Get
@@ -815,7 +814,7 @@
         End If
     End Sub
 
-    Private Sub CheckDispUsername_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CheckDispUsername.CheckedChanged
-        __dispusername_changed = True
-    End Sub
+    '    Private Sub CheckDispUsername_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CheckDispUsername.CheckedChanged
+    '       __dispusername_changed = True
+    '  End Sub
 End Class

@@ -127,6 +127,8 @@ Partial Class Setting
         Me.CheckboxReply = New System.Windows.Forms.CheckBox
         Me.CheckDispUsername = New System.Windows.Forms.CheckBox
         Me.Label46 = New System.Windows.Forms.Label
+        Me.Label45 = New System.Windows.Forms.Label
+        Me.CheckDispLatestPost = New System.Windows.Forms.CheckBox
         Me.GroupBox1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -166,7 +168,7 @@ Partial Class Setting
         'Save
         '
         Me.Save.DialogResult = System.Windows.Forms.DialogResult.OK
-        Me.Save.Location = New System.Drawing.Point(570, 532)
+        Me.Save.Location = New System.Drawing.Point(570, 558)
         Me.Save.Name = "Save"
         Me.Save.Size = New System.Drawing.Size(75, 23)
         Me.Save.TabIndex = 58
@@ -177,7 +179,7 @@ Partial Class Setting
         '
         Me.Cancel.CausesValidation = False
         Me.Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.Cancel.Location = New System.Drawing.Point(651, 532)
+        Me.Cancel.Location = New System.Drawing.Point(651, 558)
         Me.Cancel.Name = "Cancel"
         Me.Cancel.Size = New System.Drawing.Size(75, 23)
         Me.Cancel.TabIndex = 59
@@ -1125,13 +1127,34 @@ Partial Class Setting
         Me.Label46.TabIndex = 66
         Me.Label46.Text = "タイトルバーとツールチップ"
         '
+        'Label45
+        '
+        Me.Label45.AutoSize = True
+        Me.Label45.Location = New System.Drawing.Point(12, 558)
+        Me.Label45.Name = "Label45"
+        Me.Label45.Size = New System.Drawing.Size(60, 12)
+        Me.Label45.TabIndex = 68
+        Me.Label45.Text = "タイトルバー"
+        '
+        'CheckDispLatestPost
+        '
+        Me.CheckDispLatestPost.AutoSize = True
+        Me.CheckDispLatestPost.Location = New System.Drawing.Point(181, 557)
+        Me.CheckDispLatestPost.Name = "CheckDispLatestPost"
+        Me.CheckDispLatestPost.Size = New System.Drawing.Size(81, 16)
+        Me.CheckDispLatestPost.TabIndex = 69
+        Me.CheckDispLatestPost.Text = "発言を表示"
+        Me.CheckDispLatestPost.UseVisualStyleBackColor = True
+        '
         'Setting
         '
         Me.AcceptButton = Me.Save
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.Cancel
-        Me.ClientSize = New System.Drawing.Size(740, 565)
+        Me.ClientSize = New System.Drawing.Size(740, 593)
+        Me.Controls.Add(Me.Label45)
+        Me.Controls.Add(Me.CheckDispLatestPost)
         Me.Controls.Add(Me.Label46)
         Me.Controls.Add(Me.CheckDispUsername)
         Me.Controls.Add(Me.CheckboxReply)
@@ -1316,4 +1339,6 @@ Partial Class Setting
     Friend WithEvents CheckboxReply As System.Windows.Forms.CheckBox
     Friend WithEvents CheckDispUsername As System.Windows.Forms.CheckBox
     Friend WithEvents Label46 As System.Windows.Forms.Label
+    Friend WithEvents Label45 As System.Windows.Forms.Label
+    Friend WithEvents CheckDispLatestPost As System.Windows.Forms.CheckBox
 End Class
