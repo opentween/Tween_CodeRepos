@@ -1114,7 +1114,7 @@ Public Class Twitter
         Return 0
     End Function
 
-    Public Function PostStatus(ByVal postStr As String) As String
+    Public Function PostStatus(ByVal postStr As String, ByVal reply_to As Integer) As String
         '140文字まで。Byteで計算する必要有？
         'If postStr.Length > 140 Then
         '    Return "PostStatus -> Err: 文字数オーバー"
@@ -1167,7 +1167,13 @@ Public Class Twitter
         'Return resStatus
         'Else
         'データ部分の生成
-        Dim dataStr As String = _statusHeader + HttpUtility.UrlEncode(postStr) + "&source=Tween"
+        Dim dataStr As String
+        If reply_to = 0 Then
+            dataStr = _statusHeader + HttpUtility.UrlEncode(postStr) + "&source=Tween"
+        Else
+            dataStr = _statusHeader + HttpUtility.UrlEncode(postStr) + "&source=Tween" + "&in_reply_to_status_id=" + HttpUtility.UrlEncode(reply_to.ToString)
+        End If
+
         Dim resStatus As String = ""
         Dim resMsg As String = _mySock.GetWebResponce("https://" + _hubServer + _statusUpdatePathAPI, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI, dataStr)
 

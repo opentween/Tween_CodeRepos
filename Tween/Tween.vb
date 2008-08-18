@@ -52,6 +52,7 @@ Public Class TweenMain
     Private _hisIdx As Integer
     Private UrlDialog As New OpenURL
     Private Const _replyHtml As String = "@<a target=""_self"" href=""https://twitter.com/"
+    Private _reply_to As Integer         ' リプライ先のステータスID 0の場合はリプライではない 注：複数あてのものはリプライではない
 
     Friend Class Win32Api
         '画面をブリンクするためのWin32API。起動時に10ページ読み取りごとに継続確認メッセージを表示する際の通知強調用
@@ -174,6 +175,8 @@ Public Class TweenMain
 
         _history.Add("")
         _hisIdx = 0
+        _reply_to = 0
+
         '<<<<<<<<<設定関連>>>>>>>>>
         '設定読み出し
         _config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
@@ -1365,7 +1368,7 @@ Public Class TweenMain
                     Case WORKERTYPE.DirectMessegeSnt
                         ret = clsTw.GetDirectMessage(tlList, args.page, args.endPage, Twitter.GetTypes.GET_DMSNT, TIconList.Images.Keys, imgs)
                     Case WORKERTYPE.PostMessage
-                        ret = clsTw.PostStatus(args.status)
+                        ret = clsTw.PostStatus(args.status, _reply_to)
                     Case WORKERTYPE.FavAdd
                         ret = clsTw.PostFavAdd(args.ids(args.page))
                     Case WORKERTYPE.FavRemove
@@ -4990,41 +4993,58 @@ RETRY:
 
         If StatusText.Enabled = False Then Exit Sub
 
+        ' 複数あてリプライはReplyではなく通常ポスト
+
         If MyList.SelectedItems.Count > 0 Then
+            ' アイテムが1件以上選択されている
             If MyList.SelectedItems.Count = 1 And isAll = False Then
+                ' 単独ユーザー宛リプライまたはDM
                 If (MyList.Name = "DirectMsg" And isAuto) Or (isAuto = False And isReply = False) Then
+                    ' ダイレクトメッセージ
                     StatusText.Text = "D " + MyList.SelectedItems(0).SubItems(4).Text + " " + StatusText.Text
                     StatusText.SelectionStart = StatusText.Text.Length
                     StatusText.Focus()
+                    _reply_to = 0
                     Exit Sub
                 End If
                 If StatusText.Text = "" Then
+                    ' ステータステキストが入力されていない場合先頭に@ユーザー名を追加する
                     StatusText.Text = "@" + MyList.SelectedItems(0).SubItems(4).Text + " "
+                    _reply_to = MyList.SelectedItems(0).SubItems(5).Text
                 Else
                     If isAuto Then
                         If StatusText.Text.IndexOf("@" + MyList.SelectedItems(0).SubItems(4).Text + " ") > -1 Then Exit Sub
                         If StatusText.Text.StartsWith("@") = False Then
                             If StatusText.Text.StartsWith(". ") Then
+                                ' 複数リプライ
                                 StatusText.Text = StatusText.Text.Insert(2, "@" + MyList.SelectedItems(0).SubItems(4).Text + " ")
+                                _reply_to = 0
                             Else
+                                ' 単独リプライ
                                 StatusText.Text = "@" + MyList.SelectedItems(0).SubItems(4).Text + " " + StatusText.Text
+                                _reply_to = MyList.SelectedItems(0).SubItems(5).Text
                             End If
                         Else
+                            ' 複数リプライ
                             StatusText.Text = ". @" + MyList.SelectedItems(0).SubItems(4).Text + " " + StatusText.Text
+                            _reply_to = 0
                         End If
                     Else
                         Dim sidx As Integer = StatusText.SelectionStart
                         If StatusText.Text.StartsWith("@") Then
+                            '複数リプライ
                             'StatusText.Text = ". " + StatusText.Text + IIf(StatusText.Text.EndsWith(" "), "@", " @") + MyList.SelectedItems(0).SubItems(4).Text + " "
                             StatusText.Text = ". " + StatusText.Text.Insert(sidx, " @" + MyList.SelectedItems(0).SubItems(4).Text + " ")
                             sidx += 5 + MyList.SelectedItems(0).SubItems(4).Text.Length
                         Else
+                            ' 複数リプライ
                             'StatusText.Text = StatusText.Text + IIf(StatusText.Text.EndsWith(" "), "@", " @") + MyList.SelectedItems(0).SubItems(4).Text + " "
                             StatusText.Text = StatusText.Text.Insert(sidx, " @" + MyList.SelectedItems(0).SubItems(4).Text + " ")
                             sidx += 3 + MyList.SelectedItems(0).SubItems(4).Text.Length
                         End If
                         StatusText.SelectionStart = sidx
                         StatusText.Focus()
+                        _reply_to = 0
                         Exit Sub
                     End If
                 End If
@@ -5299,7 +5319,7 @@ RETRY:
             '            For i As Integer = 0 To 2
             Select Case args.type
                 Case WORKERTYPE.PostMessage
-                    ret = clsTwPost.PostStatus(args.status)
+                    ret = clsTwPost.PostStatus(args.status, _reply_to)
             End Select
             '            If ret.StartsWith("Err:") = False Then Exit For
             '           Threading.Thread.Sleep(500)
