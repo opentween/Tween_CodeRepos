@@ -1034,13 +1034,69 @@ Public Class TweenMain
             MyList.ChangeItemStyles(_item.Index, _item.BackColor, fcl, fnt)
             'MyList.Invalidate(_item.Bounds)
 
+            '最古未読ID再設定
+            For Each ts As TabStructure In _tabs
+                'タブ特定
+                If ts.listCustom.Equals(MyList) Then
+                    ts.unreadCount -= 1         '未読数減
+                    '未読数0
+                    If ts.unreadCount = 0 Then
+                        ts.oldestUnreadID = ""
+                        Exit For
+                    End If
+                    '最古未読IDが既読になった場合、新たな最古未読IDを探索
+                    If ts.oldestUnreadID = _item.SubItems(5).Text Then
+                        Dim stp As Integer = 1
+                        Dim frmi As Integer = _item.Index
+                        Dim toi As Integer = 0
+                        Dim oldUrID As String = ts.oldestUnreadID
+                        '日時ソート（＝ID順）の場合
+                        If listViewItemSorter.Column = 3 Then
+                            If listViewItemSorter.Order = SortOrder.Ascending Then
+                                '昇順
+                                frmi += 1
+                                toi = MyList.Items.Count - 1
+                                If frmi > toi Then
+                                    ts.oldestUnreadID = ""
+                                    Exit For
+                                End If
+                            Else
+                                '降順
+                                stp = -1
+                                frmi -= 1
+                                If frmi < 0 Then
+                                    ts.oldestUnreadID = ""
+                                    Exit For
+                                End If
+                            End If
+                        Else
+                            '日時以外が基準の場合は頭から探索
+                            frmi = 0
+                            toi = MyList.Items.Count - 1
+                        End If
+
+                        For i As Integer = frmi To toi Step stp
+                            If MyList.Items(i).SubItems(8).Text = "False" Then
+                                ts.oldestUnreadID = MyList.Items(i).SubItems(5).Text
+                                Exit For
+                            End If
+                        Next
+                    End If
+                    Exit For
+                End If
+            Next
+
+            '他のタブに同発言IDがあるかチェック。未読状態の整合性取る
             If MyList.Name <> "DirectMsg" Then
-                For i As Integer = 0 To ListTab.TabCount - 1
-                    If i <> ListTab.SelectedIndex And ListTab.TabPages(i).Text <> "Direct" Then
-                        Dim tmpList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.TabPages(i).Controls(0), Tween.TweenCustomControl.DetailsListView)
-                        tmpList.BeginUpdate()
+                'For i As Integer = 0 To ListTab.TabCount - 1
+                For Each ts As TabStructure In _tabs
+                    'If i <> ListTab.SelectedIndex And ListTab.TabPages(i).Text <> "Direct" Then
+                    If ts.listCustom.Equals(MyList) = False And ts.tabPage.Text <> "Direct" And ts.unreadCount > 0 Then
+                        'Dim tmpList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.TabPages(i).Controls(0), Tween.TweenCustomControl.DetailsListView)
+                        'tmpList.BeginUpdate()
                         Dim ur As Boolean = False
-                        For Each tmpItem As ListViewItem In tmpList.Items
+                        'For Each tmpItem As ListViewItem In tmpList.Items
+                        For Each tmpItem As ListViewItem In ts.listCustom.Items
                             If tmpItem.SubItems(5).Text = _item.SubItems(5).Text Then
                                 tmpItem.Font = _fntReaded
                                 tmpItem.ForeColor = fcl
@@ -1053,9 +1109,9 @@ Public Class TweenMain
                                 End If
                             End If
                         Next
-                        tmpList.EndUpdate()
+                        'tmpList.EndUpdate()
                         If ur = False Then
-                            If ListTab.TabPages(i).ImageIndex = 0 Then ListTab.TabPages(i).ImageIndex = -1
+                            If ts.tabPage.ImageIndex = 0 Then ts.tabPage.ImageIndex = -1
                         End If
                     End If
                 Next
