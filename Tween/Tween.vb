@@ -52,7 +52,8 @@ Public Class TweenMain
     Private _hisIdx As Integer
     Private UrlDialog As New OpenURL
     Private Const _replyHtml As String = "@<a target=""_self"" href=""https://twitter.com/"
-    Private _reply_to As Integer         ' リプライ先のステータスID 0の場合はリプライではない 注：複数あてのものはリプライではない
+    Private _reply_to_id As Integer     ' リプライ先のステータスID 0の場合はリプライではない 注：複数あてのものはリプライではない
+    Private _reply_to_name As String    ' リプライ先ステータスの書き込み者の名前
 
     Friend Class Win32Api
         '画面をブリンクするためのWin32API。起動時に10ページ読み取りごとに継続確認メッセージを表示する際の通知強調用
@@ -175,7 +176,8 @@ Public Class TweenMain
 
         _history.Add("")
         _hisIdx = 0
-        _reply_to = 0
+        _reply_to_id = 0
+        _reply_to_name = Nothing
 
         '<<<<<<<<<設定関連>>>>>>>>>
         '設定読み出し
@@ -1413,6 +1415,7 @@ Public Class TweenMain
 
         Dim args As GetWorkerArg = CType(e.Argument, GetWorkerArg)
         Try
+            If args.type = WORKERTYPE.PostMessage Then CheckReplyTo(args.status)
             For i As Integer = 0 To 1
                 Select Case args.type
                     Case WORKERTYPE.Timeline
@@ -1424,12 +1427,16 @@ Public Class TweenMain
                     Case WORKERTYPE.DirectMessegeSnt
                         ret = clsTw.GetDirectMessage(tlList, args.page, args.endPage, Twitter.GetTypes.GET_DMSNT, TIconList.Images.Keys, imgs)
                     Case WORKERTYPE.PostMessage
-                        ret = clsTw.PostStatus(args.status, _reply_to)
+                        ret = clsTw.PostStatus(args.status, _reply_to_id)
                     Case WORKERTYPE.FavAdd
                         ret = clsTw.PostFavAdd(args.ids(args.page))
                     Case WORKERTYPE.FavRemove
                         ret = clsTw.PostFavRemove(args.ids(args.page))
                 End Select
+                If args.type = WORKERTYPE.PostMessage Then
+                    _reply_to_id = 0
+                    _reply_to_name = Nothing
+                End If
                 If ret = "" Or (ret <> "" And (args.type = WORKERTYPE.PostMessage Or args.type = WORKERTYPE.FavAdd Or args.type = WORKERTYPE.FavRemove)) Then Exit For
                 Threading.Thread.Sleep(500)
             Next
@@ -5060,13 +5067,15 @@ RETRY:
                     StatusText.Text = "D " + MyList.SelectedItems(0).SubItems(4).Text + " " + StatusText.Text
                     StatusText.SelectionStart = StatusText.Text.Length
                     StatusText.Focus()
-                    _reply_to = 0
+                    _reply_to_id = 0
+                    _reply_to_name = Nothing
                     Exit Sub
                 End If
                 If StatusText.Text = "" Then
                     ' ステータステキストが入力されていない場合先頭に@ユーザー名を追加する
                     StatusText.Text = "@" + MyList.SelectedItems(0).SubItems(4).Text + " "
-                    _reply_to = MyList.SelectedItems(0).SubItems(5).Text
+                    _reply_to_id = MyList.SelectedItems(0).SubItems(5).Text
+                    _reply_to_name = MyList.SelectedItems(0).SubItems(4).Text
                 Else
                     If isAuto Then
                         If StatusText.Text.IndexOf("@" + MyList.SelectedItems(0).SubItems(4).Text + " ") > -1 Then Exit Sub
@@ -5074,16 +5083,19 @@ RETRY:
                             If StatusText.Text.StartsWith(". ") Then
                                 ' 複数リプライ
                                 StatusText.Text = StatusText.Text.Insert(2, "@" + MyList.SelectedItems(0).SubItems(4).Text + " ")
-                                _reply_to = 0
+                                _reply_to_id = 0
+                                _reply_to_name = Nothing
                             Else
                                 ' 単独リプライ
                                 StatusText.Text = "@" + MyList.SelectedItems(0).SubItems(4).Text + " " + StatusText.Text
-                                _reply_to = MyList.SelectedItems(0).SubItems(5).Text
+                                _reply_to_id = MyList.SelectedItems(0).SubItems(5).Text
+                                _reply_to_name = MyList.SelectedItems(0).SubItems(4).Text
                             End If
                         Else
                             ' 複数リプライ
                             StatusText.Text = ". @" + MyList.SelectedItems(0).SubItems(4).Text + " " + StatusText.Text
-                            _reply_to = 0
+                            _reply_to_id = 0
+                            _reply_to_name = Nothing
                         End If
                     Else
                         Dim sidx As Integer = StatusText.SelectionStart
@@ -5100,11 +5112,13 @@ RETRY:
                         End If
                         StatusText.SelectionStart = sidx
                         StatusText.Focus()
-                        _reply_to = 0
+                        _reply_to_id = 0
+                        _reply_to_name = Nothing
                         Exit Sub
                     End If
                 End If
             Else
+                ' 複数リプライ
                 If isAuto = False And isReply = False Then Exit Sub
 
                 If isAuto Then
@@ -5373,14 +5387,12 @@ RETRY:
         Dim args As GetWorkerArg = CType(e.Argument, GetWorkerArg)
         Try
             '            For i As Integer = 0 To 2
-            Select Case args.type
-                Case WORKERTYPE.PostMessage
-                    ret = clsTwPost.PostStatus(args.status, _reply_to)
-            End Select
-            '            If ret.StartsWith("Err:") = False Then Exit For
-            '           Threading.Thread.Sleep(500)
-            '            Next
+            CheckReplyTo(args.status)
 
+            ret = clsTwPost.PostStatus(args.status, _reply_to_id)
+
+            _reply_to_id = 0
+            _reply_to_name = Nothing
             rslt.retMsg = ret
             rslt.TLine = Nothing
             rslt.page = args.page
@@ -5778,6 +5790,8 @@ RETRY:
         Next
     End Sub
     Friend Sub SetMainWindowTitle()
+        'メインウインドウタイトルの書き換え
+
         If SettingDialog.DispUsername = True Then
             'ユーザー名表示あり
             If SettingDialog.DispLatestPost = True And _history IsNot Nothing And _hisIdx > 0 Then
@@ -5797,11 +5811,35 @@ RETRY:
         End If
     End Sub
     Friend Sub SetNotifyIconText()
+        ' タスクトレイアイコンのツールチップテキスト書き換え
+
         If SettingDialog.DispUsername = True Then
             NotifyIcon1.Text = _username + " - Tween"
         Else
             NotifyIcon1.Text = "Tween"
         End If
+    End Sub
+    Friend Sub CheckReplyTo(ByVal StatusText As String)
+        ' 本当にリプライ先指定すべきかどうかの判定
+        Dim id As New Regex("@[a-zA-Z0-9_]+")
+        Dim m As MatchCollection
+
+        If _reply_to_id = 0 Then Exit Sub
+
+        If _reply_to_name = Nothing Then
+            _reply_to_id = 0
+            Exit Sub
+        End If
+
+        m = id.Matches(StatusText)
+
+        If m.Count = 1 And m.Item(0).Value = "@" + _reply_to_name Then
+            Exit Sub
+        End If
+
+        _reply_to_id = 0
+        _reply_to_name = Nothing
+
     End Sub
 End Class
 
