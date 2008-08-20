@@ -427,6 +427,8 @@ Public Class TweenMain
         myTabRecent.unreadManage = _section.ListElement("Recent").UnreadManage
         myTabRecent.soundFile = _section.ListElement("Recent").SoundFile
         myTabRecent.tabName = "Recent"
+        myTabRecent.tabPage = ListTab.TabPages(0)
+        myTabRecent.listCustom = Timeline
         _tabs.Add(myTabRecent)
 
         'Replyタブ
@@ -450,6 +452,8 @@ Public Class TweenMain
         myTabReply.unreadManage = _section.ListElement("Reply").UnreadManage
         myTabReply.soundFile = _section.ListElement("Reply").SoundFile
         myTabReply.tabName = "Reply"
+        myTabReply.tabPage = ListTab.TabPages(1)
+        myTabReply.listCustom = Reply
         _tabs.Add(myTabReply)
 
         'DirectMsgタブ
@@ -473,6 +477,8 @@ Public Class TweenMain
         myTabDM.unreadManage = _section.ListElement("Direct").UnreadManage
         myTabDM.soundFile = _section.ListElement("Direct").SoundFile
         myTabDM.tabName = "Direct"
+        myTabDM.tabPage = ListTab.TabPages(2)
+        myTabDM.listCustom = DirectMsg
         _tabs.Add(myTabDM)
 
         Dim idx As Integer = 0
@@ -638,22 +644,13 @@ Public Class TweenMain
     Private Sub RefreshTimeline(ByVal tlList As List(Of Twitter.MyListItem), Optional ByVal OldItems As Boolean = False)
         Dim lItem As Twitter.MyListItem
         Dim cnt As Integer = 0
-        'Dim unread As Integer = 0
         Dim RepCnt As Integer = 0
-        'Dim _nick As String = ""
-        'Dim _data As String = ""
         Dim _pop As String = ""
         Dim topItem As ListViewItem
-        'Dim NewReply As Boolean = False
-        'Dim _reply As Boolean = False
         Dim firstDate As String = ""
         Dim endDate As String = ""
         Dim readed As Boolean = SettingDialog.Readed
         Dim myList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
-        'Dim tabName As String = ListTab.SelectedTab.Text
-        'Dim mySorter As ListViewItemComparer = Nothing
-        'Dim tlFont As Boolean = False
-        'Dim PopFlg As Boolean
         Dim _readed As Boolean
         Dim _fav As Boolean
         Dim _onewaylove As Boolean
@@ -663,26 +660,6 @@ Public Class TweenMain
 
         TimerColorize.Stop()
 
-        'If NewPostPopMenuItem.Checked = True Or _
-        '  (NewPostPopMenuItem.Checked = False And NewReplyPopMenuItem.Checked = True) Then
-        '    PopFlg = True
-        'End If
-
-        'Select Case ListTab.SelectedIndex
-        '    Case 0
-        '        mySorter = listViewItemSorter
-        '    Case 1
-        '        mySorter = listViewItemSorter2
-        '    Case 2
-        '        mySorter = listViewItemSorter3
-        '    Case Else
-        '        For Each myTab As TabStructure In _tabs
-        '            If myTab.tabName = tabName Then
-        '                mySorter = myTab.sorter
-        '                Exit For
-        '            End If
-        '        Next
-        'End Select
 
         Dim _item As ListViewItem
 
@@ -757,16 +734,8 @@ Public Class TweenMain
                                      _onewaylove.ToString, _
                                      lItem.Reply.ToString}
             Dim lvItem As New ListViewItem(sItem)
-            'lvItem.Font = _fntReaded
-            'lvItem.ForeColor = _clReaded
             lvItem.ToolTipText = lItem.Data
-            'If ((OldItems And _readed = False And readed = False) Or _
-            '   (OldItems = False And _
-            '    (_initial = False Or (_initial And readed = False)))) And SettingDialog.UnreadManage Then
             If (_initial = False Or (_initial And readed = False)) And SettingDialog.UnreadManage Then
-                'lvItem.Font = _fntUnread
-                'lvItem.ForeColor = _clUnread
-                'lvItem.SubItems(8).Text = "False"
                 _readed = False
             End If
             If _onewaylove And SettingDialog.OneWayLove = True Then
@@ -823,7 +792,11 @@ Public Class TweenMain
                         lvItem.SubItems(8).Text = "False"
                         ts.tabPage.ImageIndex = 0
                         ts.unreadCount += 1
-                        If lvItem.SubItems(5).Text < ts.oldestUnreadID Then ts.oldestUnreadID = lvItem.SubItems(5).Text
+                        If ts.oldestUnreadItem IsNot Nothing Then
+                            If lvItem.SubItems(5).Text < ts.oldestUnreadItem.SubItems(5).Text Then ts.oldestUnreadItem = lvItem
+                        Else
+                            ts.oldestUnreadItem = lvItem
+                        End If
                     Else
                         lvItem.Font = _fntReaded
                         lvItem.ForeColor = _clReaded
@@ -850,7 +823,11 @@ Public Class TweenMain
                     lvItem.SubItems(8).Text = "False"
                     ListTab.TabPages(0).ImageIndex = 0
                     _tabs(0).unreadCount += 1
-                    If lvItem.SubItems(5).Text < _tabs(0).oldestUnreadID Then _tabs(0).oldestUnreadID = lvItem.SubItems(5).Text
+                    If _tabs(0).oldestUnreadItem IsNot Nothing Then
+                        If lvItem.SubItems(5).Text < _tabs(0).oldestUnreadItem.SubItems(5).Text Then _tabs(0).oldestUnreadItem = lvItem
+                    Else
+                        _tabs(0).oldestUnreadItem = lvItem
+                    End If
                 Else
                     lvItem.Font = _fntReaded
                     lvItem.ForeColor = _clReaded
@@ -877,7 +854,11 @@ Public Class TweenMain
                     lvItem.SubItems(8).Text = "False"
                     ListTab.TabPages(1).ImageIndex = 0
                     _tabs(1).unreadCount += 1
-                    If lvItem.SubItems(5).Text < _tabs(1).oldestUnreadID Then _tabs(1).oldestUnreadID = lvItem.SubItems(5).Text
+                    If _tabs(1).oldestUnreadItem IsNot Nothing Then
+                        If lvItem.SubItems(5).Text < _tabs(1).oldestUnreadItem.SubItems(5).Text Then _tabs(1).oldestUnreadItem = lvItem
+                    Else
+                        _tabs(1).oldestUnreadItem = lvItem
+                    End If
                 Else
                     lvItem.Font = _fntReaded
                     lvItem.ForeColor = _clReaded
@@ -908,9 +889,6 @@ Public Class TweenMain
             End Select
             Dim pmsg As String
             pmsg = nm + " : " + lItem.Data
-            'If pmsg.Length > 30 Then
-            '    pmsg = pmsg.Substring(0, 30)
-            'End If
             If NewPostPopMenuItem.Checked = True And nf = True Then
                 If _pop = "" Then
                     _pop = pmsg
@@ -923,17 +901,11 @@ Public Class TweenMain
 
         endDate = lItem.PDate.ToString("yy-MM-dd HH:mm:ss")
 
-        'For cnt = 0 To Timeline.Items.Count - 1
-        '    If Timeline.Items(cnt).Font.Underline Then
-        '        unread += 1
-        '    End If
-        'Next
 
         myList.EndUpdate()
 
         If cnt > 0 Then
             TimerColorize.Start()
-            'ColorizeList(False)
             If Not topItem Is Nothing Then
                 If myList.Items.Count > 0 And topItem.Index > -1 Then
                     myList.EnsureVisible(myList.Items.Count - 1)
@@ -941,50 +913,24 @@ Public Class TweenMain
                 End If
             Else
 
-                'If mySorter.Column = 3 And mySorter.Order = SortOrder.Ascending And myList.Items.Count > 0 Then
                 If listViewItemSorter.Column = 3 And listViewItemSorter.Order = SortOrder.Ascending And myList.Items.Count > 0 Then
                     myList.EnsureVisible(myList.Items.Count - 1)
                 End If
             End If
             '新着バルーン通知
-            'If OldItems = False And _initial = False And _pop <> "" Then
             If _initial = False And _pop <> "" Then
                 If RepCnt > 0 And _tabs(1).notify Then
                     NotifyIcon1.BalloonTipIcon = ToolTipIcon.Warning
-                    'NotifyIcon1.BalloonTipTitle = "Tween [Reply!] 新着 " + newCnt.ToString() + "件 / 未読 " + unread.ToString() + "件 "
-                    'NotifyIcon1.BalloonTipTitle = "Tween [Reply!] 新着"
-                    'If NewPostPopMenuItem.Checked Then
                     NotifyIcon1.BalloonTipTitle = "Tween [Reply!] 新着 " + cnt.ToString() + "件"
-                    'Else
-                    '    NotifyIcon1.BalloonTipTitle = "Tween [Reply!] 新着 " + RepCnt.ToString() + "件"
-                    'End If
                 Else
                     NotifyIcon1.BalloonTipIcon = ToolTipIcon.Info
-                    'NotifyIcon1.BalloonTipTitle = "Tween 新着 " + newCnt.ToString() + "件 / 未読 " + unread.ToString() + "件"
-                    'NotifyIcon1.BalloonTipTitle = "Tween 新着"
                     NotifyIcon1.BalloonTipTitle = "Tween 新着 " + cnt.ToString() + "件"
                 End If
                 NotifyIcon1.BalloonTipText = _pop
                 NotifyIcon1.ShowBalloonTip(500)
-
-                '_postCounter += cnt
             End If
             'サウンド再生
-            'If OldItems = False And _initial = False And SettingDialog.PlaySound = True Then
             If _initial = False And SettingDialog.PlaySound = True And snd <> "" Then
-                'If NewReply = True Then
-                '    Try
-                '        My.Computer.Audio.Play(My.Application.Info.DirectoryPath.ToString() + "\reply.wav", AudioPlayMode.Background)
-                '    Catch ex As Exception
-
-                '    End Try
-                'Else
-                '    Try
-                '        My.Computer.Audio.Play(My.Application.Info.DirectoryPath.ToString() + "\new.wav", AudioPlayMode.Background)
-                '    Catch ex As Exception
-
-                '    End Try
-                'End If
                 Try
                     My.Computer.Audio.Play(My.Application.Info.DirectoryPath.ToString() + "\" + snd, AudioPlayMode.Background)
                 Catch ex As Exception
@@ -1004,24 +950,17 @@ Public Class TweenMain
     End Sub
 
     Private Sub Mylist_Scrolled(ByVal sender As Object, ByVal e As System.EventArgs) Handles DirectMsg.Scrolled, Timeline.Scrolled, Reply.Scrolled
-        'Call ColorizeList(False)
         TimerColorize.Stop()
         TimerColorize.Start()
     End Sub
 
     Private Sub MyList_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timeline.SelectedIndexChanged, Reply.SelectedIndexChanged, DirectMsg.SelectedIndexChanged
-        'TimerColorize.Enabled = False
         TimerColorize.Stop()
-        'TimerColorize.Enabled = False
         TimerColorize.Interval = 100
 
         Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(sender, Tween.TweenCustomControl.DetailsListView)
         MyList.Update()
         If MyList.SelectedItems.Count <> 1 Then Exit Sub
-
-        'TimerColorize.Enabled = False
-        'TimerColorize.Stop()
-        'TimerColorize.Enabled = True
 
         Dim _item As ListViewItem = MyList.SelectedItems(0)
         If _item.SubItems(8).Text = "False" Then
@@ -1034,7 +973,6 @@ Public Class TweenMain
             If _item.SubItems(10).Text = "True" And SettingDialog.OneWayLove Then fcl = _clOWL
             If _item.SubItems(9).Text = "True" Then fcl = _clFav
             MyList.ChangeItemStyles(_item.Index, _item.BackColor, fcl, fnt)
-            'MyList.Invalidate(_item.Bounds)
 
             '最古未読ID再設定
             For Each ts As TabStructure In _tabs
@@ -1043,43 +981,35 @@ Public Class TweenMain
                     ts.unreadCount -= 1         '未読数減
                     '未読数0
                     If ts.unreadCount = 0 Then
-                        ts.oldestUnreadID = ""
+                        ts.oldestUnreadItem = Nothing
+                        If ts.tabPage.ImageIndex = 0 Then ts.tabPage.ImageIndex = -1
                         Exit For
                     End If
                     '最古未読IDが既読になった場合、新たな最古未読IDを探索
-                    If ts.oldestUnreadID = _item.SubItems(5).Text Then
+                    If ts.oldestUnreadItem IsNot Nothing AndAlso ts.oldestUnreadItem.Equals(_item) Then
                         Dim stp As Integer = 1
-                        Dim frmi As Integer = _item.Index
+                        Dim frmi As Integer = ts.oldestUnreadItem.Index
                         Dim toi As Integer = 0
-                        Dim oldUrID As String = ts.oldestUnreadID
                         '日時ソート（＝ID順）の場合
                         If listViewItemSorter.Column = 3 Then
                             If listViewItemSorter.Order = SortOrder.Ascending Then
                                 '昇順
                                 frmi += 1
-                                toi = MyList.Items.Count - 1
-                                If frmi > toi Then
-                                    ts.oldestUnreadID = ""
-                                    Exit For
-                                End If
+                                toi = ts.listCustom.Items.Count - 1
                             Else
                                 '降順
                                 stp = -1
                                 frmi -= 1
-                                If frmi < 0 Then
-                                    ts.oldestUnreadID = ""
-                                    Exit For
-                                End If
                             End If
                         Else
                             '日時以外が基準の場合は頭から探索
                             frmi = 0
-                            toi = MyList.Items.Count - 1
+                            toi = ts.listCustom.Items.Count - 1
                         End If
 
                         For i As Integer = frmi To toi Step stp
-                            If MyList.Items(i).SubItems(8).Text = "False" Then
-                                ts.oldestUnreadID = MyList.Items(i).SubItems(5).Text
+                            If ts.listCustom.Items(i).SubItems(8).Text = "False" Then
+                                ts.oldestUnreadItem = ts.listCustom.Items(i)
                                 Exit For
                             End If
                         Next
@@ -1090,54 +1020,89 @@ Public Class TweenMain
 
             '他のタブに同発言IDがあるかチェック。未読状態の整合性取る
             If MyList.Name <> "DirectMsg" Then
-                'For i As Integer = 0 To ListTab.TabCount - 1
                 For Each ts As TabStructure In _tabs
-                    'If i <> ListTab.SelectedIndex And ListTab.TabPages(i).Text <> "Direct" Then
                     If ts.listCustom.Equals(MyList) = False And ts.tabPage.Text <> "Direct" And ts.unreadCount > 0 Then
-                        'Dim tmpList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.TabPages(i).Controls(0), Tween.TweenCustomControl.DetailsListView)
-                        'tmpList.BeginUpdate()
-                        Dim ur As Boolean = False
-                        'For Each tmpItem As ListViewItem In tmpList.Items
-                        For Each tmpItem As ListViewItem In ts.listCustom.Items
-                            If tmpItem.SubItems(5).Text = _item.SubItems(5).Text Then
-                                tmpItem.Font = _fntReaded
-                                tmpItem.ForeColor = fcl
-                                tmpItem.SubItems(8).Text = "True"
-                                'If tmpItem.SubItems(10).Text = "True" And SettingDialog.OneWayLove Then tmpItem.ForeColor = _clOWL
-                                'If tmpItem.SubItems(9).Text = "True" Then tmpItem.ForeColor = _clFav
+                        Dim rdItem As ListViewItem = Nothing    '今回既読になったアイテム
+                        '最古未読アイテムが既読になったら、次の未読を探索
+                        If ts.oldestUnreadItem IsNot Nothing AndAlso _item.SubItems(5).Text = ts.oldestUnreadItem.SubItems(5).Text Then
+                            ts.unreadCount -= 1
+                            rdItem = ts.oldestUnreadItem
+                            If ts.unreadCount = 0 Then
+                                ts.oldestUnreadItem = Nothing
                             Else
-                                If ur = False AndAlso tmpItem.SubItems(8).Text = "False" Then
-                                    ur = True
+                                Dim stp As Integer = 1
+                                Dim frmi As Integer = ts.oldestUnreadItem.Index
+                                Dim toi As Integer = 0
+                                '日時ソート（＝ID順）の場合
+                                If listViewItemSorter.Column = 3 Then
+                                    If listViewItemSorter.Order = SortOrder.Ascending Then
+                                        '昇順
+                                        frmi += 1
+                                        toi = ts.listCustom.Items.Count - 1
+                                    Else
+                                        '降順
+                                        stp = -1
+                                        frmi -= 1
+                                    End If
+                                Else
+                                    '日時以外が基準の場合は頭から探索
+                                    frmi = 0
+                                    toi = ts.listCustom.Items.Count - 1
                                 End If
+
+                                For i As Integer = frmi To toi Step stp
+                                    If ts.listCustom.Items(i).SubItems(8).Text = "False" Then
+                                        ts.oldestUnreadItem = ts.listCustom.Items(i)
+                                        Exit For
+                                    End If
+                                Next
                             End If
-                        Next
-                        'tmpList.EndUpdate()
-                        If ur = False Then
-                            If ts.tabPage.ImageIndex = 0 Then ts.tabPage.ImageIndex = -1
+                        Else
+                            '最古未読以外の場合、既読にすべきアイテムが存在するかチェック
+                            Dim stp As Integer = 1
+                            Dim frmi As Integer = 0
+                            Dim toi As Integer = 0
+                            If ts.oldestUnreadItem IsNot Nothing Then
+                                frmi = ts.oldestUnreadItem.Index
+                            End If
+                            '日時ソート（＝ID順）の場合
+                            If listViewItemSorter.Column = 3 Then
+                                If listViewItemSorter.Order = SortOrder.Ascending Then
+                                    '昇順
+                                    frmi += 1
+                                    toi = ts.listCustom.Items.Count - 1
+                                Else
+                                    '降順
+                                    stp = -1
+                                    frmi -= 1
+                                End If
+                            Else
+                                '日時以外が基準の場合は頭から探索
+                                frmi = 0
+                                toi = ts.listCustom.Items.Count - 1
+                            End If
+                            For i As Integer = frmi To toi Step stp
+                                If ts.listCustom.Items(i).SubItems(8).Text = "False" Then
+                                    rdItem = ts.listCustom.Items(i)
+                                    ts.unreadCount -= 1
+                                    Exit For
+                                End If
+                            Next
                         End If
+                        '既読化
+                        If rdItem IsNot Nothing Then
+                            rdItem.Font = _fntReaded
+                            rdItem.ForeColor = fcl
+                            rdItem.SubItems(8).Text = "True"
+                        End If
+                        'タブ見出しアイコンクリア
+                        If ts.unreadCount = 0 And ts.tabPage.ImageIndex = 0 Then ts.tabPage.ImageIndex = -1
                     End If
                 Next
             End If
         End If
 
-        'If ListTab.SelectedIndex <> 2 Then
-
-        'ColorizeList(True)
         TimerColorize.Start()
-
-        'End If
-        'TimerColorize.Enabled = True
-        'TimerColorize.Start()
-
-        'If ListTab.SelectedIndex <> 2 Then
-        For Each _tempItem As ListViewItem In MyList.Items
-            If _tempItem.SubItems(8).Text = "False" Then
-                'ListTab.SelectedTab.ImageIndex = 0
-                Exit Sub
-            End If
-        Next
-        If ListTab.SelectedTab.ImageIndex = 0 Then ListTab.SelectedTab.ImageIndex = -1
-        'End If
 
     End Sub
 
@@ -2282,7 +2247,11 @@ Public Class TweenMain
                     ListTab.TabPages(2).ImageIndex = 0
                 End If
                 _tabs(2).unreadCount += 1
-                If lvItem.SubItems(5).Text < _tabs(2).oldestUnreadID Then _tabs(2).oldestUnreadID = lvItem.SubItems(5).Text
+                If _tabs(2).oldestUnreadItem IsNot Nothing Then
+                    If lvItem.SubItems(5).Text < _tabs(2).oldestUnreadItem.SubItems(5).Text Then _tabs(2).oldestUnreadItem = lvItem
+                Else
+                    _tabs(2).oldestUnreadItem = lvItem
+                End If
             End If
             DirectMsg.Items.Add(lvItem)
 
@@ -2359,18 +2328,6 @@ Public Class TweenMain
 
     Private Sub DeleteStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DeleteStripMenuItem.Click
         Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
-        Dim MyList2 As Tween.TweenCustomControl.DetailsListView = Nothing
-
-        'Select Case ListTab.SelectedIndex
-        '    Case 0
-        '        MyList = Timeline
-        '        MyList2 = Reply
-        '    Case 1
-        '        MyList = Reply
-        '        MyList2 = Timeline
-        '    Case 2
-        '        MyList = DirectMsg
-        'End Select
 
         If MessageBox.Show("選択されている発言(DM)を削除してもよろしいですか？" + vbCrLf + _
                            "　※注意　：　Twitterサーバからも削除されます！※" + vbCrLf + _
@@ -2385,23 +2342,19 @@ Public Class TweenMain
         _refreshIconCnt = 0
         TimerRefreshIcon.Enabled = True
 
-        'Do While GetTimelineWorker.IsBusy
-        '    Threading.Thread.Sleep(100)
-        '    Application.DoEvents()
-        'Loop
-
         If ListTab.SelectedTab.Text <> "Direct" Then
             Dim cnt As Integer = 0
             Dim cnt2 As Integer = 0
-            Dim cnt3 As Integer = 0
+            'Dim cnt3 As Integer = 0
             Dim rtn As String = ""
             Dim msg As String = ""
-            Dim idx As Integer = 0
+            'Dim idx As Integer = 0
 
             For cnt = 0 To MyList.SelectedItems.Count - 1
-                If MyList.SelectedItems(cnt2).SubItems(4).Text = _username Then
+                If MyList.SelectedItems(cnt2).SubItems(4).Text.Equals(_username, StringComparison.CurrentCultureIgnoreCase) Then    'IgnoreCase
                     rtn = clsTw.RemoveStatus(MyList.SelectedItems(cnt2).SubItems(5).Text)
                     If rtn.Length > 0 Then
+                        'エラー
                         msg = rtn + vbCrLf
                         msg += MyList.SelectedItems(cnt2).SubItems(1).Text + ":"
                         If MyList.SelectedItems(cnt2).SubItems(2).Text.Length > 5 Then
@@ -2411,16 +2364,26 @@ Public Class TweenMain
                         End If
                         cnt2 += 1
                     Else
-                        For idx = 0 To ListTab.TabCount - 1
-                            If idx <> ListTab.SelectedIndex And ListTab.TabPages(idx).Text <> "Direct" Then
-                                MyList2 = CType(ListTab.TabPages(idx).Controls(0), Tween.TweenCustomControl.DetailsListView)
-                                For cnt3 = 0 To MyList2.Items.Count - 1
-                                    If MyList.SelectedItems(cnt2).SubItems(4).Text = MyList2.Items(cnt3).SubItems(4).Text And _
-                                       MyList.SelectedItems(cnt2).SubItems(5).Text = MyList2.Items(cnt3).SubItems(5).Text Then
-                                        MyList2.Items.Remove(MyList2.Items(cnt3))
+                        '削除成功→リストから削除（全タブチェック）
+                        For Each ts As TabStructure In _tabs
+                            If ts.listCustom.Equals(MyList) = False And ts.tabPage.Text <> "Direct" Then
+                                For Each itm As ListViewItem In ts.listCustom.Items
+                                    If MyList.SelectedItems(cnt2).SubItems(5).Text = itm.SubItems(5).Text Then
+                                        If ts.oldestUnreadItem.Equals(itm) Then ts.oldestUnreadItem = Nothing
+                                        If itm.SubItems(8).Text = "False" Then ts.unreadCount -= 1
+                                        ts.allCount -= 1
+                                        ts.listCustom.Items.Remove(itm)
                                         Exit For
                                     End If
                                 Next
+                            End If
+                        Next
+                        For Each ts As TabStructure In _tabs
+                            If ts.listCustom.Equals(MyList) Then
+                                If ts.oldestUnreadItem.Equals(MyList.SelectedItems(cnt2)) Then ts.oldestUnreadItem = Nothing
+                                If MyList.SelectedItems(cnt2).SubItems(8).Text = "False" Then ts.unreadCount -= 1
+                                ts.allCount -= 1
+                                Exit For
                             End If
                         Next
                         MyList.Items.Remove(MyList.SelectedItems(cnt2))
@@ -2454,6 +2417,14 @@ Public Class TweenMain
                     End If
                     cnt2 += 1
                 Else
+                    For Each ts As TabStructure In _tabs
+                        If ts.listCustom.Equals(MyList) Then
+                            If ts.oldestUnreadItem.Equals(MyList.SelectedItems(cnt2)) Then ts.oldestUnreadItem = Nothing
+                            If MyList.SelectedItems(cnt2).SubItems(8).Text = "False" Then ts.unreadCount -= 1
+                            ts.allCount -= 1
+                            Exit For
+                        End If
+                    Next
                     MyList.Items.Remove(MyList.SelectedItems(cnt2))
                 End If
             Next
@@ -5859,7 +5830,7 @@ Public Class TabStructure
     Public soundFile As String
     Public filters As New List(Of FilterClass)
     Public modified As Boolean
-    Public oldestUnreadID As String
+    Public oldestUnreadItem As ListViewItem
     Public unreadCount As Integer
     Public allCount As Integer
 End Class
