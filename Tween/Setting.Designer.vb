@@ -128,7 +128,7 @@ Partial Class Setting
         Me.CheckDispUsername = New System.Windows.Forms.CheckBox
         Me.Label46 = New System.Windows.Forms.Label
         Me.Label45 = New System.Windows.Forms.Label
-        Me.CheckDispLatestPost = New System.Windows.Forms.CheckBox
+        Me.ComboDispTitle = New System.Windows.Forms.ComboBox
         Me.GroupBox1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -171,7 +171,7 @@ Partial Class Setting
         Me.Save.Location = New System.Drawing.Point(570, 558)
         Me.Save.Name = "Save"
         Me.Save.Size = New System.Drawing.Size(75, 23)
-        Me.Save.TabIndex = 58
+        Me.Save.TabIndex = 67
         Me.Save.Text = "OK"
         Me.Save.UseVisualStyleBackColor = True
         '
@@ -182,7 +182,7 @@ Partial Class Setting
         Me.Cancel.Location = New System.Drawing.Point(651, 558)
         Me.Cancel.Name = "Cancel"
         Me.Cancel.Size = New System.Drawing.Size(75, 23)
-        Me.Cancel.TabIndex = 59
+        Me.Cancel.TabIndex = 68
         Me.Cancel.Text = "キャンセル"
         Me.Cancel.UseVisualStyleBackColor = True
         '
@@ -208,7 +208,7 @@ Partial Class Setting
         Me.Label4.Location = New System.Drawing.Point(12, 145)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(139, 12)
-        Me.Label4.TabIndex = 8
+        Me.Label4.TabIndex = 9
         Me.Label4.Text = "次頁取得件数閾値(1～20)"
         '
         'NextThreshold
@@ -216,14 +216,14 @@ Partial Class Setting
         Me.NextThreshold.Location = New System.Drawing.Point(181, 142)
         Me.NextThreshold.Name = "NextThreshold"
         Me.NextThreshold.Size = New System.Drawing.Size(65, 19)
-        Me.NextThreshold.TabIndex = 9
+        Me.NextThreshold.TabIndex = 10
         '
         'DMPeriod
         '
         Me.DMPeriod.Location = New System.Drawing.Point(181, 104)
         Me.DMPeriod.Name = "DMPeriod"
         Me.DMPeriod.Size = New System.Drawing.Size(65, 19)
-        Me.DMPeriod.TabIndex = 7
+        Me.DMPeriod.TabIndex = 8
         '
         'Label5
         '
@@ -231,7 +231,7 @@ Partial Class Setting
         Me.Label5.Location = New System.Drawing.Point(12, 107)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(94, 12)
-        Me.Label5.TabIndex = 6
+        Me.Label5.TabIndex = 7
         Me.Label5.Text = "DM更新間隔（秒）"
         '
         'NextPages
@@ -239,7 +239,7 @@ Partial Class Setting
         Me.NextPages.Location = New System.Drawing.Point(181, 167)
         Me.NextPages.Name = "NextPages"
         Me.NextPages.Size = New System.Drawing.Size(65, 19)
-        Me.NextPages.TabIndex = 11
+        Me.NextPages.TabIndex = 12
         '
         'Label6
         '
@@ -247,7 +247,7 @@ Partial Class Setting
         Me.Label6.Location = New System.Drawing.Point(12, 170)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(144, 12)
-        Me.Label6.TabIndex = 10
+        Me.Label6.TabIndex = 11
         Me.Label6.Text = "閾値オーバー時の取得ページ"
         '
         'ReadLogDays
@@ -256,7 +256,7 @@ Partial Class Setting
         Me.ReadLogDays.Location = New System.Drawing.Point(181, 194)
         Me.ReadLogDays.Name = "ReadLogDays"
         Me.ReadLogDays.Size = New System.Drawing.Size(51, 19)
-        Me.ReadLogDays.TabIndex = 13
+        Me.ReadLogDays.TabIndex = 14
         '
         'Label7
         '
@@ -265,7 +265,7 @@ Partial Class Setting
         Me.Label7.Location = New System.Drawing.Point(12, 197)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(163, 12)
-        Me.Label7.TabIndex = 12
+        Me.Label7.TabIndex = 13
         Me.Label7.Text = "ログ読み込み 起動時刻から過去"
         '
         'StartupReadPages
@@ -273,7 +273,7 @@ Partial Class Setting
         Me.StartupReadPages.Location = New System.Drawing.Point(72, 237)
         Me.StartupReadPages.Name = "StartupReadPages"
         Me.StartupReadPages.Size = New System.Drawing.Size(34, 19)
-        Me.StartupReadPages.TabIndex = 17
+        Me.StartupReadPages.TabIndex = 18
         '
         'Label8
         '
@@ -281,7 +281,7 @@ Partial Class Setting
         Me.Label8.Location = New System.Drawing.Point(12, 222)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(129, 12)
-        Me.Label8.TabIndex = 15
+        Me.Label8.TabIndex = 16
         Me.Label8.Text = "起動時読み込みページ数"
         '
         'Label9
@@ -290,7 +290,7 @@ Partial Class Setting
         Me.Label9.Location = New System.Drawing.Point(12, 268)
         Me.Label9.Name = "Label9"
         Me.Label9.Size = New System.Drawing.Size(114, 12)
-        Me.Label9.TabIndex = 22
+        Me.Label9.TabIndex = 23
         Me.Label9.Text = "起動時読み込みポスト"
         '
         'StartupReaded
@@ -299,7 +299,7 @@ Partial Class Setting
         Me.StartupReaded.Location = New System.Drawing.Point(181, 267)
         Me.StartupReaded.Name = "StartupReaded"
         Me.StartupReaded.Size = New System.Drawing.Size(76, 16)
-        Me.StartupReaded.TabIndex = 23
+        Me.StartupReaded.TabIndex = 24
         Me.StartupReaded.Text = "既読にする"
         Me.StartupReaded.UseVisualStyleBackColor = True
         '
@@ -311,7 +311,7 @@ Partial Class Setting
         Me.ReadLogUnit.Location = New System.Drawing.Point(233, 194)
         Me.ReadLogUnit.Name = "ReadLogUnit"
         Me.ReadLogUnit.Size = New System.Drawing.Size(61, 20)
-        Me.ReadLogUnit.TabIndex = 14
+        Me.ReadLogUnit.TabIndex = 15
         '
         'Label11
         '
@@ -319,7 +319,7 @@ Partial Class Setting
         Me.Label11.Location = New System.Drawing.Point(12, 381)
         Me.Label11.Name = "Label11"
         Me.Label11.Size = New System.Drawing.Size(163, 12)
-        Me.Label11.TabIndex = 29
+        Me.Label11.TabIndex = 30
         Me.Label11.Text = "リストのアイコンサイズ（初期値16）"
         '
         'Label12
@@ -328,7 +328,7 @@ Partial Class Setting
         Me.Label12.Location = New System.Drawing.Point(310, 416)
         Me.Label12.Name = "Label12"
         Me.Label12.Size = New System.Drawing.Size(119, 12)
-        Me.Label12.TabIndex = 50
+        Me.Label12.TabIndex = 56
         Me.Label12.Text = "ステータス（文末に付加）"
         '
         'StatusText
@@ -336,7 +336,7 @@ Partial Class Setting
         Me.StatusText.Location = New System.Drawing.Point(461, 413)
         Me.StatusText.Name = "StatusText"
         Me.StatusText.Size = New System.Drawing.Size(100, 19)
-        Me.StatusText.TabIndex = 51
+        Me.StatusText.TabIndex = 57
         '
         'PlaySnd
         '
@@ -344,7 +344,7 @@ Partial Class Setting
         Me.PlaySnd.Location = New System.Drawing.Point(181, 321)
         Me.PlaySnd.Name = "PlaySnd"
         Me.PlaySnd.Size = New System.Drawing.Size(67, 16)
-        Me.PlaySnd.TabIndex = 27
+        Me.PlaySnd.TabIndex = 28
         Me.PlaySnd.Text = "再生する"
         Me.PlaySnd.UseVisualStyleBackColor = True
         '
@@ -354,7 +354,7 @@ Partial Class Setting
         Me.Label14.Location = New System.Drawing.Point(12, 322)
         Me.Label14.Name = "Label14"
         Me.Label14.Size = New System.Drawing.Size(66, 12)
-        Me.Label14.TabIndex = 26
+        Me.Label14.TabIndex = 27
         Me.Label14.Text = "サウンド再生"
         '
         'Label15
@@ -363,7 +363,7 @@ Partial Class Setting
         Me.Label15.Location = New System.Drawing.Point(12, 343)
         Me.Label15.Name = "Label15"
         Me.Label15.Size = New System.Drawing.Size(290, 29)
-        Me.Label15.TabIndex = 28
+        Me.Label15.TabIndex = 29
         Me.Label15.Text = "タブのサウンドを設定した上で、「再生する」を選ぶとサウンドが再生されます。"
         '
         'OneWayLv
@@ -372,7 +372,7 @@ Partial Class Setting
         Me.OneWayLv.Location = New System.Drawing.Point(181, 426)
         Me.OneWayLv.Name = "OneWayLv"
         Me.OneWayLv.Size = New System.Drawing.Size(43, 16)
-        Me.OneWayLv.TabIndex = 35
+        Me.OneWayLv.TabIndex = 36
         Me.OneWayLv.Text = "する"
         Me.OneWayLv.UseVisualStyleBackColor = True
         '
@@ -382,7 +382,7 @@ Partial Class Setting
         Me.Label16.Location = New System.Drawing.Point(12, 427)
         Me.Label16.Name = "Label16"
         Me.Label16.Size = New System.Drawing.Size(97, 12)
-        Me.Label16.TabIndex = 34
+        Me.Label16.TabIndex = 35
         Me.Label16.Text = "片思い色分け表示"
         '
         'GroupBox1
@@ -426,7 +426,7 @@ Partial Class Setting
         Me.GroupBox1.Location = New System.Drawing.Point(312, 6)
         Me.GroupBox1.Name = "GroupBox1"
         Me.GroupBox1.Size = New System.Drawing.Size(407, 331)
-        Me.GroupBox1.TabIndex = 57
+        Me.GroupBox1.TabIndex = 49
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "フォント＆色設定"
         '
@@ -779,7 +779,7 @@ Partial Class Setting
         Me.cmbNameBalloon.Location = New System.Drawing.Point(181, 295)
         Me.cmbNameBalloon.Name = "cmbNameBalloon"
         Me.cmbNameBalloon.Size = New System.Drawing.Size(100, 20)
-        Me.cmbNameBalloon.TabIndex = 25
+        Me.cmbNameBalloon.TabIndex = 26
         '
         'Label10
         '
@@ -787,7 +787,7 @@ Partial Class Setting
         Me.Label10.Location = New System.Drawing.Point(12, 298)
         Me.Label10.Name = "Label10"
         Me.Label10.Size = New System.Drawing.Size(130, 12)
-        Me.Label10.TabIndex = 24
+        Me.Label10.TabIndex = 25
         Me.Label10.Text = "新着バルーンのユーザー名"
         '
         'CheckUseRecommendStatus
@@ -796,7 +796,7 @@ Partial Class Setting
         Me.CheckUseRecommendStatus.Location = New System.Drawing.Point(372, 438)
         Me.CheckUseRecommendStatus.Name = "CheckUseRecommendStatus"
         Me.CheckUseRecommendStatus.Size = New System.Drawing.Size(207, 16)
-        Me.CheckUseRecommendStatus.TabIndex = 52
+        Me.CheckUseRecommendStatus.TabIndex = 58
         Me.CheckUseRecommendStatus.Text = "推奨ステータスを使用する[TWNv○○]"
         Me.CheckUseRecommendStatus.UseVisualStyleBackColor = True
         '
@@ -807,7 +807,7 @@ Partial Class Setting
         Me.CheckBox2.Location = New System.Drawing.Point(181, 448)
         Me.CheckBox2.Name = "CheckBox2"
         Me.CheckBox2.Size = New System.Drawing.Size(67, 16)
-        Me.CheckBox2.TabIndex = 37
+        Me.CheckBox2.TabIndex = 38
         Me.CheckBox2.Text = "ロックする"
         Me.CheckBox2.UseVisualStyleBackColor = True
         '
@@ -818,7 +818,7 @@ Partial Class Setting
         Me.Label21.Location = New System.Drawing.Point(12, 449)
         Me.Label21.Name = "Label21"
         Me.Label21.Size = New System.Drawing.Size(44, 12)
-        Me.Label21.TabIndex = 36
+        Me.Label21.TabIndex = 37
         Me.Label21.Text = "ソート順"
         '
         'ComboBox1
@@ -829,7 +829,7 @@ Partial Class Setting
         Me.ComboBox1.Location = New System.Drawing.Point(461, 343)
         Me.ComboBox1.Name = "ComboBox1"
         Me.ComboBox1.Size = New System.Drawing.Size(118, 20)
-        Me.ComboBox1.TabIndex = 45
+        Me.ComboBox1.TabIndex = 51
         '
         'Label23
         '
@@ -838,7 +838,7 @@ Partial Class Setting
         Me.Label23.Location = New System.Drawing.Point(310, 346)
         Me.Label23.Name = "Label23"
         Me.Label23.Size = New System.Drawing.Size(113, 12)
-        Me.Label23.TabIndex = 44
+        Me.Label23.TabIndex = 50
         Me.Label23.Text = "リストの日時フォーマット"
         '
         'CheckBox3
@@ -848,7 +848,7 @@ Partial Class Setting
         Me.CheckBox3.Location = New System.Drawing.Point(181, 404)
         Me.CheckBox3.Name = "CheckBox3"
         Me.CheckBox3.Size = New System.Drawing.Size(67, 16)
-        Me.CheckBox3.TabIndex = 33
+        Me.CheckBox3.TabIndex = 34
         Me.CheckBox3.Text = "表示する"
         Me.CheckBox3.UseVisualStyleBackColor = True
         '
@@ -859,7 +859,7 @@ Partial Class Setting
         Me.Label25.Location = New System.Drawing.Point(12, 405)
         Me.Label25.Name = "Label25"
         Me.Label25.Size = New System.Drawing.Size(134, 12)
-        Me.Label25.TabIndex = 32
+        Me.Label25.TabIndex = 33
         Me.Label25.Text = "発言詳細部のアイコン表示"
         '
         'CheckPostCtrlEnter
@@ -868,7 +868,7 @@ Partial Class Setting
         Me.CheckPostCtrlEnter.Location = New System.Drawing.Point(461, 369)
         Me.CheckPostCtrlEnter.Name = "CheckPostCtrlEnter"
         Me.CheckPostCtrlEnter.Size = New System.Drawing.Size(104, 16)
-        Me.CheckPostCtrlEnter.TabIndex = 47
+        Me.CheckPostCtrlEnter.TabIndex = 53
         Me.CheckPostCtrlEnter.Text = "Ctrl+Enterにする"
         Me.CheckPostCtrlEnter.UseVisualStyleBackColor = True
         '
@@ -878,7 +878,7 @@ Partial Class Setting
         Me.Label27.Location = New System.Drawing.Point(310, 370)
         Me.Label27.Name = "Label27"
         Me.Label27.Size = New System.Drawing.Size(137, 12)
-        Me.Label27.TabIndex = 46
+        Me.Label27.TabIndex = 52
         Me.Label27.Text = "POSTキー（デフォルトEnter）"
         '
         'CheckBox5
@@ -888,7 +888,7 @@ Partial Class Setting
         Me.CheckBox5.Location = New System.Drawing.Point(461, 391)
         Me.CheckBox5.Name = "CheckBox5"
         Me.CheckBox5.Size = New System.Drawing.Size(76, 16)
-        Me.CheckBox5.TabIndex = 49
+        Me.CheckBox5.TabIndex = 55
         Me.CheckBox5.Text = "有効にする"
         Me.CheckBox5.UseVisualStyleBackColor = True
         '
@@ -899,7 +899,7 @@ Partial Class Setting
         Me.Label29.Location = New System.Drawing.Point(310, 392)
         Me.Label29.Name = "Label29"
         Me.Label29.Size = New System.Drawing.Size(111, 12)
-        Me.Label29.TabIndex = 48
+        Me.Label29.TabIndex = 54
         Me.Label29.Text = "発言欄の複数行編集"
         '
         'Label31
@@ -908,7 +908,7 @@ Partial Class Setting
         Me.Label31.Location = New System.Drawing.Point(25, 240)
         Me.Label31.Name = "Label31"
         Me.Label31.Size = New System.Drawing.Size(41, 12)
-        Me.Label31.TabIndex = 16
+        Me.Label31.TabIndex = 17
         Me.Label31.Text = "Recent"
         '
         'Label33
@@ -917,7 +917,7 @@ Partial Class Setting
         Me.Label33.Location = New System.Drawing.Point(112, 240)
         Me.Label33.Name = "Label33"
         Me.Label33.Size = New System.Drawing.Size(34, 12)
-        Me.Label33.TabIndex = 18
+        Me.Label33.TabIndex = 19
         Me.Label33.Text = "Reply"
         '
         'Label35
@@ -926,7 +926,7 @@ Partial Class Setting
         Me.Label35.Location = New System.Drawing.Point(192, 240)
         Me.Label35.Name = "Label35"
         Me.Label35.Size = New System.Drawing.Size(22, 12)
-        Me.Label35.TabIndex = 20
+        Me.Label35.TabIndex = 21
         Me.Label35.Text = "DM"
         '
         'StartupReadReply
@@ -934,14 +934,14 @@ Partial Class Setting
         Me.StartupReadReply.Location = New System.Drawing.Point(152, 237)
         Me.StartupReadReply.Name = "StartupReadReply"
         Me.StartupReadReply.Size = New System.Drawing.Size(34, 19)
-        Me.StartupReadReply.TabIndex = 19
+        Me.StartupReadReply.TabIndex = 20
         '
         'StartupReadDM
         '
         Me.StartupReadDM.Location = New System.Drawing.Point(220, 237)
         Me.StartupReadDM.Name = "StartupReadDM"
         Me.StartupReadDM.Size = New System.Drawing.Size(34, 19)
-        Me.StartupReadDM.TabIndex = 21
+        Me.StartupReadDM.TabIndex = 22
         '
         'TextBox3
         '
@@ -949,7 +949,7 @@ Partial Class Setting
         Me.TextBox3.Location = New System.Drawing.Point(181, 378)
         Me.TextBox3.Name = "TextBox3"
         Me.TextBox3.Size = New System.Drawing.Size(34, 19)
-        Me.TextBox3.TabIndex = 30
+        Me.TextBox3.TabIndex = 31
         '
         'IconSize
         '
@@ -959,7 +959,7 @@ Partial Class Setting
         Me.IconSize.Location = New System.Drawing.Point(217, 377)
         Me.IconSize.Name = "IconSize"
         Me.IconSize.Size = New System.Drawing.Size(85, 20)
-        Me.IconSize.TabIndex = 31
+        Me.IconSize.TabIndex = 32
         '
         'Label38
         '
@@ -967,7 +967,7 @@ Partial Class Setting
         Me.Label38.Location = New System.Drawing.Point(12, 471)
         Me.Label38.Name = "Label38"
         Me.Label38.Size = New System.Drawing.Size(53, 12)
-        Me.Label38.TabIndex = 38
+        Me.Label38.TabIndex = 39
         Me.Label38.Text = "未読管理"
         '
         'UReadMng
@@ -976,7 +976,7 @@ Partial Class Setting
         Me.UReadMng.Location = New System.Drawing.Point(181, 470)
         Me.UReadMng.Name = "UReadMng"
         Me.UReadMng.Size = New System.Drawing.Size(43, 16)
-        Me.UReadMng.TabIndex = 39
+        Me.UReadMng.TabIndex = 40
         Me.UReadMng.Text = "する"
         Me.UReadMng.UseVisualStyleBackColor = True
         '
@@ -987,7 +987,7 @@ Partial Class Setting
         Me.Label39.Location = New System.Drawing.Point(310, 464)
         Me.Label39.Name = "Label39"
         Me.Label39.Size = New System.Drawing.Size(89, 12)
-        Me.Label39.TabIndex = 53
+        Me.Label39.TabIndex = 59
         Me.Label39.Text = "新着時未読クリア"
         '
         'CheckBox6
@@ -997,7 +997,7 @@ Partial Class Setting
         Me.CheckBox6.Location = New System.Drawing.Point(461, 463)
         Me.CheckBox6.Name = "CheckBox6"
         Me.CheckBox6.Size = New System.Drawing.Size(43, 16)
-        Me.CheckBox6.TabIndex = 54
+        Me.CheckBox6.TabIndex = 60
         Me.CheckBox6.Text = "する"
         Me.CheckBox6.UseVisualStyleBackColor = True
         '
@@ -1008,7 +1008,7 @@ Partial Class Setting
         Me.Label40.Location = New System.Drawing.Point(12, 493)
         Me.Label40.Name = "Label40"
         Me.Label40.Size = New System.Drawing.Size(100, 12)
-        Me.Label40.TabIndex = 40
+        Me.Label40.TabIndex = 41
         Me.Label40.Text = "×ボタンを押したとき"
         '
         'CheckBox7
@@ -1018,7 +1018,7 @@ Partial Class Setting
         Me.CheckBox7.Location = New System.Drawing.Point(181, 492)
         Me.CheckBox7.Name = "CheckBox7"
         Me.CheckBox7.Size = New System.Drawing.Size(67, 16)
-        Me.CheckBox7.TabIndex = 41
+        Me.CheckBox7.TabIndex = 42
         Me.CheckBox7.Text = "終了する"
         Me.CheckBox7.UseVisualStyleBackColor = True
         '
@@ -1029,7 +1029,7 @@ Partial Class Setting
         Me.Label41.Location = New System.Drawing.Point(12, 515)
         Me.Label41.Name = "Label41"
         Me.Label41.Size = New System.Drawing.Size(76, 12)
-        Me.Label41.TabIndex = 42
+        Me.Label41.TabIndex = 43
         Me.Label41.Text = "最小化したとき"
         '
         'CheckBox8
@@ -1039,7 +1039,7 @@ Partial Class Setting
         Me.CheckBox8.Location = New System.Drawing.Point(181, 514)
         Me.CheckBox8.Name = "CheckBox8"
         Me.CheckBox8.Size = New System.Drawing.Size(90, 16)
-        Me.CheckBox8.TabIndex = 43
+        Me.CheckBox8.TabIndex = 44
         Me.CheckBox8.Text = "アイコン化する"
         Me.CheckBox8.UseVisualStyleBackColor = True
         '
@@ -1050,7 +1050,7 @@ Partial Class Setting
         Me.Label42.Location = New System.Drawing.Point(310, 486)
         Me.Label42.Name = "Label42"
         Me.Label42.Size = New System.Drawing.Size(113, 12)
-        Me.Label42.TabIndex = 55
+        Me.Label42.TabIndex = 61
         Me.Label42.Text = "POSTにAPIを使用する"
         '
         'CheckUseAPI
@@ -1060,7 +1060,7 @@ Partial Class Setting
         Me.CheckUseAPI.Location = New System.Drawing.Point(461, 485)
         Me.CheckUseAPI.Name = "CheckUseAPI"
         Me.CheckUseAPI.Size = New System.Drawing.Size(67, 16)
-        Me.CheckUseAPI.TabIndex = 56
+        Me.CheckUseAPI.TabIndex = 62
         Me.CheckUseAPI.Text = "使用する"
         Me.CheckUseAPI.UseVisualStyleBackColor = True
         '
@@ -1069,7 +1069,7 @@ Partial Class Setting
         Me.HubServerDomain.Location = New System.Drawing.Point(461, 507)
         Me.HubServerDomain.Name = "HubServerDomain"
         Me.HubServerDomain.Size = New System.Drawing.Size(100, 19)
-        Me.HubServerDomain.TabIndex = 61
+        Me.HubServerDomain.TabIndex = 64
         Me.HubServerDomain.Visible = False
         '
         'Label43
@@ -1078,7 +1078,7 @@ Partial Class Setting
         Me.Label43.Location = New System.Drawing.Point(310, 510)
         Me.Label43.Name = "Label43"
         Me.Label43.Size = New System.Drawing.Size(140, 12)
-        Me.Label43.TabIndex = 60
+        Me.Label43.TabIndex = 63
         Me.Label43.Text = "接続先ドメイン（http://～/）"
         Me.Label43.Visible = False
         '
@@ -1087,7 +1087,7 @@ Partial Class Setting
         Me.BrowserPathText.Location = New System.Drawing.Point(651, 343)
         Me.BrowserPathText.Name = "BrowserPathText"
         Me.BrowserPathText.Size = New System.Drawing.Size(75, 19)
-        Me.BrowserPathText.TabIndex = 63
+        Me.BrowserPathText.TabIndex = 66
         '
         'Label44
         '
@@ -1095,7 +1095,7 @@ Partial Class Setting
         Me.Label44.Location = New System.Drawing.Point(585, 346)
         Me.Label44.Name = "Label44"
         Me.Label44.Size = New System.Drawing.Size(60, 12)
-        Me.Label44.TabIndex = 62
+        Me.Label44.TabIndex = 65
         Me.Label44.Text = "ブラウザパス"
         '
         'CheckboxReply
@@ -1104,7 +1104,7 @@ Partial Class Setting
         Me.CheckboxReply.Location = New System.Drawing.Point(181, 82)
         Me.CheckboxReply.Name = "CheckboxReply"
         Me.CheckboxReply.Size = New System.Drawing.Size(126, 16)
-        Me.CheckboxReply.TabIndex = 65
+        Me.CheckboxReply.TabIndex = 6
         Me.CheckboxReply.Text = "Replyも同時にチェック"
         Me.CheckboxReply.UseVisualStyleBackColor = True
         '
@@ -1114,7 +1114,7 @@ Partial Class Setting
         Me.CheckDispUsername.Location = New System.Drawing.Point(181, 536)
         Me.CheckDispUsername.Name = "CheckDispUsername"
         Me.CheckDispUsername.Size = New System.Drawing.Size(109, 16)
-        Me.CheckDispUsername.TabIndex = 67
+        Me.CheckDispUsername.TabIndex = 46
         Me.CheckDispUsername.Text = "ユーザー名を表示"
         Me.CheckDispUsername.UseVisualStyleBackColor = True
         '
@@ -1124,7 +1124,7 @@ Partial Class Setting
         Me.Label46.Location = New System.Drawing.Point(12, 537)
         Me.Label46.Name = "Label46"
         Me.Label46.Size = New System.Drawing.Size(122, 12)
-        Me.Label46.TabIndex = 66
+        Me.Label46.TabIndex = 45
         Me.Label46.Text = "タイトルバーとツールチップ"
         '
         'Label45
@@ -1133,18 +1133,18 @@ Partial Class Setting
         Me.Label45.Location = New System.Drawing.Point(12, 558)
         Me.Label45.Name = "Label45"
         Me.Label45.Size = New System.Drawing.Size(60, 12)
-        Me.Label45.TabIndex = 68
+        Me.Label45.TabIndex = 47
         Me.Label45.Text = "タイトルバー"
         '
-        'CheckDispLatestPost
+        'ComboDispTitle
         '
-        Me.CheckDispLatestPost.AutoSize = True
-        Me.CheckDispLatestPost.Location = New System.Drawing.Point(181, 557)
-        Me.CheckDispLatestPost.Name = "CheckDispLatestPost"
-        Me.CheckDispLatestPost.Size = New System.Drawing.Size(81, 16)
-        Me.CheckDispLatestPost.TabIndex = 69
-        Me.CheckDispLatestPost.Text = "発言を表示"
-        Me.CheckDispLatestPost.UseVisualStyleBackColor = True
+        Me.ComboDispTitle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboDispTitle.FormattingEnabled = True
+        Me.ComboDispTitle.Items.AddRange(New Object() {"（なし）", "バージョン", "最終発言", "＠未読数", "全未読数", "＠未読/全未読数", "全未読/全発言数"})
+        Me.ComboDispTitle.Location = New System.Drawing.Point(181, 555)
+        Me.ComboDispTitle.Name = "ComboDispTitle"
+        Me.ComboDispTitle.Size = New System.Drawing.Size(118, 20)
+        Me.ComboDispTitle.TabIndex = 48
         '
         'Setting
         '
@@ -1153,8 +1153,8 @@ Partial Class Setting
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.Cancel
         Me.ClientSize = New System.Drawing.Size(740, 593)
+        Me.Controls.Add(Me.ComboDispTitle)
         Me.Controls.Add(Me.Label45)
-        Me.Controls.Add(Me.CheckDispLatestPost)
         Me.Controls.Add(Me.Label46)
         Me.Controls.Add(Me.CheckDispUsername)
         Me.Controls.Add(Me.CheckboxReply)
@@ -1341,5 +1341,5 @@ Partial Class Setting
     Friend WithEvents CheckDispUsername As System.Windows.Forms.CheckBox
     Friend WithEvents Label46 As System.Windows.Forms.Label
     Friend WithEvents Label45 As System.Windows.Forms.Label
-    Friend WithEvents CheckDispLatestPost As System.Windows.Forms.CheckBox
+    Friend WithEvents ComboDispTitle As System.Windows.Forms.ComboBox
 End Class
