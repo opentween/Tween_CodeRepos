@@ -36,7 +36,7 @@
     Private _MyCheckReply As Boolean
     Private _MyUseRecommendStatus As Boolean
     Private _MyDispUsername As Boolean
-    Private _MyDispLatestPost As Boolean
+    Private _MyDispLatestPost As DispTitleEnum
 
     Public Enum LogUnitEnum
         Minute
@@ -55,6 +55,16 @@
         None
         UserID
         NickName
+    End Enum
+
+    Public Enum DispTitleEnum
+        None
+        Ver
+        Post
+        UnreadRepCount
+        UnreadAllCount
+        UnreadAllRepCount
+        UnreadCountAllCount
     End Enum
 
     Private Sub Save_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Save.Click
@@ -133,10 +143,25 @@
             _MyCheckReply = CheckboxReply.Checked
             _MyUseRecommendStatus = CheckUseRecommendStatus.Checked
             _MyDispUsername = CheckDispUsername.Checked
-            _MyDispLatestPost = CheckDispLatestPost.Checked
+            Select Case ComboDispTitle.SelectedIndex
+                Case 0  'None
+                    _MyDispLatestPost = DispTitleEnum.None
+                Case 1  'Ver
+                    _MyDispLatestPost = DispTitleEnum.Ver
+                Case 2  'Post
+                    _MyDispLatestPost = DispTitleEnum.Post
+                Case 3  'RepCount
+                    _MyDispLatestPost = DispTitleEnum.UnreadRepCount
+                Case 4  'AllCount
+                    _MyDispLatestPost = DispTitleEnum.UnreadAllCount
+                Case 5  'Rep+All
+                    _MyDispLatestPost = DispTitleEnum.UnreadAllRepCount
+                Case 6  'Unread/All
+                    _MyDispLatestPost = DispTitleEnum.UnreadCountAllCount
+            End Select
 
-            TweenMain.SetMainWindowTitle()
-            TweenMain.SetNotifyIconText()
+            'TweenMain.SetMainWindowTitle()
+            'TweenMain.SetNotifyIconText()
 
         Catch ex As Exception
             MessageBox.Show("設定値に誤りがあります。")
@@ -214,10 +239,25 @@
         CheckboxReply.Checked = _MyCheckReply
         CheckUseRecommendStatus.Checked = _MyUseRecommendStatus
         CheckDispUsername.Checked = _MyDispUsername
-        CheckDispLatestPost.Checked = _MyDispLatestPost
+        Select Case _MyDispLatestPost
+            Case DispTitleEnum.None
+                ComboDispTitle.SelectedIndex = 0
+            Case DispTitleEnum.Ver
+                ComboDispTitle.SelectedIndex = 1
+            Case DispTitleEnum.Post
+                ComboDispTitle.SelectedIndex = 2
+            Case DispTitleEnum.UnreadRepCount
+                ComboDispTitle.SelectedIndex = 3
+            Case DispTitleEnum.UnreadAllCount
+                ComboDispTitle.SelectedIndex = 4
+            Case DispTitleEnum.UnreadAllRepCount
+                ComboDispTitle.SelectedIndex = 5
+            Case DispTitleEnum.UnreadCountAllCount
+                ComboDispTitle.SelectedIndex = 6
+        End Select
 
-        TweenMain.SetMainWindowTitle()
-        TweenMain.SetNotifyIconText()
+        'TweenMain.SetMainWindowTitle()
+        'TweenMain.SetNotifyIconText()
 
     End Sub
 
@@ -772,11 +812,11 @@
             _MyDispUsername = value
         End Set
     End Property
-    Public Property DispLatestPost() As Boolean
+    Public Property DispLatestPost() As DispTitleEnum
         Get
             Return _MyDispLatestPost
         End Get
-        Set(ByVal value As Boolean)
+        Set(ByVal value As DispTitleEnum)
             _MyDispLatestPost = value
         End Set
     End Property

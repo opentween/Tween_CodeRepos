@@ -329,9 +329,6 @@ Public Class TweenMain
             '他の設定項目は、随時設定画面で保持している値を読み出して使用
         End If
 
-        SetMainWindowTitle()
-        SetNotifyIconText()
-
         'ウィンドウ設定
         Me.WindowState = FormWindowState.Normal     '通常状態
         Me.ClientSize = _section.FormSize           'サイズ設定
@@ -395,9 +392,6 @@ Public Class TweenMain
         'PostedText.RemoveLinks()
         NameLabel.Text = ""                 '発言詳細部名前ラベル初期化
         DateTimeLabel.Text = ""             '発言詳細部日時ラベル初期化
-
-        SetMainWindowTitle()
-        SetNotifyIconText()
 
         '<<<<<<<<タブ関連>>>>>>>
         'Recentタブ
@@ -553,6 +547,9 @@ Public Class TweenMain
             DeleteStripMenuItem.Enabled = False
             RefreshStripMenuItem.Enabled = False
         End If
+
+        SetMainWindowTitle()
+        SetNotifyIconText()
 
         AddHandler My.Computer.Network.NetworkAvailabilityChanged, AddressOf Network_NetworkAvailabilityChanged
     End Sub
@@ -790,7 +787,7 @@ Public Class TweenMain
                         lvItem.Font = _fntUnread
                         lvItem.ForeColor = _clUnread
                         lvItem.SubItems(8).Text = "False"
-                        ts.tabPage.ImageIndex = 0
+                        'ts.tabPage.ImageIndex = 0
                         ts.unreadCount += 1
                     Else
                         lvItem.Font = _fntReaded
@@ -824,7 +821,7 @@ Public Class TweenMain
                     lvItem.Font = _fntUnread
                     lvItem.ForeColor = _clUnread
                     lvItem.SubItems(8).Text = "False"
-                    ListTab.TabPages(0).ImageIndex = 0
+                    'ListTab.TabPages(0).ImageIndex = 0
                     _tabs(0).unreadCount += 1
                     If _tabs(0).oldestUnreadItem IsNot Nothing Then
                         If lvItem.SubItems(5).Text < _tabs(0).oldestUnreadItem.SubItems(5).Text Then _tabs(0).oldestUnreadItem = lvItem
@@ -855,7 +852,7 @@ Public Class TweenMain
                     lvItem.Font = _fntUnread
                     lvItem.ForeColor = _clUnread
                     lvItem.SubItems(8).Text = "False"
-                    ListTab.TabPages(1).ImageIndex = 0
+                    'ListTab.TabPages(1).ImageIndex = 0
                     _tabs(1).unreadCount += 1
                 Else
                     lvItem.Font = _fntReaded
@@ -951,6 +948,16 @@ Public Class TweenMain
                 StatusLabel.Text = "起動読込 [" + firstDate + "] ～ [" + endDate + "]"
             End If
         End If
+
+        If SettingDialog.UnreadManage Then
+            For Each ts As TabStructure In _tabs
+                If ts.unreadManage AndAlso ts.unreadCount > 0 AndAlso ts.tabPage.ImageIndex = -1 Then
+                    ts.tabPage.ImageIndex = 0
+                End If
+            Next
+        End If
+
+        SetMainWindowTitle()
 
         tlList.Clear()
     End Sub
@@ -2307,6 +2314,13 @@ Public Class TweenMain
         'DirectMsg.ResumeLayout(True)
         DirectMsg.EndUpdate()
 
+        If SettingDialog.UnreadManage Then
+            If _tabs(2).unreadManage AndAlso _tabs(2).unreadCount > 0 AndAlso _tabs(2).tabPage.ImageIndex = -1 Then
+                _tabs(2).tabPage.ImageIndex = 0
+            End If
+        End If
+
+        SetMainWindowTitle()
     End Sub
 
     Private Sub ContextMenuStrip2_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuStrip2.Opening
@@ -3000,6 +3014,9 @@ Public Class TweenMain
             Next
             'ColorizeList(False)
             TimerColorize.Start()
+
+            SetMainWindowTitle()
+            SetNotifyIconText()
         End If
 
         Call SaveConfigs()
@@ -6006,29 +6023,43 @@ RETRY:
             End If
         Next
     End Sub
-    Friend Sub SetMainWindowTitle()
+    Private Sub SetMainWindowTitle()
         'メインウインドウタイトルの書き換え
-
-        If SettingDialog.DispUsername = True Then
-            'ユーザー名表示あり
-            If SettingDialog.DispLatestPost = True And _history IsNot Nothing And _hisIdx > 0 Then
-                ' ポスト表示設定でヒストリがある場合最新のヒストリから引っ張って設定
-                Me.Text = _username + " - Tween  " + _history(_hisIdx - 1)
-            Else
-                Me.Text = _username + " - Tween"
-            End If
-        Else
-            'ユーザー名表示なし
-            If SettingDialog.DispLatestPost = True And _history IsNot Nothing And _hisIdx > 0 Then
-                ' ポスト表示設定でヒストリがある場合最新のヒストリから引っ張って設定
-                Me.Text = "Tween  " + _history(_hisIdx - 1)
-            Else
-                Me.Text = "Tween"
-            End If
+        Dim ttl As String = ""
+        Dim urat As Integer = _tabs(1).unreadCount + _tabs(2).unreadCount
+        Dim ur As Integer = 0
+        Dim al As Integer = 0
+        If SettingDialog.DispLatestPost <> Setting.DispTitleEnum.None And _
+           SettingDialog.DispLatestPost <> Setting.DispTitleEnum.Post And _
+           SettingDialog.DispLatestPost <> Setting.DispTitleEnum.Ver Then
+            For Each ts As TabStructure In _tabs
+                ur += ts.unreadCount
+                al += ts.allCount
+            Next
         End If
+        If SettingDialog.DispUsername = True Then ttl = _username + " - "
+        ttl += "Tween  "
+        Select Case SettingDialog.DispLatestPost
+            Case Setting.DispTitleEnum.Ver
+                ttl += "Ver:" + My.Application.Info.Version.ToString()
+            Case Setting.DispTitleEnum.Post
+                If _history IsNot Nothing AndAlso _history.Count > 1 Then
+                    ttl += _history(_history.Count - 2)
+                End If
+            Case Setting.DispTitleEnum.UnreadRepCount
+                ttl += urat.ToString() + "件 (未読＠)"
+            Case Setting.DispTitleEnum.UnreadAllCount
+                ttl += ur.ToString() + "件 (未読)"
+            Case Setting.DispTitleEnum.UnreadAllRepCount
+                ttl += ur.ToString() + " ( " + urat.ToString() + " )件 (未読(＠))"
+            Case Setting.DispTitleEnum.UnreadCountAllCount
+                ttl += ur.ToString() + "/" + al.ToString() + "件 (未読/総件数)"
+        End Select
+
+        Me.Text = ttl
     End Sub
 
-    Friend Sub SetNotifyIconText()
+    Private Sub SetNotifyIconText()
         ' タスクトレイアイコンのツールチップテキスト書き換え
 
         If SettingDialog.DispUsername = True Then

@@ -753,6 +753,17 @@ Public NotInheritable Class ListSection
         UserID
         NickName
     End Enum
+
+    Public Enum DispTitleEnum
+        None
+        Ver
+        Post
+        UnreadRepCount
+        UnreadAllCount
+        UnreadAllRepCount
+        UnreadCountAllCount
+    End Enum
+
     <ConfigurationProperty("listelement", IsDefaultCollection:=False)> _
     Public Property ListElement() As ListElementCollection
         Get
@@ -1378,12 +1389,12 @@ Public NotInheritable Class ListSection
         End Set
     End Property
 
-    <ConfigurationProperty("displatestpost", DefaultValue:=True)> _
-    Public Property DispLatestPost() As Boolean
+    <ConfigurationProperty("displatestpost", DefaultValue:=DispTitleEnum.Post)> _
+    Public Property DispLatestPost() As DispTitleEnum
         Get
-            Return CBool(Me("displatestpost"))
+            Return Me("displatestpost")
         End Get
-        Set(ByVal value As Boolean)
+        Set(ByVal value As DispTitleEnum)
             Me("displatestpost") = value
         End Set
     End Property
