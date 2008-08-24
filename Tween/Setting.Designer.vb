@@ -93,7 +93,7 @@ Partial Class Setting
         Me.cmbNameBalloon = New System.Windows.Forms.ComboBox
         Me.Label10 = New System.Windows.Forms.Label
         Me.CheckUseRecommendStatus = New System.Windows.Forms.CheckBox
-        Me.CheckBox2 = New System.Windows.Forms.CheckBox
+        Me.CheckSortOrderLock = New System.Windows.Forms.CheckBox
         Me.Label21 = New System.Windows.Forms.Label
         Me.ComboBox1 = New System.Windows.Forms.ComboBox
         Me.Label23 = New System.Windows.Forms.Label
@@ -800,21 +800,19 @@ Partial Class Setting
         Me.CheckUseRecommendStatus.Text = "推奨ステータスを使用する[TWNv○○]"
         Me.CheckUseRecommendStatus.UseVisualStyleBackColor = True
         '
-        'CheckBox2
+        'CheckSortOrderLock
         '
-        Me.CheckBox2.AutoSize = True
-        Me.CheckBox2.Enabled = False
-        Me.CheckBox2.Location = New System.Drawing.Point(181, 448)
-        Me.CheckBox2.Name = "CheckBox2"
-        Me.CheckBox2.Size = New System.Drawing.Size(67, 16)
-        Me.CheckBox2.TabIndex = 38
-        Me.CheckBox2.Text = "ロックする"
-        Me.CheckBox2.UseVisualStyleBackColor = True
+        Me.CheckSortOrderLock.AutoSize = True
+        Me.CheckSortOrderLock.Location = New System.Drawing.Point(181, 448)
+        Me.CheckSortOrderLock.Name = "CheckSortOrderLock"
+        Me.CheckSortOrderLock.Size = New System.Drawing.Size(67, 16)
+        Me.CheckSortOrderLock.TabIndex = 38
+        Me.CheckSortOrderLock.Text = "ロックする"
+        Me.CheckSortOrderLock.UseVisualStyleBackColor = True
         '
         'Label21
         '
         Me.Label21.AutoSize = True
-        Me.Label21.Enabled = False
         Me.Label21.Location = New System.Drawing.Point(12, 449)
         Me.Label21.Name = "Label21"
         Me.Label21.Size = New System.Drawing.Size(44, 12)
@@ -1052,6 +1050,7 @@ Partial Class Setting
         Me.Label42.Size = New System.Drawing.Size(113, 12)
         Me.Label42.TabIndex = 61
         Me.Label42.Text = "POSTにAPIを使用する"
+        Me.Label42.Visible = False
         '
         'CheckUseAPI
         '
@@ -1063,6 +1062,7 @@ Partial Class Setting
         Me.CheckUseAPI.TabIndex = 62
         Me.CheckUseAPI.Text = "使用する"
         Me.CheckUseAPI.UseVisualStyleBackColor = True
+        Me.CheckUseAPI.Visible = False
         '
         'HubServerDomain
         '
@@ -1140,7 +1140,7 @@ Partial Class Setting
         '
         Me.ComboDispTitle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboDispTitle.FormattingEnabled = True
-        Me.ComboDispTitle.Items.AddRange(New Object() {"（なし）", "バージョン", "最終発言", "＠未読数", "全未読数", "＠未読/全未読数", "全未読/全発言数"})
+        Me.ComboDispTitle.Items.AddRange(New Object() {"（なし）", "バージョン", "最終発言", "＠未読数", "未読数", "未読数(@未読数)", "全未読/全発言数"})
         Me.ComboDispTitle.Location = New System.Drawing.Point(181, 555)
         Me.ComboDispTitle.Name = "ComboDispTitle"
         Me.ComboDispTitle.Size = New System.Drawing.Size(118, 20)
@@ -1188,7 +1188,7 @@ Partial Class Setting
         Me.Controls.Add(Me.ComboBox1)
         Me.Controls.Add(Me.Label23)
         Me.Controls.Add(Me.Label21)
-        Me.Controls.Add(Me.CheckBox2)
+        Me.Controls.Add(Me.CheckSortOrderLock)
         Me.Controls.Add(Me.CheckUseRecommendStatus)
         Me.Controls.Add(Me.cmbNameBalloon)
         Me.Controls.Add(Me.Label10)
@@ -1303,7 +1303,7 @@ Partial Class Setting
     Friend WithEvents Label18 As System.Windows.Forms.Label
     Friend WithEvents Label19 As System.Windows.Forms.Label
     Friend WithEvents CheckUseRecommendStatus As System.Windows.Forms.CheckBox
-    Friend WithEvents CheckBox2 As System.Windows.Forms.CheckBox
+    Friend WithEvents CheckSortOrderLock As System.Windows.Forms.CheckBox
     Friend WithEvents Label21 As System.Windows.Forms.Label
     Friend WithEvents ComboBox1 As System.Windows.Forms.ComboBox
     Friend WithEvents Label23 As System.Windows.Forms.Label
