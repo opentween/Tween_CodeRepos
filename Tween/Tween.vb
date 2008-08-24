@@ -6084,7 +6084,7 @@ RETRY:
 
         m = id.Matches(StatusText)
 
-        If m.Count = 1 And m.Item(0).Value = "@" + _reply_to_name Then
+        If m IsNot Nothing AndAlso m.Count = 1 AndAlso m.Item(0).Value = "@" + _reply_to_name Then
             Exit Sub
         End If
 
