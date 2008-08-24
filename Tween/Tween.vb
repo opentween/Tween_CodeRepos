@@ -4235,6 +4235,7 @@ RETRY:
         'PostBrowser.DocumentText = "<html><head></head><body style=""margin:0px""><font size=""2"" face=""sans-serif"">" + _item.SubItems(7).Text + "</font></body></html>"
         Call ColorizeList(False)
         Call DispSelectedPost()
+        Call SetMainWindowTitle()
     End Sub
 
     Private Sub DispSelectedPost()
