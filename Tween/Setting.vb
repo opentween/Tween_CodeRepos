@@ -37,6 +37,7 @@
     Private _MyUseRecommendStatus As Boolean
     Private _MyDispUsername As Boolean
     Private _MyDispLatestPost As DispTitleEnum
+    Private _MySortOrderLock As Boolean
 
     Public Enum LogUnitEnum
         Minute
@@ -159,6 +160,7 @@
                 Case 6  'Unread/All
                     _MyDispLatestPost = DispTitleEnum.UnreadCountAllCount
             End Select
+            _MySortOrderLock = CheckSortOrderLock.Checked
 
             'TweenMain.SetMainWindowTitle()
             'TweenMain.SetNotifyIconText()
@@ -255,6 +257,7 @@
             Case DispTitleEnum.UnreadCountAllCount
                 ComboDispTitle.SelectedIndex = 6
         End Select
+        CheckSortOrderLock.Checked = _MySortOrderLock
 
         'TweenMain.SetMainWindowTitle()
         'TweenMain.SetNotifyIconText()
@@ -853,5 +856,14 @@
             StatusText.Enabled = True
         End If
     End Sub
+
+    Public Property SortOrderLock() As Boolean
+        Get
+            Return _MySortOrderLock
+        End Get
+        Set(ByVal value As Boolean)
+            _MySortOrderLock = value
+        End Set
+    End Property
 
 End Class

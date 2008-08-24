@@ -296,7 +296,7 @@ Public Class TweenMain
         SettingDialog.UseRecommendStatus = _section.UseRecommendStatus
         SettingDialog.DispUsername = _section.DispUsername
         SettingDialog.DispLatestPost = _section.DispLatestPost
-
+        SettingDialog.SortOrderLock = _section.SortOrderLock
 
         'ユーザー名、パスワードが未設定なら設定画面を表示（初回起動時など）
         If _username = "" Or _password = "" Then
@@ -2164,6 +2164,8 @@ Public Class TweenMain
 
     Private Sub MyList_ColumnClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.ColumnClickEventArgs) Handles Timeline.ColumnClick, Reply.ColumnClick, DirectMsg.ColumnClick
         '        If ListTab.SelectedTab.Text <> "Direct" Then
+        If SettingDialog.SortOrderLock Then Exit Sub
+
         listViewItemSorter.Column = e.Column
         For Each _tab As TabPage In ListTab.TabPages
             'If _tab.Text <> "Direct" Then
@@ -2746,8 +2748,7 @@ Public Class TweenMain
                     If _tabs(idx).oldestUnreadItem Is Nothing Then
                         _tabs(idx).oldestUnreadItem = lItem
                     Else
-                        If _tabs(idx).oldestUnreadItem.SubItems(5).Text > lItem.SubItems(5).Text And _
-                          listViewItemSorter.Column = 3 Then
+                        If _tabs(idx).oldestUnreadItem.SubItems(5).Text > lItem.SubItems(5).Text Then
                             _tabs(idx).oldestUnreadItem = lItem
                         End If
                     End If
@@ -2768,8 +2769,7 @@ Public Class TweenMain
                                         If ts.oldestUnreadItem Is Nothing Then
                                             ts.oldestUnreadItem = itm
                                         Else
-                                            If ts.oldestUnreadItem.SubItems(5).Text > itm.SubItems(5).Text And _
-                                               listViewItemSorter.Column = 3 Then
+                                            If ts.oldestUnreadItem.SubItems(5).Text > itm.SubItems(5).Text Then
                                                 ts.oldestUnreadItem = itm
                                             End If
                                         End If
@@ -3436,7 +3436,8 @@ Public Class TweenMain
             StatusLabelUrl.Text = PostBrowser.StatusText
         End If
         If PostBrowser.StatusText = "" Then
-            StatusLabelUrl.Text = ""
+            'StatusLabelUrl.Text = ""
+            Call SetStatusLabel()
         End If
     End Sub
 
@@ -3992,6 +3993,7 @@ RETRY:
 
         For Each ts As TabStructure In _tabs
             If ts.listCustom.Equals(myList) Then
+                If ts.unreadCount = 0 Then Exit For
                 If listViewItemSorter.Column = 3 Then
                     If listViewItemSorter.Order = SortOrder.Ascending Then
                         If ts.oldestUnreadItem Is Nothing Then
@@ -4002,12 +4004,12 @@ RETRY:
                         toIdx = myList.Items.Count - 1
                         stp = 1
                     Else
-                        cidx = myList.Items.Count - 1
                         If ts.oldestUnreadItem Is Nothing Then
-                            toIdx = 0
+                            cidx = myList.Items.Count - 1
                         Else
-                            toIdx = ts.oldestUnreadItem.Index
+                            cidx = ts.oldestUnreadItem.Index
                         End If
+                        toIdx = 0
                         stp = -1
                     End If
                 Else
@@ -4235,7 +4237,8 @@ RETRY:
         'PostBrowser.DocumentText = "<html><head></head><body style=""margin:0px""><font size=""2"" face=""sans-serif"">" + _item.SubItems(7).Text + "</font></body></html>"
         Call ColorizeList(False)
         Call DispSelectedPost()
-        Call SetMainWindowTitle()
+        'Call SetMainWindowTitle()
+        If StatusLabelUrl.Text.StartsWith("http") = False Then Call SetStatusLabel()
     End Sub
 
     Private Sub DispSelectedPost()
@@ -4901,6 +4904,7 @@ RETRY:
             _section.UseRecommendStatus = SettingDialog.UseRecommendStatus
             _section.DispUsername = SettingDialog.DispUsername
             _section.DispLatestPost = SettingDialog.DispLatestPost
+            _section.SortOrderLock = SettingDialog.SortOrderLock
 
             Dim tmpList As TweenCustomControl.DetailsListView = Nothing
             For Each myTab As TabPage In ListTab.TabPages
@@ -6052,12 +6056,31 @@ RETRY:
             Case Setting.DispTitleEnum.UnreadAllCount
                 ttl += ur.ToString() + "件 (未読)"
             Case Setting.DispTitleEnum.UnreadAllRepCount
-                ttl += ur.ToString() + " ( " + urat.ToString() + " )件 (未読(＠))"
+                ttl += ur.ToString() + " (" + urat.ToString() + ")件 (未読)"
             Case Setting.DispTitleEnum.UnreadCountAllCount
                 ttl += ur.ToString() + "/" + al.ToString() + "件 (未読/総件数)"
         End Select
 
         Me.Text = ttl
+    End Sub
+
+    Private Sub SetStatusLabel()
+        'ステータス欄にカウント表示
+        'タブ未読数/タブ発言数 全未読数/総発言数 (未読＠＋未読DM数)
+        Dim urat As Integer = _tabs(1).unreadCount + _tabs(2).unreadCount
+        Dim ur As Integer = 0
+        Dim al As Integer = 0
+        Dim tur As Integer = 0
+        Dim tal As Integer = 0
+        For Each ts As TabStructure In _tabs
+            ur += ts.unreadCount
+            al += ts.allCount
+            If ts.tabPage.Equals(ListTab.SelectedTab) Then
+                tur = ts.unreadCount
+                tal = ts.allCount
+            End If
+        Next
+        StatusLabelUrl.Text = "タブ: " + tur.ToString() + "/" + tal.ToString() + " 全体:" + ur.ToString() + "/" + al.ToString() + " (返信: " + urat.ToString() + ")"
     End Sub
 
     Private Sub SetNotifyIconText()
