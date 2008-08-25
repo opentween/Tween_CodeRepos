@@ -129,6 +129,7 @@ Partial Class Setting
         Me.Label46 = New System.Windows.Forms.Label
         Me.Label45 = New System.Windows.Forms.Label
         Me.ComboDispTitle = New System.Windows.Forms.ComboBox
+        Me.Label47 = New System.Windows.Forms.Label
         Me.GroupBox1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -316,7 +317,7 @@ Partial Class Setting
         'Label11
         '
         Me.Label11.AutoSize = True
-        Me.Label11.Location = New System.Drawing.Point(12, 381)
+        Me.Label11.Location = New System.Drawing.Point(12, 366)
         Me.Label11.Name = "Label11"
         Me.Label11.Size = New System.Drawing.Size(163, 12)
         Me.Label11.TabIndex = 30
@@ -360,7 +361,7 @@ Partial Class Setting
         'Label15
         '
         Me.Label15.ForeColor = System.Drawing.SystemColors.ActiveCaption
-        Me.Label15.Location = New System.Drawing.Point(12, 343)
+        Me.Label15.Location = New System.Drawing.Point(12, 336)
         Me.Label15.Name = "Label15"
         Me.Label15.Size = New System.Drawing.Size(290, 29)
         Me.Label15.TabIndex = 29
@@ -944,7 +945,7 @@ Partial Class Setting
         'TextBox3
         '
         Me.TextBox3.Enabled = False
-        Me.TextBox3.Location = New System.Drawing.Point(181, 378)
+        Me.TextBox3.Location = New System.Drawing.Point(181, 363)
         Me.TextBox3.Name = "TextBox3"
         Me.TextBox3.Size = New System.Drawing.Size(34, 19)
         Me.TextBox3.TabIndex = 31
@@ -954,7 +955,7 @@ Partial Class Setting
         Me.IconSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.IconSize.FormattingEnabled = True
         Me.IconSize.Items.AddRange(New Object() {"なし", "16*16", "24*24", "48*48"})
-        Me.IconSize.Location = New System.Drawing.Point(217, 377)
+        Me.IconSize.Location = New System.Drawing.Point(217, 362)
         Me.IconSize.Name = "IconSize"
         Me.IconSize.Size = New System.Drawing.Size(85, 20)
         Me.IconSize.TabIndex = 32
@@ -1146,6 +1147,15 @@ Partial Class Setting
         Me.ComboDispTitle.Size = New System.Drawing.Size(118, 20)
         Me.ComboDispTitle.TabIndex = 48
         '
+        'Label47
+        '
+        Me.Label47.ForeColor = System.Drawing.SystemColors.ActiveCaption
+        Me.Label47.Location = New System.Drawing.Point(14, 383)
+        Me.Label47.Name = "Label47"
+        Me.Label47.Size = New System.Drawing.Size(290, 18)
+        Me.Label47.TabIndex = 69
+        Me.Label47.Text = "再起動後有効になります。"
+        '
         'Setting
         '
         Me.AcceptButton = Me.Save
@@ -1153,6 +1163,7 @@ Partial Class Setting
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.Cancel
         Me.ClientSize = New System.Drawing.Size(740, 593)
+        Me.Controls.Add(Me.Label47)
         Me.Controls.Add(Me.ComboDispTitle)
         Me.Controls.Add(Me.Label45)
         Me.Controls.Add(Me.Label46)
@@ -1342,4 +1353,5 @@ Partial Class Setting
     Friend WithEvents Label46 As System.Windows.Forms.Label
     Friend WithEvents Label45 As System.Windows.Forms.Label
     Friend WithEvents ComboDispTitle As System.Windows.Forms.ComboBox
+    Friend WithEvents Label47 As System.Windows.Forms.Label
 End Class

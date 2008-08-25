@@ -407,15 +407,22 @@ Public Class TweenMain
         listViewItemSorter.Order = _section.SortOrder
         Timeline.ListViewItemSorter = listViewItemSorter
         Timeline.Columns(0).Width = _section.Width1
-        Timeline.Columns(1).Width = _section.Width2
-        Timeline.Columns(2).Width = _section.Width3
-        Timeline.Columns(3).Width = _section.Width4
-        Timeline.Columns(4).Width = _section.Width5
         Timeline.Columns(0).DisplayIndex = _section.DisplayIndex1
-        Timeline.Columns(1).DisplayIndex = _section.DisplayIndex2
-        Timeline.Columns(2).DisplayIndex = _section.DisplayIndex3
-        Timeline.Columns(3).DisplayIndex = _section.DisplayIndex4
-        Timeline.Columns(4).DisplayIndex = _section.DisplayIndex5
+        If _iconSz < 48 Then
+            Timeline.Columns(1).Width = _section.Width2
+            Timeline.Columns(2).Width = _section.Width3
+            Timeline.Columns(3).Width = _section.Width4
+            Timeline.Columns(4).Width = _section.Width5
+            Timeline.Columns(1).DisplayIndex = _section.DisplayIndex2
+            Timeline.Columns(2).DisplayIndex = _section.DisplayIndex3
+            Timeline.Columns(3).DisplayIndex = _section.DisplayIndex4
+            Timeline.Columns(4).DisplayIndex = _section.DisplayIndex5
+        Else
+            Timeline.Columns.RemoveAt(4)
+            Timeline.Columns.RemoveAt(3)
+            Timeline.Columns.RemoveAt(2)
+            Timeline.Columns.RemoveAt(1)
+        End If
         Dim myTabRecent As New TabStructure
         myTabRecent.notify = _section.ListElement("Recent").Notify
         myTabRecent.unreadManage = _section.ListElement("Recent").UnreadManage
@@ -432,15 +439,22 @@ Public Class TweenMain
         Reply.SmallImageList = TIconSmallList
         Reply.ListViewItemSorter = listViewItemSorter
         Reply.Columns(0).Width = _section.Width1
-        Reply.Columns(1).Width = _section.Width2
-        Reply.Columns(2).Width = _section.Width3
-        Reply.Columns(3).Width = _section.Width4
-        Reply.Columns(4).Width = _section.Width5
         Reply.Columns(0).DisplayIndex = _section.DisplayIndex1
-        Reply.Columns(1).DisplayIndex = _section.DisplayIndex2
-        Reply.Columns(2).DisplayIndex = _section.DisplayIndex3
-        Reply.Columns(3).DisplayIndex = _section.DisplayIndex4
-        Reply.Columns(4).DisplayIndex = _section.DisplayIndex5
+        If _iconSz < 48 Then
+            Reply.Columns(1).Width = _section.Width2
+            Reply.Columns(2).Width = _section.Width3
+            Reply.Columns(3).Width = _section.Width4
+            Reply.Columns(4).Width = _section.Width5
+            Reply.Columns(1).DisplayIndex = _section.DisplayIndex2
+            Reply.Columns(2).DisplayIndex = _section.DisplayIndex3
+            Reply.Columns(3).DisplayIndex = _section.DisplayIndex4
+            Reply.Columns(4).DisplayIndex = _section.DisplayIndex5
+        Else
+            Reply.Columns.RemoveAt(4)
+            Reply.Columns.RemoveAt(3)
+            Reply.Columns.RemoveAt(2)
+            Reply.Columns.RemoveAt(1)
+        End If
         Dim myTabReply As New TabStructure
         myTabReply.notify = _section.ListElement("Reply").Notify
         myTabReply.unreadManage = _section.ListElement("Reply").UnreadManage
@@ -457,15 +471,22 @@ Public Class TweenMain
         DirectMsg.SmallImageList = TIconSmallList
         DirectMsg.ListViewItemSorter = listViewItemSorter
         DirectMsg.Columns(0).Width = _section.Width1
-        DirectMsg.Columns(1).Width = _section.Width2
-        DirectMsg.Columns(2).Width = _section.Width3
-        DirectMsg.Columns(3).Width = _section.Width4
-        DirectMsg.Columns(4).Width = _section.Width5
         DirectMsg.Columns(0).DisplayIndex = _section.DisplayIndex1
-        DirectMsg.Columns(1).DisplayIndex = _section.DisplayIndex2
-        DirectMsg.Columns(2).DisplayIndex = _section.DisplayIndex3
-        DirectMsg.Columns(3).DisplayIndex = _section.DisplayIndex4
-        DirectMsg.Columns(4).DisplayIndex = _section.DisplayIndex5
+        If _iconSz < 48 Then
+            DirectMsg.Columns(1).Width = _section.Width2
+            DirectMsg.Columns(2).Width = _section.Width3
+            DirectMsg.Columns(3).Width = _section.Width4
+            DirectMsg.Columns(4).Width = _section.Width5
+            DirectMsg.Columns(1).DisplayIndex = _section.DisplayIndex2
+            DirectMsg.Columns(2).DisplayIndex = _section.DisplayIndex3
+            DirectMsg.Columns(3).DisplayIndex = _section.DisplayIndex4
+            DirectMsg.Columns(4).DisplayIndex = _section.DisplayIndex5
+        Else
+            DirectMsg.Columns.RemoveAt(4)
+            DirectMsg.Columns.RemoveAt(3)
+            DirectMsg.Columns.RemoveAt(2)
+            DirectMsg.Columns.RemoveAt(1)
+        End If
         Dim myTabDM As New TabStructure
         myTabDM.notify = _section.ListElement("Direct").Notify
         myTabDM.unreadManage = _section.ListElement("Direct").UnreadManage
@@ -481,12 +502,14 @@ Public Class TweenMain
             If name <> "Recent" And name <> "Reply" And name <> "Direct" Then
                 Dim myTab As New TabStructure
                 myTab.tabPage = New TabPage
-                myTab.listCustom = New Tween.TweenCustomControl.DetailsListView
+                myTab.listCustom = New TweenCustomControl.DetailsListView
                 myTab.colHd1 = New ColumnHeader
-                myTab.colHd2 = New ColumnHeader
-                myTab.colHd3 = New ColumnHeader
-                myTab.colHd4 = New ColumnHeader
-                myTab.colHd5 = New ColumnHeader
+                If _iconSz < 48 Then
+                    myTab.colHd2 = New ColumnHeader
+                    myTab.colHd3 = New ColumnHeader
+                    myTab.colHd4 = New ColumnHeader
+                    myTab.colHd5 = New ColumnHeader
+                End If
                 myTab.notify = _section.ListElement(idx).Notify
                 myTab.unreadManage = _section.ListElement(idx).UnreadManage
                 myTab.soundFile = _section.ListElement(idx).SoundFile
@@ -647,7 +670,7 @@ Public Class TweenMain
         Dim firstDate As String = ""
         Dim endDate As String = ""
         Dim readed As Boolean = SettingDialog.Readed
-        Dim myList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim myList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         Dim _readed As Boolean
         Dim _fav As Boolean
         Dim _onewaylove As Boolean
@@ -971,7 +994,7 @@ Public Class TweenMain
         TimerColorize.Stop()
         TimerColorize.Interval = 100
 
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(sender, Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(sender, TweenCustomControl.DetailsListView)
         MyList.Update()
         If MyList.SelectedItems.Count <> 1 Then Exit Sub
 
@@ -1121,7 +1144,7 @@ Public Class TweenMain
     End Sub
 
     Private Sub ColorizeList(ByRef DispDetail As Boolean)
-        Dim myList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim myList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         Dim name As String
         Dim at As New Collections.Specialized.StringCollection
         Dim dTxt As String
@@ -1806,7 +1829,7 @@ Public Class TweenMain
                     NotifyIcon1.Icon = NIconAtRed
                 Else
                     StatusLabel.Text = "POST完了"
-                     StatusText.Text = ""
+                    StatusText.Text = ""
                     _history.Add("")
                     _hisIdx = _history.Count - 1
                     SetMainWindowTitle()
@@ -1853,7 +1876,7 @@ Public Class TweenMain
                                     itm.SubItems(9).Text = "True"
                                     For idx As Integer = 0 To ListTab.TabCount - 1
                                         If ListTab.TabPages(idx).Text <> rslt.tName And ListTab.TabPages(idx).Text <> "Direct" Then
-                                            Dim MyList2 As TweenCustomControl.DetailsListView = CType(ListTab.TabPages(idx).Controls(0), Tween.TweenCustomControl.DetailsListView)
+                                            Dim MyList2 As TweenCustomControl.DetailsListView = CType(ListTab.TabPages(idx).Controls(0), TweenCustomControl.DetailsListView)
                                             For cnt3 As Integer = 0 To MyList2.Items.Count - 1
                                                 If itm.SubItems(5).Text = MyList2.Items(cnt3).SubItems(5).Text Then
                                                     MyList2.Items(cnt3).ForeColor = _clFav
@@ -1926,7 +1949,7 @@ Public Class TweenMain
                                     itm.ForeColor = _cl
                                     For idx As Integer = 0 To ListTab.TabCount - 1
                                         If ListTab.TabPages(idx).Text <> rslt.tName And ListTab.TabPages(idx).Text <> "Direct" Then
-                                            Dim MyList2 As TweenCustomControl.DetailsListView = CType(ListTab.TabPages(idx).Controls(0), Tween.TweenCustomControl.DetailsListView)
+                                            Dim MyList2 As TweenCustomControl.DetailsListView = CType(ListTab.TabPages(idx).Controls(0), TweenCustomControl.DetailsListView)
                                             Dim idxt2 As Integer = 0
                                             Dim _cl2 As Color
                                             For idxt2 = 0 To _tabs.Count - 1
@@ -1999,8 +2022,8 @@ Public Class TweenMain
         'Dim rtn As String = ""
         'Dim msg As String = ""
         'Dim cnt2 As Integer = 0
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
-        'Dim MyList2 As Tween.TweenCustomControl.DetailsListView = Nothing
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
+        'Dim MyList2 As TweenCustomControl.DetailsListView = Nothing
         'Dim cnt3 As Integer = 0
         'Dim tabName As String = ListTab.SelectedTab.Text
         'Dim idx As Integer = 0
@@ -2054,8 +2077,8 @@ Public Class TweenMain
         Dim rtn As String = ""
         Dim msg As String = ""
         Dim cnt2 As Integer = 0
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
-        Dim MyList2 As Tween.TweenCustomControl.DetailsListView = Nothing
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
+        Dim MyList2 As TweenCustomControl.DetailsListView = Nothing
         Dim cnt3 As Integer = 0
         Dim tabName As String = ListTab.SelectedTab.Text
         Dim idx As Integer = 0
@@ -2117,7 +2140,7 @@ Public Class TweenMain
             Application.DoEvents()
         Loop
 
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
 
         '後でタブ追加して独自読み込みにする
         If MyList.SelectedItems.Count > 0 Then
@@ -2136,7 +2159,7 @@ Public Class TweenMain
             Application.DoEvents()
         Loop
 
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
 
         '後でタブ追加して独自読み込みにする
         If MyList.SelectedItems.Count > 0 Then
@@ -2169,7 +2192,7 @@ Public Class TweenMain
         listViewItemSorter.Column = e.Column
         For Each _tab As TabPage In ListTab.TabPages
             'If _tab.Text <> "Direct" Then
-            Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(_tab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+            Dim MyList As TweenCustomControl.DetailsListView = CType(_tab.Controls(0), TweenCustomControl.DetailsListView)
             'CType(MyList.ListViewItemSorter, ListViewItemComparer).Column = e.Column
             'listViewItemSorter.Column = e.Column
             MyList.Sort()
@@ -2350,7 +2373,7 @@ Public Class TweenMain
     End Sub
 
     Private Sub DeleteStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DeleteStripMenuItem.Click
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
 
         If MessageBox.Show("選択されている発言(DM)を削除してもよろしいですか？" + vbCrLf + _
                            "　※注意　：　Twitterサーバからも削除されます！※" + vbCrLf + _
@@ -2465,7 +2488,7 @@ Public Class TweenMain
     End Sub
 
     Private Sub ReadedStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ReadedStripMenuItem.Click
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
 
         'Select Case ListTab.SelectedIndex
         '    Case 0
@@ -2724,7 +2747,7 @@ Public Class TweenMain
 
     End Sub
     Private Sub UnreadStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UnreadStripMenuItem.Click
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         Dim idx As Integer = 0
         For idx = 0 To _tabs.Count - 1
             If _tabs(idx).tabName = ListTab.SelectedTab.Text Then
@@ -2852,7 +2875,7 @@ Public Class TweenMain
     End Sub
 
     Private Sub RefreshStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RefreshStripMenuItem.Click
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
 
         NotifyIcon1.Icon = NIconRefresh(0)
         _refreshIconCnt = 0
@@ -2907,7 +2930,7 @@ Public Class TweenMain
 
     Private Sub SettingStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SettingStripMenuItem.Click
         TimerColorize.Stop()
-        Dim isz As Setting.IconSizes = SettingDialog.IconSz
+        'Dim isz As Setting.IconSizes = SettingDialog.IconSz
 
         If SettingDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
             _username = SettingDialog.UserID
@@ -2923,37 +2946,37 @@ Public Class TweenMain
             clsTwPost.UseAPI = SettingDialog.UseAPI
             clsTw.HubServer = SettingDialog.HubServer
             clsTwPost.HubServer = SettingDialog.HubServer
-            If isz <> SettingDialog.IconSz Then
-                Select Case SettingDialog.IconSz
-                    Case Setting.IconSizes.IconNone
-                        _iconSz = 0
-                    Case Setting.IconSizes.Icon16
-                        _iconSz = 16
-                    Case Setting.IconSizes.Icon24
-                        _iconSz = 26
-                    Case Setting.IconSizes.Icon48
-                        _iconSz = 48
-                End Select
-                ChangeImageSize()
+            'If isz <> SettingDialog.IconSz Then
+            '    Select Case SettingDialog.IconSz
+            '        Case Setting.IconSizes.IconNone
+            '            _iconSz = 0
+            '        Case Setting.IconSizes.Icon16
+            '            _iconSz = 16
+            '        Case Setting.IconSizes.Icon24
+            '            _iconSz = 26
+            '        Case Setting.IconSizes.Icon48
+            '            _iconSz = 48
+            '    End Select
+            '    ChangeImageSize()
 
-                Dim idx As Integer = 0
-                For idx = 0 To ListTab.TabCount - 1
-                    Dim myList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.TabPages(idx).Controls(0), Tween.TweenCustomControl.DetailsListView)
-                    myList.SmallImageList = TIconSmallList
-                Next
+            '    Dim idx As Integer = 0
+            '    For idx = 0 To ListTab.TabCount - 1
+            '        Dim myList As TweenCustomControl.DetailsListView = CType(ListTab.TabPages(idx).Controls(0), TweenCustomControl.DetailsListView)
+            '        myList.SmallImageList = TIconSmallList
+            '    Next
 
-                Dim myList2 As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
-                If myList2.SelectedItems.Count > 0 Then
-                    myList2.EnsureVisible(myList2.SelectedItems(0).Index)
-                Else
-                    If myList2.Items.Count > 0 Then
-                        myList2.EnsureVisible(0)
-                    End If
-                End If
+            '    Dim myList2 As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
+            '    If myList2.SelectedItems.Count > 0 Then
+            '        myList2.EnsureVisible(myList2.SelectedItems(0).Index)
+            '    Else
+            '        If myList2.Items.Count > 0 Then
+            '            myList2.EnsureVisible(0)
+            '        End If
+            '    End If
 
-                CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView).Refresh()
-                'CType(ListTab.SelectedTab.Controls(0), ListView).Focus()
-            End If
+            '    CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView).Refresh()
+            '    'CType(ListTab.SelectedTab.Controls(0), ListView).Focus()
+            'End If
             If SettingDialog.UnreadManage = False Then
                 ReadedStripMenuItem.Enabled = False
                 UnreadStripMenuItem.Enabled = False
@@ -2967,7 +2990,7 @@ Public Class TweenMain
             If SettingDialog.OneWayLove = True Then
                 For Each myTab As TabPage In ListTab.TabPages
                     If myTab.Text <> "Direct" Then
-                        Dim myList As Tween.TweenCustomControl.DetailsListView = CType(myTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+                        Dim myList As TweenCustomControl.DetailsListView = CType(myTab.Controls(0), TweenCustomControl.DetailsListView)
                         For Each myItem As ListViewItem In myList.Items
                             If clsTw.follower.Contains(myItem.SubItems(4).Text) Then
                                 myItem.SubItems(10).Text = "False"
@@ -3068,7 +3091,12 @@ Public Class TweenMain
                 myTab.tabPage.UseVisualStyleBackColor = True
 
                 myTab.listCustom.AllowColumnReorder = True
-                myTab.listCustom.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {myTab.colHd1, myTab.colHd2, myTab.colHd3, myTab.colHd4, myTab.colHd5})
+                If _iconSz < 48 Then
+                    myTab.listCustom.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {myTab.colHd1, myTab.colHd2, myTab.colHd3, myTab.colHd4, myTab.colHd5})
+                Else
+                    myTab.listCustom.Columns.Add(myTab.colHd1)
+                End If
+
                 myTab.listCustom.ContextMenuStrip = Me.ContextMenuStrip2
                 myTab.listCustom.Dock = System.Windows.Forms.DockStyle.Fill
                 myTab.listCustom.FullRowSelect = True
@@ -3093,14 +3121,16 @@ Public Class TweenMain
 
                 myTab.colHd1.Text = ""
                 myTab.colHd1.Width = 26
-                myTab.colHd2.Text = "名前"
-                myTab.colHd2.Width = 80
-                myTab.colHd3.Text = "投稿"
-                myTab.colHd3.Width = 300
-                myTab.colHd4.Text = "日時"
-                myTab.colHd4.Width = 50
-                myTab.colHd5.Text = "ユーザ名"
-                myTab.colHd5.Width = 50
+                If _iconSz < 48 Then
+                    myTab.colHd2.Text = "名前"
+                    myTab.colHd2.Width = 80
+                    myTab.colHd3.Text = "投稿"
+                    myTab.colHd3.Width = 300
+                    myTab.colHd4.Text = "日時"
+                    myTab.colHd4.Width = 50
+                    myTab.colHd5.Text = "ユーザ名"
+                    myTab.colHd5.Width = 50
+                End If
 
                 TabDialog.AddTab(myTab.tabName)
 
@@ -3116,15 +3146,17 @@ Public Class TweenMain
                 'myTab.listCustom.ListViewItemSorter = myTab.sorter
                 myTab.listCustom.ListViewItemSorter = listViewItemSorter
                 myTab.listCustom.Columns(0).Width = _section.Width1
-                myTab.listCustom.Columns(1).Width = _section.Width2
-                myTab.listCustom.Columns(2).Width = _section.Width3
-                myTab.listCustom.Columns(3).Width = _section.Width4
-                myTab.listCustom.Columns(4).Width = _section.Width5
                 myTab.listCustom.Columns(0).DisplayIndex = _section.DisplayIndex1
-                myTab.listCustom.Columns(1).DisplayIndex = _section.DisplayIndex2
-                myTab.listCustom.Columns(2).DisplayIndex = _section.DisplayIndex3
-                myTab.listCustom.Columns(3).DisplayIndex = _section.DisplayIndex4
-                myTab.listCustom.Columns(4).DisplayIndex = _section.DisplayIndex5
+                If _iconSz < 48 Then
+                    myTab.listCustom.Columns(1).Width = _section.Width2
+                    myTab.listCustom.Columns(2).Width = _section.Width3
+                    myTab.listCustom.Columns(3).Width = _section.Width4
+                    myTab.listCustom.Columns(4).Width = _section.Width5
+                    myTab.listCustom.Columns(1).DisplayIndex = _section.DisplayIndex2
+                    myTab.listCustom.Columns(2).DisplayIndex = _section.DisplayIndex3
+                    myTab.listCustom.Columns(3).DisplayIndex = _section.DisplayIndex4
+                    myTab.listCustom.Columns(4).DisplayIndex = _section.DisplayIndex5
+                End If
 
                 myTab.tabPage.ResumeLayout(False)
             End If
@@ -3154,12 +3186,14 @@ Public Class TweenMain
         Dim myTab As New TabStructure
 
         myTab.tabPage = New TabPage
-        myTab.listCustom = New Tween.TweenCustomControl.DetailsListView
+        myTab.listCustom = New TweenCustomControl.DetailsListView
         myTab.colHd1 = New ColumnHeader
-        myTab.colHd2 = New ColumnHeader
-        myTab.colHd3 = New ColumnHeader
-        myTab.colHd4 = New ColumnHeader
-        myTab.colHd5 = New ColumnHeader
+        If _iconSz < 48 Then
+            myTab.colHd2 = New ColumnHeader
+            myTab.colHd3 = New ColumnHeader
+            myTab.colHd4 = New ColumnHeader
+            myTab.colHd5 = New ColumnHeader
+        End If
         'myTab.sorter = New ListViewItemComparer
         myTab.tabName = tabName
         myTab.filters.Clear()
@@ -3192,7 +3226,11 @@ Public Class TweenMain
         myTab.tabPage.UseVisualStyleBackColor = True
 
         myTab.listCustom.AllowColumnReorder = True
-        myTab.listCustom.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {myTab.colHd1, myTab.colHd2, myTab.colHd3, myTab.colHd4, myTab.colHd5})
+        If _iconSz < 48 Then
+            myTab.listCustom.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {myTab.colHd1, myTab.colHd2, myTab.colHd3, myTab.colHd4, myTab.colHd5})
+        Else
+            myTab.listCustom.Columns.Add(myTab.colHd1)
+        End If
         myTab.listCustom.ContextMenuStrip = Me.ContextMenuStrip2
         myTab.listCustom.Dock = System.Windows.Forms.DockStyle.Fill
         myTab.listCustom.FullRowSelect = True
@@ -3217,14 +3255,16 @@ Public Class TweenMain
 
         myTab.colHd1.Text = ""
         myTab.colHd1.Width = 26
-        myTab.colHd2.Text = "名前"
-        myTab.colHd2.Width = 80
-        myTab.colHd3.Text = "投稿"
-        myTab.colHd3.Width = 300
-        myTab.colHd4.Text = "日時"
-        myTab.colHd4.Width = 50
-        myTab.colHd5.Text = "ユーザ名"
-        myTab.colHd5.Width = 50
+        If _iconSz < 48 Then
+            myTab.colHd2.Text = "名前"
+            myTab.colHd2.Width = 80
+            myTab.colHd3.Text = "投稿"
+            myTab.colHd3.Width = 300
+            myTab.colHd4.Text = "日時"
+            myTab.colHd4.Width = 50
+            myTab.colHd5.Text = "ユーザ名"
+            myTab.colHd5.Width = 50
+        End If
 
         TabDialog.AddTab(myTab.tabName)
 
@@ -3240,15 +3280,17 @@ Public Class TweenMain
         'myTab.listCustom.ListViewItemSorter = myTab.sorter
         myTab.listCustom.ListViewItemSorter = listViewItemSorter
         myTab.listCustom.Columns(0).Width = Timeline.Columns(0).Width
-        myTab.listCustom.Columns(1).Width = Timeline.Columns(1).Width
-        myTab.listCustom.Columns(2).Width = Timeline.Columns(2).Width
-        myTab.listCustom.Columns(3).Width = Timeline.Columns(3).Width
-        myTab.listCustom.Columns(4).Width = Timeline.Columns(4).Width
         myTab.listCustom.Columns(0).DisplayIndex = Timeline.Columns(0).DisplayIndex
-        myTab.listCustom.Columns(1).DisplayIndex = Timeline.Columns(1).DisplayIndex
-        myTab.listCustom.Columns(2).DisplayIndex = Timeline.Columns(2).DisplayIndex
-        myTab.listCustom.Columns(3).DisplayIndex = Timeline.Columns(3).DisplayIndex
-        myTab.listCustom.Columns(4).DisplayIndex = Timeline.Columns(4).DisplayIndex
+        If _iconSz < 48 Then
+            myTab.listCustom.Columns(1).Width = Timeline.Columns(1).Width
+            myTab.listCustom.Columns(2).Width = Timeline.Columns(2).Width
+            myTab.listCustom.Columns(3).Width = Timeline.Columns(3).Width
+            myTab.listCustom.Columns(4).Width = Timeline.Columns(4).Width
+            myTab.listCustom.Columns(1).DisplayIndex = Timeline.Columns(1).DisplayIndex
+            myTab.listCustom.Columns(2).DisplayIndex = Timeline.Columns(2).DisplayIndex
+            myTab.listCustom.Columns(3).DisplayIndex = Timeline.Columns(3).DisplayIndex
+            myTab.listCustom.Columns(4).DisplayIndex = Timeline.Columns(4).DisplayIndex
+        End If
 
         myTab.tabPage.ResumeLayout(False)
 
@@ -3346,10 +3388,12 @@ Public Class TweenMain
         _tabs(idx).tabPage.Dispose()
         _tabs(idx).listCustom.Dispose()
         _tabs(idx).colHd1.Dispose()
-        _tabs(idx).colHd2.Dispose()
-        _tabs(idx).colHd3.Dispose()
-        _tabs(idx).colHd4.Dispose()
-        _tabs(idx).colHd5.Dispose()
+        If _iconSz < 48 Then
+            _tabs(idx).colHd2.Dispose()
+            _tabs(idx).colHd3.Dispose()
+            _tabs(idx).colHd4.Dispose()
+            _tabs(idx).colHd5.Dispose()
+        End If
         '_tabs(idx).idCol.Clear()
         '_tabs(idx).idCol = Nothing
         _tabs(idx).filters.Clear()
@@ -3399,7 +3443,7 @@ Public Class TweenMain
         Call SetListProperty()
 
         '新しく表示されたリストを再描画
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         MyList.Update()
         TimerColorize.Start()
         '新しいタブ名を保管
@@ -3408,7 +3452,7 @@ Public Class TweenMain
 
     Private Sub SetListProperty()
         '直前のリスト特定
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = Nothing
+        Dim MyList As TweenCustomControl.DetailsListView = Nothing
         For Each myTab As TabPage In ListTab.TabPages
             If myTab.Text = _curTabText Then
                 MyList = CType(myTab.Controls(0), TweenCustomControl.DetailsListView)
@@ -3422,8 +3466,8 @@ Public Class TweenMain
         '列幅、列並びを他のタブに設定
         For Each _tab As TabPage In ListTab.TabPages
             If _tab.Text <> _curTabText Then
-                Dim lst As Tween.TweenCustomControl.DetailsListView = CType(_tab.Controls(0), Tween.TweenCustomControl.DetailsListView)
-                For i As Integer = 0 To 4
+                Dim lst As TweenCustomControl.DetailsListView = CType(_tab.Controls(0), TweenCustomControl.DetailsListView)
+                For i As Integer = 0 To lst.Columns.Count - 1
                     lst.Columns(i).DisplayIndex = MyList.Columns(i).DisplayIndex
                     lst.Columns(i).Width = MyList.Columns(i).Width
                 Next
@@ -3490,18 +3534,11 @@ Public Class TweenMain
 
     Private Sub MyList_DrawItem(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DrawListViewItemEventArgs) Handles Timeline.DrawItem, Reply.DrawItem, DirectMsg.DrawItem
         'e.DrawDefault = True
-        If SettingDialog.IconSz = Setting.IconSizes.Icon48 Or _
-           SettingDialog.IconSz = Setting.IconSizes.Icon24 Then
+        If _iconSz = 48 Or _
+           _iconSz = 26 Then
             If e.State = 0 Then Exit Sub
 
-            Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(sender, Tween.TweenCustomControl.DetailsListView)
-            Dim cnt As Integer
-            Dim sf As New StringFormat
-            Dim brs As SolidBrush
-            Dim x As Integer = 0
-            Dim wd As Integer
-            Dim wd2 As Integer
-            Dim idx As Integer
+
 
             'Dim dspstr As String = e.Item.SubItems(0).Text + " " + e.Item.SubItems(1).Text + "/" + e.Item.SubItems(4).Text + "     " + e.Item.SubItems(3).Text + vbCrLf + _
             '                       e.Item.SubItems(2).Text
@@ -3544,78 +3581,134 @@ Public Class TweenMain
             'sf.Dispose()
 
             'アイコンカラム位置取得
-            For cnt = 0 To 4
-                If MyList.Columns(cnt).Text = "" Then
-                    idx = MyList.Columns(cnt).DisplayIndex
-                    wd2 = MyList.Columns(cnt).Width - 2
-                    Exit For
-                End If
-            Next
-            x = e.Item.Bounds.X
-            For cnt = 0 To 4
-                If MyList.Columns(cnt).DisplayIndex < idx Then
-                    x += MyList.Columns(cnt).Width
-                End If
-            Next
-            If wd2 > MyList.SmallImageList.ImageSize.Width Then
-                wd = MyList.SmallImageList.ImageSize.Width
-            Else
-                wd = wd2
-            End If
-
-            Dim rct As New Rectangle(x, e.Item.SubItems(idx).Bounds.Y + 1, wd, MyList.SmallImageList.ImageSize.Height)
-
+            Dim rct As Rectangle = Nothing
+            Dim MyList As TweenCustomControl.DetailsListView = e.Item.ListView
+            Dim sf As New StringFormat
             sf.Alignment = StringAlignment.Near
             sf.LineAlignment = StringAlignment.Near
+            If _iconSz < 48 Then
+                'Dim MyList As TweenCustomControl.DetailsListView = CType(sender, TweenCustomControl.DetailsListView)
+                Dim cnt As Integer
+                Dim brs As SolidBrush
+                Dim x As Integer = 0
+                Dim wd As Integer
+                Dim wd2 As Integer
+                Dim idx As Integer
 
-            If e.Item.Selected = True Then
-                brs = New SolidBrush(Color.FromKnownColor(KnownColor.Highlight))
-                e.Graphics.FillRectangle(brs, e.Bounds)
-                brs.Dispose()
-                If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
-                    e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
-                End If
-                brs = New SolidBrush(Color.FromKnownColor(KnownColor.HighlightText))
-                For i As Integer = 0 To 4
-                    If i = 0 Then
-                        If wd2 - MyList.SmallImageList.ImageSize.Width > 0 Then
-                            Dim sRct As New Rectangle(x + 1 + MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Y + 1, wd2 - MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Height - 2)
-                            e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
-                        End If
-                    Else
-                        Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y + 1, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 2)
-                        e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
+                For cnt = 0 To 4
+                    If e.Item.ListView.Columns(cnt).Text = "" Then
+                        idx = MyList.Columns(cnt).DisplayIndex
+                        wd2 = MyList.Columns(cnt).Width - 2
+                        Exit For
                     End If
                 Next
-                brs.Dispose()
+                x = e.Item.Bounds.X
+                For cnt = 0 To 4
+                    If MyList.Columns(cnt).DisplayIndex < idx Then
+                        x += MyList.Columns(cnt).Width
+                    End If
+                Next
+                If wd2 > MyList.SmallImageList.ImageSize.Width Then
+                    wd = MyList.SmallImageList.ImageSize.Width
+                Else
+                    wd = wd2
+                End If
+                rct = New Rectangle(x, e.Item.SubItems(idx).Bounds.Y + 1, wd, MyList.SmallImageList.ImageSize.Height)
+
+                sf.Alignment = StringAlignment.Near
+                sf.LineAlignment = StringAlignment.Near
+
+                If e.Item.Selected = True Then
+                    brs = New SolidBrush(Color.FromKnownColor(KnownColor.Highlight))
+                    e.Graphics.FillRectangle(brs, e.Bounds)
+                    brs.Dispose()
+                    If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
+                        e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
+                    End If
+                    brs = New SolidBrush(Color.FromKnownColor(KnownColor.HighlightText))
+                    For i As Integer = 0 To 4
+                        If i = 0 Then
+                            If wd2 - MyList.SmallImageList.ImageSize.Width > 0 Then
+                                Dim sRct As New Rectangle(x + 1 + MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Y + 1, wd2 - MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Height - 2)
+                                e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
+                            End If
+                        Else
+                            Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y + 1, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 2)
+                            e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
+                        End If
+                    Next
+                    brs.Dispose()
+                Else
+                    e.DrawBackground()
+
+                    If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
+                        e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
+                    End If
+
+
+
+                    brs = New SolidBrush(e.Item.ForeColor)
+                    For i As Integer = 0 To 4
+                        If i = 0 Then
+                            If wd2 - MyList.SmallImageList.ImageSize.Width > 0 Then
+                                Dim sRct As New Rectangle(x + 1 + MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Y + 1, wd2 - MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Height - 2)
+                                e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
+                            End If
+                        Else
+                            Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y + 1, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 2)
+                            e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
+                        End If
+                        'Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y + 1, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 2)
+                        'e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
+                    Next
+                    brs.Dispose()
+                    'e.DrawText()
+
+                    'End If
+                End If
             Else
-                e.DrawBackground()
+                Dim brs As SolidBrush
+                Dim wd As Integer
+                Dim wd2 As Integer
+                Dim x As Integer
+                wd2 = e.Item.Bounds.Width - 2
+                If wd2 > _iconSz Then wd = _iconSz
+                x = e.Item.Bounds.X
+                rct = New Rectangle(e.Item.Bounds.X, e.Item.Bounds.Y + 1, wd, _iconSz)
 
-                If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
-                    e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
-                End If
-
-
-
-                brs = New SolidBrush(e.Item.ForeColor)
-                For i As Integer = 0 To 4
-                    If i = 0 Then
-                        If wd2 - MyList.SmallImageList.ImageSize.Width > 0 Then
-                            Dim sRct As New Rectangle(x + 1 + MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Y + 1, wd2 - MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Height - 2)
-                            e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
-                        End If
-                    Else
-                        Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y + 1, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 2)
-                        e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
+                If e.Item.Selected = True Then
+                    brs = New SolidBrush(Color.FromKnownColor(KnownColor.Highlight))
+                    e.Graphics.FillRectangle(brs, e.Bounds)
+                    brs.Dispose()
+                    If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
+                        e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
                     End If
-                    'Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y + 1, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 2)
-                    'e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
-                Next
-                brs.Dispose()
-                'e.DrawText()
+                    brs = New SolidBrush(Color.FromKnownColor(KnownColor.HighlightText))
 
-                'End If
+                    If wd2 - _iconSz > 0 Then
+                        Dim sRct As New Rectangle(x + 1 + _iconSz, e.Item.Bounds.Y + 1, wd2 - _iconSz, _iconSz - 2)
+                        e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text + vbCrLf + e.Item.SubItems(2).Text, e.Item.Font, brs, sRct, sf)
+                    End If
+                    brs.Dispose()
+                Else
+                    e.DrawBackground()
+
+                    If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
+                        e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
+                    End If
+                    brs = New SolidBrush(e.Item.ForeColor)
+                    If wd2 - _iconSz > 0 Then
+                        Dim sRct As New Rectangle(x + 1 + _iconSz, e.Item.Bounds.Y + 1, wd2 - _iconSz, _iconSz - 2)
+                        e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text + vbCrLf + e.Item.SubItems(2).Text, e.Item.Font, brs, sRct, sf)
+                    End If
+                    brs.Dispose()
+                    'e.DrawText()
+
+                    'End If
+                End If
             End If
+
+
             e.DrawFocusRectangle()
 
             sf.Dispose()
@@ -3625,7 +3718,7 @@ Public Class TweenMain
     End Sub
 
     Private Sub MenuItemSubSearch_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemSubSearch.Click
-        Dim myList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim myList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         Dim _word As String
         Dim cidx As Integer = 0
         Dim fnd As Boolean = False
@@ -3728,7 +3821,7 @@ RETRY:
     End Sub
 
     Private Sub MenuItemSearchNext_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemSearchNext.Click
-        Dim myList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim myList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         Dim _word As String
         Dim cidx As Integer = 0
         Dim fnd As Boolean = False
@@ -3833,7 +3926,7 @@ RETRY:
     End Sub
 
     Private Sub MenuItemSearchPrev_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemSearchPrev.Click
-        Dim myList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim myList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         Dim _word As String
         Dim cidx As Integer = 0
         Dim fnd As Boolean = False
@@ -3952,7 +4045,7 @@ RETRY:
     End Sub
 
     Private Sub JumpUnreadMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles JumpUnreadMenuItem.Click
-        Dim myList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim myList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         Dim _itnm As String = ListTab.SelectedTab.Text
         Dim _ntnm As String = _itnm
         Dim cidx As Integer = 0
@@ -4061,7 +4154,7 @@ RETRY:
                     Else
                         i += 1
                     End If
-                    myList = CType(ListTab.TabPages(i).Controls(0), Tween.TweenCustomControl.DetailsListView)
+                    myList = CType(ListTab.TabPages(i).Controls(0), TweenCustomControl.DetailsListView)
                     _ntnm = ListTab.TabPages(i).Text
                     GoTo RETRY
                 End If
@@ -4074,7 +4167,7 @@ RETRY:
             Threading.Thread.Sleep(100)
             Application.DoEvents()
         Loop
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
 
         '後でタブ追加して独自読み込みにする
         If MyList.SelectedItems.Count > 0 Then
@@ -4093,7 +4186,7 @@ RETRY:
             Application.DoEvents()
         Loop
 
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
 
         '後でタブ追加して独自読み込みにする
         If MyList.SelectedItems.Count > 0 Then
@@ -4144,7 +4237,7 @@ RETRY:
     '    Dim at As New Collections.Specialized.StringCollection
     '    Dim pos1 As Integer = -1
     '    Dim pos2 As Integer = 0
-    '    Dim myList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+    '    Dim myList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
     '    Dim _item As ListViewItem
     '    Dim dTxt As String
 
@@ -4243,7 +4336,7 @@ RETRY:
 
     Private Sub DispSelectedPost()
         Dim _item As ListViewItem
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         Dim dTxt As String
 
         If MyList.SelectedItems.Count = 0 Then Exit Sub
@@ -4456,7 +4549,7 @@ RETRY:
 
     Private Sub GoNextFav()
         TimerColorize.Stop()
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         If MyList.SelectedItems.Count = 0 Then Exit Sub
 
         Dim user As String = MyList.SelectedItems(0).SubItems(4).Text
@@ -4482,7 +4575,7 @@ RETRY:
 
     Private Sub GoPreviousFav()
         TimerColorize.Stop()
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         If MyList.SelectedItems.Count = 0 Then Exit Sub
 
         Dim user As String = MyList.SelectedItems(0).SubItems(4).Text
@@ -4508,7 +4601,7 @@ RETRY:
 
     Private Sub GoNextPost()
         TimerColorize.Stop()
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         If MyList.SelectedItems.Count = 0 Then Exit Sub
 
         Dim user As String = MyList.SelectedItems(0).SubItems(4).Text
@@ -4534,7 +4627,7 @@ RETRY:
 
     Private Sub GoPreviousPost()
         TimerColorize.Stop()
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         If MyList.SelectedItems.Count = 0 Then Exit Sub
 
         Dim user As String = MyList.SelectedItems(0).SubItems(4).Text
@@ -4560,7 +4653,7 @@ RETRY:
 
     Private Sub GoNextRelPost()
         TimerColorize.Stop()
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         If MyList.SelectedItems.Count = 0 Then Exit Sub
 
         Dim fIdx As Integer = MyList.SelectedItems(0).Index + 1
@@ -4609,7 +4702,7 @@ RETRY:
 
     Private Sub GoPreviousRelPost()
         TimerColorize.Stop()
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         If MyList.SelectedItems.Count = 0 Then Exit Sub
 
 
@@ -4659,7 +4752,7 @@ RETRY:
 
     Private Sub GoAnchor()
         TimerColorize.Stop()
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         If _anchorItem Is Nothing Then Exit Sub
 
         Dim aid As String = _anchorItem.SubItems(5).Text
@@ -4683,7 +4776,7 @@ RETRY:
 
     Private Sub GoTopEnd(ByVal GoTop As Boolean)
         TimerColorize.Stop()
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         Dim _item As ListViewItem
 
         If GoTop Then
@@ -4706,7 +4799,7 @@ RETRY:
 
     Private Sub GoMiddle()
         TimerColorize.Stop()
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         Dim _item As ListViewItem
         Dim idx1 As Integer
         Dim idx2 As Integer
@@ -4732,7 +4825,7 @@ RETRY:
 
     Private Sub GoLast()
         TimerColorize.Stop()
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         Dim _item As ListViewItem
         If listViewItemSorter.Column = 3 Then
             If listViewItemSorter.Order = SortOrder.Ascending Then
@@ -4761,7 +4854,7 @@ RETRY:
 
     Private Sub MoveTop()
         TimerColorize.Stop()
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         If MyList.SelectedItems.Count = 0 Then Exit Sub
         Dim _item As ListViewItem = MyList.SelectedItems(0)
         If listViewItemSorter.Column = 3 Then
@@ -4795,7 +4888,7 @@ RETRY:
     Private Sub StatusText_KeyDown(ByVal sender As System.Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles StatusText.KeyDown
         'If e.KeyCode = Keys.Enter Or e.KeyCode = Keys.Return Then
         '    If e.Alt = False And e.Control = SettingDialog.PostCtrlEnter And e.Shift = False Then
-        '        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        '        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
         '        'e.Handled = True
         '        e.SuppressKeyPress = True
         '        'MyList.Focus()
@@ -4914,15 +5007,17 @@ RETRY:
                 End If
             Next
             _section.DisplayIndex1 = tmpList.Columns(0).DisplayIndex
-            _section.DisplayIndex2 = tmpList.Columns(1).DisplayIndex
-            _section.DisplayIndex3 = tmpList.Columns(2).DisplayIndex
-            _section.DisplayIndex4 = tmpList.Columns(3).DisplayIndex
-            _section.DisplayIndex5 = tmpList.Columns(4).DisplayIndex
             _section.Width1 = tmpList.Columns(0).Width
-            _section.Width2 = tmpList.Columns(1).Width
-            _section.Width3 = tmpList.Columns(2).Width
-            _section.Width4 = tmpList.Columns(3).Width
-            _section.Width5 = tmpList.Columns(4).Width
+            If _iconSz < 48 Then
+                _section.DisplayIndex2 = tmpList.Columns(1).DisplayIndex
+                _section.DisplayIndex3 = tmpList.Columns(2).DisplayIndex
+                _section.DisplayIndex4 = tmpList.Columns(3).DisplayIndex
+                _section.DisplayIndex5 = tmpList.Columns(4).DisplayIndex
+                _section.Width2 = tmpList.Columns(1).Width
+                _section.Width3 = tmpList.Columns(2).Width
+                _section.Width4 = tmpList.Columns(3).Width
+                _section.Width5 = tmpList.Columns(4).Width
+            End If
             _section.SortColumn = listViewItemSorter.Column
             _section.SortOrder = listViewItemSorter.Order
 
@@ -4972,7 +5067,7 @@ RETRY:
             Dim cnt As Integer = 0
             For idx As Integer = 0 To ListTab.TabCount - 1
                 Dim tabName As String = ListTab.TabPages(idx).Text
-                Dim myList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.TabPages(idx).Controls(0), Tween.TweenCustomControl.DetailsListView)
+                Dim myList As TweenCustomControl.DetailsListView = CType(ListTab.TabPages(idx).Controls(0), TweenCustomControl.DetailsListView)
                 _section.ListElement.Add(New ListElement(tabName))
                 For Each myTab As TabStructure In _tabs
                     If myTab.tabName = tabName Then
@@ -5073,7 +5168,7 @@ RETRY:
         SaveFileDialog1.RestoreDirectory = True
 
         If SaveFileDialog1.ShowDialog = Windows.Forms.DialogResult.OK Then
-            Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+            Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
             Dim srm As System.IO.Stream
             srm = SaveFileDialog1.OpenFile
             If Not (srm Is Nothing) Then
@@ -5242,7 +5337,7 @@ RETRY:
     End Sub
 
     Private Sub MakeReplyOrDirectStatus(Optional ByVal isAuto As Boolean = True, Optional ByVal isReply As Boolean = True, Optional ByVal isAll As Boolean = False)
-        Dim MyList As Tween.TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), Tween.TweenCustomControl.DetailsListView)
+        Dim MyList As TweenCustomControl.DetailsListView = CType(ListTab.SelectedTab.Controls(0), TweenCustomControl.DetailsListView)
 
         If StatusText.Enabled = False Then Exit Sub
 
@@ -5823,7 +5918,7 @@ RETRY:
 
         Dim idx As Integer = MyList.SelectedItems(0).Index
 
-        _item = myList.GetItemAt(0, 25)
+        _item = MyList.GetItemAt(0, 25)
         If _item Is Nothing Then _item = MyList.Items(0)
         idx1 = _item.Index
         _item = MyList.GetItemAt(0, MyList.ClientSize.Height - 1)
@@ -6119,7 +6214,7 @@ End Class
 
 Public Class TabStructure
     Public tabPage As System.Windows.Forms.TabPage
-    Public listCustom As Tween.TweenCustomControl.DetailsListView
+    Public listCustom As TweenCustomControl.DetailsListView
     Public colHd1 As System.Windows.Forms.ColumnHeader
     Public colHd2 As System.Windows.Forms.ColumnHeader
     Public colHd3 As System.Windows.Forms.ColumnHeader
