@@ -34,6 +34,7 @@ Public Class TweenMain
     Private TIconList As ImageList      '発言詳細部用アイコン画像リスト
     Private TIconSmallList As ImageList 'リスト表示用アイコン画像リスト
     Private _iconSz As Integer          'アイコンサイズ（現在は16、24、48の3種類。将来直接数字指定可能とする）
+    Private _iconCol As Boolean         '1列表示の時True（48サイズのとき）
     Private NIconAt As Icon             'At.ico             タスクトレイアイコン：通常時
     Private NIconAtRed As Icon          'AtRed.ico          タスクトレイアイコン：通信エラー時
     Private NIconAtSmoke As Icon        'AtSmoke.ico        タスクトレイアイコン：オフライン時
@@ -256,6 +257,8 @@ Public Class TweenMain
                 SettingDialog.IconSz = Setting.IconSizes.Icon24
             Case ListSection.IconSizes.Icon48
                 SettingDialog.IconSz = Setting.IconSizes.Icon48
+            Case ListSection.IconSizes.Icon48_2
+                SettingDialog.IconSz = Setting.IconSizes.Icon48_2
         End Select
         '文末ステータス
         SettingDialog.Status = _section.StatusText
@@ -368,6 +371,7 @@ Public Class TweenMain
         Call clsTw.GetWedata()
         clsTw.NextThreshold = SettingDialog.NextPageThreshold   '次頁取得閾値
         clsTw.NextPages = SettingDialog.NextPagesInt    '閾値オーバー時の読み込みページ数（未使用）
+        _iconCol = False
         Select Case SettingDialog.IconSz    'リストのアイコンサイズ（未使用）
             Case Setting.IconSizes.IconNone
                 _iconSz = 0
@@ -377,6 +381,9 @@ Public Class TweenMain
                 _iconSz = 26
             Case Setting.IconSizes.Icon48
                 _iconSz = 48
+            Case Setting.IconSizes.Icon48_2
+                _iconSz = 48
+                _iconCol = True
         End Select
         clsTwPost.UseAPI = SettingDialog.UseAPI
         clsTw.HubServer = SettingDialog.HubServer
@@ -408,7 +415,7 @@ Public Class TweenMain
         Timeline.ListViewItemSorter = listViewItemSorter
         Timeline.Columns(0).Width = _section.Width1
         Timeline.Columns(0).DisplayIndex = _section.DisplayIndex1
-        If _iconSz < 48 Then
+        If _iconCol = False Then
             Timeline.Columns(1).Width = _section.Width2
             Timeline.Columns(2).Width = _section.Width3
             Timeline.Columns(3).Width = _section.Width4
@@ -440,7 +447,7 @@ Public Class TweenMain
         Reply.ListViewItemSorter = listViewItemSorter
         Reply.Columns(0).Width = _section.Width1
         Reply.Columns(0).DisplayIndex = _section.DisplayIndex1
-        If _iconSz < 48 Then
+        If _iconCol = False Then
             Reply.Columns(1).Width = _section.Width2
             Reply.Columns(2).Width = _section.Width3
             Reply.Columns(3).Width = _section.Width4
@@ -472,7 +479,7 @@ Public Class TweenMain
         DirectMsg.ListViewItemSorter = listViewItemSorter
         DirectMsg.Columns(0).Width = _section.Width1
         DirectMsg.Columns(0).DisplayIndex = _section.DisplayIndex1
-        If _iconSz < 48 Then
+        If _iconCol = False Then
             DirectMsg.Columns(1).Width = _section.Width2
             DirectMsg.Columns(2).Width = _section.Width3
             DirectMsg.Columns(3).Width = _section.Width4
@@ -504,7 +511,7 @@ Public Class TweenMain
                 myTab.tabPage = New TabPage
                 myTab.listCustom = New TweenCustomControl.DetailsListView
                 myTab.colHd1 = New ColumnHeader
-                If _iconSz < 48 Then
+                If _iconCol = False Then
                     myTab.colHd2 = New ColumnHeader
                     myTab.colHd3 = New ColumnHeader
                     myTab.colHd4 = New ColumnHeader
@@ -2189,7 +2196,12 @@ Public Class TweenMain
         '        If ListTab.SelectedTab.Text <> "Direct" Then
         If SettingDialog.SortOrderLock Then Exit Sub
 
-        listViewItemSorter.Column = e.Column
+        If _iconCol = False Then
+            listViewItemSorter.Column = e.Column
+        Else
+            listViewItemSorter.Column = 3
+        End If
+
         For Each _tab As TabPage In ListTab.TabPages
             'If _tab.Text <> "Direct" Then
             Dim MyList As TweenCustomControl.DetailsListView = CType(_tab.Controls(0), TweenCustomControl.DetailsListView)
@@ -3091,7 +3103,7 @@ Public Class TweenMain
                 myTab.tabPage.UseVisualStyleBackColor = True
 
                 myTab.listCustom.AllowColumnReorder = True
-                If _iconSz < 48 Then
+                If _iconCol = False Then
                     myTab.listCustom.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {myTab.colHd1, myTab.colHd2, myTab.colHd3, myTab.colHd4, myTab.colHd5})
                 Else
                     myTab.listCustom.Columns.Add(myTab.colHd1)
@@ -3121,7 +3133,7 @@ Public Class TweenMain
 
                 myTab.colHd1.Text = ""
                 myTab.colHd1.Width = 26
-                If _iconSz < 48 Then
+                If _iconCol = False Then
                     myTab.colHd2.Text = "名前"
                     myTab.colHd2.Width = 80
                     myTab.colHd3.Text = "投稿"
@@ -3147,7 +3159,7 @@ Public Class TweenMain
                 myTab.listCustom.ListViewItemSorter = listViewItemSorter
                 myTab.listCustom.Columns(0).Width = _section.Width1
                 myTab.listCustom.Columns(0).DisplayIndex = _section.DisplayIndex1
-                If _iconSz < 48 Then
+                If _iconCol = False Then
                     myTab.listCustom.Columns(1).Width = _section.Width2
                     myTab.listCustom.Columns(2).Width = _section.Width3
                     myTab.listCustom.Columns(3).Width = _section.Width4
@@ -3188,7 +3200,7 @@ Public Class TweenMain
         myTab.tabPage = New TabPage
         myTab.listCustom = New TweenCustomControl.DetailsListView
         myTab.colHd1 = New ColumnHeader
-        If _iconSz < 48 Then
+        If _iconCol = False Then
             myTab.colHd2 = New ColumnHeader
             myTab.colHd3 = New ColumnHeader
             myTab.colHd4 = New ColumnHeader
@@ -3226,7 +3238,7 @@ Public Class TweenMain
         myTab.tabPage.UseVisualStyleBackColor = True
 
         myTab.listCustom.AllowColumnReorder = True
-        If _iconSz < 48 Then
+        If _iconCol = False Then
             myTab.listCustom.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {myTab.colHd1, myTab.colHd2, myTab.colHd3, myTab.colHd4, myTab.colHd5})
         Else
             myTab.listCustom.Columns.Add(myTab.colHd1)
@@ -3255,7 +3267,7 @@ Public Class TweenMain
 
         myTab.colHd1.Text = ""
         myTab.colHd1.Width = 26
-        If _iconSz < 48 Then
+        If _iconCol = False Then
             myTab.colHd2.Text = "名前"
             myTab.colHd2.Width = 80
             myTab.colHd3.Text = "投稿"
@@ -3281,7 +3293,7 @@ Public Class TweenMain
         myTab.listCustom.ListViewItemSorter = listViewItemSorter
         myTab.listCustom.Columns(0).Width = Timeline.Columns(0).Width
         myTab.listCustom.Columns(0).DisplayIndex = Timeline.Columns(0).DisplayIndex
-        If _iconSz < 48 Then
+        If _iconCol = False Then
             myTab.listCustom.Columns(1).Width = Timeline.Columns(1).Width
             myTab.listCustom.Columns(2).Width = Timeline.Columns(2).Width
             myTab.listCustom.Columns(3).Width = Timeline.Columns(3).Width
@@ -3388,7 +3400,7 @@ Public Class TweenMain
         _tabs(idx).tabPage.Dispose()
         _tabs(idx).listCustom.Dispose()
         _tabs(idx).colHd1.Dispose()
-        If _iconSz < 48 Then
+        If _iconCol = False Then
             _tabs(idx).colHd2.Dispose()
             _tabs(idx).colHd3.Dispose()
             _tabs(idx).colHd4.Dispose()
@@ -3586,7 +3598,7 @@ Public Class TweenMain
             Dim sf As New StringFormat
             sf.Alignment = StringAlignment.Near
             sf.LineAlignment = StringAlignment.Near
-            If _iconSz < 48 Then
+            If _iconCol = False Then
                 'Dim MyList As TweenCustomControl.DetailsListView = CType(sender, TweenCustomControl.DetailsListView)
                 Dim cnt As Integer
                 Dim brs As SolidBrush
@@ -3685,9 +3697,12 @@ Public Class TweenMain
                     End If
                     brs = New SolidBrush(Color.FromKnownColor(KnownColor.HighlightText))
 
-                    If wd2 - _iconSz > 0 Then
-                        Dim sRct As New Rectangle(x + 1 + _iconSz, e.Item.Bounds.Y + 1, wd2 - _iconSz, _iconSz - 2)
-                        e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text + vbCrLf + e.Item.SubItems(2).Text, e.Item.Font, brs, sRct, sf)
+                    If wd2 - _iconSz - 5 > 0 Then
+                        Dim sRct As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y + 1, wd2 - _iconSz - 5, e.Item.Font.Height)
+                        Dim sRct2 As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y + 1 + e.Item.Font.Height, wd2 - _iconSz - 5, _iconSz - 2 - e.Item.Font.Height)
+                        Dim fnt As New Font(e.Item.Font, FontStyle.Bold)
+                        e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text, fnt, brs, sRct, sf)
+                        e.Graphics.DrawString(e.Item.SubItems(2).Text, e.Item.Font, brs, sRct2, sf)
                     End If
                     brs.Dispose()
                 Else
@@ -3697,9 +3712,12 @@ Public Class TweenMain
                         e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
                     End If
                     brs = New SolidBrush(e.Item.ForeColor)
-                    If wd2 - _iconSz > 0 Then
-                        Dim sRct As New Rectangle(x + 1 + _iconSz, e.Item.Bounds.Y + 1, wd2 - _iconSz, _iconSz - 2)
-                        e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text + vbCrLf + e.Item.SubItems(2).Text, e.Item.Font, brs, sRct, sf)
+                    If wd2 - _iconSz - 5 > 0 Then
+                        Dim sRct As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y + 1, wd2 - _iconSz - 5, e.Item.Font.Height)
+                        Dim sRct2 As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y + 1 + e.Item.Font.Height, wd2 - _iconSz - 5, _iconSz - 2 - e.Item.Font.Height)
+                        Dim fnt As New Font(e.Item.Font, FontStyle.Bold)
+                        e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text, fnt, brs, sRct, sf)
+                        e.Graphics.DrawString(e.Item.SubItems(2).Text, e.Item.Font, brs, sRct2, sf)
                     End If
                     brs.Dispose()
                     'e.DrawText()
@@ -4957,6 +4975,8 @@ RETRY:
                     _section.IconSize = ListSection.IconSizes.Icon24
                 Case Setting.IconSizes.Icon48
                     _section.IconSize = ListSection.IconSizes.Icon48
+                Case Setting.IconSizes.Icon48_2
+                    _section.IconSize = ListSection.IconSizes.Icon48_2
             End Select
             '_section.selecteduser（collection)
             '_section.favuser
@@ -5008,7 +5028,7 @@ RETRY:
             Next
             _section.DisplayIndex1 = tmpList.Columns(0).DisplayIndex
             _section.Width1 = tmpList.Columns(0).Width
-            If _iconSz < 48 Then
+            If _iconCol = False Then
                 _section.DisplayIndex2 = tmpList.Columns(1).DisplayIndex
                 _section.DisplayIndex3 = tmpList.Columns(2).DisplayIndex
                 _section.DisplayIndex4 = tmpList.Columns(3).DisplayIndex

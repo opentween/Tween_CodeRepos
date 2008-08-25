@@ -50,6 +50,7 @@
         Icon16 = 1
         Icon24 = 2
         Icon48 = 3
+        Icon48_2 = 4
     End Enum
 
     Public Enum NameBalloonEnum
@@ -111,6 +112,8 @@
                     _MyIconSize = IconSizes.Icon24
                 Case 3
                     _MyIconSize = IconSizes.Icon48
+                Case 4
+                    _MyIconSize = IconSizes.Icon48_2
             End Select
             _MyStatusText = StatusText.Text
             _MyPlaySound = PlaySnd.Checked
@@ -201,6 +204,8 @@
                 IconSize.SelectedIndex = 2
             Case IconSizes.Icon48
                 IconSize.SelectedIndex = 3
+            Case IconSizes.Icon48_2
+                IconSize.SelectedIndex = 4
         End Select
         StatusText.Text = _MyStatusText
         UReadMng.Checked = _MyUnreadManage
