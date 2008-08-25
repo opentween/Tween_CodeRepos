@@ -746,6 +746,7 @@ Public NotInheritable Class ListSection
         Icon16 = 1
         Icon24 = 2
         Icon48 = 3
+        Icon48_2 = 4
     End Enum
 
     Public Enum NameBalloonEnum

@@ -954,7 +954,7 @@ Partial Class Setting
         '
         Me.IconSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.IconSize.FormattingEnabled = True
-        Me.IconSize.Items.AddRange(New Object() {"なし", "16*16", "24*24", "48*48"})
+        Me.IconSize.Items.AddRange(New Object() {"なし", "16*16", "24*24", "48*48", "48*48(1列)"})
         Me.IconSize.Location = New System.Drawing.Point(217, 362)
         Me.IconSize.Name = "IconSize"
         Me.IconSize.Size = New System.Drawing.Size(85, 20)
@@ -1150,9 +1150,9 @@ Partial Class Setting
         'Label47
         '
         Me.Label47.ForeColor = System.Drawing.SystemColors.ActiveCaption
-        Me.Label47.Location = New System.Drawing.Point(14, 383)
+        Me.Label47.Location = New System.Drawing.Point(179, 385)
         Me.Label47.Name = "Label47"
-        Me.Label47.Size = New System.Drawing.Size(290, 18)
+        Me.Label47.Size = New System.Drawing.Size(142, 18)
         Me.Label47.TabIndex = 69
         Me.Label47.Text = "再起動後有効になります。"
         '
