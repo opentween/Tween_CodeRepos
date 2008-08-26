@@ -813,26 +813,26 @@ Public Class TweenMain
                 Next
                 If hit Then
                     ts.allCount += 1
+                    Dim lvItem2 As ListViewItem = lvItem.Clone
                     If _readed = False And ts.unreadManage Then
-                        lvItem.Font = _fntUnread
-                        lvItem.ForeColor = _clUnread
-                        lvItem.SubItems(8).Text = "False"
+                        lvItem2.Font = _fntUnread
+                        lvItem2.ForeColor = _clUnread
+                        lvItem2.SubItems(8).Text = "False"
                         'ts.tabPage.ImageIndex = 0
                         ts.unreadCount += 1
                     Else
-                        lvItem.Font = _fntReaded
-                        lvItem.ForeColor = _clReaded
-                        lvItem.SubItems(8).Text = "True"
+                        lvItem2.Font = _fntReaded
+                        lvItem2.ForeColor = _clReaded
+                        lvItem2.SubItems(8).Text = "True"
                         'ts.tabPage.ImageIndex = -1
                     End If
                     If _onewaylove And SettingDialog.OneWayLove = True Then
-                        lvItem.ForeColor = _clOWL
+                        lvItem2.ForeColor = _clOWL
                     End If
                     If _fav Then
-                        lvItem.ForeColor = _clFav
+                        lvItem2.ForeColor = _clFav
                     End If
 
-                    Dim lvItem2 As ListViewItem = lvItem.Clone
                     If lvItem2.SubItems(8).Text = "False" Then
                         If ts.oldestUnreadItem IsNot Nothing Then
                             If lvItem2.SubItems(5).Text < ts.oldestUnreadItem.SubItems(5).Text Then ts.oldestUnreadItem = lvItem2
@@ -845,6 +845,42 @@ Public Class TweenMain
                     If snd = "" Then snd = ts.soundFile
                 End If
             Next
+
+            If lItem.Reply Or Regex.IsMatch(lItem.Data, "@" + _username + "([^a-zA-Z0-9_]|$)", RegexOptions.IgnoreCase) Then
+                Dim lvItem2 As ListViewItem = lvItem.Clone
+                _tabs(1).allCount += 1
+                If _readed = False And _tabs(1).unreadManage Then
+                    lvItem2.Font = _fntUnread
+                    lvItem2.ForeColor = _clUnread
+                    lvItem2.SubItems(8).Text = "False"
+                    'ListTab.TabPages(1).ImageIndex = 0
+                    _tabs(1).unreadCount += 1
+                Else
+                    lvItem2.Font = _fntReaded
+                    lvItem2.ForeColor = _clReaded
+                    lvItem2.SubItems(8).Text = "True"
+                    'ListTab.TabPages(1).ImageIndex = -1
+                End If
+                If _onewaylove And SettingDialog.OneWayLove = True Then
+                    lvItem2.ForeColor = _clOWL
+                End If
+                If _fav Then
+                    lvItem2.ForeColor = _clFav
+                End If
+                If lvItem2.SubItems(8).Text = "False" Then
+                    If _tabs(1).oldestUnreadItem IsNot Nothing Then
+                        If lvItem2.SubItems(5).Text < _tabs(1).oldestUnreadItem.SubItems(5).Text Then _tabs(1).oldestUnreadItem = lvItem2
+                    Else
+                        _tabs(1).oldestUnreadItem = lvItem2
+                    End If
+                End If
+                Reply.Items.Add(lvItem2)
+                If _tabs(1).notify Then nf = True
+                If _tabs(1).soundFile <> "" Then snd = _tabs(1).soundFile '優先度高
+                '_reply = True
+                RepCnt += 1
+            End If
+
             If mv = False Then
                 _tabs(0).allCount += 1
                 If _readed = False And _tabs(0).unreadManage Then
@@ -876,40 +912,6 @@ Public Class TweenMain
                 If snd = "" Then snd = _tabs(0).soundFile
             End If
 
-            If lItem.Reply Or Regex.IsMatch(lItem.Data, "@" + _username + "([^a-zA-Z0-9_]|$)", RegexOptions.IgnoreCase) Then
-                _tabs(1).allCount += 1
-                If _readed = False And _tabs(1).unreadManage Then
-                    lvItem.Font = _fntUnread
-                    lvItem.ForeColor = _clUnread
-                    lvItem.SubItems(8).Text = "False"
-                    'ListTab.TabPages(1).ImageIndex = 0
-                    _tabs(1).unreadCount += 1
-                Else
-                    lvItem.Font = _fntReaded
-                    lvItem.ForeColor = _clReaded
-                    lvItem.SubItems(8).Text = "True"
-                    'ListTab.TabPages(1).ImageIndex = -1
-                End If
-                If _onewaylove And SettingDialog.OneWayLove = True Then
-                    lvItem.ForeColor = _clOWL
-                End If
-                If _fav Then
-                    lvItem.ForeColor = _clFav
-                End If
-                Dim lvItem2 As ListViewItem = lvItem.Clone
-                If lvItem2.SubItems(8).Text = "False" Then
-                    If _tabs(1).oldestUnreadItem IsNot Nothing Then
-                        If lvItem2.SubItems(5).Text < _tabs(1).oldestUnreadItem.SubItems(5).Text Then _tabs(1).oldestUnreadItem = lvItem2
-                    Else
-                        _tabs(1).oldestUnreadItem = lvItem2
-                    End If
-                End If
-                Reply.Items.Add(lvItem2)
-                If _tabs(1).notify Then nf = True
-                If _tabs(1).soundFile <> "" Then snd = _tabs(1).soundFile '優先度高
-                '_reply = True
-                RepCnt += 1
-            End If
 
             nm = ""
             Select Case SettingDialog.NameBalloon
@@ -2427,7 +2429,7 @@ Public Class TweenMain
                             If ts.listCustom.Equals(MyList) = False And ts.tabPage.Text <> "Direct" Then
                                 For Each itm As ListViewItem In ts.listCustom.Items
                                     If MyList.SelectedItems(cnt2).SubItems(5).Text = itm.SubItems(5).Text Then
-                                        If ts.oldestUnreadItem.Equals(itm) Then ts.oldestUnreadItem = Nothing
+                                        If ts.oldestUnreadItem IsNot Nothing AndAlso ts.oldestUnreadItem.Equals(itm) Then ts.oldestUnreadItem = Nothing
                                         If itm.SubItems(8).Text = "False" Then ts.unreadCount -= 1
                                         ts.allCount -= 1
                                         ts.listCustom.Items.Remove(itm)
@@ -2438,7 +2440,7 @@ Public Class TweenMain
                         Next
                         For Each ts As TabStructure In _tabs
                             If ts.listCustom.Equals(MyList) Then
-                                If ts.oldestUnreadItem.Equals(MyList.SelectedItems(cnt2)) Then ts.oldestUnreadItem = Nothing
+                                If ts.oldestUnreadItem IsNot Nothing AndAlso ts.oldestUnreadItem.Equals(MyList.SelectedItems(cnt2)) Then ts.oldestUnreadItem = Nothing
                                 If MyList.SelectedItems(cnt2).SubItems(8).Text = "False" Then ts.unreadCount -= 1
                                 ts.allCount -= 1
                                 Exit For
@@ -2477,7 +2479,7 @@ Public Class TweenMain
                 Else
                     For Each ts As TabStructure In _tabs
                         If ts.listCustom.Equals(MyList) Then
-                            If ts.oldestUnreadItem.Equals(MyList.SelectedItems(cnt2)) Then ts.oldestUnreadItem = Nothing
+                            If ts.oldestUnreadItem IsNot Nothing AndAlso ts.oldestUnreadItem.Equals(MyList.SelectedItems(cnt2)) Then ts.oldestUnreadItem = Nothing
                             If MyList.SelectedItems(cnt2).SubItems(8).Text = "False" Then ts.unreadCount -= 1
                             ts.allCount -= 1
                             Exit For
@@ -3641,11 +3643,11 @@ Public Class TweenMain
                     For i As Integer = 0 To 4
                         If i = 0 Then
                             If wd2 - MyList.SmallImageList.ImageSize.Width > 0 Then
-                                Dim sRct As New Rectangle(x + 1 + MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Y + 1, wd2 - MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Height - 2)
+                                Dim sRct As New Rectangle(x + 1 + MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Y, wd2 - MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Height - 3)
                                 e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
                             End If
                         Else
-                            Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y + 1, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 2)
+                            Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 3)
                             e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
                         End If
                     Next
@@ -3663,11 +3665,11 @@ Public Class TweenMain
                     For i As Integer = 0 To 4
                         If i = 0 Then
                             If wd2 - MyList.SmallImageList.ImageSize.Width > 0 Then
-                                Dim sRct As New Rectangle(x + 1 + MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Y + 1, wd2 - MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Height - 2)
+                                Dim sRct As New Rectangle(x + 1 + MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Y, wd2 - MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Height - 3)
                                 e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
                             End If
                         Else
-                            Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y + 1, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 2)
+                            Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 3)
                             e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
                         End If
                         'Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y + 1, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 2)
@@ -3698,8 +3700,8 @@ Public Class TweenMain
                     brs = New SolidBrush(Color.FromKnownColor(KnownColor.HighlightText))
 
                     If wd2 - _iconSz - 5 > 0 Then
-                        Dim sRct As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y + 1, wd2 - _iconSz - 5, e.Item.Font.Height)
-                        Dim sRct2 As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y + 1 + e.Item.Font.Height, wd2 - _iconSz - 5, _iconSz - 2 - e.Item.Font.Height)
+                        Dim sRct As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y, wd2 - _iconSz - 5, e.Item.Font.Height)
+                        Dim sRct2 As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y + e.Item.Font.Height, wd2 - _iconSz - 5, _iconSz - e.Item.Font.Height)
                         Dim fnt As New Font(e.Item.Font, FontStyle.Bold)
                         e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text, fnt, brs, sRct, sf)
                         e.Graphics.DrawString(e.Item.SubItems(2).Text, e.Item.Font, brs, sRct2, sf)
@@ -3713,8 +3715,8 @@ Public Class TweenMain
                     End If
                     brs = New SolidBrush(e.Item.ForeColor)
                     If wd2 - _iconSz - 5 > 0 Then
-                        Dim sRct As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y + 1, wd2 - _iconSz - 5, e.Item.Font.Height)
-                        Dim sRct2 As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y + 1 + e.Item.Font.Height, wd2 - _iconSz - 5, _iconSz - 2 - e.Item.Font.Height)
+                        Dim sRct As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y, wd2 - _iconSz - 5, e.Item.Font.Height)
+                        Dim sRct2 As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y + e.Item.Font.Height, wd2 - _iconSz - 5, _iconSz - e.Item.Font.Height)
                         Dim fnt As New Font(e.Item.Font, FontStyle.Bold)
                         e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text, fnt, brs, sRct, sf)
                         e.Graphics.DrawString(e.Item.SubItems(2).Text, e.Item.Font, brs, sRct2, sf)
