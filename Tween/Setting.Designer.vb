@@ -1022,7 +1022,6 @@ Partial Class Setting
         'Label41
         '
         Me.Label41.AutoSize = True
-        Me.Label41.Enabled = False
         Me.Label41.Location = New System.Drawing.Point(12, 515)
         Me.Label41.Name = "Label41"
         Me.Label41.Size = New System.Drawing.Size(76, 12)
