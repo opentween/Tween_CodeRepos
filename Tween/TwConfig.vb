@@ -1390,6 +1390,16 @@ Public NotInheritable Class ListSection
         End Set
     End Property
 
+    <ConfigurationProperty("minimizetotray", DefaultValue:=False)> _
+    Public Property MinimizeToTray() As Boolean
+        Get
+            Return CBool(Me("minimizetotray"))
+        End Get
+        Set(ByVal value As Boolean)
+            Me("minimizetotray") = value
+        End Set
+    End Property
+
     <ConfigurationProperty("displatestpost", DefaultValue:=DispTitleEnum.Post)> _
     Public Property DispLatestPost() As DispTitleEnum
         Get

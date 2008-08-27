@@ -298,6 +298,7 @@ Public Class TweenMain
         SettingDialog.CheckReply = _section.CheckReply
         SettingDialog.UseRecommendStatus = _section.UseRecommendStatus
         SettingDialog.DispUsername = _section.DispUsername
+        SettingDialog.MinimizeToTray = _section.MinimizeToTray
         SettingDialog.DispLatestPost = _section.DispLatestPost
         SettingDialog.SortOrderLock = _section.SortOrderLock
 
@@ -5018,6 +5019,7 @@ RETRY:
             _section.CheckReply = SettingDialog.CheckReply
             _section.UseRecommendStatus = SettingDialog.UseRecommendStatus
             _section.DispUsername = SettingDialog.DispUsername
+            _section.MinimizeToTray = SettingDialog.MinimizeToTray
             _section.DispLatestPost = SettingDialog.DispLatestPost
             _section.SortOrderLock = SettingDialog.SortOrderLock
 
@@ -6231,6 +6233,12 @@ RETRY:
         _reply_to_id = 0
         _reply_to_name = Nothing
 
+    End Sub
+
+    Private Sub TweenMain_Resize(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Resize
+        If SettingDialog.MinimizeToTray = True And WindowState = FormWindowState.Minimized Then
+            Me.Visible = False
+        End If
     End Sub
 End Class
 

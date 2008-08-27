@@ -38,6 +38,7 @@
     Private _MyDispUsername As Boolean
     Private _MyDispLatestPost As DispTitleEnum
     Private _MySortOrderLock As Boolean
+    Private _MyMinimizeToTray As Boolean
 
     Public Enum LogUnitEnum
         Minute
@@ -147,6 +148,7 @@
             _MyCheckReply = CheckboxReply.Checked
             _MyUseRecommendStatus = CheckUseRecommendStatus.Checked
             _MyDispUsername = CheckDispUsername.Checked
+            _MyMinimizeToTray = CheckMinimizeToTray.Checked
             Select Case ComboDispTitle.SelectedIndex
                 Case 0  'None
                     _MyDispLatestPost = DispTitleEnum.None
@@ -246,6 +248,7 @@
         CheckboxReply.Checked = _MyCheckReply
         CheckUseRecommendStatus.Checked = _MyUseRecommendStatus
         CheckDispUsername.Checked = _MyDispUsername
+        CheckMinimizeToTray.Checked = _MyMinimizeToTray
         Select Case _MyDispLatestPost
             Case DispTitleEnum.None
                 ComboDispTitle.SelectedIndex = 0
@@ -818,6 +821,14 @@
         End Get
         Set(ByVal value As Boolean)
             _MyDispUsername = value
+        End Set
+    End Property
+    Public Property MinimizeToTray() As Boolean
+        Get
+            Return _MyMinimizeToTray
+        End Get
+        Set(ByVal value As Boolean)
+            _MyMinimizeToTray = value
         End Set
     End Property
     Public Property DispLatestPost() As DispTitleEnum
