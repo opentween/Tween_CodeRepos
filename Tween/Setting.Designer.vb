@@ -115,7 +115,7 @@ Partial Class Setting
         Me.Label39 = New System.Windows.Forms.Label
         Me.CheckBox6 = New System.Windows.Forms.CheckBox
         Me.Label40 = New System.Windows.Forms.Label
-        Me.CheckBox7 = New System.Windows.Forms.CheckBox
+        Me.CheckCloseToExit = New System.Windows.Forms.CheckBox
         Me.Label41 = New System.Windows.Forms.Label
         Me.CheckMinimizeToTray = New System.Windows.Forms.CheckBox
         Me.Label42 = New System.Windows.Forms.Label
@@ -1003,23 +1003,21 @@ Partial Class Setting
         'Label40
         '
         Me.Label40.AutoSize = True
-        Me.Label40.Enabled = False
         Me.Label40.Location = New System.Drawing.Point(12, 493)
         Me.Label40.Name = "Label40"
         Me.Label40.Size = New System.Drawing.Size(100, 12)
         Me.Label40.TabIndex = 41
         Me.Label40.Text = "×ボタンを押したとき"
         '
-        'CheckBox7
+        'CheckCloseToExit
         '
-        Me.CheckBox7.AutoSize = True
-        Me.CheckBox7.Enabled = False
-        Me.CheckBox7.Location = New System.Drawing.Point(181, 492)
-        Me.CheckBox7.Name = "CheckBox7"
-        Me.CheckBox7.Size = New System.Drawing.Size(67, 16)
-        Me.CheckBox7.TabIndex = 42
-        Me.CheckBox7.Text = "終了する"
-        Me.CheckBox7.UseVisualStyleBackColor = True
+        Me.CheckCloseToExit.AutoSize = True
+        Me.CheckCloseToExit.Location = New System.Drawing.Point(181, 492)
+        Me.CheckCloseToExit.Name = "CheckCloseToExit"
+        Me.CheckCloseToExit.Size = New System.Drawing.Size(67, 16)
+        Me.CheckCloseToExit.TabIndex = 42
+        Me.CheckCloseToExit.Text = "終了する"
+        Me.CheckCloseToExit.UseVisualStyleBackColor = True
         '
         'Label41
         '
@@ -1177,7 +1175,7 @@ Partial Class Setting
         Me.Controls.Add(Me.Label41)
         Me.Controls.Add(Me.CheckMinimizeToTray)
         Me.Controls.Add(Me.Label40)
-        Me.Controls.Add(Me.CheckBox7)
+        Me.Controls.Add(Me.CheckCloseToExit)
         Me.Controls.Add(Me.Label39)
         Me.Controls.Add(Me.CheckBox6)
         Me.Controls.Add(Me.Label38)
@@ -1338,7 +1336,7 @@ Partial Class Setting
     Friend WithEvents Label39 As System.Windows.Forms.Label
     Friend WithEvents CheckBox6 As System.Windows.Forms.CheckBox
     Friend WithEvents Label40 As System.Windows.Forms.Label
-    Friend WithEvents CheckBox7 As System.Windows.Forms.CheckBox
+    Friend WithEvents CheckCloseToExit As System.Windows.Forms.CheckBox
     Friend WithEvents Label41 As System.Windows.Forms.Label
     Friend WithEvents CheckMinimizeToTray As System.Windows.Forms.CheckBox
     Friend WithEvents Label42 As System.Windows.Forms.Label

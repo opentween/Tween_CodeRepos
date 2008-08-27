@@ -298,6 +298,7 @@ Public Class TweenMain
         SettingDialog.CheckReply = _section.CheckReply
         SettingDialog.UseRecommendStatus = _section.UseRecommendStatus
         SettingDialog.DispUsername = _section.DispUsername
+        SettingDialog.CloseToExit = _section.CloseToExit
         SettingDialog.MinimizeToTray = _section.MinimizeToTray
         SettingDialog.DispLatestPost = _section.DispLatestPost
         SettingDialog.SortOrderLock = _section.SortOrderLock
@@ -1379,7 +1380,7 @@ Public Class TweenMain
     End Sub
 
     Private Sub Tween_FormClosing(ByVal sender As System.Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles MyBase.FormClosing
-        If e.CloseReason = CloseReason.UserClosing Then
+        If SettingDialog.CloseToExit = False AndAlso e.CloseReason = CloseReason.UserClosing Then
             e.Cancel = True
             Me.Visible = False
 
@@ -5020,6 +5021,7 @@ RETRY:
             _section.UseRecommendStatus = SettingDialog.UseRecommendStatus
             _section.DispUsername = SettingDialog.DispUsername
             _section.MinimizeToTray = SettingDialog.MinimizeToTray
+            _section.CloseToExit = SettingDialog.CloseToExit
             _section.DispLatestPost = SettingDialog.DispLatestPost
             _section.SortOrderLock = SettingDialog.SortOrderLock
 
