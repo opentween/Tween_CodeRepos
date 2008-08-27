@@ -1400,6 +1400,16 @@ Public NotInheritable Class ListSection
         End Set
     End Property
 
+    <ConfigurationProperty("closetoexit", DefaultValue:=False)> _
+Public Property CloseToExit() As Boolean
+        Get
+            Return CBool(Me("closetoexit"))
+        End Get
+        Set(ByVal value As Boolean)
+            Me("closetoexit") = value
+        End Set
+    End Property
+
     <ConfigurationProperty("displatestpost", DefaultValue:=DispTitleEnum.Post)> _
     Public Property DispLatestPost() As DispTitleEnum
         Get

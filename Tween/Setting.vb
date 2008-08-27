@@ -39,6 +39,7 @@ Public Class Setting
     Private _MyDispLatestPost As DispTitleEnum
     Private _MySortOrderLock As Boolean
     Private _MyMinimizeToTray As Boolean
+    Private _MyCloseToExit As Boolean
 
     Public Enum LogUnitEnum
         Minute
@@ -148,6 +149,7 @@ Public Class Setting
             _MyCheckReply = CheckboxReply.Checked
             _MyUseRecommendStatus = CheckUseRecommendStatus.Checked
             _MyDispUsername = CheckDispUsername.Checked
+            _MyCloseToExit = CheckCloseToExit.Checked
             _MyMinimizeToTray = CheckMinimizeToTray.Checked
             Select Case ComboDispTitle.SelectedIndex
                 Case 0  'None
@@ -248,6 +250,7 @@ Public Class Setting
         CheckboxReply.Checked = _MyCheckReply
         CheckUseRecommendStatus.Checked = _MyUseRecommendStatus
         CheckDispUsername.Checked = _MyDispUsername
+        CheckCloseToExit.Checked = _MyCloseToExit
         CheckMinimizeToTray.Checked = _MyMinimizeToTray
         Select Case _MyDispLatestPost
             Case DispTitleEnum.None
@@ -815,6 +818,7 @@ Public Class Setting
             _MyUseRecommendStatus = value
         End Set
     End Property
+
     Public Property DispUsername() As Boolean
         Get
             Return _MyDispUsername
@@ -823,6 +827,16 @@ Public Class Setting
             _MyDispUsername = value
         End Set
     End Property
+
+    Public Property CloseToExit() As Boolean
+        Get
+            Return _MyCloseToExit
+        End Get
+        Set(ByVal value As Boolean)
+            _MyCloseToExit = value
+        End Set
+    End Property
+
     Public Property MinimizeToTray() As Boolean
         Get
             Return _MyMinimizeToTray
