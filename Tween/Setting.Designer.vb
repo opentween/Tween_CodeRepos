@@ -117,7 +117,7 @@ Partial Class Setting
         Me.Label40 = New System.Windows.Forms.Label
         Me.CheckBox7 = New System.Windows.Forms.CheckBox
         Me.Label41 = New System.Windows.Forms.Label
-        Me.CheckBox8 = New System.Windows.Forms.CheckBox
+        Me.CheckMinimizeToTray = New System.Windows.Forms.CheckBox
         Me.Label42 = New System.Windows.Forms.Label
         Me.CheckUseAPI = New System.Windows.Forms.CheckBox
         Me.HubServerDomain = New System.Windows.Forms.TextBox
@@ -1031,16 +1031,15 @@ Partial Class Setting
         Me.Label41.TabIndex = 43
         Me.Label41.Text = "最小化したとき"
         '
-        'CheckBox8
+        'CheckMinimizeToTray
         '
-        Me.CheckBox8.AutoSize = True
-        Me.CheckBox8.Enabled = False
-        Me.CheckBox8.Location = New System.Drawing.Point(181, 514)
-        Me.CheckBox8.Name = "CheckBox8"
-        Me.CheckBox8.Size = New System.Drawing.Size(90, 16)
-        Me.CheckBox8.TabIndex = 44
-        Me.CheckBox8.Text = "アイコン化する"
-        Me.CheckBox8.UseVisualStyleBackColor = True
+        Me.CheckMinimizeToTray.AutoSize = True
+        Me.CheckMinimizeToTray.Location = New System.Drawing.Point(181, 514)
+        Me.CheckMinimizeToTray.Name = "CheckMinimizeToTray"
+        Me.CheckMinimizeToTray.Size = New System.Drawing.Size(90, 16)
+        Me.CheckMinimizeToTray.TabIndex = 44
+        Me.CheckMinimizeToTray.Text = "アイコン化する"
+        Me.CheckMinimizeToTray.UseVisualStyleBackColor = True
         '
         'Label42
         '
@@ -1176,7 +1175,7 @@ Partial Class Setting
         Me.Controls.Add(Me.Label42)
         Me.Controls.Add(Me.CheckUseAPI)
         Me.Controls.Add(Me.Label41)
-        Me.Controls.Add(Me.CheckBox8)
+        Me.Controls.Add(Me.CheckMinimizeToTray)
         Me.Controls.Add(Me.Label40)
         Me.Controls.Add(Me.CheckBox7)
         Me.Controls.Add(Me.Label39)
@@ -1341,7 +1340,7 @@ Partial Class Setting
     Friend WithEvents Label40 As System.Windows.Forms.Label
     Friend WithEvents CheckBox7 As System.Windows.Forms.CheckBox
     Friend WithEvents Label41 As System.Windows.Forms.Label
-    Friend WithEvents CheckBox8 As System.Windows.Forms.CheckBox
+    Friend WithEvents CheckMinimizeToTray As System.Windows.Forms.CheckBox
     Friend WithEvents Label42 As System.Windows.Forms.Label
     Friend WithEvents CheckUseAPI As System.Windows.Forms.CheckBox
     Friend WithEvents HubServerDomain As System.Windows.Forms.TextBox
