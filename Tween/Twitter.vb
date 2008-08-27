@@ -1215,8 +1215,9 @@ Public Class Twitter
         If _endingFlag Then Return ""
 
         'データ部分の生成
+        Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim resStatus As String = ""
-        Dim resMsg As String = _mySock.GetWebResponce("https://" + _hubServer + _DMDestroyPath + id, resStatus, MySocket.REQ_TYPE.ReqPOST)
+        Dim resMsg As String = _mySock.GetWebResponce("https://" + _hubServer + _DMDestroyPath + id, resStatus, MySocket.REQ_TYPE.ReqPOST, dataStr)
 
         If resMsg.StartsWith("<html>") = False Then
             Return resStatus
