@@ -52,6 +52,9 @@ Partial Class Setting
         Me.OneWayLv = New System.Windows.Forms.CheckBox
         Me.Label16 = New System.Windows.Forms.Label
         Me.GroupBox1 = New System.Windows.Forms.GroupBox
+        Me.Button4 = New System.Windows.Forms.Button
+        Me.Label48 = New System.Windows.Forms.Label
+        Me.Label49 = New System.Windows.Forms.Label
         Me.Button2 = New System.Windows.Forms.Button
         Me.Label13 = New System.Windows.Forms.Label
         Me.Label37 = New System.Windows.Forms.Label
@@ -133,12 +136,9 @@ Partial Class Setting
         Me.TabControl1 = New System.Windows.Forms.TabControl
         Me.TabPage1 = New System.Windows.Forms.TabPage
         Me.TabPage2 = New System.Windows.Forms.TabPage
+        Me.Button3 = New System.Windows.Forms.Button
         Me.TabPage3 = New System.Windows.Forms.TabPage
         Me.TabPage4 = New System.Windows.Forms.TabPage
-        Me.Button3 = New System.Windows.Forms.Button
-        Me.Button4 = New System.Windows.Forms.Button
-        Me.Label48 = New System.Windows.Forms.Label
-        Me.Label49 = New System.Windows.Forms.Label
         Me.GroupBox1.SuspendLayout()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
@@ -450,6 +450,37 @@ Partial Class Setting
         Me.GroupBox1.TabIndex = 49
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "フォント＆色設定"
+        '
+        'Button4
+        '
+        Me.Button4.Enabled = False
+        Me.Button4.Location = New System.Drawing.Point(259, 280)
+        Me.Button4.Name = "Button4"
+        Me.Button4.Size = New System.Drawing.Size(56, 20)
+        Me.Button4.TabIndex = 87
+        Me.Button4.Text = "背景色"
+        Me.Button4.UseVisualStyleBackColor = True
+        '
+        'Label48
+        '
+        Me.Label48.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.Label48.Enabled = False
+        Me.Label48.Location = New System.Drawing.Point(149, 281)
+        Me.Label48.Name = "Label48"
+        Me.Label48.Size = New System.Drawing.Size(104, 19)
+        Me.Label48.TabIndex = 86
+        Me.Label48.Text = "This is sample."
+        Me.Label48.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'Label49
+        '
+        Me.Label49.AutoSize = True
+        Me.Label49.Enabled = False
+        Me.Label49.Location = New System.Drawing.Point(9, 284)
+        Me.Label49.Name = "Label49"
+        Me.Label49.Size = New System.Drawing.Size(102, 12)
+        Me.Label49.TabIndex = 85
+        Me.Label49.Text = "その発言の@先発言"
         '
         'Button2
         '
@@ -795,6 +826,7 @@ Partial Class Setting
         '
         'cmbNameBalloon
         '
+        Me.cmbNameBalloon.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cmbNameBalloon.FormattingEnabled = True
         Me.cmbNameBalloon.Items.AddRange(New Object() {"なし", "ユーザーID", "ニックネーム"})
         Me.cmbNameBalloon.Location = New System.Drawing.Point(178, 6)
@@ -1211,10 +1243,10 @@ Partial Class Setting
         Me.TabPage1.Controls.Add(Me.Label35)
         Me.TabPage1.Controls.Add(Me.StartupReadReply)
         Me.TabPage1.Controls.Add(Me.StartupReadDM)
-        Me.TabPage1.Location = New System.Drawing.Point(4, 21)
+        Me.TabPage1.Location = New System.Drawing.Point(4, 22)
         Me.TabPage1.Name = "TabPage1"
         Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(372, 437)
+        Me.TabPage1.Size = New System.Drawing.Size(372, 436)
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "基本"
         Me.TabPage1.UseVisualStyleBackColor = True
@@ -1248,13 +1280,23 @@ Partial Class Setting
         Me.TabPage2.Controls.Add(Me.Label12)
         Me.TabPage2.Controls.Add(Me.StatusText)
         Me.TabPage2.Controls.Add(Me.CheckUseRecommendStatus)
-        Me.TabPage2.Location = New System.Drawing.Point(4, 21)
+        Me.TabPage2.Location = New System.Drawing.Point(4, 22)
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(372, 437)
+        Me.TabPage2.Size = New System.Drawing.Size(372, 436)
         Me.TabPage2.TabIndex = 1
         Me.TabPage2.Text = "動作"
         Me.TabPage2.UseVisualStyleBackColor = True
+        '
+        'Button3
+        '
+        Me.Button3.Enabled = False
+        Me.Button3.Location = New System.Drawing.Point(301, 239)
+        Me.Button3.Name = "Button3"
+        Me.Button3.Size = New System.Drawing.Size(65, 23)
+        Me.Button3.TabIndex = 67
+        Me.Button3.Text = "参照"
+        Me.Button3.UseVisualStyleBackColor = True
         '
         'TabPage3
         '
@@ -1274,10 +1316,10 @@ Partial Class Setting
         Me.TabPage3.Controls.Add(Me.IconSize)
         Me.TabPage3.Controls.Add(Me.CheckBox3)
         Me.TabPage3.Controls.Add(Me.TextBox3)
-        Me.TabPage3.Location = New System.Drawing.Point(4, 21)
+        Me.TabPage3.Location = New System.Drawing.Point(4, 22)
         Me.TabPage3.Name = "TabPage3"
         Me.TabPage3.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage3.Size = New System.Drawing.Size(372, 437)
+        Me.TabPage3.Size = New System.Drawing.Size(372, 436)
         Me.TabPage3.TabIndex = 2
         Me.TabPage3.Text = "表示"
         Me.TabPage3.UseVisualStyleBackColor = True
@@ -1285,54 +1327,13 @@ Partial Class Setting
         'TabPage4
         '
         Me.TabPage4.Controls.Add(Me.GroupBox1)
-        Me.TabPage4.Location = New System.Drawing.Point(4, 21)
+        Me.TabPage4.Location = New System.Drawing.Point(4, 22)
         Me.TabPage4.Name = "TabPage4"
         Me.TabPage4.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage4.Size = New System.Drawing.Size(372, 437)
+        Me.TabPage4.Size = New System.Drawing.Size(372, 436)
         Me.TabPage4.TabIndex = 3
         Me.TabPage4.Text = "フォント＆色"
         Me.TabPage4.UseVisualStyleBackColor = True
-        '
-        'Button3
-        '
-        Me.Button3.Enabled = False
-        Me.Button3.Location = New System.Drawing.Point(301, 239)
-        Me.Button3.Name = "Button3"
-        Me.Button3.Size = New System.Drawing.Size(65, 23)
-        Me.Button3.TabIndex = 67
-        Me.Button3.Text = "参照"
-        Me.Button3.UseVisualStyleBackColor = True
-        '
-        'Button4
-        '
-        Me.Button4.Enabled = False
-        Me.Button4.Location = New System.Drawing.Point(259, 280)
-        Me.Button4.Name = "Button4"
-        Me.Button4.Size = New System.Drawing.Size(56, 20)
-        Me.Button4.TabIndex = 87
-        Me.Button4.Text = "背景色"
-        Me.Button4.UseVisualStyleBackColor = True
-        '
-        'Label48
-        '
-        Me.Label48.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.Label48.Enabled = False
-        Me.Label48.Location = New System.Drawing.Point(149, 281)
-        Me.Label48.Name = "Label48"
-        Me.Label48.Size = New System.Drawing.Size(104, 19)
-        Me.Label48.TabIndex = 86
-        Me.Label48.Text = "This is sample."
-        Me.Label48.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'Label49
-        '
-        Me.Label49.AutoSize = True
-        Me.Label49.Enabled = False
-        Me.Label49.Location = New System.Drawing.Point(9, 284)
-        Me.Label49.Name = "Label49"
-        Me.Label49.Size = New System.Drawing.Size(102, 12)
-        Me.Label49.TabIndex = 85
-        Me.Label49.Text = "その発言の@先発言"
         '
         'Setting
         '
