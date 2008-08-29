@@ -1,4 +1,5 @@
-﻿Public Class Setting
+﻿
+Public Class Setting
     Private _MyuserID As String
     Private _Mypassword As String
     Private _MytimelinePeriod As Integer
@@ -896,4 +897,17 @@
         End Set
     End Property
 
+    Private Sub Button3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button3.Click
+        Dim filedlg As New OpenFileDialog()
+
+        filedlg.Filter = "実行形式ファイル(*.exe)|*.exe|すべてのファイル(*.*)|*.*"
+        filedlg.FilterIndex = 1
+        filedlg.Title = "ブラウザを指定してください"
+        filedlg.RestoreDirectory = True
+
+        If filedlg.ShowDialog() = Windows.Forms.DialogResult.OK Then
+            BrowserPathText.Text = filedlg.FileName
+
+        End If
+    End Sub
 End Class

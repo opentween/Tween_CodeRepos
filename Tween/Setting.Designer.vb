@@ -1290,7 +1290,6 @@ Partial Class Setting
         '
         'Button3
         '
-        Me.Button3.Enabled = False
         Me.Button3.Location = New System.Drawing.Point(301, 239)
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(65, 23)
