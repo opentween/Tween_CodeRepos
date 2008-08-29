@@ -274,6 +274,8 @@ Public Class Setting
         'TweenMain.SetMainWindowTitle()
         'TweenMain.SetNotifyIconText()
 
+        TabControl1.SelectedIndex = 0
+
     End Sub
 
     Private Sub TimelinePeriod_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles TimelinePeriod.Validating
@@ -910,4 +912,5 @@ Public Class Setting
 
         End If
     End Sub
+
 End Class
