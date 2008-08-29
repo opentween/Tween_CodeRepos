@@ -143,9 +143,10 @@ Public Class Twitter
         Public Id As String
         Public Fav As Boolean
         Public OrgData As String
-        Public Unread As Boolean
+        Public Readed As Boolean
         Public Reply As Boolean
         Public Protect As Boolean
+        Public OWL As Boolean
     End Structure
 
     Public Enum GetTypes
