@@ -3506,7 +3506,8 @@ Public Class TweenMain
 
         Try
             If SettingDialog.BrowserPath <> "" Then
-                System.Diagnostics.Process.Start(SettingDialog.BrowserPath, myPath)
+                'System.Diagnostics.Process.Start(SettingDialog.BrowserPath, myPath)
+                Shell(SettingDialog.BrowserPath & " " & myPath)
             Else
                 System.Diagnostics.Process.Start(myPath)
             End If
@@ -6032,7 +6033,7 @@ RETRY:
             lItem.PDate = CDate(itm.SubItems(3).Text)
             lItem.Protect = itm.SubItems(0).Text.Contains("Ю")
             lItem.Reply = CBool(itm.SubItems(11).Text)
-            lItem.Unread = IIf(itm.SubItems(8).Text = "True", "False", "True")
+            lItem.Readed = IIf(itm.SubItems(8).Text = "True", True, False)
             itm.SubItems(0).Text = itm.SubItems(0).Text.Replace("♪", "")
 
             For Each ts As TabStructure In _tabs
