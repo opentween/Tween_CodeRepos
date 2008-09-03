@@ -6229,7 +6229,7 @@ RETRY:
 
         m = id.Matches(StatusText)
 
-        If m IsNot Nothing AndAlso m.Count = 1 AndAlso m.Item(0).Value = "@" + _reply_to_name Then
+        If m IsNot Nothing AndAlso m.Count = 1 AndAlso m.Item(0).Value = "@" + _reply_to_name AndAlso StatusText.StartsWith(". ") = False Then
             Exit Sub
         End If
 
