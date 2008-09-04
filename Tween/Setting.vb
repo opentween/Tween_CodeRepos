@@ -120,6 +120,7 @@ Public Class Setting
             End Select
             _MyStatusText = StatusText.Text
             _MyPlaySound = PlaySnd.Checked
+            TweenMain.PlaySoundMenuItem.Checked = _MyPlaySound
             _MyUnreadManage = UReadMng.Checked
             _MyOneWayLove = OneWayLv.Checked
 
@@ -220,6 +221,7 @@ Public Class Setting
             StartupReaded.Enabled = True
         End If
         PlaySnd.Checked = _MyPlaySound
+        TweenMain.PlaySoundMenuItem.Checked = _MyPlaySound
         OneWayLv.Checked = _MyOneWayLove
 
         lblUnRead.Font = _fntUnread
@@ -912,5 +914,4 @@ Public Class Setting
 
         End If
     End Sub
-
 End Class
