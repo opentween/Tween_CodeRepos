@@ -266,6 +266,7 @@ Public Class TweenMain
         SettingDialog.UnreadManage = _section.UnreadManage
         'サウンド再生（タブ別設定より優先）
         SettingDialog.PlaySound = _section.PlaySound
+        PlaySoundMenuItem.Checked = SettingDialog.PlaySound
         '片思い表示。Trueなら片思い表示する
         SettingDialog.OneWayLove = _section.OneWayLove
         'フォント＆文字色＆背景色
@@ -6243,6 +6244,13 @@ RETRY:
             Me.Visible = False
         End If
     End Sub
+    Private Sub PlaySoundMenuItem_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PlaySoundMenuItem.CheckedChanged
+        If PlaySoundMenuItem.Checked = True Then
+            SettingDialog.PlaySound = True
+        Else
+            SettingDialog.PlaySound = False
+        End If
+    End Sub
 End Class
 
 Public Class TabStructure
@@ -6415,5 +6423,4 @@ Public Class ListViewItemComparer
         '結果を返す
         Return result
     End Function
-
 End Class
