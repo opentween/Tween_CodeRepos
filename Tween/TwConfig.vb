@@ -741,29 +741,29 @@ Public NotInheritable Class ListSection
     '    Day
     'End Enum
 
-    Public Enum IconSizes
-        IconNone = 0
-        Icon16 = 1
-        Icon24 = 2
-        Icon48 = 3
-        Icon48_2 = 4
-    End Enum
+    'Public Enum IconSizes
+    '    IconNone = 0
+    '    Icon16 = 1
+    '    Icon24 = 2
+    '    Icon48 = 3
+    '    Icon48_2 = 4
+    'End Enum
 
-    Public Enum NameBalloonEnum
-        None
-        UserID
-        NickName
-    End Enum
+    'Public Enum NameBalloonEnum
+    '    None
+    '    UserID
+    '    NickName
+    'End Enum
 
-    Public Enum DispTitleEnum
-        None
-        Ver
-        Post
-        UnreadRepCount
-        UnreadAllCount
-        UnreadAllRepCount
-        UnreadCountAllCount
-    End Enum
+    'Public Enum DispTitleEnum
+    '    None
+    '    Ver
+    '    Post
+    '    UnreadRepCount
+    '    UnreadAllCount
+    '    UnreadAllRepCount
+    '    UnreadCountAllCount
+    'End Enum
 
     <ConfigurationProperty("listelement", IsDefaultCollection:=False)> _
     Public Property ListElement() As ListElementCollection
