@@ -4309,14 +4309,14 @@ RETRY:
         Dim resStatus As String = ""
         Dim strVer As String
 
-        retMsg = _mySock.GetWebResponce("http://www.asahi-net.or.jp/~ne5h-ykmz/version2.txt?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus)
+        retMsg = _mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/version2.txt?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus)
         If retMsg.Length > 0 Then
             strVer = retMsg.Substring(0, 4)
             If strVer.CompareTo(My.Application.Info.Version.ToString.Replace(".", "")) > 0 Then
                 If MessageBox.Show("新しいバージョン " + strVer + " が公開されています。更新しますか？", "Tween更新確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
-                    retMsg = _mySock.GetWebResponce("http://www.asahi-net.or.jp/~ne5h-ykmz/Tween" + strVer + ".gz", resStatus, MySocket.REQ_TYPE.ReqGETFile)
+                    retMsg = _mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/Tween" + strVer + ".gz", resStatus, MySocket.REQ_TYPE.ReqGETFile)
                     If retMsg.Length = 0 Then
-                        retMsg = _mySock.GetWebResponce("http://www.asahi-net.or.jp/~ne5h-ykmz/TweenUp.gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileUp)
+                        retMsg = _mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/TweenUp.gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileUp)
                         If retMsg.Length = 0 Then
                             System.Diagnostics.Process.Start(My.Application.Info.DirectoryPath + "\TweenUp.exe")
                             Application.Exit()
