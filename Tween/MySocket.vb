@@ -35,11 +35,12 @@ Public Class MySocket
         End If
     End Sub
 
-    Public Function GetWebResponce(ByVal url As String, _
+    Public Function GetWebResponse(ByVal url As String, _
             ByRef resStatus As String, _
             Optional ByVal reqType As REQ_TYPE = REQ_TYPE.ReqGET, _
             Optional ByVal data As String = "", _
-            Optional ByVal referer As String = "") As Object
+            Optional ByVal referer As String = "", _
+            Optional ByVal timeout As Integer = 100000) As Object
         Dim webReq As HttpWebRequest
         Dim dataB As Byte()
         Dim strm As Stream
@@ -48,7 +49,7 @@ Public Class MySocket
         Try
             webReq = _
                 CType(WebRequest.Create(url), HttpWebRequest)
-            'webReq.Timeout = 20000
+            webReq.Timeout = timeout
             If reqType <> REQ_TYPE.ReqPOSTAPI Then
                 webReq.CookieContainer = _cCon
                 webReq.AutomaticDecompression = DecompressionMethods.Deflate Or DecompressionMethods.GZip
@@ -66,7 +67,7 @@ Public Class MySocket
                reqType = REQ_TYPE.ReqPOSTEncodeProtoVer1 Or reqType = REQ_TYPE.ReqPOSTEncodeProtoVer2 Or _
                reqType = REQ_TYPE.ReqPOSTAPI Then
                 webReq.Method = "POST"
-                'webReq.Timeout = 100000
+                webReq.Timeout = timeout
                 dataB = Encoding.ASCII.GetBytes(data)
                 webReq.ContentLength = dataB.Length
                 Select Case reqType
