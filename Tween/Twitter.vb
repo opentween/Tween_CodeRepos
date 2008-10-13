@@ -1369,7 +1369,7 @@ Public Class Twitter
         Dim resStatus As String = ""
         Dim resMsg As String = ""
 
-        resMsg = _mySock.GetWebResponse(wedataUrl, resStatus)
+        resMsg = _mySock.GetWebResponse(wedataUrl, resStatus, timeout:=10 * 1000) 'タイムアウト時間を10秒に設定
         If resMsg.Length = 0 Then Exit Sub
 
         Dim rs As New System.IO.StringReader(resMsg)
