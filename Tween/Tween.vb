@@ -378,7 +378,7 @@ Public Class TweenMain
         clsTw.NextThreshold = SettingDialog.NextPageThreshold   '次頁取得閾値
         clsTw.NextPages = SettingDialog.NextPagesInt    '閾値オーバー時の読み込みページ数（未使用）
         _iconCol = False
-        Select Case SettingDialog.IconSz    'リストのアイコンサイズ（未使用）
+        Select Case SettingDialog.IconSz
             Case IconSizes.IconNone
                 _iconSz = 0
             Case IconSizes.Icon16
@@ -391,6 +391,11 @@ Public Class TweenMain
                 _iconSz = 48
                 _iconCol = True
         End Select
+        If _iconSz = 0 Then
+            clsTw.GetIcon = False
+        Else
+            clsTw.GetIcon = True
+        End If
         clsTwPost.UseAPI = SettingDialog.UseAPI
         clsTw.HubServer = SettingDialog.HubServer
         clsTwPost.HubServer = SettingDialog.HubServer

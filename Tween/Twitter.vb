@@ -23,6 +23,8 @@ Public Class Twitter
 
     Private _hubServer As String
 
+    Private _getIcon As Boolean
+
     Private Const _baseUrlStr As String = "twitter.com"
     Private Const _loginPath As String = "/sessions"
     Private Const _homePath As String = "/home"
@@ -1030,6 +1032,7 @@ Public Class Twitter
 
     Private Sub GetIconImage(ByVal pathUrl As String, ByVal imgKeys As Collections.Specialized.StringCollection, ByVal imgs As ImageList)
         If _endingFlag Then Exit Sub
+        If _getIcon = False Then Exit Sub
 
         'Dim pathUrlSmall As String = pathUrl.Replace("_normal.", "_mini.")
         Dim resStatus As String = ""
@@ -1534,4 +1537,10 @@ Public Class Twitter
         rs.Close()
 
     End Sub
+
+    Public WriteOnly Property GetIcon() As Boolean
+        Set(ByVal value As Boolean)
+            _getIcon = value
+        End Set
+    End Property
 End Class
