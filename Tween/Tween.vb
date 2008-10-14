@@ -378,7 +378,7 @@ Public Class TweenMain
         clsTw.NextThreshold = SettingDialog.NextPageThreshold   '次頁取得閾値
         clsTw.NextPages = SettingDialog.NextPagesInt    '閾値オーバー時の読み込みページ数（未使用）
         _iconCol = False
-        Select Case SettingDialog.IconSz
+        Select Case SettingDialog.IconSz    'リストのアイコンサイズ（未使用）
             Case IconSizes.IconNone
                 _iconSz = 0
             Case IconSizes.Icon16
@@ -391,11 +391,6 @@ Public Class TweenMain
                 _iconSz = 48
                 _iconCol = True
         End Select
-        If _iconSz = 0 Then
-            clsTw.GetIcon = False
-        Else
-            clsTw.GetIcon = True
-        End If
         clsTwPost.UseAPI = SettingDialog.UseAPI
         clsTw.HubServer = SettingDialog.HubServer
         clsTwPost.HubServer = SettingDialog.HubServer
@@ -1248,9 +1243,9 @@ Public Class TweenMain
 
         For cnt As Integer = fromIndex To toIndex
             Dim cl As Color
-            If myList.Items(cnt).SubItems(4).Text = name Then
+            If myList.Items(cnt).SubItems(4).Text.Equals(name, StringComparison.CurrentCultureIgnoreCase) Then
                 '発言者
-                If name = _username Then
+                If String.Equals(name, _username, StringComparison.CurrentCultureIgnoreCase) Then
                     '自分=発言者
                     cl = _clSelf
                 Else
@@ -1259,7 +1254,7 @@ Public Class TweenMain
                 End If
             Else
                 'その他の人
-                If myList.Items(cnt).SubItems(4).Text <> _username Then
+                If myList.Items(cnt).SubItems(4).Text.Equals(_username, StringComparison.CurrentCultureIgnoreCase) = False Then
                     '自分以外
                     If myList.Items(cnt).SubItems(11).Text = "False" And Regex.IsMatch(myList.Items(cnt).SubItems(2).Text, "@" + _username + "([^a-zA-Z0-9_]|$)") = False Then
                         '通常発言
