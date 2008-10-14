@@ -24,6 +24,8 @@ Public Class Twitter
     Private _hubServer As String
 
     Private _getIcon As Boolean
+    Private _tinyUrlResolve As Boolean
+    Private _dmCount As Integer
 
     Private Const _baseUrlStr As String = "twitter.com"
     Private Const _loginPath As String = "/sessions"
@@ -89,6 +91,9 @@ Public Class Twitter
     Private _isReplyTo As String = "<"
     Private _parseProtectMsg1 As String = "."" />"
     Private _parseProtectMsg2 As String = "<span class=""meta entry-meta"">"
+    'テスト実装：HomeのDM数が変わったときに取得
+    Private _parseDMCount1 As String = "<a href=""/direct_messages"" id=""direct_messages_tab""><span id=""message_count"" class=""stat_count"">"
+    Private _parseDMCount2 As String = "</span>"
 
     Private _endingFlag As Boolean
     Private _useAPI As Boolean
@@ -194,7 +199,7 @@ Public Class Twitter
         Return ""
     End Function
 
-    Public Function GetTimeline(ByVal tLine As List(Of MyListItem), ByVal page As Integer, ByVal initial As Boolean, ByRef endPage As Integer, ByVal gType As GetTypes, ByVal imgKeys As Collections.Specialized.StringCollection, ByVal imgs As ImageList) As String
+    Public Function GetTimeline(ByVal tLine As List(Of MyListItem), ByVal page As Integer, ByVal initial As Boolean, ByRef endPage As Integer, ByVal gType As GetTypes, ByVal imgKeys As Collections.Specialized.StringCollection, ByVal imgs As ImageList, ByRef getDM As Boolean) As String
         If _endingFlag Then Return ""
 
         Dim retMsg As String = ""
@@ -422,7 +427,7 @@ Public Class Twitter
                                 Else
                                     'pos2 = strPost.IndexOf("<span class=""meta entry-meta"">", pos1)
                                     pos2 = strPost.IndexOf(_parseProtectMsg2, pos1)
-                                    orgData = strPost.Substring(pos1 + _parseProtectMsg1.length, pos2 - pos1 - _parseProtectMsg1.length).Trim()
+                                    orgData = strPost.Substring(pos1 + _parseProtectMsg1.Length, pos2 - pos1 - _parseProtectMsg1.Length).Trim()
                                 End If
                             End If
                         Catch ex As Exception
@@ -444,28 +449,31 @@ Public Class Twitter
                     Dim posl2 As Integer = 0
                     Dim posl3 As Integer
 
-                    Do While True
-                        If orgData.IndexOf("<a href=""http://tinyurl.com/", posl2) > -1 Then
-                            Dim urlStr As String
-                            Try
-                                posl1 = orgData.IndexOf("<a href=""http://tinyurl.com/", posl2)
-                                posl1 = orgData.IndexOf("http://tinyurl.com/", posl1)
-                                posl2 = orgData.IndexOf("""", posl1)
-                                urlStr = orgData.Substring(posl1, posl2 - posl1)
-                            Catch ex As Exception
-                                _signed = False
-                                Return "GetTimeline -> Err: Can't get tinyurl."
-                            End Try
-                            Dim Response As String = ""
-                            Dim retUrlStr As String = ""
-                            retUrlStr = _mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo)
-                            If retUrlStr.Length > 0 Then
-                                orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
+                    If _tinyUrlResolve Then
+                        Do While True
+                            If orgData.IndexOf("<a href=""http://tinyurl.com/", posl2) > -1 Then
+                                Dim urlStr As String
+                                Try
+                                    posl1 = orgData.IndexOf("<a href=""http://tinyurl.com/", posl2)
+                                    posl1 = orgData.IndexOf("http://tinyurl.com/", posl1)
+                                    posl2 = orgData.IndexOf("""", posl1)
+                                    urlStr = orgData.Substring(posl1, posl2 - posl1)
+                                Catch ex As Exception
+                                    _signed = False
+                                    Return "GetTimeline -> Err: Can't get tinyurl."
+                                End Try
+                                Dim Response As String = ""
+                                Dim retUrlStr As String = ""
+                                retUrlStr = _mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo)
+                                If retUrlStr.Length > 0 Then
+                                    orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
+                                End If
+                            Else
+                                Exit Do
                             End If
-                        Else
-                            Exit Do
-                        End If
-                    Loop
+                        Loop
+
+                    End If
 
                     lItem.OrgData = orgData
                     lItem.OrgData = lItem.OrgData.Replace("<a href=""/", "<a href=""https://twitter.com/")
@@ -579,6 +587,23 @@ Public Class Twitter
                     'links.Add(lItem.Name + "_" + lItem.Id, LinkCol)
                     links.Add(lItem.Id)
                     tLine.Add(lItem)
+                End If
+
+                'テスト実装：DMカウント取得
+                getDM = False
+                If intCnt = posts.Length And gType = GetTypes.GET_TIMELINE And page = 1 Then
+                    pos1 = strPost.IndexOf(_parseDMCount1, pos2)
+                    If pos1 > -1 Then
+                        Try
+                            pos2 = strPost.IndexOf(_parseDMCount2, pos1 + _parseDMCount1.Length)
+                            Dim dmCnt As Integer = Integer.Parse(strPost.Substring(pos1 + _parseDMCount1.Length, pos2 - pos1 - _parseDMCount1.Length))
+                            If dmCnt > _dmCount Then
+                                _dmCount = dmCnt
+                                getDM = True
+                            End If
+                        Catch ex As Exception
+                        End Try
+                    End If
                 End If
             End If
         Next
@@ -795,28 +820,31 @@ Public Class Twitter
                     Dim posl1 As Integer
                     Dim posl2 As Integer = 0
                     Dim posl3 As Integer
-                    Try
-                        Do While True
-                            If orgData.IndexOf("<a href=""http://tinyurl.com/", posl2) > -1 Then
-                                Dim urlStr As String
-                                posl1 = orgData.IndexOf("<a href=""http://tinyurl.com/", posl2)
-                                posl1 = orgData.IndexOf("http://tinyurl.com/", posl1)
-                                posl2 = orgData.IndexOf("""", posl1)
-                                urlStr = orgData.Substring(posl1, posl2 - posl1)
-                                Dim Response As String = ""
-                                Dim retUrlStr As String = ""
-                                retUrlStr = _mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo)
-                                If retUrlStr.Length > 0 Then
-                                    orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
+
+                    If _tinyUrlResolve Then
+                        Try
+                            Do While True
+                                If orgData.IndexOf("<a href=""http://tinyurl.com/", posl2) > -1 Then
+                                    Dim urlStr As String
+                                    posl1 = orgData.IndexOf("<a href=""http://tinyurl.com/", posl2)
+                                    posl1 = orgData.IndexOf("http://tinyurl.com/", posl1)
+                                    posl2 = orgData.IndexOf("""", posl1)
+                                    urlStr = orgData.Substring(posl1, posl2 - posl1)
+                                    Dim Response As String = ""
+                                    Dim retUrlStr As String = ""
+                                    retUrlStr = _mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo)
+                                    If retUrlStr.Length > 0 Then
+                                        orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
+                                    End If
+                                Else
+                                    Exit Do
                                 End If
-                            Else
-                                Exit Do
-                            End If
-                        Loop
-                    Catch ex As Exception
-                        _signed = False
-                        Return "GetDirectMessage -> Err: Can't parse tinyurl"
-                    End Try
+                            Loop
+                        Catch ex As Exception
+                            _signed = False
+                            Return "GetDirectMessage -> Err: Can't parse tinyurl"
+                        End Try
+                    End If
 
                     lItem.OrgData = orgData
                     lItem.OrgData = lItem.OrgData.Replace("<a href=""/", "<a href=""https://twitter.com/")
@@ -1543,4 +1571,16 @@ Public Class Twitter
             _getIcon = value
         End Set
     End Property
+
+    Public WriteOnly Property TinyUrlResolve() As Boolean
+        Set(ByVal value As Boolean)
+            _tinyUrlResolve = value
+        End Set
+    End Property
+
+    Public Sub CreateNewSocket()
+        _mySock = Nothing
+        _mySock = New MySocket("UTF-8", Username, Password)
+        _signed = False
+    End Sub
 End Class

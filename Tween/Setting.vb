@@ -41,6 +41,7 @@ Public Class Setting
     Private _MySortOrderLock As Boolean
     Private _MyMinimizeToTray As Boolean
     Private _MyCloseToExit As Boolean
+    Private _MyTinyUrlResolve As Boolean
 
     'Public Enum LogUnitEnum
     '    Minute
@@ -170,6 +171,7 @@ Public Class Setting
                     _MyDispLatestPost = DispTitleEnum.UnreadCountAllCount
             End Select
             _MySortOrderLock = CheckSortOrderLock.Checked
+            _MyTinyUrlResolve = CheckTinyURL.Checked
 
             'TweenMain.SetMainWindowTitle()
             'TweenMain.SetNotifyIconText()
@@ -272,6 +274,7 @@ Public Class Setting
                 ComboDispTitle.SelectedIndex = 6
         End Select
         CheckSortOrderLock.Checked = _MySortOrderLock
+        CheckTinyURL.Checked = _MyTinyUrlResolve
 
         'TweenMain.SetMainWindowTitle()
         'TweenMain.SetNotifyIconText()
@@ -881,6 +884,15 @@ Public Class Setting
         End Get
         Set(ByVal value As String)
             _browserpath = value
+        End Set
+    End Property
+
+    Public Property TinyUrlResolve() As Boolean
+        Get
+            Return _MyTinyUrlResolve
+        End Get
+        Set(ByVal value As Boolean)
+            _MyTinyUrlResolve = value
         End Set
     End Property
 

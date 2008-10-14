@@ -1450,6 +1450,16 @@ Public Property CloseToExit() As Boolean
         End Set
     End Property
 
+    <ConfigurationProperty("tinyurlresolve", DefaultValue:=True)> _
+    Public Property TinyURLResolve() As Boolean
+        Get
+            Return CBool(Me("tinyurlresolve"))
+        End Get
+        Set(ByVal value As Boolean)
+            Me("tinyurlresolve") = value
+        End Set
+    End Property
+
     Private Function EncryptString(ByVal str As String) As String
         '文字列をバイト型配列にする
         Dim bytesIn As Byte() = System.Text.Encoding.UTF8.GetBytes(str)

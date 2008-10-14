@@ -56,6 +56,7 @@ Public Class TweenMain
     Private Const _replyHtml As String = "@<a target=""_self"" href=""https://twitter.com/"
     Private _reply_to_id As Integer     ' リプライ先のステータスID 0の場合はリプライではない 注：複数あてのものはリプライではない
     Private _reply_to_name As String    ' リプライ先ステータスの書き込み者の名前
+    Private _getDM As Boolean
 
     Friend Class Win32Api
         '画面をブリンクするためのWin32API。起動時に10ページ読み取りごとに継続確認メッセージを表示する際の通知強調用
@@ -306,6 +307,7 @@ Public Class TweenMain
         SettingDialog.MinimizeToTray = _section.MinimizeToTray
         SettingDialog.DispLatestPost = _section.DispLatestPost
         SettingDialog.SortOrderLock = _section.SortOrderLock
+        SettingDialog.TinyUrlResolve = _section.TinyURLResolve
 
         'ユーザー名、パスワードが未設定なら設定画面を表示（初回起動時など）
         If _username = "" Or _password = "" Then
@@ -378,7 +380,8 @@ Public Class TweenMain
         clsTw.NextThreshold = SettingDialog.NextPageThreshold   '次頁取得閾値
         clsTw.NextPages = SettingDialog.NextPagesInt    '閾値オーバー時の読み込みページ数（未使用）
         _iconCol = False
-        Select Case SettingDialog.IconSz    'リストのアイコンサイズ（未使用）
+        Select Case SettingDialog.IconSz
+
             Case IconSizes.IconNone
                 _iconSz = 0
             Case IconSizes.Icon16
@@ -391,9 +394,15 @@ Public Class TweenMain
                 _iconSz = 48
                 _iconCol = True
         End Select
+        If _iconSz = 0 Then
+            clsTw.GetIcon = False
+        Else
+            clsTw.GetIcon = True
+        End If
         clsTwPost.UseAPI = SettingDialog.UseAPI
         clsTw.HubServer = SettingDialog.HubServer
         clsTwPost.HubServer = SettingDialog.HubServer
+        clsTw.TinyUrlResolve = SettingDialog.TinyUrlResolve
 
         '発言詳細部アイコンをリストアイコンにサイズ変更
         ChangeImageSize()
@@ -592,6 +601,8 @@ Public Class TweenMain
 
     Private Sub Network_NetworkAvailabilityChanged(ByVal sender As Object, ByVal e As Devices.NetworkAvailableEventArgs)
         If e.IsNetworkAvailable Then
+            Call clsTw.CreateNewSocket()
+            Call clsTwPost.CreateNewSocket()
             PostButton.Enabled = True
             'ReplyStripMenuItem.Enabled = True
             'DMStripMenuItem.Enabled = True
@@ -1427,6 +1438,7 @@ Public Class TweenMain
         Dim tlList As New List(Of Twitter.MyListItem)
         Dim rslt As New GetWorkerResult
         Dim imgs As New ImageList
+        Dim getDM As Boolean = False
         imgs.ImageSize = New Size(48, 48)
         imgs.ColorDepth = ColorDepth.Depth32Bit
 
@@ -1436,9 +1448,9 @@ Public Class TweenMain
             For i As Integer = 0 To 1
                 Select Case args.type
                     Case WORKERTYPE.Timeline
-                        ret = clsTw.GetTimeline(tlList, args.page, _initial, args.endPage, Twitter.GetTypes.GET_TIMELINE, TIconList.Images.Keys, imgs)
+                        ret = clsTw.GetTimeline(tlList, args.page, _initial, args.endPage, Twitter.GetTypes.GET_TIMELINE, TIconList.Images.Keys, imgs, getDM)
                     Case WORKERTYPE.Reply
-                        ret = clsTw.GetTimeline(tlList, args.page, _initial, args.endPage, Twitter.GetTypes.GET_REPLY, TIconList.Images.Keys, imgs)
+                        ret = clsTw.GetTimeline(tlList, args.page, _initial, args.endPage, Twitter.GetTypes.GET_REPLY, TIconList.Images.Keys, imgs, getDM)
                     Case WORKERTYPE.DirectMessegeRcv
                         ret = clsTw.GetDirectMessage(tlList, args.page, args.endPage, Twitter.GetTypes.GET_DMRCV, TIconList.Images.Keys, imgs)
                     Case WORKERTYPE.DirectMessegeSnt
@@ -1471,6 +1483,7 @@ Public Class TweenMain
             rslt.type = args.type
             rslt.imgs = imgs
             rslt.tName = args.tName
+            If getDM Then _getDM = True
 
             If _endingFlag Then
                 e.Cancel = True
@@ -1582,6 +1595,7 @@ Public Class TweenMain
                         TimerTimeline.Enabled = True
                     End If
                     If _initial = True Then
+                        _getDM = False
                         If rslt.page + 1 <= rslt.endPage And SettingDialog.ReadPages >= rslt.page + 1 Then
                             If rslt.page Mod 10 = 0 Then
                                 Dim flashRslt As Integer
@@ -1642,6 +1656,7 @@ Public Class TweenMain
                         End If
                     Else
                         If rslt.page + 1 <= rslt.endPage Then
+                            If rslt.TLine.Count = 20 Then TimerTimeline.Interval -= 1000
                             args.page = rslt.page + 1
                             args.endPage = rslt.endPage
                             args.type = WORKERTYPE.Timeline
@@ -1656,6 +1671,10 @@ Public Class TweenMain
                             Loop
                             GetTimelineWorker.RunWorkerAsync(args)
                         Else
+                            If rslt.page = 1 And rslt.TLine.Count < 18 Then
+                                TimerTimeline.Interval += 1000
+                                If TimerTimeline.Interval > SettingDialog.TimelinePeriodInt * 1000 Then TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
+                            End If
                             If SettingDialog.CheckReply Then
                                 args.page = 1
                                 args.endPage = 1
@@ -1669,9 +1688,24 @@ Public Class TweenMain
                                     Application.DoEvents()
                                 Loop
                                 GetTimelineWorker.RunWorkerAsync(args)
+                            Else
+                                If _getDM Then
+                                    _getDM = False
+                                    args.page = 1
+                                    args.endPage = 1
+                                    args.type = WORKERTYPE.DirectMessegeRcv
+                                    StatusLabel.Text = "DMRcv更新中..."
+                                    NotifyIcon1.Icon = NIconRefresh(0)
+                                    _refreshIconCnt = 0
+                                    TimerRefreshIcon.Enabled = True
+                                    Do While GetTimelineWorker.IsBusy
+                                        Threading.Thread.Sleep(100)
+                                        Application.DoEvents()
+                                    Loop
+                                    GetTimelineWorker.RunWorkerAsync(args)
+                                End If
                             End If
                         End If
-
                     End If
                 End If
             Case WORKERTYPE.Reply
@@ -1688,6 +1722,7 @@ Public Class TweenMain
                 Else
                     If My.Computer.Network.IsAvailable = False Then Exit Sub
                     If _initial = True Then
+                        _getDM = False
                         If rslt.page + 1 <= rslt.endPage And SettingDialog.ReadPagesReply >= rslt.page + 1 Then
                             If rslt.page Mod 10 = 0 Then
                                 Dim flashRslt As Integer
@@ -1716,6 +1751,22 @@ Public Class TweenMain
                             Exit Sub
                         End If
                         _initial = False
+                    Else
+                        If _getDM Then
+                            _getDM = False
+                            args.page = 1
+                            args.endPage = 1
+                            args.type = WORKERTYPE.DirectMessegeRcv
+                            StatusLabel.Text = "DMRcv更新中..."
+                            NotifyIcon1.Icon = NIconRefresh(0)
+                            _refreshIconCnt = 0
+                            TimerRefreshIcon.Enabled = True
+                            Do While GetTimelineWorker.IsBusy
+                                Threading.Thread.Sleep(100)
+                                Application.DoEvents()
+                            Loop
+                            GetTimelineWorker.RunWorkerAsync(args)
+                        End If
                     End If
                 End If
             Case WORKERTYPE.DirectMessegeRcv
@@ -2766,6 +2817,7 @@ Public Class TweenMain
         End If
 
     End Sub
+
     Private Sub UnreadStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UnreadStripMenuItem.Click
         Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
         Dim idx As Integer = 0
@@ -2795,7 +2847,7 @@ Public Class TweenMain
                             _tabs(idx).oldestUnreadItem = lItem
                         End If
                     End If
-                    If MyList.Name <> "DirectMsg" Then
+                    If _tabs(idx).tabName <> "Direct" Then
                         '全タブの未読状態を合わせる
                         For Each ts As TabStructure In _tabs
                             If ts.listCustom.Equals(MyList) = False And ts.tabName <> "Direct" And ts.unreadManage Then
@@ -4356,7 +4408,12 @@ RETRY:
         'PostBrowser.DocumentText = "<html><head></head><body style=""margin:0px""><font size=""2"" face=""sans-serif"">" + _item.SubItems(7).Text + "</font></body></html>"
         Call ColorizeList(False)
         Call DispSelectedPost()
-        Call SetMainWindowTitle()
+        '件数関連の場合、タイトル即時書き換え
+        If SettingDialog.DispLatestPost <> DispTitleEnum.None And _
+           SettingDialog.DispLatestPost <> DispTitleEnum.Post And _
+           SettingDialog.DispLatestPost <> DispTitleEnum.Ver Then
+            Call SetMainWindowTitle()
+        End If
         If StatusLabelUrl.Text.StartsWith("http") = False Then Call SetStatusLabel()
     End Sub
 
@@ -4372,7 +4429,7 @@ RETRY:
         'PostedText.Text = _item.SubItems(2).Text
         NameLabel.Text = _item.SubItems(1).Text + "/" + _item.SubItems(4).Text
         UserPicture.Image = TIconList.Images(_item.SubItems(6).Text)
-        If MyList.Name = "DirectMsg" Then
+        If ListTab.SelectedTab.Text = "Direct" Then
             NameLabel.Text = _item.SubItems(1).Text
             DateTimeLabel.Text = ""
         Else
@@ -4381,7 +4438,7 @@ RETRY:
         End If
 
         NameLabel.ForeColor = System.Drawing.SystemColors.ControlText
-        If _item.SubItems(10).Text = "True" And (SettingDialog.OneWayLove Or MyList.Name = "DirectMsg") Then NameLabel.ForeColor = _clOWL
+        If _item.SubItems(10).Text = "True" And (SettingDialog.OneWayLove Or ListTab.SelectedTab.Text = "Direct") Then NameLabel.ForeColor = _clOWL
         If _item.SubItems(9).Text = "True" Then NameLabel.ForeColor = _clFav
 
         '''''
@@ -5379,7 +5436,7 @@ RETRY:
             ' アイテムが1件以上選択されている
             If MyList.SelectedItems.Count = 1 And isAll = False Then
                 ' 単独ユーザー宛リプライまたはDM
-                If (MyList.Name = "DirectMsg" And isAuto) Or (isAuto = False And isReply = False) Then
+                If (ListTab.SelectedTab.Text = "Direct" And isAuto) Or (isAuto = False And isReply = False) Then
                     ' ダイレクトメッセージ
                     StatusText.Text = "D " + MyList.SelectedItems(0).SubItems(4).Text + " " + StatusText.Text
                     StatusText.SelectionStart = StatusText.Text.Length
@@ -6155,6 +6212,7 @@ RETRY:
             End If
         Next
     End Sub
+
     Private Sub SetMainWindowTitle()
         'メインウインドウタイトルの書き換え
         Dim ttl As String = ""
@@ -6248,6 +6306,7 @@ RETRY:
             Me.Visible = False
         End If
     End Sub
+
     Private Sub PlaySoundMenuItem_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PlaySoundMenuItem.CheckedChanged
         If PlaySoundMenuItem.Checked = True Then
             SettingDialog.PlaySound = True
