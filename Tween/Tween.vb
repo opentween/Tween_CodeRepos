@@ -57,6 +57,8 @@ Public Class TweenMain
     Private _reply_to_id As Integer     ' リプライ先のステータスID 0の場合はリプライではない 注：複数あてのものはリプライではない
     Private _reply_to_name As String    ' リプライ先ステータスの書き込み者の名前
     Private _getDM As Boolean
+    Private RemainPostNum As Integer   ' POST残り回数
+    Private __PostCounter As Integer = 59  '割り込みカウンタ　タイマ割り込みでカウントダウン
 
     Friend Class Win32Api
         '画面をブリンクするためのWin32API。起動時に10ページ読み取りごとに継続確認メッセージを表示する際の通知強調用
@@ -231,6 +233,8 @@ Public Class TweenMain
         SettingDialog.DMPeriodInt = _section.DMPeriod                   'DM取得間隔
         SettingDialog.NextPageThreshold = _section.NextPageThreshold    '次頁以降を取得するための新着件数閾値
         SettingDialog.NextPagesInt = _section.NextPages                 '閾値を超えた場合の取得ページ数
+        SettingDialog.MaxPostNum = _section.MaxPostNum                  '時間当たりPOST回数最大値
+        RemainPostNum = SettingDialog.MaxPostNum
         'ログ保存関連（扱いが難しいので機能削除）
         'SettingDialog.LogDays = _section.LogDays
         'Select Case _section.LogUnit
@@ -1894,8 +1898,9 @@ Public Class TweenMain
                     TimerRefreshIcon.Enabled = False
                     NotifyIcon1.Icon = NIconAtRed
                 Else
+                    If RemainPostNum > 1 Then RemainPostNum -= 1
+                    If TimerPostCounter.Enabled = False Then TimerPostCounter.Enabled = True
                     StatusLabel.Text = "POST完了"
-                    StatusText.Text = ""
                     _history.Add("")
                     _hisIdx = _history.Count - 1
                     SetMainWindowTitle()
@@ -5019,6 +5024,7 @@ RETRY:
             _section.NextPages = clsTw.NextPages
             _section.TimelinePeriod = SettingDialog.TimelinePeriodInt
             _section.DMPeriod = SettingDialog.DMPeriodInt
+            _section.MaxPostNum = SettingDialog.MaxPostNum
             '_section.LogDays = SettingDialog.LogDays
             'Select Case SettingDialog.LogUnit
             '    Case Setting.LogUnitEnum.Minute
@@ -5851,6 +5857,8 @@ RETRY:
                     TimerRefreshIcon.Enabled = False
                     NotifyIcon1.Icon = NIconAtRed
                 Else
+                    If RemainPostNum > 1 Then RemainPostNum -= 1
+                    If TimerPostCounter.Enabled = False Then TimerPostCounter.Enabled = True
                     StatusLabel.Text = "POST完了"
                     StatusText.Text = ""
                     _history.Add("")
@@ -6265,7 +6273,8 @@ RETRY:
                 tal = ts.allCount
             End If
         Next
-        StatusLabelUrl.Text = "タブ: " + tur.ToString() + "/" + tal.ToString() + " 全体:" + ur.ToString() + "/" + al.ToString() + " (返信: " + urat.ToString() + ")"
+        StatusLabelUrl.Text = "タブ: " + tur.ToString() + "/" + tal.ToString() + " 全体:" + ur.ToString() + "/" + al.ToString() + _
+                " (返信: " + urat.ToString() + ") POST残り " + RemainPostNum.ToString() + "回/最大 " + SettingDialog.MaxPostNum.ToString() + "回"
     End Sub
 
     Private Sub SetNotifyIconText()
@@ -6312,6 +6321,15 @@ RETRY:
             SettingDialog.PlaySound = True
         Else
             SettingDialog.PlaySound = False
+        End If
+    End Sub
+
+    Private Sub TimerPostCounter_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerPostCounter.Tick
+        __PostCounter -= 1          'カウントダウン
+        If __PostCounter < 0 Then
+            '1時間経過(=60回割り込み発生)したら残りPOST数リセット
+            RemainPostNum = SettingDialog.MaxPostNum
+            __PostCounter = 59
         End If
     End Sub
 End Class

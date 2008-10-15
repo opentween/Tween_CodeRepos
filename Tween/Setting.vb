@@ -42,6 +42,7 @@ Public Class Setting
     Private _MyMinimizeToTray As Boolean
     Private _MyCloseToExit As Boolean
     Private _MyTinyUrlResolve As Boolean
+    Private _MyMaxPostNum As Integer
 
     'Public Enum LogUnitEnum
     '    Minute
@@ -92,6 +93,8 @@ Public Class Setting
             _MyDMPeriod = CType(DMPeriod.Text, Integer)
             _MynextThreshold = CType(NextThreshold.Text, Integer)
             _MyNextPages = CType(NextPages.Text, Integer)
+            _MyMaxPostNum = CType(MaxPost.Text, Integer)
+
             '_MyLogDays = CType(ReadLogDays.Text, Integer)
             'Select Case ReadLogUnit.SelectedIndex
             '    Case 0
@@ -190,6 +193,7 @@ Public Class Setting
         DMPeriod.Text = _MyDMPeriod.ToString()
         NextThreshold.Text = _MynextThreshold.ToString()
         NextPages.Text = _MyNextPages.ToString()
+        MaxPost.Text = _MyMaxPostNum.ToString()
         'ReadLogDays.Text = _MyLogDays.ToString()
         'Select Case _MyLogUnit
         '    Case LogUnitEnum.Minute
@@ -554,6 +558,14 @@ Public Class Setting
         End Get
         Set(ByVal value As Integer)
             _MynextThreshold = value
+        End Set
+    End Property
+    Public Property MaxPostNum() As Integer
+        Get
+            Return _MyMaxPostNum
+        End Get
+        Set(ByVal value As Integer)
+            _MyMaxPostNum = value
         End Set
     End Property
 
@@ -924,6 +936,22 @@ Public Class Setting
         If filedlg.ShowDialog() = Windows.Forms.DialogResult.OK Then
             BrowserPathText.Text = filedlg.FileName
 
+        End If
+    End Sub
+
+    Private Sub MaxPostNum_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MaxPost.Validating
+        Dim pstnm As Integer
+        Try
+            pstnm = CType(MaxPost.Text, Integer)
+        Catch ex As Exception
+            MessageBox.Show("1時間当たり最大POST回数には数値（1〜999）を指定してください。")
+            e.Cancel = True
+            Exit Sub
+        End Try
+
+        If pstnm < 1 Or pstnm > 999 Then
+            MessageBox.Show("1時間当たり最大POST回数には数値（1〜999）を指定してください。")
+            e.Cancel = True
         End If
     End Sub
 End Class
