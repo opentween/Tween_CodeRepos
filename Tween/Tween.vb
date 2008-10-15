@@ -75,6 +75,7 @@ Public Class TweenMain
         PostMessage             '発言POST
         FavAdd                  'Fav追加
         FavRemove               'Fav削除
+        CreateNewSocket         'Socket再作成
     End Enum
 
     'Backgroundworkerの処理結果通知用引数構造体
@@ -102,9 +103,6 @@ Public Class TweenMain
     End Structure
 
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        'バージョンチェック（引数：起動時チェックの場合はTrue･･･チェック結果のメッセージを表示しない）
-        Call CheckNewVersion(True)
-
         'OSバージョン判定。ビジュアルスタイルのRenderMode切り替え（メニュー関連の描画方法）
         If System.Environment.OSVersion.Version.Major = 4 Or _
            System.Environment.OSVersion.Version.Major = 5 And System.Environment.OSVersion.Version.Minor = 0 Then
@@ -312,6 +310,11 @@ Public Class TweenMain
         SettingDialog.DispLatestPost = _section.DispLatestPost
         SettingDialog.SortOrderLock = _section.SortOrderLock
         SettingDialog.TinyUrlResolve = _section.TinyURLResolve
+        SettingDialog.ProxyType = _section.ProxyType
+        SettingDialog.ProxyAddress = _section.ProxyAddress
+        SettingDialog.ProxyPort = _section.ProxyPort
+        SettingDialog.ProxyUser = _section.ProxyUser
+        SettingDialog.ProxyPassword = _section.ProxyPassword
 
         'ユーザー名、パスワードが未設定なら設定画面を表示（初回起動時など）
         If _username = "" Or _password = "" Then
@@ -343,6 +346,9 @@ Public Class TweenMain
             _clAtFromTarget = SettingDialog.ColorAtFromTarget
             '他の設定項目は、随時設定画面で保持している値を読み出して使用
         End If
+
+        'バージョンチェック（引数：起動時チェックの場合はTrue･･･チェック結果のメッセージを表示しない）
+        Call CheckNewVersion(True)
 
         'ウィンドウ設定
         Me.WindowState = FormWindowState.Normal     '通常状態
@@ -378,8 +384,8 @@ Public Class TweenMain
         TIconList.ColorDepth = ColorDepth.Depth32Bit
 
         'Twitter用通信クラス初期化
-        clsTw = New Twitter(_username, _password)
-        clsTwPost = New Twitter(_username, _password)
+        clsTw = New Twitter(_username, _password, SettingDialog.ProxyType, SettingDialog.ProxyAddress, SettingDialog.ProxyPort, SettingDialog.ProxyUser, SettingDialog.ProxyPassword)
+        clsTwPost = New Twitter(_username, _password, SettingDialog.ProxyType, SettingDialog.ProxyAddress, SettingDialog.ProxyPort, SettingDialog.ProxyUser, SettingDialog.ProxyPassword)
         Call clsTw.GetWedata()
         clsTw.NextThreshold = SettingDialog.NextPageThreshold   '次頁取得閾値
         clsTw.NextPages = SettingDialog.NextPagesInt    '閾値オーバー時の読み込みページ数（未使用）
@@ -605,8 +611,18 @@ Public Class TweenMain
 
     Private Sub Network_NetworkAvailabilityChanged(ByVal sender As Object, ByVal e As Devices.NetworkAvailableEventArgs)
         If e.IsNetworkAvailable Then
-            Call clsTw.CreateNewSocket()
-            Call clsTwPost.CreateNewSocket()
+            Dim args As New GetWorkerArg
+            args.type = WORKERTYPE.CreateNewSocket
+            Do While GetTimelineWorker.IsBusy
+                Threading.Thread.Sleep(100)
+                Application.DoEvents()
+            Loop
+            GetTimelineWorker.RunWorkerAsync(args)
+            Do While PostWorker.IsBusy
+                Threading.Thread.Sleep(100)
+                Application.DoEvents()
+            Loop
+            PostWorker.RunWorkerAsync(args)
             PostButton.Enabled = True
             'ReplyStripMenuItem.Enabled = True
             'DMStripMenuItem.Enabled = True
@@ -625,7 +641,6 @@ Public Class TweenMain
                 NotifyIcon1.Icon = NIconRefresh(0)
                 _refreshIconCnt = 0
                 TimerRefreshIcon.Enabled = True
-                Dim args As New GetWorkerArg
                 args.page = 1
                 args.endPage = 1
                 args.type = WORKERTYPE.DirectMessegeRcv
@@ -1465,6 +1480,8 @@ Public Class TweenMain
                         ret = clsTw.PostFavAdd(args.ids(args.page))
                     Case WORKERTYPE.FavRemove
                         ret = clsTw.PostFavRemove(args.ids(args.page))
+                    Case WORKERTYPE.CreateNewSocket
+                        Call clsTw.CreateNewSocket()
                 End Select
                 If args.type = WORKERTYPE.PostMessage Then
                     _reply_to_id = 0
@@ -1582,6 +1599,8 @@ Public Class TweenMain
         End If
 
         Select Case rslt.type
+            Case WORKERTYPE.CreateNewSocket
+                Exit Sub
             Case WORKERTYPE.Timeline
                 StatusLabel.Text = "Recent更新完了"
                 If rslt.TLine.Count > 0 Then
@@ -3022,6 +3041,28 @@ Public Class TweenMain
             clsTwPost.UseAPI = SettingDialog.UseAPI
             clsTw.HubServer = SettingDialog.HubServer
             clsTwPost.HubServer = SettingDialog.HubServer
+            clsTw.ProxyType = SettingDialog.ProxyType
+            clsTw.ProxyAddress = SettingDialog.ProxyAddress
+            clsTw.ProxyPort = SettingDialog.ProxyPort
+            clsTw.ProxyUser = SettingDialog.ProxyUser
+            clsTw.ProxyPassword = SettingDialog.ProxyPassword
+            Dim args As New GetWorkerArg
+            args.type = WORKERTYPE.CreateNewSocket
+            Do While GetTimelineWorker.IsBusy
+                Threading.Thread.Sleep(100)
+                Application.DoEvents()
+            Loop
+            GetTimelineWorker.RunWorkerAsync(args)
+            clsTwPost.ProxyType = SettingDialog.ProxyType
+            clsTwPost.ProxyAddress = SettingDialog.ProxyAddress
+            clsTwPost.ProxyPort = SettingDialog.ProxyPort
+            clsTwPost.ProxyUser = SettingDialog.ProxyUser
+            clsTwPost.ProxyPassword = SettingDialog.ProxyPassword
+            Do While PostWorker.IsBusy
+                Threading.Thread.Sleep(100)
+                Application.DoEvents()
+            Loop
+            PostWorker.RunWorkerAsync(args)
             'If isz <> SettingDialog.IconSz Then
             '    Select Case SettingDialog.IconSz
             '        Case Setting.IconSizes.IconNone
@@ -4361,7 +4402,12 @@ RETRY:
     End Sub
 
     Private Sub CheckNewVersion(Optional ByVal startup As Boolean = False)
-        Dim _mySock As New MySocket("Shift_JIS")
+        Dim _mySock As New MySocket("Shift_JIS", "", "", _
+                                SettingDialog.ProxyType, _
+                                SettingDialog.ProxyAddress, _
+                                SettingDialog.ProxyPort, _
+                                SettingDialog.ProxyUser, _
+                                SettingDialog.ProxyPassword)
         Dim retMsg As String
         Dim resStatus As String = ""
         Dim strVer As String
@@ -5773,13 +5819,17 @@ RETRY:
 
         Dim args As GetWorkerArg = DirectCast(e.Argument, GetWorkerArg)
         Try
-            '            For i As Integer = 0 To 2
-            CheckReplyTo(args.status)
+            If args.type = WORKERTYPE.CreateNewSocket Then
+                Call clsTwPost.CreateNewSocket()
+            Else
+                '            For i As Integer = 0 To 2
+                CheckReplyTo(args.status)
 
-            ret = clsTwPost.PostStatus(args.status, _reply_to_id)
+                ret = clsTwPost.PostStatus(args.status, _reply_to_id)
 
-            _reply_to_id = 0
-            _reply_to_name = Nothing
+                _reply_to_id = 0
+                _reply_to_name = Nothing
+            End If
             rslt.retMsg = ret
             rslt.TLine = Nothing
             rslt.page = args.page
@@ -5846,6 +5896,8 @@ RETRY:
         End If
 
         Select Case rslt.type
+            Case WORKERTYPE.CreateNewSocket
+                Exit Sub
             Case WORKERTYPE.PostMessage
                 StatusText.Enabled = True
                 PostButton.Enabled = True

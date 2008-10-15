@@ -29,4 +29,9 @@
         Day
     End Enum
 
+    Public Enum ProxyTypeEnum
+        None
+        IE
+        Specified
+    End Enum
 End Module

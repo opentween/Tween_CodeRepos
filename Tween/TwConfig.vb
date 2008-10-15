@@ -1470,6 +1470,73 @@ Public Property CloseToExit() As Boolean
         End Set
     End Property
 
+    <ConfigurationProperty("proxytype", DefaultValue:=ProxyTypeEnum.IE)> _
+    Public Property ProxyType() As ProxyTypeEnum
+        Get
+            Return Me("proxytype")
+        End Get
+        Set(ByVal value As ProxyTypeEnum)
+            Me("proxytype") = value
+        End Set
+    End Property
+
+    <ConfigurationProperty("proxyaddress", DefaultValue:="127.0.0.1")> _
+    Public Property ProxyAddress() As String
+        Get
+            Return Me("proxyaddress")
+        End Get
+        Set(ByVal value As String)
+            Me("proxyaddress") = value
+        End Set
+    End Property
+
+    <ConfigurationProperty("proxyport", DefaultValue:=80)> _
+    Public Property ProxyPort() As Integer
+        Get
+            Return Me("proxyport")
+        End Get
+        Set(ByVal value As Integer)
+            Me("proxyport") = value
+        End Set
+    End Property
+
+    <ConfigurationProperty("proxyuser", DefaultValue:="")> _
+    Public Property ProxyUser() As String
+        Get
+            Return Me("proxyuser")
+        End Get
+        Set(ByVal value As String)
+            Me("proxyuser") = value
+        End Set
+    End Property
+
+    <ConfigurationProperty("proxypassword", DefaultValue:="")> _
+    Public Property ProxyPassword() As String
+        Get
+            Dim pwd As String = ""
+            If CStr(Me("proxypassword")).Length > 0 Then
+                Try
+                    pwd = DecryptString(CStr(Me("proxypassword")))
+                Catch ex As Exception
+                    pwd = ""
+                End Try
+            End If
+            Return pwd
+        End Get
+        Set(ByVal value As String)
+            Dim pwd As String = value.Trim()
+            If pwd.Length > 0 Then
+                Try
+                    Me("proxypassword") = EncryptString(value)
+                Catch ex As Exception
+                    Me("proxypassword") = ""
+                End Try
+            Else
+                Me("proxypassword") = ""
+            End If
+        End Set
+    End Property
+
     Private Function EncryptString(ByVal str As String) As String
         '文字列をバイト型配列にする
         Dim bytesIn As Byte() = System.Text.Encoding.UTF8.GetBytes(str)

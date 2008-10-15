@@ -9,6 +9,8 @@ Public Class MySocket
     Private _cre As String
     Private _uid As String
     Private _pwd As String
+    Private _proxy As System.Net.WebProxy
+    Private _proxyType As ProxyTypeEnum
 
     Public Enum REQ_TYPE
         ReqGET
@@ -24,7 +26,14 @@ Public Class MySocket
         ReqPOSTAPI
     End Enum
 
-    Public Sub New(ByVal EncodeType As String, Optional ByVal Username As String = "", Optional ByVal Password As String = "")
+    Public Sub New(ByVal EncodeType As String, _
+            ByVal Username As String, _
+            ByVal Password As String, _
+            ByVal ProxyType As ProxyTypeEnum, _
+            ByVal ProxyAddress As String, _
+            ByVal ProxyPort As Integer, _
+            ByVal ProxyUser As String, _
+            ByVal ProxyPassword As String)
         _enc = Encoding.GetEncoding(EncodeType)
         ServicePointManager.Expect100Continue = False
         _version = My.Application.Info.Version.ToString
@@ -33,6 +42,17 @@ Public Class MySocket
             _uid = Username
             _pwd = Password
         End If
+        Select Case ProxyType
+            Case ProxyTypeEnum.None
+                _proxy = Nothing
+            Case ProxyTypeEnum.Specified
+                _proxy = New WebProxy("http://" + ProxyAddress + ":" + ProxyPort.ToString)
+                If ProxyUser <> "" Or ProxyPassword <> "" Then
+                    _proxy.Credentials = New NetworkCredential(ProxyUser, ProxyPassword)
+                End If
+                'IE設定（システム設定）はデフォルト値なので処理しない
+        End Select
+        _proxyType = ProxyType
     End Sub
 
     Public Function GetWebResponse(ByVal url As String, _
@@ -59,6 +79,9 @@ Public Class MySocket
             webReq.UserAgent = "Mozilla/5.0 (Windows; U; Windows NT 5.1; ja; rv:1.9) Gecko/2008051206 Firefox/3.0"
             If reqType = REQ_TYPE.ReqGetNoCache Then
                 webReq.CachePolicy = cpolicy
+            End If
+            If _proxyType <> ProxyTypeEnum.IE Then
+                webReq.Proxy = _proxy
             End If
 
             If referer <> "" Then webReq.Referer = referer

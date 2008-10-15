@@ -10,6 +10,12 @@ Public Class Twitter
 
     Private _uid As String
     Private _pwd As String
+    Private _proxyType As ProxyTypeEnum
+    Private _proxyAddress As String
+    Private _proxyPort As Integer
+    Private _proxyUser As String
+    Private _proxyPassword As String
+
     'Private _lastId As String
     'Private _lastName As String
     Private _nextThreshold As Integer
@@ -163,15 +169,26 @@ Public Class Twitter
         GET_DMSNT
     End Enum
 
-    Public Sub New(Optional ByVal Username As String = "", Optional ByVal Password As String = "")
+    Public Sub New(ByVal Username As String, _
+                ByVal Password As String, _
+                ByVal ProxyType As ProxyTypeEnum, _
+                ByVal ProxyAddress As String, _
+                ByVal ProxyPort As Integer, _
+                ByVal ProxyUser As String, _
+                ByVal ProxyPassword As String)
         'Proxyを考慮したSocketの宛先設定
         'TIconSmallList = New ImageList
         'TIconSmallList.ImageSize = New Size(_iconSz, _iconSz)
         'TIconSmallList.ColorDepth = ColorDepth.Depth32Bit
-        _mySock = New MySocket("UTF-8", Username, Password)
+        _mySock = New MySocket("UTF-8", Username, Password, ProxyType, ProxyAddress, ProxyPort, ProxyUser, ProxyPassword)
         _uid = Username
         _pwd = Password
         follower.Add(_uid)
+        _proxyType = ProxyType
+        _proxyAddress = ProxyAddress
+        _proxyPort = ProxyPort
+        _proxyUser = ProxyUser
+        _proxyPassword = ProxyPassword
     End Sub
 
     Private Function SignIn() As String
@@ -1578,9 +1595,39 @@ Public Class Twitter
         End Set
     End Property
 
+    Public WriteOnly Property ProxyType() As ProxyTypeEnum
+        Set(ByVal value As ProxyTypeEnum)
+            _proxyType = value
+        End Set
+    End Property
+
+    Public WriteOnly Property ProxyAddress() As String
+        Set(ByVal value As String)
+            _proxyAddress = value
+        End Set
+    End Property
+
+    Public WriteOnly Property ProxyPort() As Integer
+        Set(ByVal value As Integer)
+            _proxyPort = value
+        End Set
+    End Property
+
+    Public WriteOnly Property ProxyUser() As String
+        Set(ByVal value As String)
+            _proxyUser = value
+        End Set
+    End Property
+
+    Public WriteOnly Property ProxyPassword() As String
+        Set(ByVal value As String)
+            _proxyPassword = value
+        End Set
+    End Property
+
     Public Sub CreateNewSocket()
         _mySock = Nothing
-        _mySock = New MySocket("UTF-8", Username, Password)
+        _mySock = New MySocket("UTF-8", Username, Password, _proxyType, _proxyAddress, _proxyPort, _proxyUser, _proxyPassword)
         _signed = False
     End Sub
 End Class

@@ -42,6 +42,11 @@ Public Class Setting
     Private _MyMinimizeToTray As Boolean
     Private _MyCloseToExit As Boolean
     Private _MyTinyUrlResolve As Boolean
+    Private _MyProxyType As ProxyTypeEnum
+    Private _MyProxyAddress As String
+    Private _MyProxyPort As Integer
+    Private _MyProxyUser As String
+    Private _MyProxyPassword As String
     Private _MyMaxPostNum As Integer
 
     'Public Enum LogUnitEnum
@@ -175,6 +180,17 @@ Public Class Setting
             End Select
             _MySortOrderLock = CheckSortOrderLock.Checked
             _MyTinyUrlResolve = CheckTinyURL.Checked
+            If RadioProxyNone.Checked Then
+                _MyProxyType = ProxyTypeEnum.None
+            ElseIf RadioProxyIE.Checked Then
+                _MyProxyType = ProxyTypeEnum.IE
+            Else
+                _MyProxyType = ProxyTypeEnum.Specified
+            End If
+            _MyProxyAddress = TextProxyAddress.Text.Trim()
+            _MyProxyPort = Integer.Parse(TextProxyPort.Text.Trim())
+            _MyProxyUser = TextProxyUser.Text.Trim()
+            _MyProxyPassword = TextProxyPassword.Text.Trim()
 
             'TweenMain.SetMainWindowTitle()
             'TweenMain.SetNotifyIconText()
@@ -279,6 +295,28 @@ Public Class Setting
         End Select
         CheckSortOrderLock.Checked = _MySortOrderLock
         CheckTinyURL.Checked = _MyTinyUrlResolve
+        Select Case _MyProxyType
+            Case ProxyTypeEnum.None
+                RadioProxyNone.Checked = True
+            Case ProxyTypeEnum.IE
+                RadioProxyIE.Checked = True
+            Case Else
+                RadioProxySpecified.Checked = True
+        End Select
+        Dim chk As Boolean = RadioProxySpecified.Checked
+        LabelProxyAddress.Enabled = chk
+        TextProxyAddress.Enabled = chk
+        LabelProxyPort.Enabled = chk
+        TextProxyPort.Enabled = chk
+        LabelProxyUser.Enabled = chk
+        TextProxyUser.Enabled = chk
+        LabelProxyPassword.Enabled = chk
+        TextProxyPassword.Enabled = chk
+
+        TextProxyAddress.Text = _MyProxyAddress
+        TextProxyPort.Text = _MyProxyPort.ToString
+        TextProxyUser.Text = _MyProxyUser
+        TextProxyPassword.Text = _MyProxyPassword
 
         'TweenMain.SetMainWindowTitle()
         'TweenMain.SetNotifyIconText()
@@ -925,6 +963,51 @@ Public Class Setting
         End Set
     End Property
 
+    Public Property ProxyType() As ProxyTypeEnum
+        Get
+            Return _MyProxyType
+        End Get
+        Set(ByVal value As ProxyTypeEnum)
+            _MyProxyType = value
+        End Set
+    End Property
+
+    Public Property ProxyAddress() As String
+        Get
+            Return _MyProxyAddress
+        End Get
+        Set(ByVal value As String)
+            _MyProxyAddress = value
+        End Set
+    End Property
+
+    Public Property ProxyPort() As Integer
+        Get
+            Return _MyProxyPort
+        End Get
+        Set(ByVal value As Integer)
+            _MyProxyPort = value
+        End Set
+    End Property
+
+    Public Property ProxyUser() As String
+        Get
+            Return _MyProxyUser
+        End Get
+        Set(ByVal value As String)
+            _MyProxyUser = value
+        End Set
+    End Property
+
+    Public Property ProxyPassword() As String
+        Get
+            Return _MyProxyPassword
+        End Get
+        Set(ByVal value As String)
+            _MyProxyPassword = value
+        End Set
+    End Property
+
     Private Sub Button3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button3.Click
         Dim filedlg As New OpenFileDialog()
 
@@ -936,6 +1019,33 @@ Public Class Setting
         If filedlg.ShowDialog() = Windows.Forms.DialogResult.OK Then
             BrowserPathText.Text = filedlg.FileName
 
+        End If
+    End Sub
+
+    Private Sub RadioProxySpecified_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RadioProxySpecified.CheckedChanged
+        Dim chk As Boolean = RadioProxySpecified.Checked
+        LabelProxyAddress.Enabled = chk
+        TextProxyAddress.Enabled = chk
+        LabelProxyPort.Enabled = chk
+        TextProxyPort.Enabled = chk
+        LabelProxyUser.Enabled = chk
+        TextProxyUser.Enabled = chk
+        LabelProxyPassword.Enabled = chk
+        TextProxyPassword.Enabled = chk
+    End Sub
+
+    Private Sub TextProxyPort_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles TextProxyPort.Validating
+        Dim port As Integer
+        If TextProxyPort.Text.Trim() = "" Then TextProxyPort.Text = "0"
+        If Integer.TryParse(TextProxyPort.Text.Trim(), port) = False Then
+            MessageBox.Show("ポート番号には整数値を指定してください。")
+            e.Cancel = True
+            Exit Sub
+        End If
+        If port < 0 Or port > 65535 Then
+            MessageBox.Show("ポート番号には0〜65535を指定してください。")
+            e.Cancel = True
+            Exit Sub
         End If
     End Sub
 
