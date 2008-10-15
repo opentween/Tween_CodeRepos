@@ -979,6 +979,16 @@ Public NotInheritable Class ListSection
             Me("readpagesdm") = value
         End Set
     End Property
+    <ConfigurationProperty("maxpostnum", DefaultValue:=125), _
+     IntegerValidator(MaxValue:=999, MinValue:=1)> _
+    Public Property MaxPostNum() As Integer
+        Get
+            Return CInt(Me("maxpostnum"))
+        End Get
+        Set(ByVal value As Integer)
+            Me("maxpostnum") = value
+        End Set
+    End Property
 
     <ConfigurationProperty("readed", DefaultValue:=True)> _
     Public Property Readed() As Boolean

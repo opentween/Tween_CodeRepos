@@ -136,11 +136,13 @@ Partial Class Setting
         Me.TabControl1 = New System.Windows.Forms.TabControl
         Me.TabPage1 = New System.Windows.Forms.TabPage
         Me.TabPage2 = New System.Windows.Forms.TabPage
+        Me.CheckTinyURL = New System.Windows.Forms.CheckBox
+        Me.Label50 = New System.Windows.Forms.Label
         Me.Button3 = New System.Windows.Forms.Button
         Me.TabPage3 = New System.Windows.Forms.TabPage
         Me.TabPage4 = New System.Windows.Forms.TabPage
-        Me.CheckTinyURL = New System.Windows.Forms.CheckBox
-        Me.Label50 = New System.Windows.Forms.Label
+        Me.Label52 = New System.Windows.Forms.Label
+        Me.MaxPost = New System.Windows.Forms.TextBox
         Me.GroupBox1.SuspendLayout()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
@@ -1220,6 +1222,8 @@ Partial Class Setting
         '
         'TabPage1
         '
+        Me.TabPage1.Controls.Add(Me.MaxPost)
+        Me.TabPage1.Controls.Add(Me.Label52)
         Me.TabPage1.Controls.Add(Me.Label1)
         Me.TabPage1.Controls.Add(Me.Label2)
         Me.TabPage1.Controls.Add(Me.Username)
@@ -1245,10 +1249,10 @@ Partial Class Setting
         Me.TabPage1.Controls.Add(Me.Label35)
         Me.TabPage1.Controls.Add(Me.StartupReadReply)
         Me.TabPage1.Controls.Add(Me.StartupReadDM)
-        Me.TabPage1.Location = New System.Drawing.Point(4, 21)
+        Me.TabPage1.Location = New System.Drawing.Point(4, 22)
         Me.TabPage1.Name = "TabPage1"
         Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(372, 437)
+        Me.TabPage1.Size = New System.Drawing.Size(372, 436)
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "基本"
         Me.TabPage1.UseVisualStyleBackColor = True
@@ -1284,13 +1288,32 @@ Partial Class Setting
         Me.TabPage2.Controls.Add(Me.Label12)
         Me.TabPage2.Controls.Add(Me.StatusText)
         Me.TabPage2.Controls.Add(Me.CheckUseRecommendStatus)
-        Me.TabPage2.Location = New System.Drawing.Point(4, 21)
+        Me.TabPage2.Location = New System.Drawing.Point(4, 22)
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(372, 437)
+        Me.TabPage2.Size = New System.Drawing.Size(372, 436)
         Me.TabPage2.TabIndex = 1
         Me.TabPage2.Text = "動作"
         Me.TabPage2.UseVisualStyleBackColor = True
+        '
+        'CheckTinyURL
+        '
+        Me.CheckTinyURL.AutoSize = True
+        Me.CheckTinyURL.Location = New System.Drawing.Point(157, 171)
+        Me.CheckTinyURL.Name = "CheckTinyURL"
+        Me.CheckTinyURL.Size = New System.Drawing.Size(67, 16)
+        Me.CheckTinyURL.TabIndex = 12
+        Me.CheckTinyURL.Text = "解決する"
+        Me.CheckTinyURL.UseVisualStyleBackColor = True
+        '
+        'Label50
+        '
+        Me.Label50.AutoSize = True
+        Me.Label50.Location = New System.Drawing.Point(11, 172)
+        Me.Label50.Name = "Label50"
+        Me.Label50.Size = New System.Drawing.Size(73, 12)
+        Me.Label50.TabIndex = 11
+        Me.Label50.Text = "TinyURL解決"
         '
         'Button3
         '
@@ -1319,10 +1342,10 @@ Partial Class Setting
         Me.TabPage3.Controls.Add(Me.IconSize)
         Me.TabPage3.Controls.Add(Me.CheckBox3)
         Me.TabPage3.Controls.Add(Me.TextBox3)
-        Me.TabPage3.Location = New System.Drawing.Point(4, 21)
+        Me.TabPage3.Location = New System.Drawing.Point(4, 22)
         Me.TabPage3.Name = "TabPage3"
         Me.TabPage3.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage3.Size = New System.Drawing.Size(372, 437)
+        Me.TabPage3.Size = New System.Drawing.Size(372, 436)
         Me.TabPage3.TabIndex = 2
         Me.TabPage3.Text = "表示"
         Me.TabPage3.UseVisualStyleBackColor = True
@@ -1330,32 +1353,29 @@ Partial Class Setting
         'TabPage4
         '
         Me.TabPage4.Controls.Add(Me.GroupBox1)
-        Me.TabPage4.Location = New System.Drawing.Point(4, 21)
+        Me.TabPage4.Location = New System.Drawing.Point(4, 22)
         Me.TabPage4.Name = "TabPage4"
         Me.TabPage4.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage4.Size = New System.Drawing.Size(372, 437)
+        Me.TabPage4.Size = New System.Drawing.Size(372, 436)
         Me.TabPage4.TabIndex = 3
         Me.TabPage4.Text = "フォント＆色"
         Me.TabPage4.UseVisualStyleBackColor = True
         '
-        'CheckTinyURL
+        'Label52
         '
-        Me.CheckTinyURL.AutoSize = True
-        Me.CheckTinyURL.Location = New System.Drawing.Point(157, 171)
-        Me.CheckTinyURL.Name = "CheckTinyURL"
-        Me.CheckTinyURL.Size = New System.Drawing.Size(67, 16)
-        Me.CheckTinyURL.TabIndex = 12
-        Me.CheckTinyURL.Text = "解決する"
-        Me.CheckTinyURL.UseVisualStyleBackColor = True
+        Me.Label52.AutoSize = True
+        Me.Label52.Location = New System.Drawing.Point(14, 272)
+        Me.Label52.Name = "Label52"
+        Me.Label52.Size = New System.Drawing.Size(149, 12)
+        Me.Label52.TabIndex = 25
+        Me.Label52.Text = "1時間あたりの最大POST回数"
         '
-        'Label50
+        'MaxPost
         '
-        Me.Label50.AutoSize = True
-        Me.Label50.Location = New System.Drawing.Point(11, 172)
-        Me.Label50.Name = "Label50"
-        Me.Label50.Size = New System.Drawing.Size(73, 12)
-        Me.Label50.TabIndex = 11
-        Me.Label50.Text = "TinyURL解決"
+        Me.MaxPost.Location = New System.Drawing.Point(186, 269)
+        Me.MaxPost.Name = "MaxPost"
+        Me.MaxPost.Size = New System.Drawing.Size(62, 19)
+        Me.MaxPost.TabIndex = 26
         '
         'Setting
         '
@@ -1506,4 +1526,6 @@ Partial Class Setting
     Friend WithEvents Label49 As System.Windows.Forms.Label
     Friend WithEvents CheckTinyURL As System.Windows.Forms.CheckBox
     Friend WithEvents Label50 As System.Windows.Forms.Label
+    Friend WithEvents MaxPost As System.Windows.Forms.TextBox
+    Friend WithEvents Label52 As System.Windows.Forms.Label
 End Class
