@@ -2471,9 +2471,9 @@ Public Class TweenMain
         Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
 
         If MessageBox.Show("選択されている発言(DM)を削除してもよろしいですか？" + vbCrLf + _
-                           "　※注意　：　Twitterサーバからも削除されます！※" + vbCrLf + _
-                           "　※　タブからIDを削除する場合は、「IDを移動」を使ってください。　※" + vbCrLf + _
-                           "　※　タブを削除する場合は、「タブを削除」を使ってください。　　　※" + vbCrLf + vbCrLf + _
+                           "注意　：　Twitterサーバからも削除されます！" + vbCrLf + _
+                           "　タブからIDを削除する場合は、「IDを移動」を使ってください。" + vbCrLf + _
+                           "　タブを削除する場合は、「タブを削除」を使ってください。" + vbCrLf + vbCrLf + _
                            "削除処理を中止するには、「キャンセル」ボタンを押してください。", _
                            "削除確認", _
                             MessageBoxButtons.OKCancel, _
