@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{41B54F21-5442-47D4-80F0-872D56D9E1FD}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -76,7 +76,6 @@
       <DependentUpon>DetailsListView.vb</DependentUpon>
     </Compile>
     <Compile Include="DetailsListView.vb">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">

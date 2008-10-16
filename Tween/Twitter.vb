@@ -63,7 +63,7 @@ Public Class Twitter
     Private _splitPostRecent As String = "<tr id=""status_"
     Private _statusIdTo As String = """"
     'Private _splitDM As String = "<li><a href=""/direct_messages/destroy/"
-    Private _splitDM As String = "<tr class=""hentry"" id=""status_"
+    Private _splitDM As String = "<tr id=""status_"
     Private _parseName As String = "://twitter.com/"
     Private _parseNameTo As String = """"
     Private _parseNick As String = "<img alt="""
@@ -78,11 +78,11 @@ Public Class Twitter
     Private _parseDM2 As String = "</span>"
     Private _parseDate As String = "<span class=""published"" title="""
     Private _parseDateTo As String = """"
-    Private _getAuthKey As String = "<input type=""hidden"" id=""form_auth_token"" value="""
+    Private _getAuthKey As String = "<input name=""authenticity_token"" value="""
     Private _getAuthKeyTo As String = """"
-    Private _parseStar As String = "<img alt="""
+    Private _parseStar As String = "<a href=""#"" class="""
     Private _parseStarTo As String = """"
-    Private _parseStarEmpty As String = "Favorite"
+    Private _parseStarEmpty As String = "non-fav"
     Private _followerList As String = "<select id=""direct_message_user_id"" name=""user[id]""><option value="""" selected=""selected"">"
     Private _followerMbr1 As String = "/option>"
     Private _followerMbr2 As String = """>"
@@ -1286,7 +1286,8 @@ Public Class Twitter
         Dim resStatus As String = ""
         Dim resMsg As String = _mySock.GetWebResponse("https://" + _hubServer + _postFavAddPath + id, resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2, dataStr)
 
-        If resMsg.StartsWith("$") = False Then
+        'If resMsg.StartsWith("$") = False Then
+        If resMsg.StartsWith("$") = False And resMsg <> " " Then
             Return resStatus
         End If
 
@@ -1304,7 +1305,8 @@ Public Class Twitter
         Dim resStatus As String = ""
         Dim resMsg As String = _mySock.GetWebResponse("https://" + _hubServer + _postFavRemovePath + id, resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2, dataStr)
 
-        If resMsg.StartsWith("$") = False Then
+        'If resMsg.StartsWith("$") = False Then
+        If resMsg.StartsWith("$") = False And resMsg <> " " Then
             Return resStatus
         End If
 
