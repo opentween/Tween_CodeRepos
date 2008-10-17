@@ -1,6 +1,6 @@
 ﻿Imports System.Web
 
-Public Class Twitter
+Partial Public Class Twitter
     Public links As New Collections.Specialized.StringCollection
     Public follower As New Collections.Specialized.StringCollection
 
@@ -59,47 +59,6 @@ Public Class Twitter
     Private Const _parseLink2 As String = """>"
     Private Const _parseLink3 As String = "</a>"
 
-    Private _splitPost As String = "<tr id=""status_"
-    Private _splitPostRecent As String = "<tr id=""status_"
-    Private _statusIdTo As String = """"
-    'Private _splitDM As String = "<li><a href=""/direct_messages/destroy/"
-    Private _splitDM As String = "<tr id=""status_"
-    Private _parseName As String = "://twitter.com/"
-    Private _parseNameTo As String = """"
-    Private _parseNick As String = "<img alt="""
-    Private _parseNickTo As String = """"
-    Private _parseImg As String = "src="""
-    Private _parseImgTo As String = """"
-    '    Private Const _parseMsg1 As String = "<span class=""entry-title entry-content"">"
-    'Private Const _parseMsg1_2 As String = "<span class=""entry_content"">"
-    Private _parseMsg1 As String = "<span class=""entry-content"">"
-    Private _parseMsg2 As String = "</span>"
-    Private _parseDM1 As String = "<span class=""entry-content"">"
-    Private _parseDM2 As String = "</span>"
-    Private _parseDate As String = "<span class=""published"" title="""
-    Private _parseDateTo As String = """"
-    Private _getAuthKey As String = "<input name=""authenticity_token"" value="""
-    Private _getAuthKeyTo As String = """"
-    Private _parseStar As String = "<a href=""#"" class="""
-    Private _parseStarTo As String = """"
-    Private _parseStarEmpty As String = "non-fav"
-    Private _followerList As String = "<select id=""direct_message_user_id"" name=""user[id]""><option value="""" selected=""selected"">"
-    Private _followerMbr1 As String = "/option>"
-    Private _followerMbr2 As String = """>"
-    Private _followerMbr3 As String = "<"
-    'Private _getSiv As String = "<input type=""hidden"" name=""siv"" value="""
-    'Private _getSivTo As String = """"
-    Private _getInfoTwitter As String = "<div id=""top_alert"">"
-    Private _getInfoTwitterTo As String = "</div>"
-    Private _isProtect As String = "<img alt=""Icon_red_lock"""
-    Private _isReplyEng As String = ">in reply to "
-    Private _isReplyJpn As String = ">返信: "
-    Private _isReplyTo As String = "<"
-    Private _parseProtectMsg1 As String = "."" />"
-    Private _parseProtectMsg2 As String = "<span class=""meta entry-meta"">"
-    'テスト実装：HomeのDM数が変わったときに取得
-    Private _parseDMCount1 As String = "<a href=""/direct_messages"" id=""direct_messages_tab""><span id=""message_count"" class=""stat_count"">"
-    Private _parseDMCount2 As String = "</span>"
 
     Private _endingFlag As Boolean
     Private _useAPI As Boolean
@@ -1583,9 +1542,9 @@ Public Class Twitter
 
         rs.Close()
 
-        'リリースビルドの場合はコメントアウトすること
-        'GenerateAnalyzeKey()
-
+#If DEBUG Then
+        GenerateAnalyzeKey()
+#End If
     End Sub
 
     Public WriteOnly Property GetIcon() As Boolean
@@ -1635,18 +1594,17 @@ Public Class Twitter
         _mySock = New MySocket("UTF-8", Username, Password, _proxyType, _proxyAddress, _proxyPort, _proxyUser, _proxyPassword)
         _signed = False
     End Sub
+#If DEBUG Then
     Public Sub GenerateAnalyzeKey()
         '解析キー情報部分のソースをwedataから作成する
-        '生成したソースはコピペで貼り込む
-        'StreamWriterの初期化
-        'ファイルを上書きし、Shift JISで書き込む
-        '2番目のパラメータをTrueにすると、上書きせずにファイルの末尾に追加
+        '生成したソースはプロジェクトのディレクトリにコピーする
         Dim sw As New System.IO.StreamWriter(".\AnalyzeKey.vb", _
             False, _
             System.Text.Encoding.GetEncoding(932))
 
-        sw.WriteLine("'--------------------------------------------------------------------------------------------------------------------------------")
-        sw.WriteLine("'    ここから下の部分は開発中ビルドのTweenにより自動作成されました   作成日時  " + DateAndTime.Today.ToString())
+        sw.WriteLine("Public Partial Class Twitter")
+        sw.WriteLine("'    このファイルはデバッグビルドのTweenにより自動作成されました   作成日時  " + DateAndTime.Now.ToString())
+        sw.WriteLine("")
 
         sw.WriteLine("    Private _splitPost As String = " + Chr(34) + _splitPost.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Private _splitPostRecent As String = " + Chr(34) + _splitPostRecent.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
@@ -1654,7 +1612,6 @@ Public Class Twitter
         sw.WriteLine("    Private _splitDM As String = " + Chr(34) + _splitDM.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Private _parseName As String = " + Chr(34) + _parseName.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Private _parseNameTo As String = " + Chr(34) + _parseNameTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _splitDM As String = " + Chr(34) + _splitDM.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Private _parseNick As String = " + Chr(34) + _parseNick.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Private _parseNickTo As String = " + Chr(34) + _parseNickTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Private  _parseImg As String = " + Chr(34) + _parseImg.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
@@ -1666,6 +1623,7 @@ Public Class Twitter
         sw.WriteLine("    Private _parseDate As String = " + Chr(34) + _parseDate.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Private _parseDateTo As String = " + Chr(34) + _parseDateTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Private _getAuthKey As String = " + Chr(34) + _getAuthKey.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Private _getAuthKeyTo As String = " + Chr(34) + _getAuthKeyTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Private _parseStar As String = " + Chr(34) + _parseStar.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Private _parseStarTo As String = " + Chr(34) + _parseStarTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Private _parseStarEmpty As String = " + Chr(34) + _parseStarEmpty.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
@@ -1683,12 +1641,11 @@ Public Class Twitter
         sw.WriteLine("    Private _parseProtectMsg2 As String = " + Chr(34) + _parseProtectMsg2.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Private _parseDMCount1 As String = " + Chr(34) + _parseDMCount1.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Private _parseDMCount2 As String = " + Chr(34) + _parseDMCount2.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-
-        sw.WriteLine("'   ここから上の部分は開発中ビルドのTweenにより自動作成されました   作成日時  " + DateAndTime.Today.ToString())
-        sw.WriteLine("'--------------------------------------------------------------------------------------------------------------------------------")
-
+        sw.WriteLine("End Class")
 
         sw.Close()
+        MessageBox.Show("解析キー情報定義ファイル AnalyzeKey.vbを生成しました")
 
     End Sub
+#End If
 End Class
