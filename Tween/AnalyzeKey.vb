@@ -1,5 +1,5 @@
 ﻿Public Partial Class Twitter
-'    このファイルはデバッグビルドのTweenにより自動作成されました   作成日時  2008/10/18 1:40:30
+'    このファイルはデバッグビルドのTweenにより自動作成されました   作成日時  2008/10/18 2:06:36
 
     Private _splitPost As String = "<tr id=""status_"
     Private _splitPostRecent As String = "<tr id=""status_"
