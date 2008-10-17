@@ -83,6 +83,7 @@ Partial Public Class Twitter
     Private Const tbAuthKey As String = "AuthKey"
     Private Const tbInfoTwitter As String = "InfoTwitter"
     Private Const tbSplitPostReply As String = "SplitPostReply"
+    Private Const tbGetDMCount As String = "GetDMCount"
     '属性
     Private Const tbTagFrom As String = "tagfrom"
     Private Const tbTagTo As String = "tagto"
@@ -568,11 +569,11 @@ Partial Public Class Twitter
                 'テスト実装：DMカウント取得
                 getDM = False
                 If intCnt = posts.Length And gType = GetTypes.GET_TIMELINE And page = 1 Then
-                    pos1 = strPost.IndexOf(_parseDMCount1, pos2)
+                    pos1 = strPost.IndexOf(_parseDMcountFrom, pos2)
                     If pos1 > -1 Then
                         Try
-                            pos2 = strPost.IndexOf(_parseDMCount2, pos1 + _parseDMCount1.Length)
-                            Dim dmCnt As Integer = Integer.Parse(strPost.Substring(pos1 + _parseDMCount1.Length, pos2 - pos1 - _parseDMCount1.Length))
+                            pos2 = strPost.IndexOf(_parseDMcountTo, pos1 + _parseDMcountFrom.Length)
+                            Dim dmCnt As Integer = Integer.Parse(strPost.Substring(pos1 + _parseDMcountFrom.Length, pos2 - pos1 - _parseDMcountFrom.Length))
                             If dmCnt > _dmCount Then
                                 _dmCount = dmCnt
                                 getDM = True
@@ -1535,6 +1536,13 @@ Partial Public Class Twitter
                                 If ln.StartsWith("      ""tagto"": """) Then
                                     _parseProtectMsg2 = ln.Substring(16, ln.Length - 1 - 16).Replace("\", "")
                                 End If
+                            Case "GetDMCount"
+                                If ln.StartsWith("      ""tagfrom"": """) Then
+                                    _parseDMcountFrom = ln.Substring(18, ln.Length - 1 - 18).Replace("\", "")
+                                End If
+                                If ln.StartsWith("      ""tagto"": """) Then
+                                    _parseDMcountTo = ln.Substring(16, ln.Length - 1 - 16).Replace("\", "")
+                                End If
                         End Select
                     End If
             End Select
@@ -1639,8 +1647,8 @@ Partial Public Class Twitter
         sw.WriteLine("    Private _isReplyTo As String = " + Chr(34) + _isReplyTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Private _parseProtectMsg1 As String = " + Chr(34) + _parseProtectMsg1.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Private _parseProtectMsg2 As String = " + Chr(34) + _parseProtectMsg2.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseDMCount1 As String = " + Chr(34) + _parseDMCount1.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseDMCount2 As String = " + Chr(34) + _parseDMCount2.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Private _parseDMcountFrom As String = " + Chr(34) + _parseDMcountFrom.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Private _parseDMcountTo As String = " + Chr(34) + _parseDMcountTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("End Class")
 
         sw.Close()
