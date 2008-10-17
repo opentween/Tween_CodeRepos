@@ -60,7 +60,7 @@ Public Class MySocket
             Optional ByVal reqType As REQ_TYPE = REQ_TYPE.ReqGET, _
             Optional ByVal data As String = "", _
             Optional ByVal referer As String = "", _
-            Optional ByVal timeout As Integer = 30000) As Object
+            Optional ByVal timeout As Integer = 15000) As Object
         Dim webReq As HttpWebRequest
         Dim dataB As Byte()
         Dim strm As Stream
