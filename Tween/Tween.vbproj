@@ -71,6 +71,7 @@
     <Import Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnalyzeKey.vb" />
     <Compile Include="ApplicationEvents.vb" />
     <Compile Include="DetailsListView.Designer.vb">
       <DependentUpon>DetailsListView.vb</DependentUpon>
