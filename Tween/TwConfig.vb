@@ -1537,6 +1537,16 @@ Public Property CloseToExit() As Boolean
         End Set
     End Property
 
+    <ConfigurationProperty("periodadjust", DefaultValue:=True)> _
+    Public Property PeriodAdjust() As Boolean
+        Get
+            Return CBool(Me("periodadjust"))
+        End Get
+        Set(ByVal value As Boolean)
+            Me("periodadjust") = value
+        End Set
+    End Property
+
     Private Function EncryptString(ByVal str As String) As String
         '文字列をバイト型配列にする
         Dim bytesIn As Byte() = System.Text.Encoding.UTF8.GetBytes(str)

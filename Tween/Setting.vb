@@ -48,6 +48,7 @@ Public Class Setting
     Private _MyProxyUser As String
     Private _MyProxyPassword As String
     Private _MyMaxPostNum As Integer
+    Private _MyPeriodAdjust As Boolean
 
     'Public Enum LogUnitEnum
     '    Minute
@@ -191,6 +192,7 @@ Public Class Setting
             _MyProxyPort = Integer.Parse(TextProxyPort.Text.Trim())
             _MyProxyUser = TextProxyUser.Text.Trim()
             _MyProxyPassword = TextProxyPassword.Text.Trim()
+            _MyPeriodAdjust = CheckPeriodAdjust.Checked
 
             'TweenMain.SetMainWindowTitle()
             'TweenMain.SetNotifyIconText()
@@ -317,6 +319,8 @@ Public Class Setting
         TextProxyPort.Text = _MyProxyPort.ToString
         TextProxyUser.Text = _MyProxyUser
         TextProxyPassword.Text = _MyProxyPassword
+
+        CheckPeriodAdjust.Checked = _MyPeriodAdjust
 
         'TweenMain.SetMainWindowTitle()
         'TweenMain.SetNotifyIconText()
@@ -1005,6 +1009,15 @@ Public Class Setting
         End Get
         Set(ByVal value As String)
             _MyProxyPassword = value
+        End Set
+    End Property
+
+    Public Property PeriodAdjust() As Boolean
+        Get
+            Return _MyPeriodAdjust
+        End Get
+        Set(ByVal value As Boolean)
+            _MyPeriodAdjust = value
         End Set
     End Property
 

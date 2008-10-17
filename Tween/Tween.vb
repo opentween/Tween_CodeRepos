@@ -59,6 +59,9 @@ Public Class TweenMain
     Private _getDM As Boolean
     Private RemainPostNum As Integer   ' POST残り回数
     Private __PostCounter As Integer = 59  '割り込みカウンタ　タイマ割り込みでカウントダウン
+    Private _postTimestamps As New List(Of Date)
+    Private _tlTimestamps As New Dictionary(Of Date, Integer)
+    Private _tlCount As Integer
 
     Friend Class Win32Api
         '画面をブリンクするためのWin32API。起動時に10ページ読み取りごとに継続確認メッセージを表示する際の通知強調用
@@ -315,6 +318,7 @@ Public Class TweenMain
         SettingDialog.ProxyPort = _section.ProxyPort
         SettingDialog.ProxyUser = _section.ProxyUser
         SettingDialog.ProxyPassword = _section.ProxyPassword
+        SettingDialog.PeriodAdjust = _section.PeriodAdjust
 
         'ユーザー名、パスワードが未設定なら設定画面を表示（初回起動時など）
         If _username = "" Or _password = "" Then
@@ -1603,9 +1607,11 @@ Public Class TweenMain
                 Exit Sub
             Case WORKERTYPE.Timeline
                 StatusLabel.Text = "Recent更新完了"
+                Dim statusCount As Integer = rslt.TLine.Count
                 If rslt.TLine.Count > 0 Then
                     RefreshTimeline(rslt.TLine)
                 End If
+                TimerTimeline.Enabled = False
                 If rslt.retMsg <> "" Then
                     If My.Computer.Network.IsAvailable Then
                         If SettingDialog.TimelinePeriodInt > 0 Then TimerTimeline.Enabled = True
@@ -1678,8 +1684,28 @@ Public Class TweenMain
                             _initial = False
                         End If
                     Else
+                        _tlTimestamps.Add(Now, statusCount)
+                        Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
+                        Dim keys As New List(Of Date)
+                        _tlCount = 0
+                        For Each key As Date In _tlTimestamps.Keys
+                            If key.CompareTo(oneHour) < 0 Then
+                                keys.Add(key)
+                            Else
+                                _tlCount += _tlTimestamps(key)
+                            End If
+                        Next
+                        For Each key As Date In keys
+                            _tlTimestamps.Remove(key)
+                        Next
+                        keys.Clear()
                         If rslt.page + 1 <= rslt.endPage Then
-                            If rslt.TLine.Count = 20 Then TimerTimeline.Interval -= 1000
+                            If statusCount = 20 And rslt.page = 1 And SettingDialog.PeriodAdjust Then
+                                Dim itv As Integer = TimerTimeline.Interval
+                                itv -= 5000
+                                If itv < 15000 Then itv = 15000
+                                TimerTimeline.Interval = itv
+                            End If
                             args.page = rslt.page + 1
                             args.endPage = rslt.endPage
                             args.type = WORKERTYPE.Timeline
@@ -1694,7 +1720,7 @@ Public Class TweenMain
                             Loop
                             GetTimelineWorker.RunWorkerAsync(args)
                         Else
-                            If rslt.page = 1 And rslt.TLine.Count < 18 Then
+                            If rslt.page = 1 And statusCount < 18 And SettingDialog.PeriodAdjust Then
                                 TimerTimeline.Interval += 1000
                                 If TimerTimeline.Interval > SettingDialog.TimelinePeriodInt * 1000 Then TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
                             End If
@@ -1736,6 +1762,7 @@ Public Class TweenMain
                 If rslt.TLine.Count > 0 Then
                     RefreshTimeline(rslt.TLine)
                 End If
+                TimerTimeline.Enabled = False
                 If My.Computer.Network.IsAvailable Then
                     If SettingDialog.TimelinePeriodInt > 0 Then TimerTimeline.Enabled = True
                 End If
@@ -1797,6 +1824,7 @@ Public Class TweenMain
                 If rslt.TLine.Count > 0 Then
                     RefreshDirectMessage(rslt.TLine, True)
                 End If
+                TimerDM.Enabled = False
                 If rslt.retMsg <> "" Then
                     StatusLabel.Text = rslt.retMsg
                     If _initial Then TimerDM.Interval = 30000
@@ -1843,6 +1871,7 @@ Public Class TweenMain
                 If rslt.TLine.Count > 0 Then
                     RefreshDirectMessage(rslt.TLine, False)
                 End If
+                TimerDM.Enabled = False
                 If rslt.retMsg <> "" Then
                     StatusLabel.Text = rslt.retMsg
                     If _initial Then TimerDM.Interval = 30000
@@ -3034,13 +3063,31 @@ Public Class TweenMain
             clsTw.Password = _password
             clsTwPost.Username = _username
             clsTwPost.Password = _password
-            TimerTimeline.Interval = IIf(SettingDialog.TimelinePeriodInt > 0, SettingDialog.TimelinePeriodInt * 1000, 600000)
-            TimerDM.Interval = IIf(SettingDialog.DMPeriodInt > 0, SettingDialog.DMPeriodInt * 1000, 600000)
+            'TimerTimeline.Interval = IIf(SettingDialog.TimelinePeriodInt > 0, SettingDialog.TimelinePeriodInt * 1000, 600000)
+            If SettingDialog.TimelinePeriodInt > 0 Then
+                If SettingDialog.PeriodAdjust Then
+                    If SettingDialog.TimelinePeriodInt * 1000 < TimerTimeline.Interval Then
+                        TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
+                    End If
+                Else
+                    TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
+                End If
+            Else
+                TimerTimeline.Interval = 600000
+                TimerTimeline.Enabled = False
+            End If
+            If SettingDialog.DMPeriodInt > 0 Then
+                TimerDM.Interval = SettingDialog.DMPeriodInt * 1000
+            Else
+                TimerDM.Interval = 600000
+                TimerDM.Enabled = False
+            End If
             clsTw.NextThreshold = SettingDialog.NextPageThreshold
             clsTw.NextPages = SettingDialog.NextPagesInt
             clsTwPost.UseAPI = SettingDialog.UseAPI
             clsTw.HubServer = SettingDialog.HubServer
             clsTwPost.HubServer = SettingDialog.HubServer
+            clsTw.TinyUrlResolve = SettingDialog.TinyUrlResolve
             clsTw.ProxyType = SettingDialog.ProxyType
             clsTw.ProxyAddress = SettingDialog.ProxyAddress
             clsTw.ProxyPort = SettingDialog.ProxyPort
@@ -5909,6 +5956,15 @@ RETRY:
                     TimerRefreshIcon.Enabled = False
                     NotifyIcon1.Icon = NIconAtRed
                 Else
+                    _postTimestamps.Add(Now)
+                    Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
+                    For i As Integer = 0 To _postTimestamps.Count - 1
+                        If _postTimestamps(i).CompareTo(oneHour) < 0 Then
+                            _postTimestamps.RemoveAt(i)
+                        Else
+                            Exit For
+                        End If
+                    Next
                     If RemainPostNum > 1 Then RemainPostNum -= 1
                     If TimerPostCounter.Enabled = False Then TimerPostCounter.Enabled = True
                     StatusLabel.Text = "POST完了"
@@ -6325,8 +6381,10 @@ RETRY:
                 tal = ts.allCount
             End If
         Next
-        StatusLabelUrl.Text = "タブ: " + tur.ToString() + "/" + tal.ToString() + " 全体:" + ur.ToString() + "/" + al.ToString() + _
-                " (返信: " + urat.ToString() + ") POST残り " + RemainPostNum.ToString() + "回/最大 " + SettingDialog.MaxPostNum.ToString() + "回"
+        'StatusLabelUrl.Text = "タブ: " + tur.ToString() + "/" + tal.ToString() + " 全体:" + ur.ToString() + "/" + al.ToString() + _
+        '        " (返信: " + urat.ToString() + ") POST残り " + RemainPostNum.ToString() + "回/最大 " + SettingDialog.MaxPostNum.ToString() + "回 更新間隔:" + (TimerTimeline.Interval / 1000).ToString
+        StatusLabelUrl.Text = "[タブ: " + tur.ToString() + "/" + tal.ToString() + " 全体: " + ur.ToString() + "/" + al.ToString() + _
+                " (返信: " + urat.ToString() + ")] [時速: " + _postTimestamps.Count.ToString() + "/" + _tlCount.ToString + "] [間隔: " + IIf(SettingDialog.TimelinePeriodInt = 0, "-", (TimerTimeline.Interval / 1000).ToString) + "]"
     End Sub
 
     Private Sub SetNotifyIconText()

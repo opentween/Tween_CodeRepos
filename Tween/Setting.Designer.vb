@@ -135,6 +135,8 @@ Partial Class Setting
         Me.Label47 = New System.Windows.Forms.Label
         Me.TabControl1 = New System.Windows.Forms.TabControl
         Me.TabPage1 = New System.Windows.Forms.TabPage
+        Me.MaxPost = New System.Windows.Forms.TextBox
+        Me.Label52 = New System.Windows.Forms.Label
         Me.TabPage2 = New System.Windows.Forms.TabPage
         Me.CheckTinyURL = New System.Windows.Forms.CheckBox
         Me.Label50 = New System.Windows.Forms.Label
@@ -143,20 +145,19 @@ Partial Class Setting
         Me.TabPage4 = New System.Windows.Forms.TabPage
         Me.TabPage5 = New System.Windows.Forms.TabPage
         Me.GroupBox2 = New System.Windows.Forms.GroupBox
-        Me.RadioProxyNone = New System.Windows.Forms.RadioButton
-        Me.RadioProxyIE = New System.Windows.Forms.RadioButton
-        Me.RadioProxySpecified = New System.Windows.Forms.RadioButton
-        Me.LabelProxyAddress = New System.Windows.Forms.Label
-        Me.TextProxyAddress = New System.Windows.Forms.TextBox
-        Me.LabelProxyPort = New System.Windows.Forms.Label
-        Me.TextProxyPort = New System.Windows.Forms.TextBox
-        Me.LabelProxyUser = New System.Windows.Forms.Label
-        Me.TextProxyUser = New System.Windows.Forms.TextBox
-        Me.LabelProxyPassword = New System.Windows.Forms.Label
-        Me.TextProxyPassword = New System.Windows.Forms.TextBox
         Me.Label55 = New System.Windows.Forms.Label
-        Me.Label52 = New System.Windows.Forms.Label
-        Me.MaxPost = New System.Windows.Forms.TextBox
+        Me.TextProxyPassword = New System.Windows.Forms.TextBox
+        Me.LabelProxyPassword = New System.Windows.Forms.Label
+        Me.TextProxyUser = New System.Windows.Forms.TextBox
+        Me.LabelProxyUser = New System.Windows.Forms.Label
+        Me.TextProxyPort = New System.Windows.Forms.TextBox
+        Me.LabelProxyPort = New System.Windows.Forms.Label
+        Me.TextProxyAddress = New System.Windows.Forms.TextBox
+        Me.LabelProxyAddress = New System.Windows.Forms.Label
+        Me.RadioProxySpecified = New System.Windows.Forms.RadioButton
+        Me.RadioProxyIE = New System.Windows.Forms.RadioButton
+        Me.RadioProxyNone = New System.Windows.Forms.RadioButton
+        Me.CheckPeriodAdjust = New System.Windows.Forms.CheckBox
         Me.GroupBox1.SuspendLayout()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
@@ -240,103 +241,103 @@ Partial Class Setting
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(14, 126)
+        Me.Label4.Location = New System.Drawing.Point(14, 150)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(139, 12)
-        Me.Label4.TabIndex = 9
+        Me.Label4.TabIndex = 10
         Me.Label4.Text = "次頁取得件数閾値(1～20)"
         '
         'NextThreshold
         '
-        Me.NextThreshold.Location = New System.Drawing.Point(183, 123)
+        Me.NextThreshold.Location = New System.Drawing.Point(183, 147)
         Me.NextThreshold.Name = "NextThreshold"
         Me.NextThreshold.Size = New System.Drawing.Size(65, 19)
-        Me.NextThreshold.TabIndex = 10
+        Me.NextThreshold.TabIndex = 11
         '
         'DMPeriod
         '
-        Me.DMPeriod.Location = New System.Drawing.Point(183, 82)
+        Me.DMPeriod.Location = New System.Drawing.Point(183, 103)
         Me.DMPeriod.Name = "DMPeriod"
         Me.DMPeriod.Size = New System.Drawing.Size(65, 19)
-        Me.DMPeriod.TabIndex = 8
+        Me.DMPeriod.TabIndex = 9
         '
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(14, 85)
+        Me.Label5.Location = New System.Drawing.Point(14, 106)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(94, 12)
-        Me.Label5.TabIndex = 7
+        Me.Label5.TabIndex = 8
         Me.Label5.Text = "DM更新間隔（秒）"
         '
         'NextPages
         '
-        Me.NextPages.Location = New System.Drawing.Point(183, 148)
+        Me.NextPages.Location = New System.Drawing.Point(183, 172)
         Me.NextPages.Name = "NextPages"
         Me.NextPages.Size = New System.Drawing.Size(65, 19)
-        Me.NextPages.TabIndex = 12
+        Me.NextPages.TabIndex = 13
         '
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(14, 151)
+        Me.Label6.Location = New System.Drawing.Point(14, 175)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(144, 12)
-        Me.Label6.TabIndex = 11
+        Me.Label6.TabIndex = 12
         Me.Label6.Text = "閾値オーバー時の取得ページ"
         '
         'ReadLogDays
         '
         Me.ReadLogDays.Enabled = False
-        Me.ReadLogDays.Location = New System.Drawing.Point(183, 173)
+        Me.ReadLogDays.Location = New System.Drawing.Point(183, 197)
         Me.ReadLogDays.Name = "ReadLogDays"
         Me.ReadLogDays.Size = New System.Drawing.Size(51, 19)
-        Me.ReadLogDays.TabIndex = 14
+        Me.ReadLogDays.TabIndex = 15
         Me.ReadLogDays.Visible = False
         '
         'Label7
         '
         Me.Label7.AutoSize = True
         Me.Label7.Enabled = False
-        Me.Label7.Location = New System.Drawing.Point(14, 176)
+        Me.Label7.Location = New System.Drawing.Point(14, 200)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(163, 12)
-        Me.Label7.TabIndex = 13
+        Me.Label7.TabIndex = 14
         Me.Label7.Text = "ログ読み込み 起動時刻から過去"
         Me.Label7.Visible = False
         '
         'StartupReadPages
         '
-        Me.StartupReadPages.Location = New System.Drawing.Point(74, 216)
+        Me.StartupReadPages.Location = New System.Drawing.Point(74, 240)
         Me.StartupReadPages.Name = "StartupReadPages"
         Me.StartupReadPages.Size = New System.Drawing.Size(34, 19)
-        Me.StartupReadPages.TabIndex = 18
+        Me.StartupReadPages.TabIndex = 19
         '
         'Label8
         '
         Me.Label8.AutoSize = True
-        Me.Label8.Location = New System.Drawing.Point(14, 201)
+        Me.Label8.Location = New System.Drawing.Point(14, 225)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(129, 12)
-        Me.Label8.TabIndex = 16
+        Me.Label8.TabIndex = 17
         Me.Label8.Text = "起動時読み込みページ数"
         '
         'Label9
         '
         Me.Label9.AutoSize = True
-        Me.Label9.Location = New System.Drawing.Point(14, 247)
+        Me.Label9.Location = New System.Drawing.Point(14, 271)
         Me.Label9.Name = "Label9"
         Me.Label9.Size = New System.Drawing.Size(114, 12)
-        Me.Label9.TabIndex = 23
+        Me.Label9.TabIndex = 24
         Me.Label9.Text = "起動時読み込みポスト"
         '
         'StartupReaded
         '
         Me.StartupReaded.AutoSize = True
-        Me.StartupReaded.Location = New System.Drawing.Point(183, 246)
+        Me.StartupReaded.Location = New System.Drawing.Point(183, 270)
         Me.StartupReaded.Name = "StartupReaded"
         Me.StartupReaded.Size = New System.Drawing.Size(76, 16)
-        Me.StartupReaded.TabIndex = 24
+        Me.StartupReaded.TabIndex = 25
         Me.StartupReaded.Text = "既読にする"
         Me.StartupReaded.UseVisualStyleBackColor = True
         '
@@ -345,10 +346,10 @@ Partial Class Setting
         Me.ReadLogUnit.Enabled = False
         Me.ReadLogUnit.FormattingEnabled = True
         Me.ReadLogUnit.Items.AddRange(New Object() {"分間", "時間", "日間"})
-        Me.ReadLogUnit.Location = New System.Drawing.Point(235, 173)
+        Me.ReadLogUnit.Location = New System.Drawing.Point(235, 197)
         Me.ReadLogUnit.Name = "ReadLogUnit"
         Me.ReadLogUnit.Size = New System.Drawing.Size(61, 20)
-        Me.ReadLogUnit.TabIndex = 15
+        Me.ReadLogUnit.TabIndex = 16
         Me.ReadLogUnit.Visible = False
         '
         'Label11
@@ -976,43 +977,43 @@ Partial Class Setting
         'Label31
         '
         Me.Label31.AutoSize = True
-        Me.Label31.Location = New System.Drawing.Point(27, 219)
+        Me.Label31.Location = New System.Drawing.Point(27, 243)
         Me.Label31.Name = "Label31"
         Me.Label31.Size = New System.Drawing.Size(41, 12)
-        Me.Label31.TabIndex = 17
+        Me.Label31.TabIndex = 18
         Me.Label31.Text = "Recent"
         '
         'Label33
         '
         Me.Label33.AutoSize = True
-        Me.Label33.Location = New System.Drawing.Point(114, 219)
+        Me.Label33.Location = New System.Drawing.Point(114, 243)
         Me.Label33.Name = "Label33"
         Me.Label33.Size = New System.Drawing.Size(34, 12)
-        Me.Label33.TabIndex = 19
+        Me.Label33.TabIndex = 20
         Me.Label33.Text = "Reply"
         '
         'Label35
         '
         Me.Label35.AutoSize = True
-        Me.Label35.Location = New System.Drawing.Point(194, 219)
+        Me.Label35.Location = New System.Drawing.Point(194, 243)
         Me.Label35.Name = "Label35"
         Me.Label35.Size = New System.Drawing.Size(22, 12)
-        Me.Label35.TabIndex = 21
+        Me.Label35.TabIndex = 22
         Me.Label35.Text = "DM"
         '
         'StartupReadReply
         '
-        Me.StartupReadReply.Location = New System.Drawing.Point(154, 216)
+        Me.StartupReadReply.Location = New System.Drawing.Point(154, 240)
         Me.StartupReadReply.Name = "StartupReadReply"
         Me.StartupReadReply.Size = New System.Drawing.Size(34, 19)
-        Me.StartupReadReply.TabIndex = 20
+        Me.StartupReadReply.TabIndex = 21
         '
         'StartupReadDM
         '
-        Me.StartupReadDM.Location = New System.Drawing.Point(222, 216)
+        Me.StartupReadDM.Location = New System.Drawing.Point(222, 240)
         Me.StartupReadDM.Name = "StartupReadDM"
         Me.StartupReadDM.Size = New System.Drawing.Size(34, 19)
-        Me.StartupReadDM.TabIndex = 22
+        Me.StartupReadDM.TabIndex = 23
         '
         'TextBox3
         '
@@ -1170,7 +1171,7 @@ Partial Class Setting
         'CheckboxReply
         '
         Me.CheckboxReply.AutoSize = True
-        Me.CheckboxReply.Location = New System.Drawing.Point(254, 59)
+        Me.CheckboxReply.Location = New System.Drawing.Point(77, 82)
         Me.CheckboxReply.Name = "CheckboxReply"
         Me.CheckboxReply.Size = New System.Drawing.Size(101, 16)
         Me.CheckboxReply.TabIndex = 6
@@ -1239,6 +1240,7 @@ Partial Class Setting
         '
         'TabPage1
         '
+        Me.TabPage1.Controls.Add(Me.CheckPeriodAdjust)
         Me.TabPage1.Controls.Add(Me.MaxPost)
         Me.TabPage1.Controls.Add(Me.Label52)
         Me.TabPage1.Controls.Add(Me.Label1)
@@ -1266,13 +1268,31 @@ Partial Class Setting
         Me.TabPage1.Controls.Add(Me.Label35)
         Me.TabPage1.Controls.Add(Me.StartupReadReply)
         Me.TabPage1.Controls.Add(Me.StartupReadDM)
-        Me.TabPage1.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage1.Location = New System.Drawing.Point(4, 21)
         Me.TabPage1.Name = "TabPage1"
         Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(372, 436)
+        Me.TabPage1.Size = New System.Drawing.Size(372, 437)
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "基本"
         Me.TabPage1.UseVisualStyleBackColor = True
+        '
+        'MaxPost
+        '
+        Me.MaxPost.Location = New System.Drawing.Point(186, 293)
+        Me.MaxPost.Name = "MaxPost"
+        Me.MaxPost.Size = New System.Drawing.Size(62, 19)
+        Me.MaxPost.TabIndex = 27
+        Me.MaxPost.Visible = False
+        '
+        'Label52
+        '
+        Me.Label52.AutoSize = True
+        Me.Label52.Location = New System.Drawing.Point(14, 296)
+        Me.Label52.Name = "Label52"
+        Me.Label52.Size = New System.Drawing.Size(149, 12)
+        Me.Label52.TabIndex = 26
+        Me.Label52.Text = "1時間あたりの最大POST回数"
+        Me.Label52.Visible = False
         '
         'TabPage2
         '
@@ -1305,10 +1325,10 @@ Partial Class Setting
         Me.TabPage2.Controls.Add(Me.Label12)
         Me.TabPage2.Controls.Add(Me.StatusText)
         Me.TabPage2.Controls.Add(Me.CheckUseRecommendStatus)
-        Me.TabPage2.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage2.Location = New System.Drawing.Point(4, 21)
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(372, 436)
+        Me.TabPage2.Size = New System.Drawing.Size(372, 437)
         Me.TabPage2.TabIndex = 1
         Me.TabPage2.Text = "動作"
         Me.TabPage2.UseVisualStyleBackColor = True
@@ -1359,10 +1379,10 @@ Partial Class Setting
         Me.TabPage3.Controls.Add(Me.IconSize)
         Me.TabPage3.Controls.Add(Me.CheckBox3)
         Me.TabPage3.Controls.Add(Me.TextBox3)
-        Me.TabPage3.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage3.Location = New System.Drawing.Point(4, 21)
         Me.TabPage3.Name = "TabPage3"
         Me.TabPage3.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage3.Size = New System.Drawing.Size(372, 436)
+        Me.TabPage3.Size = New System.Drawing.Size(372, 437)
         Me.TabPage3.TabIndex = 2
         Me.TabPage3.Text = "表示"
         Me.TabPage3.UseVisualStyleBackColor = True
@@ -1370,10 +1390,10 @@ Partial Class Setting
         'TabPage4
         '
         Me.TabPage4.Controls.Add(Me.GroupBox1)
-        Me.TabPage4.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage4.Location = New System.Drawing.Point(4, 21)
         Me.TabPage4.Name = "TabPage4"
         Me.TabPage4.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage4.Size = New System.Drawing.Size(372, 436)
+        Me.TabPage4.Size = New System.Drawing.Size(372, 437)
         Me.TabPage4.TabIndex = 3
         Me.TabPage4.Text = "フォント＆色"
         Me.TabPage4.UseVisualStyleBackColor = True
@@ -1388,15 +1408,6 @@ Partial Class Setting
         Me.TabPage5.TabIndex = 4
         Me.TabPage5.Text = "通信"
         Me.TabPage5.UseVisualStyleBackColor = True
-        '
-        'Label52
-        '
-        Me.Label52.AutoSize = True
-        Me.Label52.Location = New System.Drawing.Point(14, 272)
-        Me.Label52.Name = "Label52"
-        Me.Label52.Size = New System.Drawing.Size(149, 12)
-        Me.Label52.TabIndex = 25
-        Me.Label52.Text = "1時間あたりの最大POST回数"
         '
         'GroupBox2
         '
@@ -1419,22 +1430,90 @@ Partial Class Setting
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "プロキシの設定"
         '
-        'MaxPost
+        'Label55
         '
-        Me.MaxPost.Location = New System.Drawing.Point(186, 269)
-        Me.MaxPost.Name = "MaxPost"
-        Me.MaxPost.Size = New System.Drawing.Size(62, 19)
-        Me.MaxPost.TabIndex = 26
+        Me.Label55.AutoSize = True
+        Me.Label55.ForeColor = System.Drawing.SystemColors.ActiveCaption
+        Me.Label55.Location = New System.Drawing.Point(28, 134)
+        Me.Label55.Name = "Label55"
+        Me.Label55.Size = New System.Drawing.Size(314, 12)
+        Me.Label55.TabIndex = 11
+        Me.Label55.Text = "※認証が不要な場合は、ユーザ名とパスワードは空にしてください。"
         '
-        'RadioProxyNone
+        'TextProxyPassword
         '
-        Me.RadioProxyNone.AutoSize = True
-        Me.RadioProxyNone.Location = New System.Drawing.Point(6, 18)
-        Me.RadioProxyNone.Name = "RadioProxyNone"
-        Me.RadioProxyNone.Size = New System.Drawing.Size(76, 16)
-        Me.RadioProxyNone.TabIndex = 0
-        Me.RadioProxyNone.Text = "使用しない"
-        Me.RadioProxyNone.UseVisualStyleBackColor = True
+        Me.TextProxyPassword.Location = New System.Drawing.Point(274, 103)
+        Me.TextProxyPassword.Name = "TextProxyPassword"
+        Me.TextProxyPassword.Size = New System.Drawing.Size(68, 19)
+        Me.TextProxyPassword.TabIndex = 10
+        Me.TextProxyPassword.UseSystemPasswordChar = True
+        '
+        'LabelProxyPassword
+        '
+        Me.LabelProxyPassword.AutoSize = True
+        Me.LabelProxyPassword.Location = New System.Drawing.Point(205, 106)
+        Me.LabelProxyPassword.Name = "LabelProxyPassword"
+        Me.LabelProxyPassword.Size = New System.Drawing.Size(69, 12)
+        Me.LabelProxyPassword.TabIndex = 9
+        Me.LabelProxyPassword.Text = "パスワード(&W)"
+        '
+        'TextProxyUser
+        '
+        Me.TextProxyUser.Location = New System.Drawing.Point(131, 103)
+        Me.TextProxyUser.Name = "TextProxyUser"
+        Me.TextProxyUser.Size = New System.Drawing.Size(68, 19)
+        Me.TextProxyUser.TabIndex = 8
+        '
+        'LabelProxyUser
+        '
+        Me.LabelProxyUser.AutoSize = True
+        Me.LabelProxyUser.Location = New System.Drawing.Point(62, 106)
+        Me.LabelProxyUser.Name = "LabelProxyUser"
+        Me.LabelProxyUser.Size = New System.Drawing.Size(63, 12)
+        Me.LabelProxyUser.TabIndex = 7
+        Me.LabelProxyUser.Text = "ユーザ名(&U)"
+        '
+        'TextProxyPort
+        '
+        Me.TextProxyPort.Location = New System.Drawing.Point(297, 78)
+        Me.TextProxyPort.Name = "TextProxyPort"
+        Me.TextProxyPort.Size = New System.Drawing.Size(45, 19)
+        Me.TextProxyPort.TabIndex = 6
+        '
+        'LabelProxyPort
+        '
+        Me.LabelProxyPort.AutoSize = True
+        Me.LabelProxyPort.Location = New System.Drawing.Point(243, 81)
+        Me.LabelProxyPort.Name = "LabelProxyPort"
+        Me.LabelProxyPort.Size = New System.Drawing.Size(48, 12)
+        Me.LabelProxyPort.TabIndex = 5
+        Me.LabelProxyPort.Text = "ポート(&P)"
+        '
+        'TextProxyAddress
+        '
+        Me.TextProxyAddress.Location = New System.Drawing.Point(102, 78)
+        Me.TextProxyAddress.Name = "TextProxyAddress"
+        Me.TextProxyAddress.Size = New System.Drawing.Size(135, 19)
+        Me.TextProxyAddress.TabIndex = 4
+        '
+        'LabelProxyAddress
+        '
+        Me.LabelProxyAddress.AutoSize = True
+        Me.LabelProxyAddress.Location = New System.Drawing.Point(38, 81)
+        Me.LabelProxyAddress.Name = "LabelProxyAddress"
+        Me.LabelProxyAddress.Size = New System.Drawing.Size(58, 12)
+        Me.LabelProxyAddress.TabIndex = 3
+        Me.LabelProxyAddress.Text = "プロキシ(&X)"
+        '
+        'RadioProxySpecified
+        '
+        Me.RadioProxySpecified.AutoSize = True
+        Me.RadioProxySpecified.Location = New System.Drawing.Point(6, 62)
+        Me.RadioProxySpecified.Name = "RadioProxySpecified"
+        Me.RadioProxySpecified.Size = New System.Drawing.Size(66, 16)
+        Me.RadioProxySpecified.TabIndex = 2
+        Me.RadioProxySpecified.Text = "指定する"
+        Me.RadioProxySpecified.UseVisualStyleBackColor = True
         '
         'RadioProxyIE
         '
@@ -1448,90 +1527,25 @@ Partial Class Setting
         Me.RadioProxyIE.Text = "InternetExplorerの設定を使用する"
         Me.RadioProxyIE.UseVisualStyleBackColor = True
         '
-        'RadioProxySpecified
+        'RadioProxyNone
         '
-        Me.RadioProxySpecified.AutoSize = True
-        Me.RadioProxySpecified.Location = New System.Drawing.Point(6, 62)
-        Me.RadioProxySpecified.Name = "RadioProxySpecified"
-        Me.RadioProxySpecified.Size = New System.Drawing.Size(66, 16)
-        Me.RadioProxySpecified.TabIndex = 2
-        Me.RadioProxySpecified.Text = "指定する"
-        Me.RadioProxySpecified.UseVisualStyleBackColor = True
+        Me.RadioProxyNone.AutoSize = True
+        Me.RadioProxyNone.Location = New System.Drawing.Point(6, 18)
+        Me.RadioProxyNone.Name = "RadioProxyNone"
+        Me.RadioProxyNone.Size = New System.Drawing.Size(76, 16)
+        Me.RadioProxyNone.TabIndex = 0
+        Me.RadioProxyNone.Text = "使用しない"
+        Me.RadioProxyNone.UseVisualStyleBackColor = True
         '
-        'LabelProxyAddress
+        'CheckPeriodAdjust
         '
-        Me.LabelProxyAddress.AutoSize = True
-        Me.LabelProxyAddress.Location = New System.Drawing.Point(38, 81)
-        Me.LabelProxyAddress.Name = "LabelProxyAddress"
-        Me.LabelProxyAddress.Size = New System.Drawing.Size(58, 12)
-        Me.LabelProxyAddress.TabIndex = 3
-        Me.LabelProxyAddress.Text = "プロキシ(&X)"
-        '
-        'TextProxyAddress
-        '
-        Me.TextProxyAddress.Location = New System.Drawing.Point(102, 78)
-        Me.TextProxyAddress.Name = "TextProxyAddress"
-        Me.TextProxyAddress.Size = New System.Drawing.Size(135, 19)
-        Me.TextProxyAddress.TabIndex = 4
-        '
-        'LabelProxyPort
-        '
-        Me.LabelProxyPort.AutoSize = True
-        Me.LabelProxyPort.Location = New System.Drawing.Point(243, 81)
-        Me.LabelProxyPort.Name = "LabelProxyPort"
-        Me.LabelProxyPort.Size = New System.Drawing.Size(48, 12)
-        Me.LabelProxyPort.TabIndex = 5
-        Me.LabelProxyPort.Text = "ポート(&P)"
-        '
-        'TextProxyPort
-        '
-        Me.TextProxyPort.Location = New System.Drawing.Point(297, 78)
-        Me.TextProxyPort.Name = "TextProxyPort"
-        Me.TextProxyPort.Size = New System.Drawing.Size(45, 19)
-        Me.TextProxyPort.TabIndex = 6
-        '
-        'LabelProxyUser
-        '
-        Me.LabelProxyUser.AutoSize = True
-        Me.LabelProxyUser.Location = New System.Drawing.Point(62, 106)
-        Me.LabelProxyUser.Name = "LabelProxyUser"
-        Me.LabelProxyUser.Size = New System.Drawing.Size(63, 12)
-        Me.LabelProxyUser.TabIndex = 7
-        Me.LabelProxyUser.Text = "ユーザ名(&U)"
-        '
-        'TextProxyUser
-        '
-        Me.TextProxyUser.Location = New System.Drawing.Point(131, 103)
-        Me.TextProxyUser.Name = "TextProxyUser"
-        Me.TextProxyUser.Size = New System.Drawing.Size(68, 19)
-        Me.TextProxyUser.TabIndex = 8
-        '
-        'LabelProxyPassword
-        '
-        Me.LabelProxyPassword.AutoSize = True
-        Me.LabelProxyPassword.Location = New System.Drawing.Point(205, 106)
-        Me.LabelProxyPassword.Name = "LabelProxyPassword"
-        Me.LabelProxyPassword.Size = New System.Drawing.Size(69, 12)
-        Me.LabelProxyPassword.TabIndex = 9
-        Me.LabelProxyPassword.Text = "パスワード(&W)"
-        '
-        'TextProxyPassword
-        '
-        Me.TextProxyPassword.Location = New System.Drawing.Point(274, 103)
-        Me.TextProxyPassword.Name = "TextProxyPassword"
-        Me.TextProxyPassword.Size = New System.Drawing.Size(68, 19)
-        Me.TextProxyPassword.TabIndex = 10
-        Me.TextProxyPassword.UseSystemPasswordChar = True
-        '
-        'Label55
-        '
-        Me.Label55.AutoSize = True
-        Me.Label55.ForeColor = System.Drawing.SystemColors.ActiveCaption
-        Me.Label55.Location = New System.Drawing.Point(28, 134)
-        Me.Label55.Name = "Label55"
-        Me.Label55.Size = New System.Drawing.Size(314, 12)
-        Me.Label55.TabIndex = 11
-        Me.Label55.Text = "※認証が不要な場合は、ユーザ名とパスワードは空にしてください。"
+        Me.CheckPeriodAdjust.AutoSize = True
+        Me.CheckPeriodAdjust.Location = New System.Drawing.Point(186, 82)
+        Me.CheckPeriodAdjust.Name = "CheckPeriodAdjust"
+        Me.CheckPeriodAdjust.Size = New System.Drawing.Size(91, 16)
+        Me.CheckPeriodAdjust.TabIndex = 7
+        Me.CheckPeriodAdjust.Text = "自動調整する"
+        Me.CheckPeriodAdjust.UseVisualStyleBackColor = True
         '
         'Setting
         '
@@ -1701,4 +1715,5 @@ Partial Class Setting
     Friend WithEvents Label55 As System.Windows.Forms.Label
     Friend WithEvents MaxPost As System.Windows.Forms.TextBox
     Friend WithEvents Label52 As System.Windows.Forms.Label
+    Friend WithEvents CheckPeriodAdjust As System.Windows.Forms.CheckBox
 End Class
