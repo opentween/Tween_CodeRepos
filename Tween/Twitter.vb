@@ -1600,7 +1600,7 @@ Partial Public Class Twitter
         '生成したソースはプロジェクトのディレクトリにコピーする
         Dim sw As New System.IO.StreamWriter(".\AnalyzeKey.vb", _
             False, _
-            System.Text.Encoding.GetEncoding(932))
+            System.Text.Encoding.UTF8)
 
         sw.WriteLine("Public Partial Class Twitter")
         sw.WriteLine("'    このファイルはデバッグビルドのTweenにより自動作成されました   作成日時  " + DateAndTime.Now.ToString())
