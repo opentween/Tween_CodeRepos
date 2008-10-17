@@ -34,6 +34,6 @@
     Private _isReplyTo As String = "<"
     Private _parseProtectMsg1 As String = "."" />"
     Private _parseProtectMsg2 As String = "<span class=""meta entry-meta"">"
-    Private _parseDMCount1 As String = "<a href=""/direct_messages"" id=""direct_messages_tab""><span id=""message_count"" class=""stat_count"">"
-    Private _parseDMCount2 As String = "</span>"
+    Private _parseDMcountFrom As String = "<a href=""/direct_messages"" id=""direct_messages_tab""><span id=""message_count"" class=""stat_count"">"
+    Private _parseDMcountTo As String = "</span>"
 End Class
