@@ -49,6 +49,8 @@ Public Class Setting
     Private _MyProxyPassword As String
     Private _MyMaxPostNum As Integer
     Private _MyPeriodAdjust As Boolean
+    Private _MyStartupVersion As Boolean
+    Private _MyStartupKey As Boolean
 
     'Public Enum LogUnitEnum
     '    Minute
@@ -193,6 +195,8 @@ Public Class Setting
             _MyProxyUser = TextProxyUser.Text.Trim()
             _MyProxyPassword = TextProxyPassword.Text.Trim()
             _MyPeriodAdjust = CheckPeriodAdjust.Checked
+            _MyStartupVersion = CheckStartupVersion.Checked
+            _MyStartupKey = CheckStartupKey.Checked
 
             'TweenMain.SetMainWindowTitle()
             'TweenMain.SetNotifyIconText()
@@ -321,6 +325,8 @@ Public Class Setting
         TextProxyPassword.Text = _MyProxyPassword
 
         CheckPeriodAdjust.Checked = _MyPeriodAdjust
+        CheckStartupVersion.Checked = _MyStartupVersion
+        CheckStartupKey.Checked = _MyStartupKey
 
         'TweenMain.SetMainWindowTitle()
         'TweenMain.SetNotifyIconText()
@@ -1018,6 +1024,24 @@ Public Class Setting
         End Get
         Set(ByVal value As Boolean)
             _MyPeriodAdjust = value
+        End Set
+    End Property
+
+    Public Property StartupVersion() As Boolean
+        Get
+            Return _MyStartupVersion
+        End Get
+        Set(ByVal value As Boolean)
+            _MyStartupVersion = value
+        End Set
+    End Property
+
+    Public Property StartupKey() As Boolean
+        Get
+            Return _MyStartupKey
+        End Get
+        Set(ByVal value As Boolean)
+            _MyStartupKey = value
         End Set
     End Property
 
