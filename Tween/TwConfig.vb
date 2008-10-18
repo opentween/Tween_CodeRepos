@@ -1547,6 +1547,26 @@ Public Property CloseToExit() As Boolean
         End Set
     End Property
 
+    <ConfigurationProperty("startupversion", DefaultValue:=True)> _
+    Public Property StartupVersion() As Boolean
+        Get
+            Return CBool(Me("startupversion"))
+        End Get
+        Set(ByVal value As Boolean)
+            Me("startupversion") = value
+        End Set
+    End Property
+
+    <ConfigurationProperty("startupkey", DefaultValue:=True)> _
+    Public Property StartupKey() As Boolean
+        Get
+            Return CBool(Me("startupkey"))
+        End Get
+        Set(ByVal value As Boolean)
+            Me("startupkey") = value
+        End Set
+    End Property
+
     Private Function EncryptString(ByVal str As String) As String
         '文字列をバイト型配列にする
         Dim bytesIn As Byte() = System.Text.Encoding.UTF8.GetBytes(str)

@@ -319,6 +319,8 @@ Public Class TweenMain
         SettingDialog.ProxyUser = _section.ProxyUser
         SettingDialog.ProxyPassword = _section.ProxyPassword
         SettingDialog.PeriodAdjust = _section.PeriodAdjust
+        SettingDialog.StartupVersion = _section.StartupVersion
+        SettingDialog.StartupKey = _section.StartupKey
 
         'ユーザー名、パスワードが未設定なら設定画面を表示（初回起動時など）
         If _username = "" Or _password = "" Then
@@ -352,7 +354,9 @@ Public Class TweenMain
         End If
 
         'バージョンチェック（引数：起動時チェックの場合はTrue･･･チェック結果のメッセージを表示しない）
-        Call CheckNewVersion(True)
+        If SettingDialog.StartupVersion Then
+            Call CheckNewVersion(True)
+        End If
 
         'ウィンドウ設定
         Me.WindowState = FormWindowState.Normal     '通常状態
@@ -390,7 +394,9 @@ Public Class TweenMain
         'Twitter用通信クラス初期化
         clsTw = New Twitter(_username, _password, SettingDialog.ProxyType, SettingDialog.ProxyAddress, SettingDialog.ProxyPort, SettingDialog.ProxyUser, SettingDialog.ProxyPassword)
         clsTwPost = New Twitter(_username, _password, SettingDialog.ProxyType, SettingDialog.ProxyAddress, SettingDialog.ProxyPort, SettingDialog.ProxyUser, SettingDialog.ProxyPassword)
-        Call clsTw.GetWedata()
+        If SettingDialog.StartupKey Then
+            Call clsTw.GetWedata()
+        End If
         clsTw.NextThreshold = SettingDialog.NextPageThreshold   '次頁取得閾値
         clsTw.NextPages = SettingDialog.NextPagesInt    '閾値オーバー時の読み込みページ数（未使用）
         _iconCol = False
@@ -1721,8 +1727,8 @@ Public Class TweenMain
                             GetTimelineWorker.RunWorkerAsync(args)
                         Else
                             If rslt.page = 1 And statusCount < 18 And SettingDialog.PeriodAdjust Then
-                                TimerTimeline.Interval += 1000
-                                If TimerTimeline.Interval > SettingDialog.TimelinePeriodInt * 1000 Then TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
+                                TimerTimeline.Interval += 2000
+                                If TimerTimeline.Interval > SettingDialog.TimelinePeriodInt * 1000 + 60000 Then TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000 + 60000
                             End If
                             If SettingDialog.CheckReply Then
                                 args.page = 1
@@ -5186,6 +5192,15 @@ RETRY:
             _section.CloseToExit = SettingDialog.CloseToExit
             _section.DispLatestPost = SettingDialog.DispLatestPost
             _section.SortOrderLock = SettingDialog.SortOrderLock
+            _section.TinyURLResolve = SettingDialog.TinyUrlResolve
+            _section.ProxyType = SettingDialog.ProxyType
+            _section.ProxyAddress = SettingDialog.ProxyAddress
+            _section.ProxyPort = SettingDialog.ProxyPort
+            _section.ProxyUser = SettingDialog.ProxyUser
+            _section.ProxyPassword = SettingDialog.ProxyPassword
+            _section.PeriodAdjust = SettingDialog.PeriodAdjust
+            _section.StartupVersion = SettingDialog.StartupVersion
+            _section.StartupKey = SettingDialog.StartupKey
 
             Dim tmpList As DetailsListView = Nothing
             For Each myTab As TabPage In ListTab.TabPages
@@ -5958,11 +5973,9 @@ RETRY:
                 Else
                     _postTimestamps.Add(Now)
                     Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
-                    For i As Integer = 0 To _postTimestamps.Count - 1
+                    For i As Integer = _postTimestamps.Count - 1 To 0 Step -1
                         If _postTimestamps(i).CompareTo(oneHour) < 0 Then
                             _postTimestamps.RemoveAt(i)
-                        Else
-                            Exit For
                         End If
                     Next
                     If RemainPostNum > 1 Then RemainPostNum -= 1
