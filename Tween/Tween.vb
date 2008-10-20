@@ -3078,12 +3078,14 @@ Public Class TweenMain
                 Else
                     TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
                 End If
+                TimerTimeline.Enabled = True
             Else
                 TimerTimeline.Interval = 600000
                 TimerTimeline.Enabled = False
             End If
             If SettingDialog.DMPeriodInt > 0 Then
                 TimerDM.Interval = SettingDialog.DMPeriodInt * 1000
+                TimerDM.Enabled = True
             Else
                 TimerDM.Interval = 600000
                 TimerDM.Enabled = False
@@ -6160,138 +6162,362 @@ RETRY:
     End Sub
 
     Private Sub ReFilter()
-        Dim modify As Boolean = False
+
+        '☆☆☆☆　暫定対応　☆☆☆☆
+        '発言保持をクラス化したとき、ちゃんと対応する
+        'このコードではメンテできない
+
+
+        'Dim modify As Boolean = False
+        'For Each ts As TabStructure In _tabs
+        '    If ts.modified Then
+        '        modify = True
+        '        ts.modified = False
+        '    End If
+        'Next
+        'If modify = False Then Exit Sub
+
+
         For Each ts As TabStructure In _tabs
-            If ts.modified Then
-                modify = True
-                ts.modified = False
-            End If
+            ts.listCustom.BeginUpdate()
         Next
-        If modify = False Then Exit Sub
 
-
-
+        Dim itms As New List(Of ListViewItem)
         For Each ts As TabStructure In _tabs
-            If ts.tabName <> "Recent" And ts.tabName <> "Reply" And ts.tabName <> "Direct" Then
-                For Each itm As ListViewItem In ts.listCustom.Items
-                    Dim i As Integer
-                    For i = 0 To _tabs(0).listCustom.Items.Count - 1
-                        If itm.SubItems(5).Text = _tabs(0).listCustom.Items(i).SubItems(5).Text Then
-                            Exit For
-                        End If
-                    Next
-                    If i > _tabs(0).listCustom.Items.Count - 1 Then
-                        Dim itm2 As ListViewItem = itm.Clone
-                        _tabs(0).allCount += 1
-                        If itm.SubItems(8).Text = "False" Then
-                            If _tabs(0).unreadManage And SettingDialog.UnreadManage Then
-                                _tabs(0).unreadCount += 1
-                                _tabs(0).oldestUnreadItem = Nothing
-                                'If _tabs(0).oldestUnreadItem Is Nothing Then
-                                '    _tabs(0).oldestUnreadItem = itm2
-                                'Else
-                                '    If _tabs(0).oldestUnreadItem.SubItems(5).Text > itm2.SubItems(5).Text Then
-                                '        _tabs(0).oldestUnreadItem = itm2
-                                '    End If
-                                'End If
-                            Else
-                                itm2.SubItems(8).Text = "True"
-                            End If
-                        End If
-                        _tabs(0).listCustom.Items.Add(itm2)
-                    End If
+            If ts.tabName <> "Recent" And ts.tabName <> "Reply" And ts.tabName <> "Direct" And ts.modified Then
+                For Each itmo As ListViewItem In ts.listCustom.Items
+                    itms.Add(itmo.Clone)
+                    'Dim i As Integer
+                    'For i = 0 To _tabs(0).listCustom.Items.Count - 1
+                    '    If itm.SubItems(5).Text = _tabs(0).listCustom.Items(i).SubItems(5).Text Then
+                    '        Exit For
+                    '    End If
+                    'Next
+                    'If i > _tabs(0).listCustom.Items.Count - 1 Then
+                    '    Dim itm2 As ListViewItem = itm.Clone
+                    '    _tabs(0).allCount += 1
+                    '    If itm.SubItems(8).Text = "False" Then
+                    '        If _tabs(0).unreadManage And SettingDialog.UnreadManage Then
+                    '            _tabs(0).unreadCount += 1
+                    '            _tabs(0).oldestUnreadItem = Nothing
+                    '            'If _tabs(0).oldestUnreadItem Is Nothing Then
+                    '            '    _tabs(0).oldestUnreadItem = itm2
+                    '            'Else
+                    '            '    If _tabs(0).oldestUnreadItem.SubItems(5).Text > itm2.SubItems(5).Text Then
+                    '            '        _tabs(0).oldestUnreadItem = itm2
+                    '            '    End If
+                    '            'End If
+                    '        Else
+                    '            itm2.SubItems(8).Text = "True"
+                    '        End If
+                    '    End If
+                    '    _tabs(0).listCustom.Items.Add(itm2)
+                    'End If
                 Next
                 ts.oldestUnreadItem = Nothing
                 ts.listCustom.Items.Clear()
                 ts.unreadCount = 0
                 ts.allCount = 0
-            End If
-        Next
+                ts.tabPage.ImageIndex = -1
 
-        For Each itm As ListViewItem In _tabs(0).listCustom.Items
-            Dim mv As Boolean = False
-            Dim nf As Boolean = False
-            Dim mk As Boolean = False
-            Dim lItem As New Twitter.MyListItem
+                For Each ts2 As TabStructure In _tabs
+                    If ts2.Equals(ts) = False And ts2.tabName <> "Reply" And ts2.tabName <> "Direct" Then
+                        For Each itm As ListViewItem In ts2.listCustom.Items
+                            Dim mv As Boolean = False
+                            Dim nf As Boolean = False
+                            Dim mk As Boolean = False
+                            Dim lItem As New Twitter.MyListItem
 
-            lItem.Data = itm.SubItems(2).Text
-            lItem.Fav = CBool(itm.SubItems(9).Text)
-            lItem.Id = itm.SubItems(5).Text
-            lItem.ImageUrl = itm.SubItems(6).Text
-            lItem.Name = itm.SubItems(4).Text
-            lItem.Nick = itm.SubItems(1).Text
-            lItem.OrgData = itm.SubItems(7).Text
-            lItem.PDate = CDate(itm.SubItems(3).Text)
-            lItem.Protect = itm.SubItems(0).Text.Contains("Ю")
-            lItem.Reply = CBool(itm.SubItems(11).Text)
-            lItem.Readed = IIf(itm.SubItems(8).Text = "True", True, False)
-            itm.SubItems(0).Text = itm.SubItems(0).Text.Replace("♪", "")
+                            lItem.Data = itm.SubItems(2).Text
+                            lItem.Fav = CBool(itm.SubItems(9).Text)
+                            lItem.Id = itm.SubItems(5).Text
+                            lItem.ImageUrl = itm.SubItems(6).Text
+                            lItem.Name = itm.SubItems(4).Text
+                            lItem.Nick = itm.SubItems(1).Text
+                            lItem.OrgData = itm.SubItems(7).Text
+                            lItem.PDate = CDate(itm.SubItems(3).Text)
+                            lItem.Protect = itm.SubItems(0).Text.Contains("Ю")
+                            lItem.Reply = CBool(itm.SubItems(11).Text)
+                            lItem.Readed = IIf(itm.SubItems(8).Text = "True", True, False)
+                            itm.SubItems(0).Text = itm.SubItems(0).Text.Replace("♪", "")
 
-            For Each ts As TabStructure In _tabs
-                Dim hit As Boolean = False
+                            '                            For Each ts As TabStructure In _tabs
+                            Dim hit As Boolean = False
 
-                For Each ft As FilterClass In ts.filters
-                    Dim bHit As Boolean = True
-                    Dim tBody As String = IIf(ft.SearchURL, lItem.OrgData, lItem.Data)
-                    If ft.SearchBoth Then
-                        If ft.IDFilter = "" Or lItem.Name = ft.IDFilter Then
+                            For Each ft As FilterClass In ts.filters
+                                Dim bHit As Boolean = True
+                                Dim tBody As String = IIf(ft.SearchURL, lItem.OrgData, lItem.Data)
+                                If ft.SearchBoth Then
+                                    If ft.IDFilter = "" Or lItem.Name = ft.IDFilter Then
+                                        For Each fs As String In ft.BodyFilter
+                                            If ft.UseRegex Then
+                                                If Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) = False Then bHit = False
+                                            Else
+                                                If tBody.ToLower.Contains(fs.ToLower) = False Then bHit = False
+                                            End If
+                                            If bHit = False Then Exit For
+                                        Next
+                                    Else
+                                        bHit = False
+                                    End If
+                                Else
+                                    For Each fs As String In ft.BodyFilter
+                                        If ft.UseRegex Then
+                                            If Regex.IsMatch(lItem.Name + tBody, fs, RegexOptions.IgnoreCase) = False Then bHit = False
+                                        Else
+                                            If (lItem.Name + tBody).ToLower.Contains(fs.ToLower) = False Then bHit = False
+                                        End If
+                                        If bHit = False Then Exit For
+                                    Next
+                                End If
+                                If bHit = True Then
+                                    hit = True
+                                    If ft.SetMark Then mk = True
+                                    If ft.moveFrom Then mv = True
+                                End If
+                                If hit And mv And mk Then Exit For
+                            Next
+                            For Each itmo2 As ListViewItem In ts.listCustom.Items
+                                If itmo2.SubItems(5).Text = itm.SubItems(5).Text Then
+                                    hit = False
+                                    Exit For
+                                End If
+                            Next
+                            If hit Then
+                                Dim itm2 As ListViewItem = itm.Clone
+                                ts.allCount += 1
+                                If itm2.SubItems(8).Text = "False" Then
+                                    If ts.unreadManage And SettingDialog.UnreadManage Then
+                                        ts.unreadCount += 1
+                                        If ts.oldestUnreadItem Is Nothing Then
+                                            ts.oldestUnreadItem = itm2
+                                        Else
+                                            If ts.oldestUnreadItem.SubItems(5).Text > itm2.SubItems(5).Text Then
+                                                ts.oldestUnreadItem = itm2
+                                            End If
+                                        End If
+                                    Else
+                                        itm2.SubItems(8).Text = "True"
+                                    End If
+                                End If
+                                ts.listCustom.Items.Add(itm2)
+                            End If
+                            If ts.unreadCount > 0 And ts.tabPage.ImageIndex = -1 Then ts.tabPage.ImageIndex = 0
+                            'Next
+                            If ts2.tabName = "Recent" Then
+                                If mv = False Then
+                                    If mk Then itm.SubItems(0).Text += "♪"
+                                Else
+                                    _tabs(0).allCount -= 1
+                                    If itm.SubItems(8).Text = "False" Then _tabs(0).unreadCount -= 1
+                                    _tabs(0).listCustom.Items.Remove(itm)
+                                End If
+                            End If
+                        Next
+                    End If
+                Next
+                For Each itm As ListViewItem In itms
+                    Dim mv As Boolean = False
+                    Dim nf As Boolean = False
+                    Dim mk As Boolean = False
+                    Dim lItem As New Twitter.MyListItem
+
+                    lItem.Data = itm.SubItems(2).Text
+                    lItem.Fav = CBool(itm.SubItems(9).Text)
+                    lItem.Id = itm.SubItems(5).Text
+                    lItem.ImageUrl = itm.SubItems(6).Text
+                    lItem.Name = itm.SubItems(4).Text
+                    lItem.Nick = itm.SubItems(1).Text
+                    lItem.OrgData = itm.SubItems(7).Text
+                    lItem.PDate = CDate(itm.SubItems(3).Text)
+                    lItem.Protect = itm.SubItems(0).Text.Contains("Ю")
+                    lItem.Reply = CBool(itm.SubItems(11).Text)
+                    lItem.Readed = IIf(itm.SubItems(8).Text = "True", True, False)
+                    itm.SubItems(0).Text = itm.SubItems(0).Text.Replace("♪", "")
+
+                    '                            For Each ts As TabStructure In _tabs
+                    Dim hit As Boolean = False
+
+                    For Each ft As FilterClass In ts.filters
+                        Dim bHit As Boolean = True
+                        Dim tBody As String = IIf(ft.SearchURL, lItem.OrgData, lItem.Data)
+                        If ft.SearchBoth Then
+                            If ft.IDFilter = "" Or lItem.Name = ft.IDFilter Then
+                                For Each fs As String In ft.BodyFilter
+                                    If ft.UseRegex Then
+                                        If Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) = False Then bHit = False
+                                    Else
+                                        If tBody.ToLower.Contains(fs.ToLower) = False Then bHit = False
+                                    End If
+                                    If bHit = False Then Exit For
+                                Next
+                            Else
+                                bHit = False
+                            End If
+                        Else
                             For Each fs As String In ft.BodyFilter
                                 If ft.UseRegex Then
-                                    If Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) = False Then bHit = False
+                                    If Regex.IsMatch(lItem.Name + tBody, fs, RegexOptions.IgnoreCase) = False Then bHit = False
                                 Else
-                                    If tBody.ToLower.Contains(fs.ToLower) = False Then bHit = False
+                                    If (lItem.Name + tBody).ToLower.Contains(fs.ToLower) = False Then bHit = False
                                 End If
                                 If bHit = False Then Exit For
                             Next
-                        Else
-                            bHit = False
                         End If
-                    Else
-                        For Each fs As String In ft.BodyFilter
-                            If ft.UseRegex Then
-                                If Regex.IsMatch(lItem.Name + tBody, fs, RegexOptions.IgnoreCase) = False Then bHit = False
-                            Else
-                                If (lItem.Name + tBody).ToLower.Contains(fs.ToLower) = False Then bHit = False
-                            End If
-                            If bHit = False Then Exit For
-                        Next
-                    End If
-                    If bHit = True Then
-                        hit = True
-                        If ft.SetMark Then mk = True
-                        If ft.moveFrom Then mv = True
-                    End If
-                    If hit And mv And mk Then Exit For
-                Next
-                If hit Then
-                    Dim itm2 As ListViewItem = itm.Clone
-                    ts.allCount += 1
-                    If itm2.SubItems(8).Text = "False" Then
-                        If ts.unreadManage And SettingDialog.UnreadManage Then
-                            ts.unreadCount += 1
-                            If ts.oldestUnreadItem Is Nothing Then
-                                ts.oldestUnreadItem = itm2
-                            Else
-                                If ts.oldestUnreadItem.SubItems(5).Text > itm2.SubItems(5).Text Then
+                        If bHit = True Then
+                            hit = True
+                            If ft.SetMark Then mk = True
+                            If ft.moveFrom Then mv = True
+                        End If
+                        If hit And mv And mk Then Exit For
+                    Next
+                    For Each itmo2 As ListViewItem In ts.listCustom.Items
+                        If itmo2.SubItems(5).Text = itm.SubItems(5).Text Then
+                            hit = False
+                            Exit For
+                        End If
+                    Next
+                    If hit Then
+                        Dim itm2 As ListViewItem = itm.Clone
+                        ts.allCount += 1
+                        If itm2.SubItems(8).Text = "False" Then
+                            If ts.unreadManage And SettingDialog.UnreadManage Then
+                                ts.unreadCount += 1
+                                If ts.oldestUnreadItem Is Nothing Then
                                     ts.oldestUnreadItem = itm2
+                                Else
+                                    If ts.oldestUnreadItem.SubItems(5).Text > itm2.SubItems(5).Text Then
+                                        ts.oldestUnreadItem = itm2
+                                    End If
+                                End If
+                            Else
+                                itm2.SubItems(8).Text = "True"
+                            End If
+                        End If
+                        ts.listCustom.Items.Add(itm2)
+                    Else
+                        For Each itmr As ListViewItem In _tabs(0).listCustom.Items
+                            If itmr.SubItems(5).Text = itm.SubItems(5).Text Then
+                                hit = True
+                                Exit For
+                            End If
+                        Next
+                        If hit = False Then
+                            _tabs(0).allCount += 1
+                            If itm.SubItems(8).Text = "False" Then
+                                If _tabs(0).unreadManage And SettingDialog.UnreadManage Then
+                                    _tabs(0).unreadCount += 1
+                                    If _tabs(0).oldestUnreadItem Is Nothing Then
+                                        _tabs(0).oldestUnreadItem = itm
+                                    Else
+                                        If _tabs(0).oldestUnreadItem.SubItems(5).Text > itm.SubItems(5).Text Then
+                                            _tabs(0).oldestUnreadItem = itm
+                                        End If
+                                    End If
+                                Else
+                                    itm.SubItems(8).Text = "True"
                                 End If
                             End If
-                        Else
-                            itm2.SubItems(8).Text = "True"
+                            _tabs(0).listCustom.Items.Add(itm.Clone)
                         End If
                     End If
-                    ts.listCustom.Items.Add(itm2)
-                End If
-                If ts.unreadCount > 0 And ts.tabPage.ImageIndex = -1 Then ts.tabPage.ImageIndex = 0
-            Next
-            If mv = False Then
-                If mk Then itm.SubItems(0).Text += "♪"
-            Else
-                _tabs(0).allCount -= 1
-                If itm.SubItems(8).Text = "False" Then _tabs(0).unreadCount -= 1
-                _tabs(0).listCustom.Items.Remove(itm)
+                    If ts.unreadCount > 0 And ts.tabPage.ImageIndex = -1 Then ts.tabPage.ImageIndex = 0
+                    If _tabs(0).unreadCount > 0 And _tabs(0).tabPage.ImageIndex = -1 Then _tabs(0).tabPage.ImageIndex = 0
+                Next
             End If
         Next
+
+        For Each ts As TabStructure In _tabs
+            If ts.modified Then
+                ts.modified = False
+            End If
+            ts.listCustom.EndUpdate()
+        Next
+
+        'For Each itm As ListViewItem In _tabs(0).listCustom.Items
+        '    Dim mv As Boolean = False
+        '    Dim nf As Boolean = False
+        '    Dim mk As Boolean = False
+        '    Dim lItem As New Twitter.MyListItem
+
+        '    lItem.Data = itm.SubItems(2).Text
+        '    lItem.Fav = CBool(itm.SubItems(9).Text)
+        '    lItem.Id = itm.SubItems(5).Text
+        '    lItem.ImageUrl = itm.SubItems(6).Text
+        '    lItem.Name = itm.SubItems(4).Text
+        '    lItem.Nick = itm.SubItems(1).Text
+        '    lItem.OrgData = itm.SubItems(7).Text
+        '    lItem.PDate = CDate(itm.SubItems(3).Text)
+        '    lItem.Protect = itm.SubItems(0).Text.Contains("Ю")
+        '    lItem.Reply = CBool(itm.SubItems(11).Text)
+        '    lItem.Readed = IIf(itm.SubItems(8).Text = "True", True, False)
+        '    itm.SubItems(0).Text = itm.SubItems(0).Text.Replace("♪", "")
+
+        '    For Each ts As TabStructure In _tabs
+        '        Dim hit As Boolean = False
+
+        '        For Each ft As FilterClass In ts.filters
+        '            Dim bHit As Boolean = True
+        '            Dim tBody As String = IIf(ft.SearchURL, lItem.OrgData, lItem.Data)
+        '            If ft.SearchBoth Then
+        '                If ft.IDFilter = "" Or lItem.Name = ft.IDFilter Then
+        '                    For Each fs As String In ft.BodyFilter
+        '                        If ft.UseRegex Then
+        '                            If Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) = False Then bHit = False
+        '                        Else
+        '                            If tBody.ToLower.Contains(fs.ToLower) = False Then bHit = False
+        '                        End If
+        '                        If bHit = False Then Exit For
+        '                    Next
+        '                Else
+        '                    bHit = False
+        '                End If
+        '            Else
+        '                For Each fs As String In ft.BodyFilter
+        '                    If ft.UseRegex Then
+        '                        If Regex.IsMatch(lItem.Name + tBody, fs, RegexOptions.IgnoreCase) = False Then bHit = False
+        '                    Else
+        '                        If (lItem.Name + tBody).ToLower.Contains(fs.ToLower) = False Then bHit = False
+        '                    End If
+        '                    If bHit = False Then Exit For
+        '                Next
+        '            End If
+        '            If bHit = True Then
+        '                hit = True
+        '                If ft.SetMark Then mk = True
+        '                If ft.moveFrom Then mv = True
+        '            End If
+        '            If hit And mv And mk Then Exit For
+        '        Next
+        '        If hit Then
+        '            Dim itm2 As ListViewItem = itm.Clone
+        '            ts.allCount += 1
+        '            If itm2.SubItems(8).Text = "False" Then
+        '                If ts.unreadManage And SettingDialog.UnreadManage Then
+        '                    ts.unreadCount += 1
+        '                    If ts.oldestUnreadItem Is Nothing Then
+        '                        ts.oldestUnreadItem = itm2
+        '                    Else
+        '                        If ts.oldestUnreadItem.SubItems(5).Text > itm2.SubItems(5).Text Then
+        '                            ts.oldestUnreadItem = itm2
+        '                        End If
+        '                    End If
+        '                Else
+        '                    itm2.SubItems(8).Text = "True"
+        '                End If
+        '            End If
+        '            ts.listCustom.Items.Add(itm2)
+        '        End If
+        '        If ts.unreadCount > 0 And ts.tabPage.ImageIndex = -1 Then ts.tabPage.ImageIndex = 0
+        '    Next
+        '    If mv = False Then
+        '        If mk Then itm.SubItems(0).Text += "♪"
+        '    Else
+        '        _tabs(0).allCount -= 1
+        '        If itm.SubItems(8).Text = "False" Then _tabs(0).unreadCount -= 1
+        '        _tabs(0).listCustom.Items.Remove(itm)
+        '    End If
+        'Next
     End Sub
 
     Private Sub OpenURLMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OpenURLMenuItem.Click
