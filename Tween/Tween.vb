@@ -828,7 +828,7 @@ Public Class TweenMain
                     Dim bHit As Boolean = True
                     Dim tBody As String = IIf(ft.SearchURL, lItem.OrgData, lItem.Data)
                     If ft.SearchBoth Then
-                        If ft.IDFilter = "" Or lItem.Name = ft.IDFilter Then
+                        If ft.IDFilter = "" Or lItem.Name.Equals(ft.IDFilter, StringComparison.CurrentCultureIgnoreCase) Then
                             For Each fs As String In ft.BodyFilter
                                 If ft.UseRegex Then
                                     If Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) = False Then bHit = False
@@ -6248,7 +6248,7 @@ RETRY:
                                 Dim bHit As Boolean = True
                                 Dim tBody As String = IIf(ft.SearchURL, lItem.OrgData, lItem.Data)
                                 If ft.SearchBoth Then
-                                    If ft.IDFilter = "" Or lItem.Name = ft.IDFilter Then
+                                    If ft.IDFilter = "" Or lItem.Name.Equals(ft.IDFilter, StringComparison.CurrentCultureIgnoreCase) Then
                                         For Each fs As String In ft.BodyFilter
                                             If ft.UseRegex Then
                                                 If Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) = False Then bHit = False
@@ -6342,7 +6342,7 @@ RETRY:
                         Dim bHit As Boolean = True
                         Dim tBody As String = IIf(ft.SearchURL, lItem.OrgData, lItem.Data)
                         If ft.SearchBoth Then
-                            If ft.IDFilter = "" Or lItem.Name = ft.IDFilter Then
+                            If ft.IDFilter = "" Or lItem.Name.Equals(ft.IDFilter, StringComparison.CurrentCultureIgnoreCase) Then
                                 For Each fs As String In ft.BodyFilter
                                     If ft.UseRegex Then
                                         If Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) = False Then bHit = False
