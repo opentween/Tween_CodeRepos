@@ -1482,6 +1482,9 @@ Public Class TweenMain
                         ret = clsTw.GetTimeline(tlList, args.page, _initial, args.endPage, Twitter.GetTypes.GET_REPLY, TIconList.Images.Keys, imgs, getDM)
                     Case WORKERTYPE.DirectMessegeRcv
                         ret = clsTw.GetDirectMessage(tlList, args.page, args.endPage, Twitter.GetTypes.GET_DMRCV, TIconList.Images.Keys, imgs)
+                        If ret = "" And _initial Then
+                            ret = clsTw.GetFollowers()
+                        End If
                     Case WORKERTYPE.DirectMessegeSnt
                         ret = clsTw.GetDirectMessage(tlList, args.page, args.endPage, Twitter.GetTypes.GET_DMSNT, TIconList.Images.Keys, imgs)
                     Case WORKERTYPE.PostMessage
@@ -2393,7 +2396,7 @@ Public Class TweenMain
             _fav = False
             _onewaylove = Not IsReceive
             lItem = tlList(cnt)
-            Dim sItem() As String = {"", lItem.Nick, lItem.Data, "", lItem.Name, lItem.Id, lItem.ImageUrl, lItem.OrgData, _readed.ToString, _fav.ToString, _onewaylove.ToString, "False"}
+            Dim sItem() As String = {"", lItem.Nick, lItem.Data, lItem.PDate.ToString("yy-MM-dd HH:mm:ss"), lItem.Name, lItem.Id, lItem.ImageUrl, lItem.OrgData, _readed.ToString, _fav.ToString, _onewaylove.ToString, "False"}
             Dim lvItem As New ListViewItem(sItem)
             lvItem.Font = _fntReaded
             lvItem.ForeColor = _clReaded

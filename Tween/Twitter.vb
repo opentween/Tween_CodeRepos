@@ -1,4 +1,5 @@
 ﻿Imports System.Web
+Imports System.Xml
 
 Partial Public Class Twitter
     Public links As New Collections.Specialized.StringCollection
@@ -58,7 +59,7 @@ Partial Public Class Twitter
     Private Const _parseLink1 As String = "<a href="""
     Private Const _parseLink2 As String = """>"
     Private Const _parseLink3 As String = "</a>"
-
+    Private Const _GetFollowers As String = "/statuses/followers.xml"
 
     Private _endingFlag As Boolean
     Private _useAPI As Boolean
@@ -689,30 +690,30 @@ Partial Public Class Twitter
         Dim pos1 As Integer
         Dim pos2 As Integer
 
-        'Followerの抽出
-        If page = 1 And gType = GetTypes.GET_DMRCV Then
-            pos1 = retMsg.IndexOf(_followerList)
-            If pos1 = -1 Then
-                '取得失敗
-                _signed = False
-                Return "GetDirectMessage -> Err: Busy(3)"
-            End If
-            follower.Clear()
-            follower.Add(_uid)
-            pos1 += _followerList.Length
-            pos1 = retMsg.IndexOf(_followerMbr1, pos1)
-            Try
-                Do While pos1 > -1
-                    pos2 = retMsg.IndexOf(_followerMbr2, pos1)
-                    pos1 = retMsg.IndexOf(_followerMbr3, pos2)
-                    follower.Add(retMsg.Substring(pos2 + _followerMbr2.Length, pos1 - pos2 - _followerMbr2.Length))
-                    pos1 = retMsg.IndexOf(_followerMbr1, pos1)
-                Loop
-            Catch ex As Exception
-                _signed = False
-                Return "GetDirectMessage -> Err: Can't get followers"
-            End Try
-        End If
+        ''Followerの抽出
+        'If page = 1 And gType = GetTypes.GET_DMRCV Then
+        '    pos1 = retMsg.IndexOf(_followerList)
+        '    If pos1 = -1 Then
+        '        '取得失敗
+        '        _signed = False
+        '        Return "GetDirectMessage -> Err: Busy(3)"
+        '    End If
+        '    follower.Clear()
+        '    follower.Add(_uid)
+        '    pos1 += _followerList.Length
+        '    pos1 = retMsg.IndexOf(_followerMbr1, pos1)
+        '    Try
+        '        Do While pos1 > -1
+        '            pos2 = retMsg.IndexOf(_followerMbr2, pos1)
+        '            pos1 = retMsg.IndexOf(_followerMbr3, pos2)
+        '            follower.Add(retMsg.Substring(pos2 + _followerMbr2.Length, pos1 - pos2 - _followerMbr2.Length))
+        '            pos1 = retMsg.IndexOf(_followerMbr1, pos1)
+        '        Loop
+        '    Catch ex As Exception
+        '        _signed = False
+        '        Return "GetDirectMessage -> Err: Can't get followers"
+        '    End Try
+        'End If
 
         '各メッセージに分割可能か？
         pos1 = retMsg.IndexOf(_splitDM)
@@ -727,6 +728,7 @@ Partial Public Class Twitter
         Dim intCnt As Integer = 0
         Dim listCnt As Integer = tLine.Count
         Dim orgData As String = ""
+        Dim tmpDate As DateTime = Now
         '''Dim imgKeys As Collections.Specialized.StringCollection = TIconList.Images.Keys
 
         '''_threadGetIcon = New ThreadGetIcon(AddressOf GetIconImage)
@@ -877,11 +879,26 @@ Partial Public Class Twitter
                         Return "GetDirectMessage -> Err: Can't parse links"
                     End Try
 
+                    ''Get Date
+                    ''pos1 = strPost.IndexOf(_parseDate, pos2)
+                    ''pos2 = strPost.IndexOf("""", pos1 + _parseDate.Length)
+                    ''lItem.PDate = DateTime.ParseExact(strPost.Substring(pos1 + _parseDate.Length, pos2 - pos1 - _parseDate.Length), "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz", System.Globalization.DateTimeFormatInfo.InvariantInfo, Globalization.DateTimeStyles.None)
+                    'lItem.PDate = Now()
                     'Get Date
-                    'pos1 = strPost.IndexOf(_parseDate, pos2)
-                    'pos2 = strPost.IndexOf("""", pos1 + _parseDate.Length)
-                    'lItem.PDate = DateTime.ParseExact(strPost.Substring(pos1 + _parseDate.Length, pos2 - pos1 - _parseDate.Length), "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz", System.Globalization.DateTimeFormatInfo.InvariantInfo, Globalization.DateTimeStyles.None)
-                    lItem.PDate = Now()
+                    pos1 = strPost.IndexOf(_parseDate, pos2)
+                    If pos1 > -1 Then
+                        Try
+                            pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length)
+                            lItem.PDate = DateTime.ParseExact(strPost.Substring(pos1 + _parseDate.Length, pos2 - pos1 - _parseDate.Length), "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz", System.Globalization.DateTimeFormatInfo.InvariantInfo, Globalization.DateTimeStyles.None)
+                            tmpDate = lItem.PDate
+                        Catch ex As Exception
+                            _signed = False
+                            Return "GetTimeline -> Err: Can't get date."
+                        End Try
+                    Else
+                        lItem.PDate = tmpDate
+                    End If
+
 
                     'Get Fav
                     'pos1 = strPost.IndexOf(_parseStar, pos2)
@@ -1272,6 +1289,40 @@ Partial Public Class Twitter
 
         '********************** POST失敗時判定 ***********************
         '*************************************************************
+
+        Return ""
+    End Function
+
+    Public Function GetFollowers() As String
+        Dim resStatus As String = ""
+        Dim resMsg As String = ""
+        Dim i As Integer = 0
+
+        follower.Clear()
+        follower.Add(_uid)
+        Do While True
+            i += 1
+            resMsg = _mySock.GetWebResponse("https://" + _hubServer + _GetFollowers + "?page=" + i.ToString, resStatus, MySocket.REQ_TYPE.ReqGetAPI)
+            If resStatus.StartsWith("OK") = False Then
+                Return resStatus
+            End If
+
+            Dim rd As Xml.XmlTextReader = New Xml.XmlTextReader(New System.IO.StringReader(resMsg))
+            Dim lc As Integer = 0
+
+            rd.Read()
+            While rd.EOF = False
+                If rd.IsStartElement("screen_name") Then
+                    follower.Add(rd.ReadElementString("screen_name"))
+                    lc += 1
+                Else
+                    rd.Read()
+                End If
+            End While
+            rd.Close()
+
+            If lc = 0 Then Exit Do
+        Loop
 
         Return ""
     End Function

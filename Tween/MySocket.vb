@@ -24,6 +24,7 @@ Public Class MySocket
         ReqGETFileUp
         ReqGetNoCache
         ReqPOSTAPI
+        ReqGetAPI
     End Enum
 
     Public Sub New(ByVal EncodeType As String, _
@@ -70,7 +71,7 @@ Public Class MySocket
             webReq = _
                 CType(WebRequest.Create(url), HttpWebRequest)
             webReq.Timeout = timeout
-            If reqType <> REQ_TYPE.ReqPOSTAPI Then
+            If reqType <> REQ_TYPE.ReqPOSTAPI And reqType <> REQ_TYPE.ReqGetAPI Then
                 webReq.CookieContainer = _cCon
                 webReq.AutomaticDecompression = DecompressionMethods.Deflate Or DecompressionMethods.GZip
             End If
@@ -129,6 +130,13 @@ Public Class MySocket
                 webReq.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
                 webReq.Headers.Add("Accept-Language", "ja,en-us;q=0.7,en;q=0.3")
                 webReq.Headers.Add("Accept-Charset", "Shift_JIS,utf-8;q=0.7,*;q=0.7")
+            ElseIf reqType = REQ_TYPE.ReqGetAPI Then
+                webReq.ContentType = "application/x-www-form-urlencoded"
+                webReq.Accept = "text/html, */*"
+                webReq.Headers.Add("X-Twitter-Client", "Tween")
+                webReq.Headers.Add("X-Twitter-Client-Version", _version)
+                webReq.Headers.Add("X-Twitter-Client-URL", "http://www.asahi-net.or.jp/~ne5h-ykmz/tween.xml")
+                webReq.Headers.Add(HttpRequestHeader.Authorization, _cre)
             End If
 
             Using webRes As HttpWebResponse = CType(webReq.GetResponse(), HttpWebResponse)
@@ -142,7 +150,7 @@ Public Class MySocket
                 '        End If
                 '    Next
                 'End If
-                If reqType <> REQ_TYPE.ReqPOSTAPI Then
+                If reqType <> REQ_TYPE.ReqPOSTAPI And reqType <> REQ_TYPE.ReqGetAPI Then
                     For Each ck As Cookie In webRes.Cookies
                         If ck.Domain.StartsWith(".") Then
                             ck.Domain = ck.Domain.Substring(1, ck.Domain.Length - 1)
@@ -154,7 +162,7 @@ Public Class MySocket
                 strm = webRes.GetResponseStream()
 
                 Select Case reqType
-                    Case REQ_TYPE.ReqGET, REQ_TYPE.ReqPOST, REQ_TYPE.ReqPOSTEncode, REQ_TYPE.ReqPOSTEncodeProtoVer1, REQ_TYPE.ReqPOSTEncodeProtoVer2, REQ_TYPE.ReqGetNoCache, REQ_TYPE.ReqPOSTAPI
+                    Case REQ_TYPE.ReqGET, REQ_TYPE.ReqPOST, REQ_TYPE.ReqPOSTEncode, REQ_TYPE.ReqPOSTEncodeProtoVer1, REQ_TYPE.ReqPOSTEncodeProtoVer2, REQ_TYPE.ReqGetNoCache, REQ_TYPE.ReqPOSTAPI, REQ_TYPE.ReqGetAPI
                         Dim rtStr As String
                         Using sr As New StreamReader(strm, _enc)
                             rtStr = sr.ReadToEnd()
