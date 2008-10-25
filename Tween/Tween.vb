@@ -60,6 +60,7 @@ Public Class TweenMain
     Private RemainPostNum As Integer   ' POST残り回数
     Private __PostCounter As Integer = 59  '割り込みカウンタ　タイマ割り込みでカウントダウン
     Private _postTimestamps As New List(Of Date)
+    Private _favTimestamps As New List(Of Date)
     Private _tlTimestamps As New Dictionary(Of Date, Integer)
     Private _tlCount As Integer
 
@@ -1491,6 +1492,13 @@ Public Class TweenMain
                         ret = clsTw.PostStatus(args.status, _reply_to_id)
                     Case WORKERTYPE.FavAdd
                         ret = clsTw.PostFavAdd(args.ids(args.page))
+                        _favTimestamps.Add(Now)
+                        Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
+                        For _i As Integer = _favTimestamps.Count - 1 To 0 Step -1
+                            If _favTimestamps(_i).CompareTo(oneHour) < 0 Then
+                                _favTimestamps.RemoveAt(_i)
+                            End If
+                        Next
                     Case WORKERTYPE.FavRemove
                         ret = clsTw.PostFavRemove(args.ids(args.page))
                     Case WORKERTYPE.CreateNewSocket
@@ -6626,7 +6634,7 @@ RETRY:
         'StatusLabelUrl.Text = "タブ: " + tur.ToString() + "/" + tal.ToString() + " 全体:" + ur.ToString() + "/" + al.ToString() + _
         '        " (返信: " + urat.ToString() + ") POST残り " + RemainPostNum.ToString() + "回/最大 " + SettingDialog.MaxPostNum.ToString() + "回 更新間隔:" + (TimerTimeline.Interval / 1000).ToString
         StatusLabelUrl.Text = "[タブ: " + tur.ToString() + "/" + tal.ToString() + " 全体: " + ur.ToString() + "/" + al.ToString() + _
-                " (返信: " + urat.ToString() + ")] [時速: " + _postTimestamps.Count.ToString() + "/" + _tlCount.ToString + "] [間隔: " + IIf(SettingDialog.TimelinePeriodInt = 0, "-", (TimerTimeline.Interval / 1000).ToString) + "]"
+                " (返信: " + urat.ToString() + ")] [時速: POST" + _postTimestamps.Count.ToString() + "/Fav" + _favTimestamps.Count.ToString() + "/TL" + _tlCount.ToString + "] [間隔: " + IIf(SettingDialog.TimelinePeriodInt = 0, "-", (TimerTimeline.Interval / 1000).ToString) + "]"
     End Sub
 
     Private Sub SetNotifyIconText()
