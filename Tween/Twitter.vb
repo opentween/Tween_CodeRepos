@@ -60,6 +60,7 @@ Partial Public Class Twitter
     Private Const _parseLink2 As String = """>"
     Private Const _parseLink3 As String = "</a>"
     Private Const _GetFollowers As String = "/statuses/followers.xml"
+    Private Const _ShowStatus As String = "/statuses/show/"
 
     Private _endingFlag As Boolean
     Private _useAPI As Boolean
@@ -1270,6 +1271,26 @@ Partial Public Class Twitter
 
         '********************** POST失敗時判定 ***********************
         '*************************************************************
+
+        'http://twitter.com/statuses/show/id.xml APIを発行して本文を取得
+
+        resMsg = _mySock.GetWebResponse("https://" + _hubServer + _ShowStatus + id + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2)
+
+        Dim rd As Xml.XmlTextReader = New Xml.XmlTextReader(New System.IO.StringReader(resMsg))
+
+        rd.Read()
+        While rd.EOF = False
+            If rd.IsStartElement("favorited") Then
+                If rd.ReadElementContentAsBoolean() = True Then
+                    Return ""  '正常にふぁぼれている
+                Else
+                    Return "NG(Restricted?)"  '正常応答なのにふぁぼれてないので制限っぽい
+                End If
+            Else
+                rd.Read()
+            End If
+        End While
+        rd.Close()
 
         Return ""
     End Function
