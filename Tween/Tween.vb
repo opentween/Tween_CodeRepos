@@ -1492,7 +1492,9 @@ Public Class TweenMain
                         ret = clsTw.PostStatus(args.status, _reply_to_id)
                     Case WORKERTYPE.FavAdd
                         ret = clsTw.PostFavAdd(args.ids(args.page))
-                        _favTimestamps.Add(Now)
+                        If ret = "" Then
+                            _favTimestamps.Add(Now)
+                        End If
                         Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
                         For _i As Integer = _favTimestamps.Count - 1 To 0 Step -1
                             If _favTimestamps(_i).CompareTo(oneHour) < 0 Then
