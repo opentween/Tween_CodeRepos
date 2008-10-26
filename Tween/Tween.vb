@@ -322,6 +322,7 @@ Public Class TweenMain
         SettingDialog.PeriodAdjust = _section.PeriodAdjust
         SettingDialog.StartupVersion = _section.StartupVersion
         SettingDialog.StartupKey = _section.StartupKey
+        SettingDialog.StartupFollowers = _section.StartupFollowers
 
         'ユーザー名、パスワードが未設定なら設定画面を表示（初回起動時など）
         If _username = "" Or _password = "" Then
@@ -1483,7 +1484,7 @@ Public Class TweenMain
                         ret = clsTw.GetTimeline(tlList, args.page, _initial, args.endPage, Twitter.GetTypes.GET_REPLY, TIconList.Images.Keys, imgs, getDM)
                     Case WORKERTYPE.DirectMessegeRcv
                         ret = clsTw.GetDirectMessage(tlList, args.page, args.endPage, Twitter.GetTypes.GET_DMRCV, TIconList.Images.Keys, imgs)
-                        If ret = "" And _initial Then
+                        If ret = "" And _initial And SettingDialog.StartupFollowers Then
                             ret = clsTw.GetFollowers()
                         End If
                     Case WORKERTYPE.DirectMessegeSnt
@@ -1739,9 +1740,9 @@ Public Class TweenMain
                             Loop
                             GetTimelineWorker.RunWorkerAsync(args)
                         Else
-                            If rslt.page = 1 And statusCount < 18 And SettingDialog.PeriodAdjust Then
-                                TimerTimeline.Interval += 2000
-                                If TimerTimeline.Interval > SettingDialog.TimelinePeriodInt * 1000 + 60000 Then TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000 + 60000
+                            If rslt.page = 1 And statusCount < 17 And SettingDialog.PeriodAdjust Then
+                                TimerTimeline.Interval += 1000
+                                If TimerTimeline.Interval > SettingDialog.TimelinePeriodInt * 1000 Then TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
                             End If
                             If SettingDialog.CheckReply Then
                                 args.page = 1
@@ -5216,6 +5217,7 @@ RETRY:
             _section.PeriodAdjust = SettingDialog.PeriodAdjust
             _section.StartupVersion = SettingDialog.StartupVersion
             _section.StartupKey = SettingDialog.StartupKey
+            _section.StartupFollowers = SettingDialog.StartupFollowers
 
             Dim tmpList As DetailsListView = Nothing
             For Each myTab As TabPage In ListTab.TabPages
@@ -6693,6 +6695,17 @@ RETRY:
             RemainPostNum = SettingDialog.MaxPostNum
             __PostCounter = 59
         End If
+    End Sub
+
+    Private Sub UpdateFollowersMenuItem1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UpdateFollowersMenuItem1.Click
+        StatusLabel.Text = "Followers取得中..."
+        Dim ret As String
+        ret = clsTw.GetFollowers()
+        If ret <> "" Then
+            StatusLabel.Text = "Followers取得エラー：" & ret
+            Exit Sub
+        End If
+        StatusLabel.Text = "Followers取得完了"
     End Sub
 End Class
 

@@ -1324,8 +1324,10 @@ Partial Public Class Twitter
         Do While True
             i += 1
             ' resMsg = _mySock.GetWebResponse("https://" + _hubServer + _GetFollowers + "?page=" + i.ToString, resStatus, MySocket.REQ_TYPE.ReqGetAPI)
-            resMsg = _mySock.GetWebResponse("https://" + _hubServer + _GetFollowers + "?page=" + i.ToString, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI)
+            resMsg = _mySock.GetWebResponse("https://" + _hubServer + _GetFollowers + _pageQry + i.ToString, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI)
             If resStatus.StartsWith("OK") = False Then
+                follower.Clear()
+                follower.Add(_uid)  '途中で失敗したら片思い表示しない
                 Return resStatus
             End If
 
