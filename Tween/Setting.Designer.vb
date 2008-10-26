@@ -135,6 +135,10 @@ Partial Class Setting
         Me.Label47 = New System.Windows.Forms.Label
         Me.TabControl1 = New System.Windows.Forms.TabControl
         Me.TabPage1 = New System.Windows.Forms.TabPage
+        Me.Label53 = New System.Windows.Forms.Label
+        Me.CheckStartupKey = New System.Windows.Forms.CheckBox
+        Me.Label51 = New System.Windows.Forms.Label
+        Me.CheckStartupVersion = New System.Windows.Forms.CheckBox
         Me.CheckPeriodAdjust = New System.Windows.Forms.CheckBox
         Me.MaxPost = New System.Windows.Forms.TextBox
         Me.Label52 = New System.Windows.Forms.Label
@@ -158,10 +162,8 @@ Partial Class Setting
         Me.RadioProxySpecified = New System.Windows.Forms.RadioButton
         Me.RadioProxyIE = New System.Windows.Forms.RadioButton
         Me.RadioProxyNone = New System.Windows.Forms.RadioButton
-        Me.Label51 = New System.Windows.Forms.Label
-        Me.CheckStartupVersion = New System.Windows.Forms.CheckBox
-        Me.Label53 = New System.Windows.Forms.Label
-        Me.CheckStartupKey = New System.Windows.Forms.CheckBox
+        Me.Label54 = New System.Windows.Forms.Label
+        Me.CheckStartupFollowers = New System.Windows.Forms.CheckBox
         Me.GroupBox1.SuspendLayout()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
@@ -1244,6 +1246,8 @@ Partial Class Setting
         '
         'TabPage1
         '
+        Me.TabPage1.Controls.Add(Me.Label54)
+        Me.TabPage1.Controls.Add(Me.CheckStartupFollowers)
         Me.TabPage1.Controls.Add(Me.Label53)
         Me.TabPage1.Controls.Add(Me.CheckStartupKey)
         Me.TabPage1.Controls.Add(Me.Label51)
@@ -1283,6 +1287,44 @@ Partial Class Setting
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "基本"
         Me.TabPage1.UseVisualStyleBackColor = True
+        '
+        'Label53
+        '
+        Me.Label53.AutoSize = True
+        Me.Label53.Location = New System.Drawing.Point(14, 341)
+        Me.Label53.Name = "Label53"
+        Me.Label53.Size = New System.Drawing.Size(109, 12)
+        Me.Label53.TabIndex = 30
+        Me.Label53.Text = "起動時キー情報更新"
+        '
+        'CheckStartupKey
+        '
+        Me.CheckStartupKey.AutoSize = True
+        Me.CheckStartupKey.Location = New System.Drawing.Point(183, 340)
+        Me.CheckStartupKey.Name = "CheckStartupKey"
+        Me.CheckStartupKey.Size = New System.Drawing.Size(67, 16)
+        Me.CheckStartupKey.TabIndex = 31
+        Me.CheckStartupKey.Text = "更新する"
+        Me.CheckStartupKey.UseVisualStyleBackColor = True
+        '
+        'Label51
+        '
+        Me.Label51.AutoSize = True
+        Me.Label51.Location = New System.Drawing.Point(14, 319)
+        Me.Label51.Name = "Label51"
+        Me.Label51.Size = New System.Drawing.Size(117, 12)
+        Me.Label51.TabIndex = 28
+        Me.Label51.Text = "起動時バージョンチェック"
+        '
+        'CheckStartupVersion
+        '
+        Me.CheckStartupVersion.AutoSize = True
+        Me.CheckStartupVersion.Location = New System.Drawing.Point(183, 318)
+        Me.CheckStartupVersion.Name = "CheckStartupVersion"
+        Me.CheckStartupVersion.Size = New System.Drawing.Size(74, 16)
+        Me.CheckStartupVersion.TabIndex = 29
+        Me.CheckStartupVersion.Text = "チェックする"
+        Me.CheckStartupVersion.UseVisualStyleBackColor = True
         '
         'CheckPeriodAdjust
         '
@@ -1555,43 +1597,24 @@ Partial Class Setting
         Me.RadioProxyNone.Text = "使用しない"
         Me.RadioProxyNone.UseVisualStyleBackColor = True
         '
-        'Label51
+        'Label54
         '
-        Me.Label51.AutoSize = True
-        Me.Label51.Location = New System.Drawing.Point(14, 319)
-        Me.Label51.Name = "Label51"
-        Me.Label51.Size = New System.Drawing.Size(117, 12)
-        Me.Label51.TabIndex = 28
-        Me.Label51.Text = "起動時バージョンチェック"
+        Me.Label54.AutoSize = True
+        Me.Label54.Location = New System.Drawing.Point(14, 363)
+        Me.Label54.Name = "Label54"
+        Me.Label54.Size = New System.Drawing.Size(163, 12)
+        Me.Label54.TabIndex = 32
+        Me.Label54.Text = "起動時片思いユーザーリスト取得"
         '
-        'CheckStartupVersion
+        'CheckStartupFollowers
         '
-        Me.CheckStartupVersion.AutoSize = True
-        Me.CheckStartupVersion.Location = New System.Drawing.Point(183, 318)
-        Me.CheckStartupVersion.Name = "CheckStartupVersion"
-        Me.CheckStartupVersion.Size = New System.Drawing.Size(74, 16)
-        Me.CheckStartupVersion.TabIndex = 29
-        Me.CheckStartupVersion.Text = "チェックする"
-        Me.CheckStartupVersion.UseVisualStyleBackColor = True
-        '
-        'Label53
-        '
-        Me.Label53.AutoSize = True
-        Me.Label53.Location = New System.Drawing.Point(14, 341)
-        Me.Label53.Name = "Label53"
-        Me.Label53.Size = New System.Drawing.Size(109, 12)
-        Me.Label53.TabIndex = 30
-        Me.Label53.Text = "起動時キー情報更新"
-        '
-        'CheckStartupKey
-        '
-        Me.CheckStartupKey.AutoSize = True
-        Me.CheckStartupKey.Location = New System.Drawing.Point(183, 340)
-        Me.CheckStartupKey.Name = "CheckStartupKey"
-        Me.CheckStartupKey.Size = New System.Drawing.Size(67, 16)
-        Me.CheckStartupKey.TabIndex = 31
-        Me.CheckStartupKey.Text = "更新する"
-        Me.CheckStartupKey.UseVisualStyleBackColor = True
+        Me.CheckStartupFollowers.AutoSize = True
+        Me.CheckStartupFollowers.Location = New System.Drawing.Point(183, 362)
+        Me.CheckStartupFollowers.Name = "CheckStartupFollowers"
+        Me.CheckStartupFollowers.Size = New System.Drawing.Size(67, 16)
+        Me.CheckStartupFollowers.TabIndex = 33
+        Me.CheckStartupFollowers.Text = "取得する"
+        Me.CheckStartupFollowers.UseVisualStyleBackColor = True
         '
         'Setting
         '
@@ -1766,4 +1789,6 @@ Partial Class Setting
     Friend WithEvents CheckStartupKey As System.Windows.Forms.CheckBox
     Friend WithEvents Label51 As System.Windows.Forms.Label
     Friend WithEvents CheckStartupVersion As System.Windows.Forms.CheckBox
+    Friend WithEvents Label54 As System.Windows.Forms.Label
+    Friend WithEvents CheckStartupFollowers As System.Windows.Forms.CheckBox
 End Class

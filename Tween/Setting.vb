@@ -51,6 +51,7 @@ Public Class Setting
     Private _MyPeriodAdjust As Boolean
     Private _MyStartupVersion As Boolean
     Private _MyStartupKey As Boolean
+    Private _MyStartupFollowers As Boolean
 
     'Public Enum LogUnitEnum
     '    Minute
@@ -197,6 +198,7 @@ Public Class Setting
             _MyPeriodAdjust = CheckPeriodAdjust.Checked
             _MyStartupVersion = CheckStartupVersion.Checked
             _MyStartupKey = CheckStartupKey.Checked
+            _MyStartupFollowers = CheckStartupFollowers.Checked
 
             'TweenMain.SetMainWindowTitle()
             'TweenMain.SetNotifyIconText()
@@ -327,6 +329,7 @@ Public Class Setting
         CheckPeriodAdjust.Checked = _MyPeriodAdjust
         CheckStartupVersion.Checked = _MyStartupVersion
         CheckStartupKey.Checked = _MyStartupKey
+        CheckStartupFollowers.Checked = _MyStartupFollowers
 
         'TweenMain.SetMainWindowTitle()
         'TweenMain.SetNotifyIconText()
@@ -1042,6 +1045,15 @@ Public Class Setting
         End Get
         Set(ByVal value As Boolean)
             _MyStartupKey = value
+        End Set
+    End Property
+
+    Public Property StartupFollowers() As Boolean
+        Get
+            Return _MyStartupFollowers
+        End Get
+        Set(ByVal value As Boolean)
+            _MyStartupFollowers = value
         End Set
     End Property
 
