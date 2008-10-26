@@ -1323,7 +1323,8 @@ Partial Public Class Twitter
         follower.Add(_uid)
         Do While True
             i += 1
-            resMsg = _mySock.GetWebResponse("https://" + _hubServer + _GetFollowers + "?page=" + i.ToString, resStatus, MySocket.REQ_TYPE.ReqGetAPI)
+            ' resMsg = _mySock.GetWebResponse("https://" + _hubServer + _GetFollowers + "?page=" + i.ToString, resStatus, MySocket.REQ_TYPE.ReqGetAPI)
+            resMsg = _mySock.GetWebResponse("https://" + _hubServer + _GetFollowers + "?page=" + i.ToString, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI)
             If resStatus.StartsWith("OK") = False Then
                 Return resStatus
             End If
