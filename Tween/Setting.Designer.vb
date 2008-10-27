@@ -135,6 +135,8 @@ Partial Class Setting
         Me.Label47 = New System.Windows.Forms.Label
         Me.TabControl1 = New System.Windows.Forms.TabControl
         Me.TabPage1 = New System.Windows.Forms.TabPage
+        Me.Label54 = New System.Windows.Forms.Label
+        Me.CheckStartupFollowers = New System.Windows.Forms.CheckBox
         Me.Label53 = New System.Windows.Forms.Label
         Me.CheckStartupKey = New System.Windows.Forms.CheckBox
         Me.Label51 = New System.Windows.Forms.Label
@@ -162,8 +164,9 @@ Partial Class Setting
         Me.RadioProxySpecified = New System.Windows.Forms.RadioButton
         Me.RadioProxyIE = New System.Windows.Forms.RadioButton
         Me.RadioProxyNone = New System.Windows.Forms.RadioButton
-        Me.Label54 = New System.Windows.Forms.Label
-        Me.CheckStartupFollowers = New System.Windows.Forms.CheckBox
+        Me.Label56 = New System.Windows.Forms.Label
+        Me.CheckFavRestrict = New System.Windows.Forms.CheckBox
+        Me.Label57 = New System.Windows.Forms.Label
         Me.GroupBox1.SuspendLayout()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
@@ -370,7 +373,7 @@ Partial Class Setting
         'Label12
         '
         Me.Label12.AutoSize = True
-        Me.Label12.Location = New System.Drawing.Point(11, 310)
+        Me.Label12.Location = New System.Drawing.Point(11, 299)
         Me.Label12.Name = "Label12"
         Me.Label12.Size = New System.Drawing.Size(119, 12)
         Me.Label12.TabIndex = 22
@@ -378,7 +381,7 @@ Partial Class Setting
         '
         'StatusText
         '
-        Me.StatusText.Location = New System.Drawing.Point(157, 331)
+        Me.StatusText.Location = New System.Drawing.Point(157, 320)
         Me.StatusText.Name = "StatusText"
         Me.StatusText.Size = New System.Drawing.Size(100, 19)
         Me.StatusText.TabIndex = 24
@@ -873,7 +876,7 @@ Partial Class Setting
         'CheckUseRecommendStatus
         '
         Me.CheckUseRecommendStatus.AutoSize = True
-        Me.CheckUseRecommendStatus.Location = New System.Drawing.Point(157, 309)
+        Me.CheckUseRecommendStatus.Location = New System.Drawing.Point(157, 298)
         Me.CheckUseRecommendStatus.Name = "CheckUseRecommendStatus"
         Me.CheckUseRecommendStatus.Size = New System.Drawing.Size(207, 16)
         Me.CheckUseRecommendStatus.TabIndex = 23
@@ -883,7 +886,7 @@ Partial Class Setting
         'CheckSortOrderLock
         '
         Me.CheckSortOrderLock.AutoSize = True
-        Me.CheckSortOrderLock.Location = New System.Drawing.Point(157, 367)
+        Me.CheckSortOrderLock.Location = New System.Drawing.Point(157, 345)
         Me.CheckSortOrderLock.Name = "CheckSortOrderLock"
         Me.CheckSortOrderLock.Size = New System.Drawing.Size(67, 16)
         Me.CheckSortOrderLock.TabIndex = 26
@@ -893,7 +896,7 @@ Partial Class Setting
         'Label21
         '
         Me.Label21.AutoSize = True
-        Me.Label21.Location = New System.Drawing.Point(11, 368)
+        Me.Label21.Location = New System.Drawing.Point(11, 346)
         Me.Label21.Name = "Label21"
         Me.Label21.Size = New System.Drawing.Size(44, 12)
         Me.Label21.TabIndex = 25
@@ -963,7 +966,7 @@ Partial Class Setting
         '
         Me.CheckBox5.AutoSize = True
         Me.CheckBox5.Enabled = False
-        Me.CheckBox5.Location = New System.Drawing.Point(157, 408)
+        Me.CheckBox5.Location = New System.Drawing.Point(157, 415)
         Me.CheckBox5.Name = "CheckBox5"
         Me.CheckBox5.Size = New System.Drawing.Size(76, 16)
         Me.CheckBox5.TabIndex = 28
@@ -974,7 +977,7 @@ Partial Class Setting
         '
         Me.Label29.AutoSize = True
         Me.Label29.Enabled = False
-        Me.Label29.Location = New System.Drawing.Point(11, 409)
+        Me.Label29.Location = New System.Drawing.Point(11, 416)
         Me.Label29.Name = "Label29"
         Me.Label29.Size = New System.Drawing.Size(111, 12)
         Me.Label29.TabIndex = 27
@@ -1288,6 +1291,25 @@ Partial Class Setting
         Me.TabPage1.Text = "基本"
         Me.TabPage1.UseVisualStyleBackColor = True
         '
+        'Label54
+        '
+        Me.Label54.AutoSize = True
+        Me.Label54.Location = New System.Drawing.Point(14, 363)
+        Me.Label54.Name = "Label54"
+        Me.Label54.Size = New System.Drawing.Size(163, 12)
+        Me.Label54.TabIndex = 32
+        Me.Label54.Text = "起動時片思いユーザーリスト取得"
+        '
+        'CheckStartupFollowers
+        '
+        Me.CheckStartupFollowers.AutoSize = True
+        Me.CheckStartupFollowers.Location = New System.Drawing.Point(183, 362)
+        Me.CheckStartupFollowers.Name = "CheckStartupFollowers"
+        Me.CheckStartupFollowers.Size = New System.Drawing.Size(67, 16)
+        Me.CheckStartupFollowers.TabIndex = 33
+        Me.CheckStartupFollowers.Text = "取得する"
+        Me.CheckStartupFollowers.UseVisualStyleBackColor = True
+        '
         'Label53
         '
         Me.Label53.AutoSize = True
@@ -1356,6 +1378,9 @@ Partial Class Setting
         '
         'TabPage2
         '
+        Me.TabPage2.Controls.Add(Me.Label57)
+        Me.TabPage2.Controls.Add(Me.Label56)
+        Me.TabPage2.Controls.Add(Me.CheckFavRestrict)
         Me.TabPage2.Controls.Add(Me.CheckTinyURL)
         Me.TabPage2.Controls.Add(Me.Label50)
         Me.TabPage2.Controls.Add(Me.Button3)
@@ -1597,24 +1622,33 @@ Partial Class Setting
         Me.RadioProxyNone.Text = "使用しない"
         Me.RadioProxyNone.UseVisualStyleBackColor = True
         '
-        'Label54
+        'Label56
         '
-        Me.Label54.AutoSize = True
-        Me.Label54.Location = New System.Drawing.Point(14, 363)
-        Me.Label54.Name = "Label54"
-        Me.Label54.Size = New System.Drawing.Size(163, 12)
-        Me.Label54.TabIndex = 32
-        Me.Label54.Text = "起動時片思いユーザーリスト取得"
+        Me.Label56.AutoSize = True
+        Me.Label56.Location = New System.Drawing.Point(11, 368)
+        Me.Label56.Name = "Label56"
+        Me.Label56.Size = New System.Drawing.Size(103, 12)
+        Me.Label56.TabIndex = 29
+        Me.Label56.Text = "Fav結果厳密チェック"
         '
-        'CheckStartupFollowers
+        'CheckFavRestrict
         '
-        Me.CheckStartupFollowers.AutoSize = True
-        Me.CheckStartupFollowers.Location = New System.Drawing.Point(183, 362)
-        Me.CheckStartupFollowers.Name = "CheckStartupFollowers"
-        Me.CheckStartupFollowers.Size = New System.Drawing.Size(67, 16)
-        Me.CheckStartupFollowers.TabIndex = 33
-        Me.CheckStartupFollowers.Text = "取得する"
-        Me.CheckStartupFollowers.UseVisualStyleBackColor = True
+        Me.CheckFavRestrict.AutoSize = True
+        Me.CheckFavRestrict.Location = New System.Drawing.Point(157, 367)
+        Me.CheckFavRestrict.Name = "CheckFavRestrict"
+        Me.CheckFavRestrict.Size = New System.Drawing.Size(74, 16)
+        Me.CheckFavRestrict.TabIndex = 30
+        Me.CheckFavRestrict.Text = "チェックする"
+        Me.CheckFavRestrict.UseVisualStyleBackColor = True
+        '
+        'Label57
+        '
+        Me.Label57.ForeColor = System.Drawing.SystemColors.ActiveCaption
+        Me.Label57.Location = New System.Drawing.Point(11, 386)
+        Me.Label57.Name = "Label57"
+        Me.Label57.Size = New System.Drawing.Size(353, 21)
+        Me.Label57.TabIndex = 31
+        Me.Label57.Text = "発言を再取得してFav結果を検証します。通信量が増えるのでOff推奨"
         '
         'Setting
         '
@@ -1791,4 +1825,7 @@ Partial Class Setting
     Friend WithEvents CheckStartupVersion As System.Windows.Forms.CheckBox
     Friend WithEvents Label54 As System.Windows.Forms.Label
     Friend WithEvents CheckStartupFollowers As System.Windows.Forms.CheckBox
+    Friend WithEvents Label56 As System.Windows.Forms.Label
+    Friend WithEvents CheckFavRestrict As System.Windows.Forms.CheckBox
+    Friend WithEvents Label57 As System.Windows.Forms.Label
 End Class
