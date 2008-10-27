@@ -33,6 +33,7 @@ Partial Public Class Twitter
     Private _getIcon As Boolean
     Private _tinyUrlResolve As Boolean
     Private _dmCount As Integer
+    Private _restrictFavCheck As Boolean
 
     Private Const _baseUrlStr As String = "twitter.com"
     Private Const _loginPath As String = "/sessions"
@@ -1272,6 +1273,8 @@ Partial Public Class Twitter
         '********************** POST失敗時判定 ***********************
         '*************************************************************
 
+        If _restrictFavCheck = False Then Return ""
+
         'http://twitter.com/statuses/show/id.xml APIを発行して本文を取得
 
         resMsg = _mySock.GetWebResponse("https://" + _hubServer + _ShowStatus + id + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2)
@@ -1672,6 +1675,11 @@ Partial Public Class Twitter
         End Set
     End Property
 
+    Public WriteOnly Property RestrictFavCheck() As Boolean
+        Set(ByVal value As Boolean)
+            _restrictFavCheck = value
+        End Set
+    End Property
     Public Sub CreateNewSocket()
         _mySock = Nothing
         _mySock = New MySocket("UTF-8", Username, Password, _proxyType, _proxyAddress, _proxyPort, _proxyUser, _proxyPassword)

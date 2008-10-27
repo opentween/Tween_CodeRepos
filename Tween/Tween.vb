@@ -323,6 +323,7 @@ Public Class TweenMain
         SettingDialog.StartupVersion = _section.StartupVersion
         SettingDialog.StartupKey = _section.StartupKey
         SettingDialog.StartupFollowers = _section.StartupFollowers
+        SettingDialog.RestrictFavCheck = _section.RestrictFavCheck
 
         'ユーザー名、パスワードが未設定なら設定画面を表示（初回起動時など）
         If _username = "" Or _password = "" Then
@@ -401,6 +402,7 @@ Public Class TweenMain
         End If
         clsTw.NextThreshold = SettingDialog.NextPageThreshold   '次頁取得閾値
         clsTw.NextPages = SettingDialog.NextPagesInt    '閾値オーバー時の読み込みページ数（未使用）
+
         _iconCol = False
         Select Case SettingDialog.IconSz
 
@@ -3110,6 +3112,7 @@ Public Class TweenMain
             clsTw.HubServer = SettingDialog.HubServer
             clsTwPost.HubServer = SettingDialog.HubServer
             clsTw.TinyUrlResolve = SettingDialog.TinyUrlResolve
+            clsTw.RestrictFavCheck = SettingDialog.RestrictFavCheck
             clsTw.ProxyType = SettingDialog.ProxyType
             clsTw.ProxyAddress = SettingDialog.ProxyAddress
             clsTw.ProxyPort = SettingDialog.ProxyPort
@@ -5218,6 +5221,7 @@ RETRY:
             _section.StartupVersion = SettingDialog.StartupVersion
             _section.StartupKey = SettingDialog.StartupKey
             _section.StartupFollowers = SettingDialog.StartupFollowers
+            _section.RestrictFavCheck = SettingDialog.RestrictFavCheck
 
             Dim tmpList As DetailsListView = Nothing
             For Each myTab As TabPage In ListTab.TabPages
@@ -6638,7 +6642,7 @@ RETRY:
         'StatusLabelUrl.Text = "タブ: " + tur.ToString() + "/" + tal.ToString() + " 全体:" + ur.ToString() + "/" + al.ToString() + _
         '        " (返信: " + urat.ToString() + ") POST残り " + RemainPostNum.ToString() + "回/最大 " + SettingDialog.MaxPostNum.ToString() + "回 更新間隔:" + (TimerTimeline.Interval / 1000).ToString
         StatusLabelUrl.Text = "[タブ: " + tur.ToString() + "/" + tal.ToString() + " 全体: " + ur.ToString() + "/" + al.ToString() + _
-                " (返信: " + urat.ToString() + ")] [時速: POST" + _postTimestamps.Count.ToString() + "/Fav" + _favTimestamps.Count.ToString() + "/TL" + _tlCount.ToString + "] [間隔: " + IIf(SettingDialog.TimelinePeriodInt = 0, "-", (TimerTimeline.Interval / 1000).ToString) + "]"
+                " (返信: " + urat.ToString() + ")] [時速: 投 " + _postTimestamps.Count.ToString() + "/ ☆ " + _favTimestamps.Count.ToString() + "/ 流 " + _tlCount.ToString + "] [間隔: " + IIf(SettingDialog.TimelinePeriodInt = 0, "-", (TimerTimeline.Interval / 1000).ToString) + "]"
     End Sub
 
     Private Sub SetNotifyIconText()
@@ -6706,6 +6710,10 @@ RETRY:
             Exit Sub
         End If
         StatusLabel.Text = "Followers取得完了"
+    End Sub
+
+    Private Sub SplitContainer1_SplitterMoved(ByVal sender As Object, ByVal e As System.Windows.Forms.SplitterEventArgs) Handles SplitContainer1.SplitterMoved
+        _mySpDis = SplitContainer1.SplitterDistance
     End Sub
 End Class
 
