@@ -52,6 +52,7 @@ Public Class Setting
     Private _MyStartupVersion As Boolean
     Private _MyStartupKey As Boolean
     Private _MyStartupFollowers As Boolean
+    Private _MyRestrictFavCheck As Boolean
 
     'Public Enum LogUnitEnum
     '    Minute
@@ -199,6 +200,7 @@ Public Class Setting
             _MyStartupVersion = CheckStartupVersion.Checked
             _MyStartupKey = CheckStartupKey.Checked
             _MyStartupFollowers = CheckStartupFollowers.Checked
+            _MyRestrictFavCheck = CheckFavRestrict.Checked
 
             'TweenMain.SetMainWindowTitle()
             'TweenMain.SetNotifyIconText()
@@ -330,6 +332,7 @@ Public Class Setting
         CheckStartupVersion.Checked = _MyStartupVersion
         CheckStartupKey.Checked = _MyStartupKey
         CheckStartupFollowers.Checked = _MyStartupFollowers
+        CheckFavRestrict.Checked = _MyRestrictFavCheck
 
         'TweenMain.SetMainWindowTitle()
         'TweenMain.SetNotifyIconText()
@@ -1054,6 +1057,15 @@ Public Class Setting
         End Get
         Set(ByVal value As Boolean)
             _MyStartupFollowers = value
+        End Set
+    End Property
+
+    Public Property RestrictFavCheck() As Boolean
+        Get
+            Return _MyRestrictFavCheck
+        End Get
+        Set(ByVal value As Boolean)
+            _MyRestrictFavCheck = value
         End Set
     End Property
 
