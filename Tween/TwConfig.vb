@@ -904,7 +904,7 @@ Public NotInheritable Class ListSection
         End Set
     End Property
 
-    <ConfigurationProperty("timelineperiod", DefaultValue:=60), _
+    <ConfigurationProperty("timelineperiod", DefaultValue:=90), _
      IntegerValidator(MaxValue:=3600, MinValue:=0)> _
     Public Property TimelinePeriod() As Integer
         Get
@@ -1584,6 +1584,16 @@ Public Property CloseToExit() As Boolean
         End Get
         Set(ByVal value As Boolean)
             Me("restrictfavcheck") = value
+        End Set
+    End Property
+
+    <ConfigurationProperty("alwaystop", DefaultValue:=False)> _
+    Public Property AlwaysTop() As Boolean
+        Get
+            Return CBool(Me("alwaystop"))
+        End Get
+        Set(ByVal value As Boolean)
+            Me("alwaystop") = value
         End Set
     End Property
 

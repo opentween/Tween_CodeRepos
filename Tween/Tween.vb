@@ -324,6 +324,7 @@ Public Class TweenMain
         SettingDialog.StartupKey = _section.StartupKey
         SettingDialog.StartupFollowers = _section.StartupFollowers
         SettingDialog.RestrictFavCheck = _section.RestrictFavCheck
+        SettingDialog.AlwaysTop = _section.AlwaysTop
 
         'ユーザー名、パスワードが未設定なら設定画面を表示（初回起動時など）
         If _username = "" Or _password = "" Then
@@ -369,6 +370,7 @@ Public Class TweenMain
         _myLoc = Me.Location                        '位置保持（最小化・最大化されたまま終了した場合の対応用）
         Me.SplitContainer1.SplitterDistance = _section.SplitterDistance     'Splitterの位置設定
         _mySpDis = Me.SplitContainer1.SplitterDistance
+        Me.TopMost = SettingDialog.AlwaysTop
 
         '全新着通知のチェック状態により、Reply＆DMの新着通知有効無効切り替え（タブ別設定にするため削除予定）
         If SettingDialog.UnreadManage = False Then
@@ -3113,6 +3115,8 @@ Public Class TweenMain
             clsTwPost.HubServer = SettingDialog.HubServer
             clsTw.TinyUrlResolve = SettingDialog.TinyUrlResolve
             clsTw.RestrictFavCheck = SettingDialog.RestrictFavCheck
+            Me.TopMost = SettingDialog.AlwaysTop
+
             clsTw.ProxyType = SettingDialog.ProxyType
             clsTw.ProxyAddress = SettingDialog.ProxyAddress
             clsTw.ProxyPort = SettingDialog.ProxyPort
@@ -5222,6 +5226,7 @@ RETRY:
             _section.StartupKey = SettingDialog.StartupKey
             _section.StartupFollowers = SettingDialog.StartupFollowers
             _section.RestrictFavCheck = SettingDialog.RestrictFavCheck
+            _section.AlwaysTop = SettingDialog.AlwaysTop
 
             Dim tmpList As DetailsListView = Nothing
             For Each myTab As TabPage In ListTab.TabPages
