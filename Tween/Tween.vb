@@ -1724,7 +1724,7 @@ Public Class TweenMain
                         Next
                         keys.Clear()
                         If rslt.page + 1 <= rslt.endPage Then
-                            If statusCount = 20 And rslt.page = 1 And SettingDialog.PeriodAdjust And SettingDialog.TimelinePeriodInt > 0 Then
+                            If statusCount = 20 And rslt.page = 1 And SettingDialog.PeriodAdjust Then
                                 Dim itv As Integer = TimerTimeline.Interval
                                 itv -= 5000
                                 If itv < 15000 Then itv = 15000
@@ -1744,7 +1744,7 @@ Public Class TweenMain
                             Loop
                             GetTimelineWorker.RunWorkerAsync(args)
                         Else
-                            If rslt.page = 1 And statusCount < 17 And SettingDialog.PeriodAdjust And SettingDialog.TimelinePeriodInt > 0 Then
+                            If rslt.page = 1 And statusCount < 17 And SettingDialog.PeriodAdjust Then
                                 TimerTimeline.Interval += 1000
                                 If TimerTimeline.Interval > SettingDialog.TimelinePeriodInt * 1000 Then TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
                             End If
@@ -4487,6 +4487,7 @@ RETRY:
         Dim retMsg As String
         Dim resStatus As String = ""
         Dim strVer As String
+        Dim forceUpdate As Boolean = My.Computer.Keyboard.ShiftKeyDown
 
         retMsg = _mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/version2.txt?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus)
         If retMsg.Length > 0 Then
@@ -4508,7 +4509,23 @@ RETRY:
                     End If
                 End If
             Else
-                If startup = False Then
+                If forceUpdate = True Then
+                    If MessageBox.Show("新しいバージョンは見つかりません。 " + strVer + " が公開されています。強制的に更新しますか？", "Tween更新確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
+                        retMsg = _mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/Tween" + strVer + ".gz", resStatus, MySocket.REQ_TYPE.ReqGETFile)
+                        If retMsg.Length = 0 Then
+                            retMsg = _mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/TweenUp.gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileUp)
+                            If retMsg.Length = 0 Then
+                                System.Diagnostics.Process.Start(My.Application.Info.DirectoryPath + "\TweenUp.exe")
+                                Application.Exit()
+                                Exit Sub
+                            Else
+                                If startup = False Then MessageBox.Show("アップデーターのダウンロードに失敗しました。しばらく待ってから再度お試しください。", "Tween更新結果", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                            End If
+                        Else
+                            If startup = False Then MessageBox.Show("最新版が公開されていますが、ダウンロードに失敗しました。しばらく待ってから再度お試しください。", "Tween更新結果", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                        End If
+                    End If
+                ElseIf startup = False Then
                     MessageBox.Show("最新版をお使いです。更新の必要はありませんでした。使用中Ver：" + My.Application.Info.Version.ToString.Replace(".", "") + " 最新Ver：" + strVer, "Tween更新結果", MessageBoxButtons.OK, MessageBoxIcon.Information)
                     'If retMsg.Length > 4 Then
                     '    strVer = retMsg.Substring(4)
@@ -5142,10 +5159,8 @@ RETRY:
             _section.SplitterDistance = _mySpDis
             _section.UserName = _username
             _section.Password = _password
-            '_section.NextPageThreshold = clsTw.NextThreshold
-            '_section.NextPages = clsTw.NextPages
-            _section.NextPageThreshold = SettingDialog.NextPageThreshold
-            _section.NextPages = SettingDialog.NextPagesInt
+            _section.NextPageThreshold = clsTw.NextThreshold
+            _section.NextPages = clsTw.NextPages
             _section.TimelinePeriod = SettingDialog.TimelinePeriodInt
             _section.DMPeriod = SettingDialog.DMPeriodInt
             _section.MaxPostNum = SettingDialog.MaxPostNum
@@ -5377,16 +5392,7 @@ RETRY:
             '    End If
             'Next
 
-            '終了処理中の保存でエラーが発生した場合は無視
-            If _endingFlag = False Then
-                _config.Save()
-            Else
-                Try
-                    _config.Save()
-                Catch ex As Exception
-
-                End Try
-            End If
+            _config.Save()
         End If
     End Sub
 
