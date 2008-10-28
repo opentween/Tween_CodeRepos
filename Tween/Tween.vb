@@ -6748,6 +6748,17 @@ RETRY:
     Private Sub SplitContainer1_SplitterMoved(ByVal sender As Object, ByVal e As System.Windows.Forms.SplitterEventArgs) Handles SplitContainer1.SplitterMoved
         _mySpDis = SplitContainer1.SplitterDistance
     End Sub
+
+    ' Added by Takeshi KIRIYA (aka @takeshik) <me@takeshik.org> BEGIN.
+    Private Sub RepliedStatusOpenMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RepliedStatusOpenMenuItem.Click
+        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
+        Dim id As Integer = clsTw.GetReplyStatusID(Integer.Parse(MyList.SelectedItems(0).SubItems(5).Text))
+        If id > 0 Then
+            ExecWorker.RunWorkerAsync("http://twitter.com/" + Regex.Match(MyList.SelectedItems(0).SubItems(2).Text, "@[A-Za-z0-9_]+").Value.Substring(1) + "/statuses/" + id.ToString())
+        End If
+    End Sub
+    ' Added by Takeshi KIRIYA (aka @takeshik) <me@takeshik.org> END.
+
 End Class
 
 Public Class TabStructure

@@ -1685,6 +1685,21 @@ Partial Public Class Twitter
         _mySock = New MySocket("UTF-8", Username, Password, _proxyType, _proxyAddress, _proxyPort, _proxyUser, _proxyPassword)
         _signed = False
     End Sub
+
+    ' Added by Takeshi KIRIYA (aka @takeshik) <me@takeshik.org> BEGIN.
+    Public Function GetReplyStatusID(ByVal id As Integer) As Integer
+        Dim resStatus As String = ""
+        Dim resMsg As String = _mySock.GetWebResponse("https://" + _hubServer + _ShowStatus + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2)
+        Dim xdoc As Xml.XmlDocument = New Xml.XmlDocument()
+        xdoc.LoadXml(resMsg)
+        If xdoc.SelectSingleNode("/status/in_reply_to_status_id").InnerXml <> "" Then
+            Return Integer.Parse(xdoc.SelectSingleNode("/status/in_reply_to_status_id").ChildNodes(0).Value)
+        Else
+            Return -1
+        End If
+    End Function
+    ' Added by Takeshi KIRIYA (aka @takeshik) <me@takeshik.org> END.
+
 #If DEBUG Then
     Public Sub GenerateAnalyzeKey()
         '解析キー情報部分のソースをwedataから作成する
