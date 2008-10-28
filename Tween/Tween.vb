@@ -1724,7 +1724,7 @@ Public Class TweenMain
                         Next
                         keys.Clear()
                         If rslt.page + 1 <= rslt.endPage Then
-                            If statusCount = 20 And rslt.page = 1 And SettingDialog.PeriodAdjust Then
+                            If statusCount = 20 And rslt.page = 1 And SettingDialog.PeriodAdjust And SettingDialog.TimelinePeriodInt > 0 Then
                                 Dim itv As Integer = TimerTimeline.Interval
                                 itv -= 5000
                                 If itv < 15000 Then itv = 15000
@@ -1744,7 +1744,7 @@ Public Class TweenMain
                             Loop
                             GetTimelineWorker.RunWorkerAsync(args)
                         Else
-                            If rslt.page = 1 And statusCount < 17 And SettingDialog.PeriodAdjust Then
+                            If rslt.page = 1 And statusCount < 17 And SettingDialog.PeriodAdjust And SettingDialog.TimelinePeriodInt > 0 Then
                                 TimerTimeline.Interval += 1000
                                 If TimerTimeline.Interval > SettingDialog.TimelinePeriodInt * 1000 Then TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
                             End If
@@ -5142,8 +5142,10 @@ RETRY:
             _section.SplitterDistance = _mySpDis
             _section.UserName = _username
             _section.Password = _password
-            _section.NextPageThreshold = clsTw.NextThreshold
-            _section.NextPages = clsTw.NextPages
+            '_section.NextPageThreshold = clsTw.NextThreshold
+            '_section.NextPages = clsTw.NextPages
+            _section.NextPageThreshold = SettingDialog.NextPageThreshold
+            _section.NextPages = SettingDialog.NextPagesInt
             _section.TimelinePeriod = SettingDialog.TimelinePeriodInt
             _section.DMPeriod = SettingDialog.DMPeriodInt
             _section.MaxPostNum = SettingDialog.MaxPostNum
@@ -5375,7 +5377,16 @@ RETRY:
             '    End If
             'Next
 
-            _config.Save()
+            '終了処理中の保存でエラーが発生した場合は無視
+            If _endingFlag = False Then
+                _config.Save()
+            Else
+                Try
+                    _config.Save()
+                Catch ex As Exception
+
+                End Try
+            End If
         End If
     End Sub
 
