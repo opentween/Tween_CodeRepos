@@ -323,6 +323,7 @@ Partial Class FilterDialog
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "振り分けルール"
+        Me.TopMost = True
         Me.EditFilterGroup.ResumeLayout(False)
         Me.EditFilterGroup.PerformLayout()
         Me.GroupBox1.ResumeLayout(False)

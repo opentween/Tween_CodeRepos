@@ -181,6 +181,12 @@ Public Class TweenMain
         ContextMenuStrip2.OwnerItem = Nothing
         ContextMenuTabProperty.OwnerItem = Nothing
 
+        SettingDialog.Owner = Me
+        SearchDialog.Owner = Me
+        fDialog.Owner = Me
+        TabDialog.Owner = Me
+        UrlDialog.Owner = Me
+
         _history.Add("")
         _hisIdx = 0
         _reply_to_id = 0
@@ -1454,13 +1460,13 @@ Public Class TweenMain
     End Sub
 
     Private Sub NotifyIcon1_BalloonTipClicked(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles NotifyIcon1.BalloonTipClicked
-        Me.TopMost = True
+        'Me.TopMost = True
         Me.Visible = True
         If Me.WindowState = FormWindowState.Minimized Then
             Me.WindowState = FormWindowState.Normal
         End If
         Me.Activate()
-        Me.TopMost = False
+        'Me.TopMost = False
     End Sub
 
     Private Sub GetTimelineWorker_DoWork(ByVal sender As System.Object, ByVal e As System.ComponentModel.DoWorkEventArgs) Handles GetTimelineWorker.DoWork
@@ -3923,7 +3929,7 @@ Public Class TweenMain
         Dim cidx As Integer = 0
         Dim fnd As Boolean = False
         Dim toIdx As Integer
-
+        SearchDialog.Owner = Me
         If SearchDialog.ShowDialog() = Windows.Forms.DialogResult.Cancel Then Exit Sub
         _word = SearchDialog.SWord
 
@@ -5472,7 +5478,12 @@ RETRY:
 
     Private Sub Tabs_DoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListTab.MouseDoubleClick
         If ListTab.SelectedTab.Text = "Recent" Or ListTab.SelectedTab.Text = "Reply" Or ListTab.SelectedTab.Text = "Direct" Then Exit Sub
-        Dim newTabText As String = InputBox("タブの名前を指定してください。", "タブ名変更", ListTab.SelectedTab.Text)
+        'Dim newTabText As String = InputBox("タブの名前を指定してください。", "タブ名変更", ListTab.SelectedTab.Text)
+        Dim inputName As New InputTabName
+        inputName.TabName = ListTab.SelectedTab.Text
+        inputName.ShowDialog()
+        Dim newTabText As String = inputName.TabName
+        inputName.Dispose()
         If newTabText <> "" Then
             For i As Integer = 0 To _tabs.Count - 1
                 If _tabs(i).tabName = ListTab.SelectedTab.Text Then
@@ -5849,7 +5860,12 @@ RETRY:
     End Sub
 
     Private Sub AddTabMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AddTabMenuItem.Click
-        Dim tabName As String = InputBox("タブ名を指定してください。", "タブ追加", "MyTab" + _tabs.Count.ToString)
+        'Dim tabName As String = InputBox("タブ名を指定してください。", "タブ追加", "MyTab" + _tabs.Count.ToString)
+        Dim inputName As New InputTabName
+        inputName.TabName = "MyTab" + _tabs.Count.ToString
+        inputName.ShowDialog()
+        Dim tabName As String = inputName.TabName
+        inputName.Dispose()
         If tabName <> "" Then
             If AddNewTab(tabName) = False Then
                 MessageBox.Show("タブ　""" + tabName + """　は既に存在するため、追加できません。別の名前を指定してください。", _
@@ -5871,7 +5887,12 @@ RETRY:
                 ListTab.SelectedTab.Focus()
                 If tabName = "(新規タブ)" Then
 
-                    tabName = InputBox("タブ名を指定してください。", "タブ追加", "MyTab" + _tabs.Count.ToString)
+                    'tabName = InputBox("タブ名を指定してください。", "タブ追加", "MyTab" + _tabs.Count.ToString)
+                    Dim inputName As New InputTabName
+                    inputName.TabName = "MyTab" + _tabs.Count.ToString
+                    inputName.ShowDialog()
+                    tabName = inputName.TabName
+                    inputName.Dispose()
                     If tabName <> "" Then
                         If AddNewTab(tabName) = False Then
                             MessageBox.Show("タブ　""" + tabName + """　は既に存在するため、追加できません。別の名前を指定してください。", _
@@ -6069,7 +6090,12 @@ RETRY:
 
             ListTab.SelectedTab.Focus()
             If tabName = "(新規タブ)" Then
-                tabName = InputBox("タブ名を指定してください。", "タブ追加", "MyTab" + _tabs.Count.ToString)
+                'tabName = InputBox("タブ名を指定してください。", "タブ追加", "MyTab" + _tabs.Count.ToString)
+                Dim inputName As New InputTabName
+                inputName.TabName = "MyTab" + _tabs.Count.ToString
+                inputName.ShowDialog()
+                tabName = inputName.TabName
+                inputName.Dispose()
                 If tabName <> "" Then
                     If AddNewTab(tabName) = False Then
                         MessageBox.Show("タブ　""" + tabName + """　は既に存在するため、追加できません。別の名前を指定してください。", _

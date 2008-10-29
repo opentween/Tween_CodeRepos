@@ -145,6 +145,8 @@ Partial Class Setting
         Me.MaxPost = New System.Windows.Forms.TextBox
         Me.Label52 = New System.Windows.Forms.Label
         Me.TabPage2 = New System.Windows.Forms.TabPage
+        Me.CheckAlwaysTop = New System.Windows.Forms.CheckBox
+        Me.Label58 = New System.Windows.Forms.Label
         Me.Label57 = New System.Windows.Forms.Label
         Me.Label56 = New System.Windows.Forms.Label
         Me.CheckFavRestrict = New System.Windows.Forms.CheckBox
@@ -167,8 +169,6 @@ Partial Class Setting
         Me.RadioProxySpecified = New System.Windows.Forms.RadioButton
         Me.RadioProxyIE = New System.Windows.Forms.RadioButton
         Me.RadioProxyNone = New System.Windows.Forms.RadioButton
-        Me.CheckAlwaysTop = New System.Windows.Forms.CheckBox
-        Me.Label58 = New System.Windows.Forms.Label
         Me.GroupBox1.SuspendLayout()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
@@ -1422,6 +1422,25 @@ Partial Class Setting
         Me.TabPage2.Text = "動作"
         Me.TabPage2.UseVisualStyleBackColor = True
         '
+        'CheckAlwaysTop
+        '
+        Me.CheckAlwaysTop.AutoSize = True
+        Me.CheckAlwaysTop.Location = New System.Drawing.Point(157, 146)
+        Me.CheckAlwaysTop.Name = "CheckAlwaysTop"
+        Me.CheckAlwaysTop.Size = New System.Drawing.Size(112, 16)
+        Me.CheckAlwaysTop.TabIndex = 12
+        Me.CheckAlwaysTop.Text = "最前面に表示する"
+        Me.CheckAlwaysTop.UseVisualStyleBackColor = True
+        '
+        'Label58
+        '
+        Me.Label58.AutoSize = True
+        Me.Label58.Location = New System.Drawing.Point(11, 147)
+        Me.Label58.Name = "Label58"
+        Me.Label58.Size = New System.Drawing.Size(86, 12)
+        Me.Label58.TabIndex = 11
+        Me.Label58.Text = "常に最前面表示"
+        '
         'Label57
         '
         Me.Label57.ForeColor = System.Drawing.SystemColors.ActiveCaption
@@ -1653,25 +1672,6 @@ Partial Class Setting
         Me.RadioProxyNone.TabIndex = 0
         Me.RadioProxyNone.Text = "使用しない"
         Me.RadioProxyNone.UseVisualStyleBackColor = True
-        '
-        'CheckAlwaysTop
-        '
-        Me.CheckAlwaysTop.AutoSize = True
-        Me.CheckAlwaysTop.Location = New System.Drawing.Point(157, 146)
-        Me.CheckAlwaysTop.Name = "CheckAlwaysTop"
-        Me.CheckAlwaysTop.Size = New System.Drawing.Size(112, 16)
-        Me.CheckAlwaysTop.TabIndex = 12
-        Me.CheckAlwaysTop.Text = "最前面に表示する"
-        Me.CheckAlwaysTop.UseVisualStyleBackColor = True
-        '
-        'Label58
-        '
-        Me.Label58.AutoSize = True
-        Me.Label58.Location = New System.Drawing.Point(11, 147)
-        Me.Label58.Name = "Label58"
-        Me.Label58.Size = New System.Drawing.Size(86, 12)
-        Me.Label58.TabIndex = 11
-        Me.Label58.Text = "常に最前面表示"
         '
         'Setting
         '
