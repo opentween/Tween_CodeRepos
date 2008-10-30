@@ -1,4 +1,5 @@
-﻿Namespace TweenCustomControl
+﻿Option Strict On
+Namespace TweenCustomControl
 
     <Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
     Partial Class DetailsListView

@@ -1,4 +1,5 @@
-﻿Imports System.IO
+﻿Option Strict On
+Imports System.IO
 Imports System.Net
 Imports System.Text
 

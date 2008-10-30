@@ -1,4 +1,5 @@
-﻿Public NotInheritable Class TweenAboutBox
+﻿Option Strict On
+Public NotInheritable Class TweenAboutBox
 
     Private Sub TweenAboutBox_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         ' フォームのタイトルを設定します。

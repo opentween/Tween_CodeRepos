@@ -1,4 +1,5 @@
-﻿Imports System.Windows.Forms
+﻿Option Strict On
+Imports System.Windows.Forms
 
 Public Class FilterDialog
 
@@ -22,7 +23,7 @@ Public Class FilterDialog
         '        Exit For
         '    End If
         'Next
-        tabName = ComboTabs.SelectedItem
+        tabName = DirectCast(ComboTabs.SelectedItem, String)
 
         ListFilters.Items.Clear()
         For Each ts As TabStructure In _tabs
@@ -106,11 +107,11 @@ Public Class FilterDialog
 
     Public Property CurrentTab() As String
         Get
-            Return ComboTabs.SelectedItem
+            Return DirectCast(ComboTabs.SelectedItem, String)
         End Get
         Set(ByVal value As String)
             For i As Integer = 0 To ComboTabs.Items.Count - 1
-                If ComboTabs.Items(i) = value Then
+                If ComboTabs.Items(i) Is value Then
                     ComboTabs.SelectedIndex = i
                     Exit For
                 End If
@@ -208,7 +209,7 @@ Public Class FilterDialog
     Private Sub ButtonDelete_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonDelete.Click
         If ListFilters.SelectedIndex = -1 Then Exit Sub
 
-        If MessageBox.Show("このルールを削除してもよろしいですか？" + vbCrLf + "   『" + ListFilters.SelectedItem + "』", _
+        If MessageBox.Show("このルールを削除してもよろしいですか？" + vbCrLf + "   『" + ListFilters.SelectedItem.ToString + "』", _
             "ルール削除確認", _
             MessageBoxButtons.OKCancel, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then Exit Sub
 
@@ -216,7 +217,7 @@ Public Class FilterDialog
 
         ListFilters.Items.RemoveAt(i)
         For Each ts As TabStructure In _tabs
-            If ts.tabName = ComboTabs.SelectedItem Then
+            If ts.tabName Is ComboTabs.SelectedItem Then
                 ts.filters.RemoveAt(i)
                 ts.modified = True
                 Exit For
@@ -243,7 +244,7 @@ Public Class FilterDialog
 
     Private Sub ShowDetail()
         For Each ts As TabStructure In _tabs
-            If ts.tabName = ComboTabs.SelectedItem Then
+            If ts.tabName Is ComboTabs.SelectedItem Then
                 If ListFilters.SelectedIndex > -1 Then
                     Dim fc As FilterClass = ts.filters(ListFilters.SelectedIndex)
                     If fc.SearchBoth Then
@@ -342,7 +343,7 @@ Public Class FilterDialog
         End If
         Dim i As Integer = ListFilters.SelectedIndex
         For Each ts As TabStructure In _tabs
-            If ts.tabName = ComboTabs.SelectedItem Then
+            If ts.tabName Is ComboTabs.SelectedItem Then
                 Dim ft As FilterClass
                 Dim ftOrg As FilterClass = Nothing
 
@@ -369,14 +370,14 @@ Public Class FilterDialog
                 If RadioAND.Checked Then
                     ft.IDFilter = UID.Text
                     ft.SearchBoth = True
-                    Dim bf() As String = MSG1.Text.Trim.Split(" ")
+                    Dim bf() As String = MSG1.Text.Trim.Split(Chr(32))
                     For Each bfs As String In bf
                         If bfs <> "" Then ft.BodyFilter.Add(bfs.Trim)
                     Next
                 Else
                     ft.IDFilter = ""
                     ft.SearchBoth = False
-                    Dim bf() As String = MSG2.Text.Trim.Split(" ")
+                    Dim bf() As String = MSG2.Text.Trim.Split(Chr(32))
                     For Each bfs As String In bf
                         If bfs <> "" Then ft.BodyFilter.Add(bfs.Trim)
                     Next
@@ -415,7 +416,7 @@ Public Class FilterDialog
                 Exit For
             End If
         Next
-        Call SetFilters(ComboTabs.SelectedItem)
+        Call SetFilters(ComboTabs.SelectedItem.ToString)
         If _mode = EDITMODE.AddNew Then
             ListFilters.SelectedIndex = ListFilters.Items.Count - 1
         Else
@@ -443,7 +444,7 @@ Public Class FilterDialog
     End Sub
 
     Private Sub ComboTabs_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ComboTabs.SelectedIndexChanged
-        Call SetFilters(ComboTabs.SelectedItem)
+        Call SetFilters(ComboTabs.SelectedItem.ToString)
     End Sub
 
     Private Sub FilterDialog_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyDown
@@ -462,7 +463,7 @@ Public Class FilterDialog
     End Sub
 
     Private Sub ListFilters_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ListFilters.DoubleClick
-        If ListFilters.SelectedItem = Nothing Then
+        If ListFilters.SelectedItem Is Nothing Then
             Exit Sub
         End If
 
@@ -470,7 +471,7 @@ Public Class FilterDialog
             Exit Sub
         End If
 
-        If ListFilters.Items(ListFilters.IndexFromPoint(ListFilters.PointToClient(Control.MousePosition))) = Nothing Then
+        If ListFilters.Items(ListFilters.IndexFromPoint(ListFilters.PointToClient(Control.MousePosition))) Is Nothing Then
             Exit Sub
         End If
         Call ButtonEdit_Click(sender, e)

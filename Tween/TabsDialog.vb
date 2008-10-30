@@ -1,4 +1,5 @@
-﻿Imports System.Windows.Forms
+﻿Option Strict On
+Imports System.Windows.Forms
 
 Public Class TabsDialog
 
@@ -47,7 +48,7 @@ Public Class TabsDialog
     End Sub
 
     Private Sub TabList_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TabList.DoubleClick
-        If TabList.SelectedItem = Nothing Then
+        If TabList.SelectedItem Is Nothing Then
             Exit Sub
         End If
 

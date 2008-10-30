@@ -1,3 +1,4 @@
+Option Strict On
 Namespace My
 
     ' 次のイベントは MyApplication に対して利用できます:
