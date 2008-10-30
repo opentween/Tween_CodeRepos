@@ -3121,7 +3121,6 @@ Public Class TweenMain
             clsTwPost.HubServer = SettingDialog.HubServer
             clsTw.TinyUrlResolve = SettingDialog.TinyUrlResolve
             clsTw.RestrictFavCheck = SettingDialog.RestrictFavCheck
-            Me.TopMost = SettingDialog.AlwaysTop
 
             clsTw.ProxyType = SettingDialog.ProxyType
             clsTw.ProxyAddress = SettingDialog.ProxyAddress
@@ -3241,6 +3240,7 @@ Public Class TweenMain
             SetNotifyIconText()
         End If
 
+        Me.TopMost = SettingDialog.AlwaysTop
         Call SaveConfigs()
     End Sub
 
@@ -3930,7 +3930,11 @@ Public Class TweenMain
         Dim fnd As Boolean = False
         Dim toIdx As Integer
         SearchDialog.Owner = Me
-        If SearchDialog.ShowDialog() = Windows.Forms.DialogResult.Cancel Then Exit Sub
+        If SearchDialog.ShowDialog() = Windows.Forms.DialogResult.Cancel Then
+            Me.TopMost = SettingDialog.AlwaysTop
+            Exit Sub
+        End If
+        Me.TopMost = SettingDialog.AlwaysTop
         _word = SearchDialog.SWord
 
         If _word = "" Then Exit Sub
@@ -4036,7 +4040,11 @@ RETRY:
         _word = SearchDialog.SWord
 
         If _word = "" Then
-            If SearchDialog.ShowDialog() = Windows.Forms.DialogResult.Cancel Then Exit Sub
+            If SearchDialog.ShowDialog() = Windows.Forms.DialogResult.Cancel Then
+                Me.TopMost = SettingDialog.AlwaysTop
+                Exit Sub
+            End If
+            Me.TopMost = SettingDialog.AlwaysTop
             _word = SearchDialog.SWord
             If _word = "" Then Exit Sub
         End If
@@ -4141,7 +4149,11 @@ RETRY:
         _word = SearchDialog.SWord
 
         If _word = "" Then
-            If SearchDialog.ShowDialog() = Windows.Forms.DialogResult.Cancel Then Exit Sub
+            If SearchDialog.ShowDialog() = Windows.Forms.DialogResult.Cancel Then
+                Me.TopMost = SettingDialog.AlwaysTop
+                Exit Sub
+            End If
+            Me.TopMost = SettingDialog.AlwaysTop
             _word = SearchDialog.SWord
             If _word = "" Then Exit Sub
         End If
@@ -4248,6 +4260,7 @@ RETRY:
 
     Private Sub AboutMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AboutMenuItem.Click
         TweenAboutBox.ShowDialog()
+        Me.TopMost = SettingDialog.AlwaysTop
     End Sub
 
     Private Sub JumpUnreadMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles JumpUnreadMenuItem.Click
@@ -5464,6 +5477,7 @@ RETRY:
             srm.Close()
             srm.Dispose()
         End If
+        Me.TopMost = SettingDialog.AlwaysTop
     End Sub
 
     Private Sub PostBrowser_PreviewKeyDown(ByVal sender As System.Object, ByVal e As System.Windows.Forms.PreviewKeyDownEventArgs) Handles PostBrowser.PreviewKeyDown
@@ -5484,6 +5498,7 @@ RETRY:
         inputName.ShowDialog()
         Dim newTabText As String = inputName.TabName
         inputName.Dispose()
+        Me.TopMost = SettingDialog.AlwaysTop
         If newTabText <> "" Then
             For i As Integer = 0 To _tabs.Count - 1
                 If _tabs(i).tabName = ListTab.SelectedTab.Text Then
@@ -5855,6 +5870,7 @@ RETRY:
         fDialog.Tabs = _tabs
         fDialog.CurrentTab = _rclickTabName
         fDialog.ShowDialog()
+        Me.TopMost = SettingDialog.AlwaysTop
         _tabs = fDialog.Tabs
         Call ReFilter()
     End Sub
@@ -5866,6 +5882,7 @@ RETRY:
         inputName.ShowDialog()
         Dim tabName As String = inputName.TabName
         inputName.Dispose()
+        Me.TopMost = SettingDialog.AlwaysTop
         If tabName <> "" Then
             If AddNewTab(tabName) = False Then
                 MessageBox.Show("タブ　""" + tabName + """　は既に存在するため、追加できません。別の名前を指定してください。", _
@@ -5881,7 +5898,11 @@ RETRY:
         For Each itm As ListViewItem In myList.SelectedItems
 
             Do
-                If TabDialog.ShowDialog = Windows.Forms.DialogResult.Cancel Then Exit Sub
+                If TabDialog.ShowDialog = Windows.Forms.DialogResult.Cancel Then
+                    Me.TopMost = SettingDialog.AlwaysTop
+                    Exit Sub
+                End If
+                Me.TopMost = SettingDialog.AlwaysTop
                 tabName = TabDialog.SelectedTabName
 
                 ListTab.SelectedTab.Focus()
@@ -5893,6 +5914,7 @@ RETRY:
                     inputName.ShowDialog()
                     tabName = inputName.TabName
                     inputName.Dispose()
+                    Me.TopMost = SettingDialog.AlwaysTop
                     If tabName <> "" Then
                         If AddNewTab(tabName) = False Then
                             MessageBox.Show("タブ　""" + tabName + """　は既に存在するため、追加できません。別の名前を指定してください。", _
@@ -5909,6 +5931,7 @@ RETRY:
             fDialog.CurrentTab = tabName
             fDialog.AddNewFilter(itm.SubItems(4).Text, itm.SubItems(2).Text)
             fDialog.ShowDialog()
+            Me.TopMost = SettingDialog.AlwaysTop
             _tabs = fDialog.Tabs
             Call ReFilter()
         Next
@@ -6085,7 +6108,11 @@ RETRY:
         Dim tabName As String = ""
 
         Do
-            If TabDialog.ShowDialog = Windows.Forms.DialogResult.Cancel Then Exit Sub
+            If TabDialog.ShowDialog = Windows.Forms.DialogResult.Cancel Then
+                Me.TopMost = SettingDialog.AlwaysTop
+                Exit Sub
+            End If
+            Me.TopMost = SettingDialog.AlwaysTop
             tabName = TabDialog.SelectedTabName
 
             ListTab.SelectedTab.Focus()
@@ -6096,6 +6123,7 @@ RETRY:
                 inputName.ShowDialog()
                 tabName = inputName.TabName
                 inputName.Dispose()
+                Me.TopMost = SettingDialog.AlwaysTop
                 If tabName <> "" Then
                     If AddNewTab(tabName) = False Then
                         MessageBox.Show("タブ　""" + tabName + """　は既に存在するため、追加できません。別の名前を指定してください。", _
@@ -6613,6 +6641,7 @@ RETRY:
                 If UrlDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
                     openUrlStr = UrlDialog.SelectedUrl
                 End If
+                Me.TopMost = SettingDialog.AlwaysTop
             End If
 
             If openUrlStr <> "" Then
