@@ -57,8 +57,6 @@ Public Class TweenMain
     Private _reply_to_id As Integer     ' リプライ先のステータスID 0の場合はリプライではない 注：複数あてのものはリプライではない
     Private _reply_to_name As String    ' リプライ先ステータスの書き込み者の名前
     Private _getDM As Boolean
-    Private RemainPostNum As Integer   ' POST残り回数
-    Private __PostCounter As Integer = 59  '割り込みカウンタ　タイマ割り込みでカウントダウン
     Private _postTimestamps As New List(Of Date)
     Private _favTimestamps As New List(Of Date)
     Private _tlTimestamps As New Dictionary(Of Date, Integer)
@@ -242,7 +240,6 @@ Public Class TweenMain
         SettingDialog.NextPageThreshold = _section.NextPageThreshold    '次頁以降を取得するための新着件数閾値
         SettingDialog.NextPagesInt = _section.NextPages                 '閾値を超えた場合の取得ページ数
         SettingDialog.MaxPostNum = _section.MaxPostNum                  '時間当たりPOST回数最大値
-        RemainPostNum = SettingDialog.MaxPostNum
         'ログ保存関連（扱いが難しいので機能削除）
         'SettingDialog.LogDays = _section.LogDays
         'Select Case _section.LogUnit
@@ -1976,8 +1973,6 @@ Public Class TweenMain
                     TimerRefreshIcon.Enabled = False
                     NotifyIcon1.Icon = NIconAtRed
                 Else
-                    If RemainPostNum > 1 Then RemainPostNum -= 1
-                    If TimerPostCounter.Enabled = False Then TimerPostCounter.Enabled = True
                     StatusLabel.Text = "POST完了"
                     _history.Add("")
                     _hisIdx = _history.Count - 1
@@ -6076,8 +6071,6 @@ RETRY:
                             _postTimestamps.RemoveAt(i)
                         End If
                     Next
-                    If RemainPostNum > 1 Then RemainPostNum -= 1
-                    If TimerPostCounter.Enabled = False Then TimerPostCounter.Enabled = True
                     StatusLabel.Text = "POST完了"
                     StatusText.Text = ""
                     _history.Add("")
@@ -6777,15 +6770,6 @@ RETRY:
             SettingDialog.PlaySound = True
         Else
             SettingDialog.PlaySound = False
-        End If
-    End Sub
-
-    Private Sub TimerPostCounter_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerPostCounter.Tick
-        __PostCounter -= 1          'カウントダウン
-        If __PostCounter < 0 Then
-            '1時間経過(=60回割り込み発生)したら残りPOST数リセット
-            RemainPostNum = SettingDialog.MaxPostNum
-            __PostCounter = 59
         End If
     End Sub
 
