@@ -1692,12 +1692,17 @@ Partial Public Class Twitter
         Dim resMsg As String = _mySock.GetWebResponse("https://" + _hubServer + _ShowStatus + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2)
         Dim xdoc As Xml.XmlDocument = New Xml.XmlDocument()
         xdoc.LoadXml(resMsg)
-        If xdoc.SelectSingleNode("/status/in_reply_to_status_id").InnerXml <> "" Then
-            Return Integer.Parse(xdoc.SelectSingleNode("/status/in_reply_to_status_id").ChildNodes(0).Value)
-        Else
-            Return -1
-        End If
+        Try
+            If xdoc.SelectSingleNode("/status/in_reply_to_status_id").InnerXml <> "" Then
+                Return Integer.Parse(xdoc.SelectSingleNode("/status/in_reply_to_status_id").ChildNodes(0).Value)
+            Else
+                Return -1
+            End If
+        Catch ex As Xml.XmlException
+            Return -2
+        End Try
     End Function
+
     ' Added by Takeshi KIRIYA (aka @takeshik) <me@takeshik.org> END.
 
 #If DEBUG Then
