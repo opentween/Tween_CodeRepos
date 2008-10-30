@@ -1,4 +1,5 @@
-﻿Imports System
+﻿Option Strict On
+Imports System
 Imports System.Drawing
 Imports System.Runtime.InteropServices
 Imports System.Windows.Forms

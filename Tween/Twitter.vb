@@ -1,4 +1,5 @@
-﻿Imports System.Web
+﻿Option Strict On
+Imports System.Web
 Imports System.Xml
 
 Partial Public Class Twitter
@@ -166,7 +167,7 @@ Partial Public Class Twitter
         Dim resStatus As String = ""
         Dim resMsg As String = ""
 
-        resMsg = _mySock.GetWebResponse("https://" + _hubServer + _loginPath, resStatus, MySocket.REQ_TYPE.ReqPOST, account)
+        resMsg = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _loginPath, resStatus, MySocket.REQ_TYPE.ReqPOST, account), String)
         If resMsg.Length = 0 Then
             Return "SignIn -> " + resStatus
         End If
@@ -211,9 +212,9 @@ Partial Public Class Twitter
         'pageQuery = _pageQry + page.ToString
 
         If gType = GetTypes.GET_TIMELINE Then
-            retMsg = _mySock.GetWebResponse("https://" + _hubServer + _homePath + pageQuery, resStatus)
+            retMsg = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _homePath + pageQuery, resStatus), String)
         Else
-            retMsg = _mySock.GetWebResponse("https://" + _hubServer + _replyPath + pageQuery, resStatus)
+            retMsg = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _replyPath + pageQuery, resStatus), String)
         End If
 
         If _endingFlag Then Return ""
@@ -444,7 +445,7 @@ Partial Public Class Twitter
                                 End Try
                                 Dim Response As String = ""
                                 Dim retUrlStr As String = ""
-                                retUrlStr = _mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo)
+                                retUrlStr = DirectCast(_mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
                                 If retUrlStr.Length > 0 Then
                                     orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
                                 End If
@@ -669,9 +670,9 @@ Partial Public Class Twitter
         pageQuery = _pageQry + page.ToString
 
         If gType = GetTypes.GET_DMRCV Then
-            retMsg = _mySock.GetWebResponse("https://" + _hubServer + _DMPathRcv + pageQuery, resStatus)
+            retMsg = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _DMPathRcv + pageQuery, resStatus), String)
         Else
-            retMsg = _mySock.GetWebResponse("https://" + _hubServer + _DMPathSnt + pageQuery, resStatus)
+            retMsg = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _DMPathSnt + pageQuery, resStatus), String)
         End If
         If retMsg.Length = 0 Then
             _signed = False
@@ -813,7 +814,7 @@ Partial Public Class Twitter
                                     urlStr = orgData.Substring(posl1, posl2 - posl1)
                                     Dim Response As String = ""
                                     Dim retUrlStr As String = ""
-                                    retUrlStr = _mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo)
+                                    retUrlStr = DirectCast(_mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
                                     If retUrlStr.Length > 0 Then
                                         orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
                                     End If
@@ -1065,7 +1066,7 @@ Partial Public Class Twitter
         Dim cnt As Integer = 1
 
         '''img = mySock.GetWebResponse(pathUrl, resStatus, MySocket.REQ_TYPE.ReqGETBinary)
-        img = _mySock.GetWebResponse(pathUrl, resStatus, MySocket.REQ_TYPE.ReqGETBinary)
+        img = DirectCast(_mySock.GetWebResponse(pathUrl, resStatus, MySocket.REQ_TYPE.ReqGETBinary), System.Drawing.Image)
         If Not img Is Nothing Then
             '''SyncLock TIconList
             imgKeys.Add(pathUrl)
@@ -1203,7 +1204,7 @@ Partial Public Class Twitter
         End If
 
         Dim resStatus As String = ""
-        Dim resMsg As String = _mySock.GetWebResponse("https://" + _hubServer + _statusUpdatePathAPI, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI, dataStr)
+        Dim resMsg As String = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _statusUpdatePathAPI, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI, dataStr), String)
 
         If resStatus.StartsWith("OK") Then
             Return ""
@@ -1227,7 +1228,7 @@ Partial Public Class Twitter
         'Dim dataStr As String = "_method=delete&" + _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim resStatus As String = ""
-        Dim resMsg As String = _mySock.GetWebResponse("https://" + _hubServer + _StDestroyPath + id, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode, dataStr, "https://" + _baseUrlStr + _homePath)
+        Dim resMsg As String = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _StDestroyPath + id, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode, dataStr, "https://" + _baseUrlStr + _homePath), String)
 
         If resMsg.StartsWith("<html>") = False Then
             Return resStatus
@@ -1245,7 +1246,7 @@ Partial Public Class Twitter
         'データ部分の生成
         Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim resStatus As String = ""
-        Dim resMsg As String = _mySock.GetWebResponse("https://" + _hubServer + _DMDestroyPath + id, resStatus, MySocket.REQ_TYPE.ReqPOST, dataStr)
+        Dim resMsg As String = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _DMDestroyPath + id, resStatus, MySocket.REQ_TYPE.ReqPOST, dataStr), String)
 
         If resMsg.StartsWith("<html>") = False Then
             Return resStatus
@@ -1263,7 +1264,7 @@ Partial Public Class Twitter
         'データ部分の生成
         Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim resStatus As String = ""
-        Dim resMsg As String = _mySock.GetWebResponse("https://" + _hubServer + _postFavAddPath + id, resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2, dataStr)
+        Dim resMsg As String = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _postFavAddPath + id, resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2, dataStr), String)
 
         'If resMsg.StartsWith("$") = False Then
         If resMsg.StartsWith("$") = False And resMsg <> " " Then
@@ -1277,7 +1278,7 @@ Partial Public Class Twitter
 
         'http://twitter.com/statuses/show/id.xml APIを発行して本文を取得
 
-        resMsg = _mySock.GetWebResponse("https://" + _hubServer + _ShowStatus + id + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2)
+        resMsg = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _ShowStatus + id + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2), String)
 
         Dim rd As Xml.XmlTextReader = New Xml.XmlTextReader(New System.IO.StringReader(resMsg))
 
@@ -1304,7 +1305,7 @@ Partial Public Class Twitter
         'データ部分の生成
         Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim resStatus As String = ""
-        Dim resMsg As String = _mySock.GetWebResponse("https://" + _hubServer + _postFavRemovePath + id, resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2, dataStr)
+        Dim resMsg As String = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _postFavRemovePath + id, resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2, dataStr), String)
 
         'If resMsg.StartsWith("$") = False Then
         If resMsg.StartsWith("$") = False And resMsg <> " " Then
@@ -1327,7 +1328,7 @@ Partial Public Class Twitter
         Do While True
             i += 1
             ' resMsg = _mySock.GetWebResponse("https://" + _hubServer + _GetFollowers + "?page=" + i.ToString, resStatus, MySocket.REQ_TYPE.ReqGetAPI)
-            resMsg = _mySock.GetWebResponse("https://" + _hubServer + _GetFollowers + _pageQry + i.ToString, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI)
+            resMsg = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _GetFollowers + _pageQry + i.ToString, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
             If resStatus.StartsWith("OK") = False Then
                 follower.Clear()
                 follower.Add(_uid)  '途中で失敗したら片思い表示しない
@@ -1354,21 +1355,21 @@ Partial Public Class Twitter
         Return ""
     End Function
 
-    Public Property Username()
+    Public Property Username() As String
         Get
             Return _uid
         End Get
-        Set(ByVal value)
+        Set(ByVal value As String)
             _uid = value
             _mySock.Username = _uid
         End Set
     End Property
 
-    Public Property Password()
+    Public Property Password() As String
         Get
             Return _pwd
         End Get
-        Set(ByVal value)
+        Set(ByVal value As String)
             _pwd = value
             _mySock.Password = _pwd
             _mySock.CreateCredentialInfo()
@@ -1457,7 +1458,7 @@ Partial Public Class Twitter
         Dim resStatus As String = ""
         Dim resMsg As String = ""
 
-        resMsg = _mySock.GetWebResponse(wedataUrl, resStatus, timeout:=10 * 1000) 'タイムアウト時間を10秒に設定
+        resMsg = DirectCast(_mySock.GetWebResponse(wedataUrl, resStatus, timeout:=10 * 1000), String) 'タイムアウト時間を10秒に設定
         If resMsg.Length = 0 Then Exit Sub
 
         Dim rs As New System.IO.StringReader(resMsg)
@@ -1689,7 +1690,7 @@ Partial Public Class Twitter
     ' Added by Takeshi KIRIYA (aka @takeshik) <me@takeshik.org> BEGIN.
     Public Function GetReplyStatusID(ByVal id As Integer) As Integer
         Dim resStatus As String = ""
-        Dim resMsg As String = _mySock.GetWebResponse("https://" + _hubServer + _ShowStatus + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2)
+        Dim resMsg As String = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _ShowStatus + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2), String)
         Dim xdoc As Xml.XmlDocument = New Xml.XmlDocument()
         xdoc.LoadXml(resMsg)
         Try

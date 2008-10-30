@@ -1,4 +1,5 @@
-﻿Imports System.Configuration
+﻿Option Strict On
+Imports System.Configuration
 Imports System.Text.RegularExpressions
 Imports Tween.TweenCustomControl
 
@@ -383,9 +384,9 @@ Public Class TweenMain
 
         'タイマー設定
         'Recent&Reply取得間隔
-        TimerTimeline.Interval = IIf(SettingDialog.TimelinePeriodInt > 0, SettingDialog.TimelinePeriodInt * 1000, 600000)
+        TimerTimeline.Interval = If(SettingDialog.TimelinePeriodInt > 0, SettingDialog.TimelinePeriodInt * 1000, 600000)
         'DM取得間隔
-        TimerDM.Interval = IIf(SettingDialog.DMPeriodInt > 0, SettingDialog.DMPeriodInt * 1000, 600000)
+        TimerDM.Interval = If(SettingDialog.DMPeriodInt > 0, SettingDialog.DMPeriodInt * 1000, 600000)
         '更新中アイコンアニメーション間隔
         TimerRefreshIcon.Interval = 85
 
@@ -455,7 +456,7 @@ Public Class TweenMain
                  ListViewItemComparer.ComparerMode.DateTime, _
                  ListViewItemComparer.ComparerMode.String}
         listViewItemSorter.Column = _section.SortColumn
-        listViewItemSorter.Order = _section.SortOrder
+        listViewItemSorter.Order = DirectCast(_section.SortOrder, System.Windows.Forms.SortOrder)
         'Timeline.ListViewItemSorter = listViewItemSorter
         'Timeline.Columns(0).Width = _section.Width1
         'Timeline.Columns(0).DisplayIndex = _section.DisplayIndex1
@@ -567,7 +568,7 @@ Public Class TweenMain
             For Each flt As Tween.SelectedUser In _section.SelectedUser
                 If flt.TabName = name Then
                     Dim fcls As New FilterClass
-                    Dim bflt() As String = flt.BodyFilter.Split(" ")
+                    Dim bflt() As String = flt.BodyFilter.Split(Chr(32))
                     For Each tmpFlt As String In bflt
                         If tmpFlt.Trim <> "" Then fcls.BodyFilter.Add(tmpFlt.Trim)
                     Next
@@ -835,7 +836,7 @@ Public Class TweenMain
                 Dim hit As Boolean = False
                 For Each ft As FilterClass In ts.filters
                     Dim bHit As Boolean = True
-                    Dim tBody As String = IIf(ft.SearchURL, lItem.OrgData, lItem.Data)
+                    Dim tBody As String = If(ft.SearchURL, lItem.OrgData, lItem.Data)
                     If ft.SearchBoth Then
                         If ft.IDFilter = "" Or lItem.Name.Equals(ft.IDFilter, StringComparison.CurrentCultureIgnoreCase) Then
                             For Each fs As String In ft.BodyFilter
@@ -868,7 +869,7 @@ Public Class TweenMain
                 Next
                 If hit Then
                     ts.allCount += 1
-                    Dim lvItem2 As ListViewItem = lvItem.Clone
+                    Dim lvItem2 As ListViewItem = DirectCast(lvItem.Clone, System.Windows.Forms.ListViewItem)
                     If _readed = False And ts.unreadManage Then
                         lvItem2.Font = _fntUnread
                         lvItem2.ForeColor = _clUnread
@@ -902,7 +903,7 @@ Public Class TweenMain
             Next
 
             If lItem.Reply Or Regex.IsMatch(lItem.Data, "@" + _username + "([^a-zA-Z0-9_]|$)", RegexOptions.IgnoreCase) Then
-                Dim lvItem2 As ListViewItem = lvItem.Clone
+                Dim lvItem2 As ListViewItem = DirectCast(lvItem.Clone, System.Windows.Forms.ListViewItem)
                 _tabs(1).allCount += 1
                 If _readed = False And _tabs(1).unreadManage Then
                     lvItem2.Font = _fntUnread
@@ -1619,7 +1620,7 @@ Public Class TweenMain
                 Dim strKey As String = rslt.imgs.Images.Keys(i)
                 Try
                     TIconSmallList.Images.Add(strKey, rslt.imgs.Images(strKey).GetThumbnailImage(_iconSz, _iconSz, New Image.GetThumbnailImageAbort(AddressOf dmy), IntPtr.Zero))
-                    TIconList.Images.Add(strKey, rslt.imgs.Images(strKey).Clone)
+                    TIconList.Images.Add(strKey, DirectCast(rslt.imgs.Images(strKey).Clone, System.Drawing.Image))
                 Catch ex As Exception
                 Finally
                     rslt.imgs.Images(strKey).Dispose()
@@ -1655,7 +1656,7 @@ Public Class TweenMain
                         If rslt.page + 1 <= rslt.endPage And SettingDialog.ReadPages >= rslt.page + 1 Then
                             If rslt.page Mod 10 = 0 Then
                                 Dim flashRslt As Integer
-                                flashRslt = Win32Api.FlashWindow(Me.Handle, 1)
+                                flashRslt = Win32Api.FlashWindow(Me.Handle.ToInt32, 1)
                                 If MessageBox.Show((rslt.page * 20).ToString + " ポストまで読み込み完了。さらに読み込みますか？", _
                                                    "読み込み継続確認", _
                                                    MessageBoxButtons.YesNo, _
@@ -1803,7 +1804,7 @@ Public Class TweenMain
                         If rslt.page + 1 <= rslt.endPage And SettingDialog.ReadPagesReply >= rslt.page + 1 Then
                             If rslt.page Mod 10 = 0 Then
                                 Dim flashRslt As Integer
-                                flashRslt = Win32Api.FlashWindow(Me.Handle, 1)
+                                flashRslt = Win32Api.FlashWindow(Me.Handle.ToInt32, 1)
                                 If MessageBox.Show((rslt.page * 20).ToString + " ポストまで読み込み完了。さらに読み込みますか？", _
                                                    "読み込み継続確認", _
                                                    MessageBoxButtons.YesNo, _
@@ -1862,7 +1863,7 @@ Public Class TweenMain
                 End If
                 If My.Computer.Network.IsAvailable = False Then Exit Sub
 
-                TimerDM.Interval = IIf(SettingDialog.DMPeriodInt > 0, SettingDialog.DMPeriodInt * 1000, 600000)
+                TimerDM.Interval = If(SettingDialog.DMPeriodInt > 0, SettingDialog.DMPeriodInt * 1000, 600000)
 
                 If (rslt.page < rslt.endPage And _initial = False) Or _
                    (rslt.page + 1 < SettingDialog.ReadPagesDM And _initial = True) Then
@@ -1925,7 +1926,7 @@ Public Class TweenMain
                     Exit Sub
                 End If
 
-                TimerDM.Interval = IIf(SettingDialog.DMPeriodInt > 0, SettingDialog.DMPeriodInt * 1000, 600000)
+                TimerDM.Interval = If(SettingDialog.DMPeriodInt > 0, SettingDialog.DMPeriodInt * 1000, 600000)
                 If SettingDialog.DMPeriodInt > 0 Then TimerDM.Enabled = True
 
                 If _initial = True Then
@@ -3280,7 +3281,7 @@ Public Class TweenMain
             myTab.tabPage.Location = New System.Drawing.Point(4, 4)
             myTab.tabPage.Name = "CTab" + cnt.ToString
             myTab.tabPage.Size = New System.Drawing.Size(380, 260)
-            myTab.tabPage.TabIndex = 2 + cnt.ToString
+            myTab.tabPage.TabIndex = 2 + cnt
             myTab.tabPage.Text = myTab.tabName
             myTab.tabPage.UseVisualStyleBackColor = True
 
@@ -3530,7 +3531,7 @@ Public Class TweenMain
                 End If
             Next
             If otherEx = False Then
-                _tabs(0).listCustom.Items.Add(itm.Clone)
+                _tabs(0).listCustom.Items.Add(DirectCast(itm.Clone, System.Windows.Forms.ListViewItem))
             End If
         Next
 
@@ -3777,7 +3778,7 @@ Public Class TweenMain
 
             'アイコンカラム位置取得
             Dim rct As Rectangle = Nothing
-            Dim MyList As DetailsListView = e.Item.ListView
+            Dim MyList As DetailsListView = DirectCast(e.Item.ListView, Tween.TweenCustomControl.DetailsListView)
             Dim sf As New StringFormat
             sf.Alignment = StringAlignment.Near
             sf.LineAlignment = StringAlignment.Near
@@ -4414,7 +4415,7 @@ RETRY:
     End Sub
 
     Private Sub ChangeImageSize()
-        Dim sz As Integer = IIf(_iconSz = 0, 16, _iconSz)
+        Dim sz As Integer = DirectCast(IIf(_iconSz = 0, 16, _iconSz), Integer)
 
         If TIconSmallList IsNot Nothing Then
             TIconSmallList.Dispose()
@@ -4503,14 +4504,14 @@ RETRY:
         Dim strVer As String
         Dim forceUpdate As Boolean = My.Computer.Keyboard.ShiftKeyDown
 
-        retMsg = _mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/version2.txt?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus)
+        retMsg = DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/version2.txt?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus), String)
         If retMsg.Length > 0 Then
             strVer = retMsg.Substring(0, 4)
             If strVer.CompareTo(My.Application.Info.Version.ToString.Replace(".", "")) > 0 Then
                 If MessageBox.Show("新しいバージョン " + strVer + " が公開されています。更新しますか？", "Tween更新確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
-                    retMsg = _mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/Tween" + strVer + ".gz", resStatus, MySocket.REQ_TYPE.ReqGETFile)
+                    retMsg = DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/Tween" + strVer + ".gz", resStatus, MySocket.REQ_TYPE.ReqGETFile), String)
                     If retMsg.Length = 0 Then
-                        retMsg = _mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/TweenUp.gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileUp)
+                        retMsg = DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/TweenUp.gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileUp), String)
                         If retMsg.Length = 0 Then
                             System.Diagnostics.Process.Start(My.Application.Info.DirectoryPath + "\TweenUp.exe")
                             Application.Exit()
@@ -4525,9 +4526,9 @@ RETRY:
             Else
                 If forceUpdate = True Then
                     If MessageBox.Show("新しいバージョンは見つかりません。 " + strVer + " が公開されています。強制的に更新しますか？", "Tween更新確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
-                        retMsg = _mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/Tween" + strVer + ".gz", resStatus, MySocket.REQ_TYPE.ReqGETFile)
+                        retMsg = DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/Tween" + strVer + ".gz", resStatus, MySocket.REQ_TYPE.ReqGETFile), String)
                         If retMsg.Length = 0 Then
-                            retMsg = _mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/TweenUp.gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileUp)
+                            retMsg = DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/TweenUp.gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileUp), String)
                             If retMsg.Length = 0 Then
                                 System.Diagnostics.Process.Start(My.Application.Info.DirectoryPath + "\TweenUp.exe")
                                 Application.Exit()
@@ -4952,7 +4953,7 @@ RETRY:
 
         If _anchorFlag = False Then
             _anchorItem = Nothing
-            _anchorItem = MyList.SelectedItems(0).Clone
+            _anchorItem = DirectCast(MyList.SelectedItems(0).Clone, System.Windows.Forms.ListViewItem)
             _anchorFlag = True
         End If
         Dim user As String = _anchorItem.SubItems(4).Text
@@ -5590,7 +5591,7 @@ RETRY:
                 i = 2
             End If
 
-            Dim ts As TabStructure = e.Data.GetData(GetType(TabStructure))
+            Dim ts As TabStructure = DirectCast(e.Data.GetData(GetType(TabStructure)), Tween.TabStructure)
 
             If ts.tabName = tn Then Exit Sub
 
@@ -5637,7 +5638,7 @@ RETRY:
                 If StatusText.Text = "" Then
                     ' ステータステキストが入力されていない場合先頭に@ユーザー名を追加する
                     StatusText.Text = "@" + MyList.SelectedItems(0).SubItems(4).Text + " "
-                    _reply_to_id = MyList.SelectedItems(0).SubItems(5).Text
+                    _reply_to_id = Integer.Parse(MyList.SelectedItems(0).SubItems(5).Text)
                     _reply_to_name = MyList.SelectedItems(0).SubItems(4).Text
                 Else
                     If isAuto Then
@@ -5651,7 +5652,7 @@ RETRY:
                             Else
                                 ' 単独リプライ
                                 StatusText.Text = "@" + MyList.SelectedItems(0).SubItems(4).Text + " " + StatusText.Text
-                                _reply_to_id = MyList.SelectedItems(0).SubItems(5).Text
+                                _reply_to_id = Integer.Parse(MyList.SelectedItems(0).SubItems(5).Text)
                                 _reply_to_name = MyList.SelectedItems(0).SubItems(4).Text
                             End If
                         Else
@@ -5847,7 +5848,7 @@ RETRY:
         For Each ts As TabStructure In _tabs
             If ts.tabName = _rclickTabName Then
                 'SoundFileComboBox.SelectedIndex = SoundFileComboBox.Items.IndexOf(ts.soundFile)
-                ts.soundFile = SoundFileComboBox.SelectedItem
+                ts.soundFile = DirectCast(SoundFileComboBox.SelectedItem, String)
                 Exit For
             End If
         Next
@@ -6285,7 +6286,7 @@ RETRY:
         For Each ts As TabStructure In _tabs
             If ts.tabName <> "Recent" And ts.tabName <> "Reply" And ts.tabName <> "Direct" And ts.modified Then
                 For Each itmo As ListViewItem In ts.listCustom.Items
-                    itms.Add(itmo.Clone)
+                    itms.Add(DirectCast(itmo.Clone, System.Windows.Forms.ListViewItem))
                     'Dim i As Integer
                     'For i = 0 To _tabs(0).listCustom.Items.Count - 1
                     '    If itm.SubItems(5).Text = _tabs(0).listCustom.Items(i).SubItems(5).Text Then
@@ -6337,7 +6338,7 @@ RETRY:
                             lItem.PDate = CDate(itm.SubItems(3).Text)
                             lItem.Protect = itm.SubItems(0).Text.Contains("Ю")
                             lItem.Reply = CBool(itm.SubItems(11).Text)
-                            lItem.Readed = IIf(itm.SubItems(8).Text = "True", True, False)
+                            lItem.Readed = If(itm.SubItems(8).Text = "True", True, False)
                             itm.SubItems(0).Text = itm.SubItems(0).Text.Replace("♪", "")
 
                             '                            For Each ts As TabStructure In _tabs
@@ -6345,7 +6346,7 @@ RETRY:
 
                             For Each ft As FilterClass In ts.filters
                                 Dim bHit As Boolean = True
-                                Dim tBody As String = IIf(ft.SearchURL, lItem.OrgData, lItem.Data)
+                                Dim tBody As String = If(ft.SearchURL, lItem.OrgData, lItem.Data)
                                 If ft.SearchBoth Then
                                     If ft.IDFilter = "" Or lItem.Name.Equals(ft.IDFilter, StringComparison.CurrentCultureIgnoreCase) Then
                                         For Each fs As String In ft.BodyFilter
@@ -6383,7 +6384,7 @@ RETRY:
                                 End If
                             Next
                             If hit Then
-                                Dim itm2 As ListViewItem = itm.Clone
+                                Dim itm2 As ListViewItem = DirectCast(itm.Clone, ListViewItem)
                                 ts.allCount += 1
                                 If itm2.SubItems(8).Text = "False" Then
                                     If ts.unreadManage And SettingDialog.UnreadManage Then
@@ -6431,7 +6432,7 @@ RETRY:
                     lItem.PDate = CDate(itm.SubItems(3).Text)
                     lItem.Protect = itm.SubItems(0).Text.Contains("Ю")
                     lItem.Reply = CBool(itm.SubItems(11).Text)
-                    lItem.Readed = IIf(itm.SubItems(8).Text = "True", True, False)
+                    lItem.Readed = If(itm.SubItems(8).Text = "True", True, False)
                     itm.SubItems(0).Text = itm.SubItems(0).Text.Replace("♪", "")
 
                     '                            For Each ts As TabStructure In _tabs
@@ -6439,7 +6440,7 @@ RETRY:
 
                     For Each ft As FilterClass In ts.filters
                         Dim bHit As Boolean = True
-                        Dim tBody As String = IIf(ft.SearchURL, lItem.OrgData, lItem.Data)
+                        Dim tBody As String = If(ft.SearchURL, lItem.OrgData, lItem.Data)
                         If ft.SearchBoth Then
                             If ft.IDFilter = "" Or lItem.Name.Equals(ft.IDFilter, StringComparison.CurrentCultureIgnoreCase) Then
                                 For Each fs As String In ft.BodyFilter
@@ -6477,7 +6478,7 @@ RETRY:
                         End If
                     Next
                     If hit Then
-                        Dim itm2 As ListViewItem = itm.Clone
+                        Dim itm2 As ListViewItem = DirectCast(itm.Clone, ListViewItem)
                         ts.allCount += 1
                         If itm2.SubItems(8).Text = "False" Then
                             If ts.unreadManage And SettingDialog.UnreadManage Then
@@ -6517,7 +6518,7 @@ RETRY:
                                     itm.SubItems(8).Text = "True"
                                 End If
                             End If
-                            _tabs(0).listCustom.Items.Add(itm.Clone)
+                            _tabs(0).listCustom.Items.Add(DirectCast(itm.Clone, System.Windows.Forms.ListViewItem))
                         End If
                     End If
                     If ts.unreadCount > 0 And ts.tabPage.ImageIndex = -1 Then ts.tabPage.ImageIndex = 0
@@ -6723,7 +6724,7 @@ RETRY:
         'StatusLabelUrl.Text = "タブ: " + tur.ToString() + "/" + tal.ToString() + " 全体:" + ur.ToString() + "/" + al.ToString() + _
         '        " (返信: " + urat.ToString() + ") POST残り " + RemainPostNum.ToString() + "回/最大 " + SettingDialog.MaxPostNum.ToString() + "回 更新間隔:" + (TimerTimeline.Interval / 1000).ToString
         StatusLabelUrl.Text = "[タブ: " + tur.ToString() + "/" + tal.ToString() + " 全体: " + ur.ToString() + "/" + al.ToString() + _
-                " (返信: " + urat.ToString() + ")] [時速: 投 " + _postTimestamps.Count.ToString() + "/ ☆ " + _favTimestamps.Count.ToString() + "/ 流 " + _tlCount.ToString + "] [間隔: " + IIf(SettingDialog.TimelinePeriodInt = 0, "-", (TimerTimeline.Interval / 1000).ToString) + "]"
+                " (返信: " + urat.ToString() + ")] [時速: 投 " + _postTimestamps.Count.ToString() + "/ ☆ " + _favTimestamps.Count.ToString() + "/ 流 " + _tlCount.ToString + "] [間隔: " + If(SettingDialog.TimelinePeriodInt = 0, "-", (TimerTimeline.Interval / 1000).ToString) + "]"
     End Sub
 
     Private Sub SetNotifyIconText()

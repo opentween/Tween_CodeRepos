@@ -1,4 +1,5 @@
-﻿Imports System.Windows.Forms
+﻿Option Strict On
+Imports System.Windows.Forms
 
 Public Class OpenURL
 
@@ -45,7 +46,7 @@ Public Class OpenURL
     End Sub
 
     Private Sub UrlList_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UrlList.DoubleClick
-        If UrlList.SelectedItem = Nothing Then
+        If UrlList.SelectedItem Is Nothing Then
             Exit Sub
         End If
 
@@ -53,7 +54,7 @@ Public Class OpenURL
             Exit Sub
         End If
 
-        If UrlList.Items(UrlList.IndexFromPoint(UrlList.PointToClient(Control.MousePosition))) = Nothing Then
+        If UrlList.Items(UrlList.IndexFromPoint(UrlList.PointToClient(Control.MousePosition))) Is Nothing Then
             Exit Sub
         End If
         Call OK_Button_Click(sender, e)

@@ -1,4 +1,5 @@
-﻿Imports System.Configuration
+﻿Option Strict On
+Imports System.Configuration
 
 Public Class ListElement
     Inherits ConfigurationElement
@@ -181,7 +182,7 @@ Public Class ListElement
     <ConfigurationProperty("soundfile", DefaultValue:="")> _
     Public Property SoundFile() As String
         Get
-            Return Me("soundfile")
+            Return DirectCast(Me("soundfile"), String)
         End Get
         Set(ByVal value As String)
             Me("soundfile") = value
@@ -1013,7 +1014,7 @@ Public NotInheritable Class ListSection
     <ConfigurationProperty("listiconsize", DefaultValue:=IconSizes.Icon16)> _
     Public Property IconSize() As IconSizes
         Get
-            Return Me("listiconsize")
+            Return DirectCast(Me("listiconsize"), IconSizes)
         End Get
         Set(ByVal value As IconSizes)
             Me("listiconsize") = value
@@ -1103,7 +1104,7 @@ Public NotInheritable Class ListSection
     <ConfigurationProperty("fontunread", DefaultValue:="MS UI Gothic, 9pt, style=Bold, Underline")> _
     Public Property FontUnread() As System.Drawing.Font
         Get
-            Return Me("fontunread")
+            Return DirectCast(Me("fontunread"), System.Drawing.Font)
         End Get
         Set(ByVal value As Font)
             Me("fontunread") = value
@@ -1113,7 +1114,7 @@ Public NotInheritable Class ListSection
     <ConfigurationProperty("colorunread", DefaultValue:="ControlText")> _
     Public Property ColorUnread() As Color
         Get
-            Return Me("colorunread")
+            Return DirectCast(Me("colorunread"), Color)
         End Get
         Set(ByVal value As Color)
             Me("colorunread") = value
@@ -1123,7 +1124,7 @@ Public NotInheritable Class ListSection
     <ConfigurationProperty("fontreaded", DefaultValue:="MS UI Gothic, 9pt")> _
     Public Property FontReaded() As Font
         Get
-            Return Me("fontreaded")
+            Return DirectCast(Me("fontreaded"), Font)
         End Get
         Set(ByVal value As Font)
             Me("fontreaded") = value
@@ -1133,7 +1134,7 @@ Public NotInheritable Class ListSection
     <ConfigurationProperty("colorreaded", DefaultValue:="ControlText")> _
     Public Property ColorReaded() As Color
         Get
-            Return Me("colorreaded")
+            Return DirectCast(Me("colorreaded"), Color)
         End Get
         Set(ByVal value As Color)
             Me("colorreaded") = value
@@ -1143,7 +1144,7 @@ Public NotInheritable Class ListSection
     <ConfigurationProperty("colorfav", DefaultValue:="Red")> _
     Public Property ColorFav() As Color
         Get
-            Return Me("colorfav")
+            Return DirectCast(Me("colorfav"), Color)
         End Get
         Set(ByVal value As Color)
             Me("colorfav") = value
@@ -1153,7 +1154,7 @@ Public NotInheritable Class ListSection
     <ConfigurationProperty("colorOWL", DefaultValue:="Blue")> _
     Public Property ColorOWL() As Color
         Get
-            Return Me("colorOWL")
+            Return DirectCast(Me("colorOWL"), Color)
         End Get
         Set(ByVal value As Color)
             Me("colorOWL") = value
@@ -1163,7 +1164,7 @@ Public NotInheritable Class ListSection
     <ConfigurationProperty("fontDetail", DefaultValue:="MS UI Gothic, 9pt")> _
     Public Property FontDetail() As Font
         Get
-            Return Me("fontDetail")
+            Return DirectCast(Me("fontDetail"), Font)
         End Get
         Set(ByVal value As Font)
             Me("fontDetail") = value
@@ -1173,7 +1174,7 @@ Public NotInheritable Class ListSection
     <ConfigurationProperty("colorSelf", DefaultValue:="AliceBlue")> _
     Public Property ColorSelf() As Color
         Get
-            Return Me("colorSelf")
+            Return DirectCast(Me("colorSelf"), Color)
         End Get
         Set(ByVal value As Color)
             Me("colorSelf") = value
@@ -1183,7 +1184,7 @@ Public NotInheritable Class ListSection
     <ConfigurationProperty("colorAtSelf", DefaultValue:="AntiqueWhite")> _
     Public Property ColorAtSelf() As Color
         Get
-            Return Me("colorAtSelf")
+            Return DirectCast(Me("colorAtSelf"), Color)
         End Get
         Set(ByVal value As Color)
             Me("colorAtSelf") = value
@@ -1193,7 +1194,7 @@ Public NotInheritable Class ListSection
     <ConfigurationProperty("colorTarget", DefaultValue:="LemonChiffon")> _
     Public Property ColorTarget() As Color
         Get
-            Return Me("colorTarget")
+            Return DirectCast(Me("colorTarget"), Color)
         End Get
         Set(ByVal value As Color)
             Me("colorTarget") = value
@@ -1203,7 +1204,7 @@ Public NotInheritable Class ListSection
     <ConfigurationProperty("colorAtTarget", DefaultValue:="LavenderBlush")> _
     Public Property ColorAtTarget() As Color
         Get
-            Return Me("colorAtTarget")
+            Return DirectCast(Me("colorAtTarget"), Color)
         End Get
         Set(ByVal value As Color)
             Me("colorAtTarget") = value
@@ -1213,7 +1214,7 @@ Public NotInheritable Class ListSection
     <ConfigurationProperty("colorAtFromTarget", DefaultValue:="Honeydew")> _
     Public Property ColorAtFromTarget() As Color
         Get
-            Return Me("colorAtFromTarget")
+            Return DirectCast(Me("colorAtFromTarget"), Color)
         End Get
         Set(ByVal value As Color)
             Me("colorAtFromTarget") = value
@@ -1223,7 +1224,7 @@ Public NotInheritable Class ListSection
     <ConfigurationProperty("nameballoon", DefaultValue:=NameBalloonEnum.NickName)> _
     Public Property NameBalloon() As NameBalloonEnum
         Get
-            Return Me("nameballoon")
+            Return DirectCast(Me("nameballoon"), NameBalloonEnum)
         End Get
         Set(ByVal value As NameBalloonEnum)
             Me("nameballoon") = value
@@ -1423,7 +1424,7 @@ Public Property CloseToExit() As Boolean
     <ConfigurationProperty("displatestpost", DefaultValue:=DispTitleEnum.Post)> _
     Public Property DispLatestPost() As DispTitleEnum
         Get
-            Return Me("displatestpost")
+            Return DirectCast(Me("displatestpost"), DispTitleEnum)
         End Get
         Set(ByVal value As DispTitleEnum)
             Me("displatestpost") = value
@@ -1473,7 +1474,7 @@ Public Property CloseToExit() As Boolean
     <ConfigurationProperty("proxytype", DefaultValue:=ProxyTypeEnum.IE)> _
     Public Property ProxyType() As ProxyTypeEnum
         Get
-            Return Me("proxytype")
+            Return DirectCast(Me("proxytype"), ProxyTypeEnum)
         End Get
         Set(ByVal value As ProxyTypeEnum)
             Me("proxytype") = value
@@ -1483,7 +1484,7 @@ Public Property CloseToExit() As Boolean
     <ConfigurationProperty("proxyaddress", DefaultValue:="127.0.0.1")> _
     Public Property ProxyAddress() As String
         Get
-            Return Me("proxyaddress")
+            Return Me("proxyaddress").ToString
         End Get
         Set(ByVal value As String)
             Me("proxyaddress") = value
@@ -1493,7 +1494,7 @@ Public Property CloseToExit() As Boolean
     <ConfigurationProperty("proxyport", DefaultValue:=80)> _
     Public Property ProxyPort() As Integer
         Get
-            Return Me("proxyport")
+            Return DirectCast(Me("proxyport"), Integer)
         End Get
         Set(ByVal value As Integer)
             Me("proxyport") = value
@@ -1503,7 +1504,7 @@ Public Property CloseToExit() As Boolean
     <ConfigurationProperty("proxyuser", DefaultValue:="")> _
     Public Property ProxyUser() As String
         Get
-            Return Me("proxyuser")
+            Return Me("proxyuser").ToString
         End Get
         Set(ByVal value As String)
             Me("proxyuser") = value
