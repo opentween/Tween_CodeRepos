@@ -740,6 +740,7 @@ Public Class TweenMain
         Dim nm As String
         Dim snd As String = ""
         Dim Protect As String = ""
+        Dim ImgTag As New Regex("<img src=.*/>", RegexOptions.IgnoreCase)
 
         TimerColorize.Stop()
 
@@ -803,6 +804,10 @@ Public Class TweenMain
                 Protect = "Ю"
             Else
                 Protect = ""
+            End If
+            ' Imageタグ除去
+            If ImgTag.IsMatch(lItem.Data) Then
+                lItem.Data = ImgTag.Replace(lItem.Data, "<img>")
             End If
             Dim sItem() As String = {Protect, _
                                      lItem.Nick, _
