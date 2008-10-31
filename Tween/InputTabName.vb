@@ -1,4 +1,5 @@
-﻿Imports System.Windows.Forms
+﻿Option Strict On
+Imports System.Windows.Forms
 
 Public Class InputTabName
 
