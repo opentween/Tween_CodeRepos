@@ -5,18 +5,20 @@ Imports Tween.TweenCustomControl
 Public Class Statuses
     Private _statuses As Dictionary(Of String, MyListItem)
     Private _addedIds As Specialized.StringCollection
-    Private _tabs As TabsClass
+    Private _tabs As TabInformations
 
     Public Sub New()
         _statuses = New Dictionary(Of String, MyListItem)
     End Sub
 
     Public Sub BeginUpdate()
-        _addedIds = New Specialized.StringCollection()
+        _addedIds = New Specialized.StringCollection()  'タブ追加用IDコレクション準備
     End Sub
 
     Public Function EndUpdate() As String
-        Return ""
+        Dim NotifyString As String = _tabs.Distribute(_addedIds)    'タブに追加
+        _tabs.Sort()    'ソート
+        Return NotifyString     '通知用メッセージを戻す
     End Function
 
     Public Sub Add(ByRef Item As MyListItem)
@@ -27,6 +29,12 @@ Public Class Statuses
     Public Function Remove(ByVal Key As String) As Integer
         _statuses.Remove(Key)
     End Function
+
+    Public WriteOnly Property TabsClass() As TabInformations
+        Set(ByVal value As TabInformations)
+            _tabs = value
+        End Set
+    End Property
 End Class
 
 
@@ -271,7 +279,7 @@ Public Class MyListItem
     Public Id As String
     Public Fav As Boolean
     Public OrgData As String
-    Public Readed As Boolean
+    Public Read As Boolean
     Public Reply As Boolean
     Public Protect As Boolean
     Public OWL As Boolean
@@ -279,34 +287,34 @@ Public Class MyListItem
 End Class
 
 Public Class TabInformations
-
+    '個別タブの情報をDictionaryで保持
     Private _sorter As ListViewItemComparerClass
-    Private _tabs As New Dictionary(Of String, TabsClass)
+    Private _tabs As New Dictionary(Of String, TabClass)
+    Private _statuses As Statuses
 
-    Public Sub New(ByVal Order As SortOrder)
+    Public Sub New()
         _sorter = New ListViewItemComparerClass
-        _sorter.Order = Order
     End Sub
 
-    Public Sub Add(ByVal TabText As String, ByVal myTab As TabsClass)
-        _tabs.Add(TabText, myTab)
+    Public Sub Add(ByVal TabText As String)
+        _tabs.Add(TabText, New TabClass)
     End Sub
 
     Public Function Contains(ByVal TabText As String) As Boolean
         Return _tabs.ContainsKey(TabText)
     End Function
 
-    Public Function Contains(ByVal ts As TabsClass) As Boolean
+    Public Function Contains(ByVal ts As TabClass) As Boolean
         Return _tabs.ContainsValue(ts)
     End Function
 
-    Public ReadOnly Property Tabs() As Dictionary(Of String, TabsClass)
+    Public ReadOnly Property Tabs() As Dictionary(Of String, TabClass)
         Get
             Return _tabs
         End Get
     End Property
 
-    Public ReadOnly Property Keys() As Collections.Generic.Dictionary(Of String, TabsClass).KeyCollection
+    Public ReadOnly Property Keys() As Collections.Generic.Dictionary(Of String, TabClass).KeyCollection
         Get
             Return _tabs.Keys
         End Get
@@ -324,9 +332,29 @@ Public Class TabInformations
         End Get
     End Property
 
+    Public Property SortOrder() As SortOrder
+        Get
+            Return _sorter.Order
+        End Get
+        Set(ByVal value As SortOrder)
+            _sorter.Order = value
+        End Set
+    End Property
+
+    Public WriteOnly Property Statuses() As Statuses
+        Set(ByVal value As Statuses)
+            _statuses = value
+        End Set
+    End Property
+
+    Public Function Distribute(ByVal AddedIDs As Specialized.StringCollection) As String
+        '各タブのフィルターと照合。合致したらタブにID追加
+        Return "通知メッセージ"
+    End Function
+
 End Class
 
-Public Class TabsClass
+Public Class TabClass
     Private _tabPage As System.Windows.Forms.TabPage
     Private _listCustom As DetailsListView
     'Public colHd1 As System.Windows.Forms.ColumnHeader
@@ -360,7 +388,7 @@ Public Class TabsClass
         _ids.Sort(Sorter)
     End Sub
 
-    Public Sub Add(ByVal ID As String, ByVal Readed As Boolean)
+    Public Sub Add(ByVal ID As String, ByVal Read As Boolean)
         If _ids.Contains(ID) Then Exit Sub
 
         _ids.Add(ID)
@@ -371,7 +399,7 @@ Public Class TabsClass
         End If
 
         _allCount += 1
-        If Readed = False And _unreadManage Then _unreadCount += 1
+        If Read = False And _unreadManage Then _unreadCount += 1
     End Sub
 
     Public Sub Remove(ByVal ID As String)
@@ -483,6 +511,7 @@ Public Class TabsClass
             Return _ids
         End Get
     End Property
+
 End Class
 
 Public Class FiltersClass
