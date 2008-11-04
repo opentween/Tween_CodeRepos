@@ -642,12 +642,12 @@ Public Class TweenMain
             Dim args As New GetWorkerArg
             args.type = WORKERTYPE.CreateNewSocket
             Do While GetTimelineWorker.IsBusy
-                Threading.Thread.Sleep(100)
+                Threading.Thread.Sleep(1)
                 Application.DoEvents()
             Loop
             GetTimelineWorker.RunWorkerAsync(args)
             Do While PostWorker.IsBusy
-                Threading.Thread.Sleep(100)
+                Threading.Thread.Sleep(1)
                 Application.DoEvents()
             Loop
             PostWorker.RunWorkerAsync(args)
@@ -673,7 +673,7 @@ Public Class TweenMain
                 args.endPage = 1
                 args.type = WORKERTYPE.DirectMessegeRcv
                 Do While GetTimelineWorker.IsBusy
-                    Threading.Thread.Sleep(100)
+                    Threading.Thread.Sleep(1)
                     Application.DoEvents()
                 Loop
                 GetTimelineWorker.RunWorkerAsync(args)
@@ -707,7 +707,7 @@ Public Class TweenMain
         _refreshIconCnt = 0
         TimerRefreshIcon.Enabled = True
         Do While GetTimelineWorker.IsBusy
-            Threading.Thread.Sleep(100)
+            Threading.Thread.Sleep(1)
             Application.DoEvents()
         Loop
         GetTimelineWorker.RunWorkerAsync(args)
@@ -726,7 +726,7 @@ Public Class TweenMain
         _refreshIconCnt = 0
         TimerRefreshIcon.Enabled = True
         Do While GetTimelineWorker.IsBusy
-            Threading.Thread.Sleep(100)
+            Threading.Thread.Sleep(1)
             Application.DoEvents()
         Loop
         GetTimelineWorker.RunWorkerAsync(args)
@@ -1432,13 +1432,13 @@ Public Class TweenMain
         TimerRefreshIcon.Enabled = True
         If SettingDialog.UseAPI Then
             Do While PostWorker.IsBusy
-                Threading.Thread.Sleep(100)
+                Threading.Thread.Sleep(1)
                 Application.DoEvents()
             Loop
             PostWorker.RunWorkerAsync(args)
         Else
             Do While GetTimelineWorker.IsBusy
-                Threading.Thread.Sleep(100)
+                Threading.Thread.Sleep(1)
                 Application.DoEvents()
             Loop
             GetTimelineWorker.RunWorkerAsync(args)
@@ -1688,7 +1688,7 @@ Public Class TweenMain
                                         _refreshIconCnt = 0
                                         TimerRefreshIcon.Enabled = True
                                         Do While GetTimelineWorker.IsBusy
-                                            Threading.Thread.Sleep(100)
+                                            Threading.Thread.Sleep(1)
                                             Application.DoEvents()
                                         Loop
                                         GetTimelineWorker.RunWorkerAsync(args)
@@ -1706,7 +1706,7 @@ Public Class TweenMain
                             _refreshIconCnt = 0
                             TimerRefreshIcon.Enabled = True
                             Do While GetTimelineWorker.IsBusy
-                                Threading.Thread.Sleep(100)
+                                Threading.Thread.Sleep(1)
                                 Application.DoEvents()
                             Loop
                             GetTimelineWorker.RunWorkerAsync(args)
@@ -1722,7 +1722,7 @@ Public Class TweenMain
                             _refreshIconCnt = 0
                             TimerRefreshIcon.Enabled = True
                             Do While GetTimelineWorker.IsBusy
-                                Threading.Thread.Sleep(100)
+                                Threading.Thread.Sleep(1)
                                 Application.DoEvents()
                             Loop
                             GetTimelineWorker.RunWorkerAsync(args)
@@ -1761,7 +1761,7 @@ Public Class TweenMain
                             TimerRefreshIcon.Enabled = True
                             'Do While GetDMWorker.IsBusy Or GetLogWorker.IsBusy
                             Do While GetTimelineWorker.IsBusy
-                                Threading.Thread.Sleep(100)
+                                Threading.Thread.Sleep(1)
                                 Application.DoEvents()
                             Loop
                             GetTimelineWorker.RunWorkerAsync(args)
@@ -1779,7 +1779,7 @@ Public Class TweenMain
                                 _refreshIconCnt = 0
                                 TimerRefreshIcon.Enabled = True
                                 Do While GetTimelineWorker.IsBusy
-                                    Threading.Thread.Sleep(100)
+                                    Threading.Thread.Sleep(1)
                                     Application.DoEvents()
                                 Loop
                                 GetTimelineWorker.RunWorkerAsync(args)
@@ -1794,7 +1794,7 @@ Public Class TweenMain
                                     _refreshIconCnt = 0
                                     TimerRefreshIcon.Enabled = True
                                     Do While GetTimelineWorker.IsBusy
-                                        Threading.Thread.Sleep(100)
+                                        Threading.Thread.Sleep(1)
                                         Application.DoEvents()
                                     Loop
                                     GetTimelineWorker.RunWorkerAsync(args)
@@ -1840,7 +1840,7 @@ Public Class TweenMain
                             _refreshIconCnt = 0
                             TimerRefreshIcon.Enabled = True
                             Do While GetTimelineWorker.IsBusy
-                                Threading.Thread.Sleep(100)
+                                Threading.Thread.Sleep(1)
                                 Application.DoEvents()
                             Loop
                             GetTimelineWorker.RunWorkerAsync(args)
@@ -1858,7 +1858,7 @@ Public Class TweenMain
                             _refreshIconCnt = 0
                             TimerRefreshIcon.Enabled = True
                             Do While GetTimelineWorker.IsBusy
-                                Threading.Thread.Sleep(100)
+                                Threading.Thread.Sleep(1)
                                 Application.DoEvents()
                             Loop
                             GetTimelineWorker.RunWorkerAsync(args)
@@ -1896,7 +1896,7 @@ Public Class TweenMain
                     _refreshIconCnt = 0
                     TimerRefreshIcon.Enabled = True
                     Do While GetTimelineWorker.IsBusy
-                        Threading.Thread.Sleep(100)
+                        Threading.Thread.Sleep(1)
                         Application.DoEvents()
                     Loop
                     GetTimelineWorker.RunWorkerAsync(args)
@@ -1911,7 +1911,7 @@ Public Class TweenMain
                 _refreshIconCnt = 0
                 TimerRefreshIcon.Enabled = True
                 Do While GetTimelineWorker.IsBusy
-                    Threading.Thread.Sleep(100)
+                    Threading.Thread.Sleep(1)
                     Application.DoEvents()
                 Loop
                 GetTimelineWorker.RunWorkerAsync(args)
@@ -1940,7 +1940,7 @@ Public Class TweenMain
                     _refreshIconCnt = 0
                     TimerRefreshIcon.Enabled = True
                     Do While GetTimelineWorker.IsBusy
-                        Threading.Thread.Sleep(100)
+                        Threading.Thread.Sleep(1)
                         Application.DoEvents()
                     Loop
                     GetTimelineWorker.RunWorkerAsync(args)
@@ -1964,7 +1964,7 @@ Public Class TweenMain
                         _refreshIconCnt = 0
                         TimerRefreshIcon.Enabled = True
                         Do While GetTimelineWorker.IsBusy
-                            Threading.Thread.Sleep(100)
+                            Threading.Thread.Sleep(1)
                             Application.DoEvents()
                         Loop
                         GetTimelineWorker.RunWorkerAsync(args)
@@ -1979,7 +1979,7 @@ Public Class TweenMain
                         _refreshIconCnt = 0
                         TimerRefreshIcon.Enabled = True
                         Do While GetTimelineWorker.IsBusy
-                            Threading.Thread.Sleep(100)
+                            Threading.Thread.Sleep(1)
                             Application.DoEvents()
                         Loop
                         GetTimelineWorker.RunWorkerAsync(args)
@@ -2015,7 +2015,7 @@ Public Class TweenMain
                     _refreshIconCnt = 0
                     TimerRefreshIcon.Enabled = True
                     Do While GetTimelineWorker.IsBusy
-                        Threading.Thread.Sleep(100)
+                        Threading.Thread.Sleep(1)
                         Application.DoEvents()
                     Loop
                     GetTimelineWorker.RunWorkerAsync(args)
@@ -2032,7 +2032,7 @@ Public Class TweenMain
                     _refreshIconCnt = 0
                     TimerRefreshIcon.Enabled = True
                     Do While GetTimelineWorker.IsBusy
-                        Threading.Thread.Sleep(100)
+                        Threading.Thread.Sleep(1)
                         Application.DoEvents()
                     Loop
                     GetTimelineWorker.RunWorkerAsync(args)
@@ -2084,7 +2084,7 @@ Public Class TweenMain
                     _refreshIconCnt = 0
                     TimerRefreshIcon.Enabled = True
                     Do While GetTimelineWorker.IsBusy
-                        Threading.Thread.Sleep(100)
+                        Threading.Thread.Sleep(1)
                         Application.DoEvents()
                     Loop
                     GetTimelineWorker.RunWorkerAsync(args)
@@ -2233,7 +2233,7 @@ Public Class TweenMain
         End If
 
         Do While GetTimelineWorker.IsBusy
-            Threading.Thread.Sleep(100)
+            Threading.Thread.Sleep(1)
             Application.DoEvents()
         Loop
 
@@ -2296,7 +2296,7 @@ Public Class TweenMain
         End If
 
         Do While GetTimelineWorker.IsBusy
-            Threading.Thread.Sleep(100)
+            Threading.Thread.Sleep(1)
             Application.DoEvents()
         Loop
 
@@ -2306,7 +2306,7 @@ Public Class TweenMain
 
     Private Sub MoveToHomeToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MoveToHomeToolStripMenuItem.Click
         Do While ExecWorker.IsBusy
-            Threading.Thread.Sleep(100)
+            Threading.Thread.Sleep(1)
             Application.DoEvents()
         Loop
 
@@ -2325,7 +2325,7 @@ Public Class TweenMain
 
     Private Sub MoveToFavToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MoveToFavToolStripMenuItem.Click
         Do While ExecWorker.IsBusy
-            Threading.Thread.Sleep(100)
+            Threading.Thread.Sleep(1)
             Application.DoEvents()
         Loop
 
@@ -3076,7 +3076,7 @@ Public Class TweenMain
                 StatusLabel.Text = "Recent更新中..."
                 'Do While GetTimelineWorker.IsBusy Or GetDMWorker.IsBusy Or GetLogWorker.IsBusy
                 Do While GetTimelineWorker.IsBusy
-                    Threading.Thread.Sleep(100)
+                    Threading.Thread.Sleep(1)
                     Application.DoEvents()
                 Loop
                 GetTimelineWorker.RunWorkerAsync(args)
@@ -3089,7 +3089,7 @@ Public Class TweenMain
                 StatusLabel.Text = "Reply更新中..."
                 'Do While GetTimelineWorker.IsBusy Or GetDMWorker.IsBusy Or GetLogWorker.IsBusy
                 Do While GetTimelineWorker.IsBusy
-                    Threading.Thread.Sleep(100)
+                    Threading.Thread.Sleep(1)
                     Application.DoEvents()
                 Loop
                 GetTimelineWorker.RunWorkerAsync(args)
@@ -3103,7 +3103,7 @@ Public Class TweenMain
             StatusLabel.Text = "DMRcv更新中..."
             'Do While GetTimelineWorker.IsBusy Or GetDMWorker.IsBusy Or GetLogWorker.IsBusy
             Do While GetTimelineWorker.IsBusy
-                Threading.Thread.Sleep(100)
+                Threading.Thread.Sleep(1)
                 Application.DoEvents()
             Loop
             GetTimelineWorker.RunWorkerAsync(args)
@@ -3160,7 +3160,7 @@ Public Class TweenMain
             Dim args As New GetWorkerArg
             args.type = WORKERTYPE.CreateNewSocket
             Do While GetTimelineWorker.IsBusy
-                Threading.Thread.Sleep(100)
+                Threading.Thread.Sleep(1)
                 Application.DoEvents()
             Loop
             GetTimelineWorker.RunWorkerAsync(args)
@@ -3170,7 +3170,7 @@ Public Class TweenMain
             clsTwPost.ProxyUser = SettingDialog.ProxyUser
             clsTwPost.ProxyPassword = SettingDialog.ProxyPassword
             Do While PostWorker.IsBusy
-                Threading.Thread.Sleep(100)
+                Threading.Thread.Sleep(1)
                 Application.DoEvents()
             Loop
             PostWorker.RunWorkerAsync(args)
@@ -3278,7 +3278,7 @@ Public Class TweenMain
         If e.Url.AbsoluteUri <> "about:blank" Then
             e.Cancel = True
             Do While ExecWorker.IsBusy
-                Threading.Thread.Sleep(100)
+                Threading.Thread.Sleep(1)
                 Application.DoEvents()
             Loop
             ExecWorker.RunWorkerAsync(e.Url.AbsoluteUri)
@@ -4413,7 +4413,7 @@ RETRY:
 
     Private Sub StatusOpenMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusOpenMenuItem.Click
         Do While ExecWorker.IsBusy
-            Threading.Thread.Sleep(100)
+            Threading.Thread.Sleep(1)
             Application.DoEvents()
         Loop
         Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
@@ -4431,7 +4431,7 @@ RETRY:
 
     Private Sub FavorareMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles FavorareMenuItem.Click
         Do While ExecWorker.IsBusy
-            Threading.Thread.Sleep(100)
+            Threading.Thread.Sleep(1)
             Application.DoEvents()
         Loop
 
@@ -4645,7 +4645,7 @@ RETRY:
     End Sub
     Private Sub MatomeMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MatomeMenuItem.Click
         Do While ExecWorker.IsBusy
-            Threading.Thread.Sleep(100)
+            Threading.Thread.Sleep(1)
             Application.DoEvents()
         Loop
 
@@ -4654,7 +4654,7 @@ RETRY:
 
     Private Sub OfficialMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OfficialMenuItem.Click
         Do While ExecWorker.IsBusy
-            Threading.Thread.Sleep(100)
+            Threading.Thread.Sleep(1)
             Application.DoEvents()
         Loop
 
@@ -4663,7 +4663,7 @@ RETRY:
 
     Private Sub DLPageMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DLPageMenuItem.Click
         Do While ExecWorker.IsBusy
-            Threading.Thread.Sleep(100)
+            Threading.Thread.Sleep(1)
             Application.DoEvents()
         Loop
 
@@ -6123,7 +6123,7 @@ RETRY:
                     _refreshIconCnt = 0
                     TimerRefreshIcon.Enabled = True
                     Do While GetTimelineWorker.IsBusy
-                        Threading.Thread.Sleep(100)
+                        Threading.Thread.Sleep(1)
                         Application.DoEvents()
                     Loop
                     GetTimelineWorker.RunWorkerAsync(args)
@@ -6692,7 +6692,7 @@ RETRY:
 
             If openUrlStr <> "" Then
                 Do While ExecWorker.IsBusy
-                    Threading.Thread.Sleep(100)
+                    Threading.Thread.Sleep(1)
                     Application.DoEvents()
                 Loop
 
