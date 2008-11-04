@@ -1,5 +1,4 @@
-﻿Option Strict On
-Public Class Setting
+﻿Public Class Setting
     Private _MyuserID As String
     Private _Mypassword As String
     Private _MytimelinePeriod As Integer

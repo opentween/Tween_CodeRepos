@@ -1,5 +1,4 @@
-﻿Option Strict On
-Imports System.Web
+﻿Imports System.Web
 Imports System.Xml
 
 Partial Public Class Twitter

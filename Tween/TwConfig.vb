@@ -1,5 +1,4 @@
-﻿Option Strict On
-Imports System.Configuration
+﻿Imports System.Configuration
 
 Public Class ListElement
     Inherits ConfigurationElement

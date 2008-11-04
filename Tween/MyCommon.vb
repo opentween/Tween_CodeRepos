@@ -1,5 +1,4 @@
-﻿Option Strict On
-Public Module MyCommon
+﻿Public Module MyCommon
     Public Enum IconSizes
         IconNone = 0
         Icon16 = 1
