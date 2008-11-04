@@ -6866,7 +6866,7 @@ RETRY:
         If MyList.SelectedItems.Count > 0 Then
             Dim name As String = MyList.SelectedItems(0).SubItems(6).Text
             name = IO.Path.GetFileNameWithoutExtension(name.Substring(name.LastIndexOf("/"c)))
-            name = name.Substring(0, name.Length - 8) ' "_normal".Length + 1
+            name = name.Substring(0, name.Length - 7) ' "_normal".Length
             Me.IconNameToolStripMenuItem.Enabled = True
             Me.SaveIconPictureToolStripMenuItem.Enabled = True
             ' TODO: 現在無効状態。消すか対応させるかのどちらか
