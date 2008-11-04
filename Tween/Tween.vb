@@ -6860,6 +6860,53 @@ RETRY:
     End Sub
     ' Added by Takeshi KIRIYA (aka @takeshik) <me@takeshik.org> END.
 
+    Private Sub ContextMenuStrip3_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuStrip3.Opening
+        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
+
+        If MyList.SelectedItems.Count > 0 Then
+            Dim name As String = MyList.SelectedItems(0).SubItems(6).Text
+            name = IO.Path.GetFileNameWithoutExtension(name.Substring(name.LastIndexOf("/"c)))
+            name = name.Substring(0, name.Length - 8) ' "_normal".Length + 1
+            Me.IconNameToolStripMenuItem.Enabled = True
+            Me.SaveIconPictureToolStripMenuItem.Enabled = True
+            ' TODO: 現在無効状態。消すか対応させるかのどちらか
+            Me.SaveOriginalSizeIconPictureToolStripMenuItem.Enabled = False
+            Me.IconNameToolStripMenuItem.Text = name
+        Else
+            Me.IconNameToolStripMenuItem.Enabled = False
+            Me.SaveIconPictureToolStripMenuItem.Enabled = False
+            Me.SaveOriginalSizeIconPictureToolStripMenuItem.Enabled = False
+            Me.IconNameToolStripMenuItem.Text = "(発言を選択してください)"
+        End If
+    End Sub
+
+    Private Sub IconNameToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles IconNameToolStripMenuItem.Click
+        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
+        Dim name As String = MyList.SelectedItems(0).SubItems(6).Text
+        ExecWorker.RunWorkerAsync(name.Remove(name.LastIndexOf("_normal"), 7)) ' "_normal".Length
+    End Sub
+
+    Private Sub SaveOriginalSizeIconPictureToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SaveOriginalSizeIconPictureToolStripMenuItem.Click
+        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
+        Dim name As String = MyList.SelectedItems(0).SubItems(6).Text
+        name = IO.Path.GetFileNameWithoutExtension(name.Substring(name.LastIndexOf("/"c)))
+
+        Me.SaveFileDialog1.FileName = name.Substring(0, name.Length - 8) ' "_normal".Length + 1
+
+        If Me.SaveFileDialog1.ShowDialog() = Windows.Forms.DialogResult.OK Then
+        End If
+    End Sub
+
+    Private Sub SaveIconPictureToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SaveIconPictureToolStripMenuItem.Click
+        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
+        Dim name As String = MyList.SelectedItems(0).SubItems(6).Text
+
+        Me.SaveFileDialog1.FileName = name.Substring(name.LastIndexOf("/"c) + 1)
+
+        If Me.SaveFileDialog1.ShowDialog() = Windows.Forms.DialogResult.OK Then
+            Me.TIconList.Images.Item(name).Save(Me.SaveFileDialog1.FileName)
+        End If
+    End Sub
 End Class
 
 Public Class TabStructure
