@@ -748,7 +748,7 @@ Public Class TweenMain
         Dim nm As String
         Dim snd As String = ""
         Dim Protect As String = ""
-        Dim ImgTag As New Regex("<img src=.*/>", RegexOptions.IgnoreCase)
+        Dim ImgTag As New Regex("<img src=.*/>", RegexOptions.IgnoreCase)   'ハロウィン
 
         TimerColorize.Stop()
 
@@ -813,7 +813,7 @@ Public Class TweenMain
             Else
                 Protect = ""
             End If
-            ' Imageタグ除去
+            ' Imageタグ除去（ハロウィン）
             If ImgTag.IsMatch(lItem.Data) Then
                 lItem.Data = ImgTag.Replace(lItem.Data, "<img>")
             End If
