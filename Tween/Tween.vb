@@ -748,7 +748,7 @@ Public Class TweenMain
         Dim nm As String
         Dim snd As String = ""
         Dim Protect As String = ""
-        Dim ImgTag As New Regex("<img src=.*/>", RegexOptions.IgnoreCase)   'ハロウィン
+        Dim ImgTag As New Regex("<img src=.*?/>", RegexOptions.IgnoreCase)   'ハロウィン
 
         TimerColorize.Stop()
 
