@@ -384,9 +384,17 @@ Public Class TweenMain
 
         'タイマー設定
         'Recent&Reply取得間隔
-        TimerTimeline.Interval = If(SettingDialog.TimelinePeriodInt > 0, SettingDialog.TimelinePeriodInt * 1000, 600000)
+        If SettingDialog.TimelinePeriodInt > 0 Then
+            TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
+        Else
+            TimerTimeline.Interval = 600000
+        End If
         'DM取得間隔
-        TimerDM.Interval = If(SettingDialog.DMPeriodInt > 0, SettingDialog.DMPeriodInt * 1000, 600000)
+        If SettingDialog.DMPeriodInt > 0 Then
+            TimerDM.Interval = SettingDialog.DMPeriodInt * 1000
+        Else
+            TimerDM.Interval = 600000
+        End If
         '更新中アイコンアニメーション間隔
         TimerRefreshIcon.Interval = 85
 
@@ -841,7 +849,12 @@ Public Class TweenMain
                 Dim hit As Boolean = False
                 For Each ft As FilterClass In ts.filters
                     Dim bHit As Boolean = True
-                    Dim tBody As String = If(ft.SearchURL, lItem.OrgData, lItem.Data)
+                    Dim tBody As String
+                    If ft.SearchURL Then
+                        tBody = lItem.OrgData
+                    Else
+                        tBody = lItem.Data
+                    End If
                     If ft.SearchBoth Then
                         If ft.IDFilter = "" Or lItem.Name.Equals(ft.IDFilter, StringComparison.CurrentCultureIgnoreCase) Then
                             For Each fs As String In ft.BodyFilter
@@ -1868,8 +1881,11 @@ Public Class TweenMain
                 End If
                 If My.Computer.Network.IsAvailable = False Then Exit Sub
 
-                TimerDM.Interval = If(SettingDialog.DMPeriodInt > 0, SettingDialog.DMPeriodInt * 1000, 600000)
-
+                If SettingDialog.DMPeriodInt > 0 Then
+                    TimerDM.Interval = SettingDialog.DMPeriodInt * 1000
+                Else
+                    TimerDM.Interval = 600000
+                End If
                 If (rslt.page < rslt.endPage And _initial = False) Or _
                    (rslt.page + 1 < SettingDialog.ReadPagesDM And _initial = True) Then
                     args.page = rslt.endPage
@@ -1931,7 +1947,11 @@ Public Class TweenMain
                     Exit Sub
                 End If
 
-                TimerDM.Interval = If(SettingDialog.DMPeriodInt > 0, SettingDialog.DMPeriodInt * 1000, 600000)
+                If SettingDialog.DMPeriodInt > 0 Then
+                    TimerDM.Interval = SettingDialog.DMPeriodInt * 1000
+                Else
+                    TimerDM.Interval = 600000
+                End If
                 If SettingDialog.DMPeriodInt > 0 Then TimerDM.Enabled = True
 
                 If _initial = True Then
@@ -6343,7 +6363,11 @@ RETRY:
                             lItem.PDate = CDate(itm.SubItems(3).Text)
                             lItem.Protect = itm.SubItems(0).Text.Contains("Ю")
                             lItem.Reply = CBool(itm.SubItems(11).Text)
-                            lItem.Readed = If(itm.SubItems(8).Text = "True", True, False)
+                            If itm.SubItems(8).Text = "True" Then
+                                lItem.Readed = True
+                            Else
+                                lItem.Readed = False
+                            End If
                             itm.SubItems(0).Text = itm.SubItems(0).Text.Replace("♪", "")
 
                             '                            For Each ts As TabStructure In _tabs
@@ -6351,7 +6375,12 @@ RETRY:
 
                             For Each ft As FilterClass In ts.filters
                                 Dim bHit As Boolean = True
-                                Dim tBody As String = If(ft.SearchURL, lItem.OrgData, lItem.Data)
+                                Dim tBody As String
+                                If ft.SearchURL Then
+                                    tBody = lItem.OrgData
+                                Else
+                                    tBody = lItem.Data
+                                End If
                                 If ft.SearchBoth Then
                                     If ft.IDFilter = "" Or lItem.Name.Equals(ft.IDFilter, StringComparison.CurrentCultureIgnoreCase) Then
                                         For Each fs As String In ft.BodyFilter
@@ -6437,7 +6466,11 @@ RETRY:
                     lItem.PDate = CDate(itm.SubItems(3).Text)
                     lItem.Protect = itm.SubItems(0).Text.Contains("Ю")
                     lItem.Reply = CBool(itm.SubItems(11).Text)
-                    lItem.Readed = If(itm.SubItems(8).Text = "True", True, False)
+                    If itm.SubItems(8).Text = "True" Then
+                        lItem.Readed = True
+                    Else
+                        lItem.Readed = False
+                    End If
                     itm.SubItems(0).Text = itm.SubItems(0).Text.Replace("♪", "")
 
                     '                            For Each ts As TabStructure In _tabs
@@ -6445,7 +6478,12 @@ RETRY:
 
                     For Each ft As FilterClass In ts.filters
                         Dim bHit As Boolean = True
-                        Dim tBody As String = If(ft.SearchURL, lItem.OrgData, lItem.Data)
+                        Dim tBody As String
+                        If ft.SearchURL Then
+                            tBody = lItem.OrgData
+                        Else
+                            tBody = lItem.Data
+                        End If
                         If ft.SearchBoth Then
                             If ft.IDFilter = "" Or lItem.Name.Equals(ft.IDFilter, StringComparison.CurrentCultureIgnoreCase) Then
                                 For Each fs As String In ft.BodyFilter
@@ -6718,6 +6756,7 @@ RETRY:
         Dim al As Integer = 0
         Dim tur As Integer = 0
         Dim tal As Integer = 0
+        Dim slbl As String
         For Each ts As TabStructure In _tabs
             ur += ts.unreadCount
             al += ts.allCount
@@ -6728,8 +6767,16 @@ RETRY:
         Next
         'StatusLabelUrl.Text = "タブ: " + tur.ToString() + "/" + tal.ToString() + " 全体:" + ur.ToString() + "/" + al.ToString() + _
         '        " (返信: " + urat.ToString() + ") POST残り " + RemainPostNum.ToString() + "回/最大 " + SettingDialog.MaxPostNum.ToString() + "回 更新間隔:" + (TimerTimeline.Interval / 1000).ToString
-        StatusLabelUrl.Text = "[タブ: " + tur.ToString() + "/" + tal.ToString() + " 全体: " + ur.ToString() + "/" + al.ToString() + _
-                " (返信: " + urat.ToString() + ")] [時速: 投 " + _postTimestamps.Count.ToString() + "/ ☆ " + _favTimestamps.Count.ToString() + "/ 流 " + _tlCount.ToString + "] [間隔: " + If(SettingDialog.TimelinePeriodInt = 0, "-", (TimerTimeline.Interval / 1000).ToString) + "]"
+        'StatusLabelUrl.Text = "[タブ: " + tur.ToString() + "/" + tal.ToString() + " 全体: " + ur.ToString() + "/" + al.ToString() + _
+        '        " (返信: " + urat.ToString() + ")] [時速: 投 " + _postTimestamps.Count.ToString() + "/ ☆ " + _favTimestamps.Count.ToString() + "/ 流 " + _tlCount.ToString + "] [間隔: " + DirectCast(IIf(SettingDialog.TimelinePeriodInt = 0, "-", (TimerTimeline.Interval / 1000).ToString), String) + "]"
+        slbl = "[タブ: " + tur.ToString() + "/" + tal.ToString() + " 全体: " + ur.ToString() + "/" + al.ToString() + _
+                " (返信: " + urat.ToString() + ")] [時速: 投 " + _postTimestamps.Count.ToString() + "/ ☆ " + _favTimestamps.Count.ToString() + "/ 流 " + _tlCount.ToString + "] [間隔: "
+        If SettingDialog.TimelinePeriodInt = 0 Then
+            slbl += "-]"
+        Else
+            slbl += (TimerTimeline.Interval / 1000).ToString + "]"
+        End If
+        StatusLabelUrl.Text = slbl
     End Sub
 
     Private Sub SetNotifyIconText()
