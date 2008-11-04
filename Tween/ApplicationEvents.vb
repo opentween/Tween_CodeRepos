@@ -32,17 +32,29 @@ Namespace My
         End Sub
 
         Private Sub MyApplication_UnhandledException(ByVal sender As Object, ByVal e As Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs) Handles Me.UnhandledException
-            My.Application.Log.DefaultFileLogWriter.Location = Logging.LogFileLocation.ExecutableDirectory
-            My.Application.Log.DefaultFileLogWriter.MaxFileSize = 102400
-            My.Application.Log.DefaultFileLogWriter.AutoFlush = True
-            My.Application.Log.DefaultFileLogWriter.Append = False
-            'My.Application.Log.WriteException(e.Exception, _
-            '    Diagnostics.TraceEventType.Critical, _
-            '    "Source=" + e.Exception.Source + " StackTrace=" + e.Exception.StackTrace + " InnerException=" + IIf(e.Exception.InnerException Is Nothing, "", e.Exception.InnerException.Message))
-            My.Application.Log.WriteException(e.Exception, _
-                Diagnostics.TraceEventType.Critical, _
-                e.Exception.StackTrace + vbCrLf + Now.ToString)
-            MessageBox.Show("エラーが発生しました。ごめんなさい。ログをexeファイルのある場所にTween.logとして作ったので、kiri.feather@gmail.comまで送っていただけると助かります。ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。", "エラー発生", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Dim now As DateTime = DateTime.Now
+            Dim fileName As String = String.Format("Tween-{0:0000}{1:00}{2:00}-{3:00}{4:00}{5:00}.log", now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second)
+
+            Using writer As IO.StreamWriter = New IO.StreamWriter(fileName)
+                writer.WriteLine("**** エラー ログ: {0} ****", DateTime.Now.ToString())
+                writer.WriteLine("このファイルの内容を kiri.feather@gmail.com まで送っていただけると助かります。")
+                writer.WriteLine("ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。")
+                writer.WriteLine()
+                writer.WriteLine("動作環境:")
+                writer.WriteLine("   オペレーティング システム: {0}", Environment.OSVersion.VersionString)
+                writer.WriteLine("   共通言語ランタイム       : {0}", Environment.Version.ToString())
+                writer.WriteLine("例外 {0}: {1}", e.Exception.GetType().FullName, e.Exception.Message)
+                writer.WriteLine(e.Exception.StackTrace)
+                writer.WriteLine()
+            End Using
+
+            If MessageBox.Show(String.Format( _
+                "エラーが発生しました。ごめんなさい。ログをexeファイルのある場所に {0} として作ったので、kiri.feather@gmail.comまで送っていただけると助かります。{1}ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。{1}「OK」ボタンをクリックするとログを開きます。ログを開かない場合は「キャンセル」ボタンをクリックしてください。", _
+                fileName, Environment.NewLine), "エラー発生", MessageBoxButtons.OKCancel, MessageBoxIcon.Error) = DialogResult.OK _
+            Then
+                Diagnostics.Process.Start(fileName)
+            End If
+
             e.ExitApplication = False
         End Sub
     End Class
