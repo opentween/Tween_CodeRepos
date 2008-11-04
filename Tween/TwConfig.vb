@@ -1,4 +1,3 @@
-Option Strict On
 Imports System.Configuration
 
 Public Class ListElement

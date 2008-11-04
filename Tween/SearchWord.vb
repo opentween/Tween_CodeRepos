@@ -1,4 +1,3 @@
-Option Strict On
 Imports System.Windows.Forms
 
 Public Class SearchWord
