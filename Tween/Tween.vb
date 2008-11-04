@@ -1,5 +1,6 @@
 ﻿Option Strict On
 Imports System.Configuration
+Imports System.Text
 Imports System.Text.RegularExpressions
 Imports Tween.TweenCustomControl
 
@@ -2550,117 +2551,119 @@ Public Class TweenMain
     Private Sub DeleteStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DeleteStripMenuItem.Click
         Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
 
-        If MessageBox.Show("選択されている発言(DM)を削除してもよろしいですか？" + vbCrLf + _
-                           "注意　：　Twitterサーバからも削除されます！" + vbCrLf + _
-                           "　タブからIDを削除する場合は、「IDを移動」を使ってください。" + vbCrLf + _
-                           "　タブを削除する場合は、「タブを削除」を使ってください。" + vbCrLf + vbCrLf + _
-                           "削除処理を中止するには、「キャンセル」ボタンを押してください。", _
-                           "削除確認", _
-                            MessageBoxButtons.OKCancel, _
-                            MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then Exit Sub
+		If (MyList.SelectedItems(0).SubItems(4).Text <> SettingDialog.UserID) Then Return
 
-        NotifyIcon1.Icon = NIconRefresh(0)
-        _refreshIconCnt = 0
-        TimerRefreshIcon.Enabled = True
+		If MessageBox.Show("選択されている発言(DM)を削除してもよろしいですか？" + vbCrLf + _
+		 "注意　：　Twitterサーバからも削除されます！" + vbCrLf + _
+		 "　タブからIDを削除する場合は、「IDを移動」を使ってください。" + vbCrLf + _
+		 "　タブを削除する場合は、「タブを削除」を使ってください。" + vbCrLf + vbCrLf + _
+		 "削除処理を中止するには、「キャンセル」ボタンを押してください。", _
+		 "削除確認", _
+		  MessageBoxButtons.OKCancel, _
+		  MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then Exit Sub
 
-        If ListTab.SelectedTab.Text <> "Direct" Then
-            Dim cnt As Integer = 0
-            Dim cnt2 As Integer = 0
-            'Dim cnt3 As Integer = 0
-            Dim rtn As String = ""
-            Dim msg As String = ""
-            'Dim idx As Integer = 0
+		NotifyIcon1.Icon = NIconRefresh(0)
+		_refreshIconCnt = 0
+		TimerRefreshIcon.Enabled = True
 
-            For cnt = 0 To MyList.SelectedItems.Count - 1
-                If MyList.SelectedItems(cnt2).SubItems(4).Text.Equals(_username, StringComparison.CurrentCultureIgnoreCase) Then    'IgnoreCase
-                    rtn = clsTw.RemoveStatus(MyList.SelectedItems(cnt2).SubItems(5).Text)
-                    If rtn.Length > 0 Then
-                        'エラー
-                        msg = rtn + vbCrLf
-                        msg += MyList.SelectedItems(cnt2).SubItems(1).Text + ":"
-                        If MyList.SelectedItems(cnt2).SubItems(2).Text.Length > 5 Then
-                            msg += MyList.SelectedItems(cnt2).SubItems(2).Text.Substring(0, 5) + "..." + vbCrLf
-                        Else
-                            msg += MyList.SelectedItems(cnt2).SubItems(2).Text + vbCrLf
-                        End If
-                        cnt2 += 1
-                    Else
-                        '削除成功→リストから削除（全タブチェック）
-                        For Each ts As TabStructure In _tabs
-                            If ts.listCustom.Equals(MyList) = False And ts.tabPage.Text <> "Direct" Then
-                                For Each itm As ListViewItem In ts.listCustom.Items
-                                    If MyList.SelectedItems(cnt2).SubItems(5).Text = itm.SubItems(5).Text Then
-                                        If ts.oldestUnreadItem IsNot Nothing AndAlso ts.oldestUnreadItem.Equals(itm) Then ts.oldestUnreadItem = Nothing
-                                        If itm.SubItems(8).Text = "False" Then ts.unreadCount -= 1
-                                        ts.allCount -= 1
-                                        ts.listCustom.Items.Remove(itm)
-                                        Exit For
-                                    End If
-                                Next
-                            End If
-                        Next
-                        For Each ts As TabStructure In _tabs
-                            If ts.listCustom.Equals(MyList) Then
-                                If ts.oldestUnreadItem IsNot Nothing AndAlso ts.oldestUnreadItem.Equals(MyList.SelectedItems(cnt2)) Then ts.oldestUnreadItem = Nothing
-                                If MyList.SelectedItems(cnt2).SubItems(8).Text = "False" Then ts.unreadCount -= 1
-                                ts.allCount -= 1
-                                Exit For
-                            End If
-                        Next
-                        MyList.Items.Remove(MyList.SelectedItems(cnt2))
-                    End If
-                Else
-                    cnt2 += 1
-                End If
-            Next
+		If ListTab.SelectedTab.Text <> "Direct" Then
+			Dim cnt As Integer = 0
+			Dim cnt2 As Integer = 0
+			'Dim cnt3 As Integer = 0
+			Dim rtn As String = ""
+			Dim msg As String = ""
+			'Dim idx As Integer = 0
 
-            If msg <> "" Then
-                StatusLabel.Text = "削除失敗 " + msg
-            Else
-                StatusLabel.Text = "削除成功"
-            End If
-        ElseIf ListTab.SelectedTab.Text = "Direct" Then
-            Dim cnt As Integer = 0
-            Dim cnt2 As Integer = 0
-            Dim rtn As String = ""
-            Dim msg As String = ""
+			For cnt = 0 To MyList.SelectedItems.Count - 1
+				If MyList.SelectedItems(cnt2).SubItems(4).Text.Equals(_username, StringComparison.CurrentCultureIgnoreCase) Then	'IgnoreCase
+					rtn = clsTw.RemoveStatus(MyList.SelectedItems(cnt2).SubItems(5).Text)
+					If rtn.Length > 0 Then
+						'エラー
+						msg = rtn + vbCrLf
+						msg += MyList.SelectedItems(cnt2).SubItems(1).Text + ":"
+						If MyList.SelectedItems(cnt2).SubItems(2).Text.Length > 5 Then
+							msg += MyList.SelectedItems(cnt2).SubItems(2).Text.Substring(0, 5) + "..." + vbCrLf
+						Else
+							msg += MyList.SelectedItems(cnt2).SubItems(2).Text + vbCrLf
+						End If
+						cnt2 += 1
+					Else
+						'削除成功→リストから削除（全タブチェック）
+						For Each ts As TabStructure In _tabs
+							If ts.listCustom.Equals(MyList) = False And ts.tabPage.Text <> "Direct" Then
+								For Each itm As ListViewItem In ts.listCustom.Items
+									If MyList.SelectedItems(cnt2).SubItems(5).Text = itm.SubItems(5).Text Then
+										If ts.oldestUnreadItem IsNot Nothing AndAlso ts.oldestUnreadItem.Equals(itm) Then ts.oldestUnreadItem = Nothing
+										If itm.SubItems(8).Text = "False" Then ts.unreadCount -= 1
+										ts.allCount -= 1
+										ts.listCustom.Items.Remove(itm)
+										Exit For
+									End If
+								Next
+							End If
+						Next
+						For Each ts As TabStructure In _tabs
+							If ts.listCustom.Equals(MyList) Then
+								If ts.oldestUnreadItem IsNot Nothing AndAlso ts.oldestUnreadItem.Equals(MyList.SelectedItems(cnt2)) Then ts.oldestUnreadItem = Nothing
+								If MyList.SelectedItems(cnt2).SubItems(8).Text = "False" Then ts.unreadCount -= 1
+								ts.allCount -= 1
+								Exit For
+							End If
+						Next
+						MyList.Items.Remove(MyList.SelectedItems(cnt2))
+					End If
+				Else
+					cnt2 += 1
+				End If
+			Next
 
-            For cnt = 0 To MyList.SelectedItems.Count - 1
-                rtn = clsTw.RemoveDirectMessage(MyList.SelectedItems(cnt2).SubItems(5).Text)
-                If rtn.Length > 0 Then
-                    msg = rtn + vbCrLf
-                    msg += MyList.SelectedItems(cnt2).SubItems(1).Text + ":"
-                    If MyList.SelectedItems(cnt2).SubItems(2).Text.Length > 5 Then
+			If msg <> "" Then
+				StatusLabel.Text = "削除失敗 " + msg
+			Else
+				StatusLabel.Text = "削除成功"
+			End If
+		ElseIf ListTab.SelectedTab.Text = "Direct" Then
+			Dim cnt As Integer = 0
+			Dim cnt2 As Integer = 0
+			Dim rtn As String = ""
+			Dim msg As String = ""
 
-                        msg += MyList.SelectedItems(cnt2).SubItems(2).Text.Substring(0, 5) + "..." + vbCrLf
-                    Else
-                        msg += MyList.SelectedItems(cnt2).SubItems(2).Text + vbCrLf
-                    End If
-                    cnt2 += 1
-                Else
-                    For Each ts As TabStructure In _tabs
-                        If ts.listCustom.Equals(MyList) Then
-                            If ts.oldestUnreadItem IsNot Nothing AndAlso ts.oldestUnreadItem.Equals(MyList.SelectedItems(cnt2)) Then ts.oldestUnreadItem = Nothing
-                            If MyList.SelectedItems(cnt2).SubItems(8).Text = "False" Then ts.unreadCount -= 1
-                            ts.allCount -= 1
-                            Exit For
-                        End If
-                    Next
-                    MyList.Items.Remove(MyList.SelectedItems(cnt2))
-                End If
-            Next
+			For cnt = 0 To MyList.SelectedItems.Count - 1
+				rtn = clsTw.RemoveDirectMessage(MyList.SelectedItems(cnt2).SubItems(5).Text)
+				If rtn.Length > 0 Then
+					msg = rtn + vbCrLf
+					msg += MyList.SelectedItems(cnt2).SubItems(1).Text + ":"
+					If MyList.SelectedItems(cnt2).SubItems(2).Text.Length > 5 Then
 
-            If msg <> "" Then
-                StatusLabel.Text = "削除失敗 " + msg
-            Else
-                StatusLabel.Text = "削除成功"
-            End If
-        End If
+						msg += MyList.SelectedItems(cnt2).SubItems(2).Text.Substring(0, 5) + "..." + vbCrLf
+					Else
+						msg += MyList.SelectedItems(cnt2).SubItems(2).Text + vbCrLf
+					End If
+					cnt2 += 1
+				Else
+					For Each ts As TabStructure In _tabs
+						If ts.listCustom.Equals(MyList) Then
+							If ts.oldestUnreadItem IsNot Nothing AndAlso ts.oldestUnreadItem.Equals(MyList.SelectedItems(cnt2)) Then ts.oldestUnreadItem = Nothing
+							If MyList.SelectedItems(cnt2).SubItems(8).Text = "False" Then ts.unreadCount -= 1
+							ts.allCount -= 1
+							Exit For
+						End If
+					Next
+					MyList.Items.Remove(MyList.SelectedItems(cnt2))
+				End If
+			Next
 
-        TimerRefreshIcon.Enabled = False
-        NotifyIcon1.Icon = NIconAt
+			If msg <> "" Then
+				StatusLabel.Text = "削除失敗 " + msg
+			Else
+				StatusLabel.Text = "削除成功"
+			End If
+		End If
 
-    End Sub
+		TimerRefreshIcon.Enabled = False
+		NotifyIcon1.Icon = NIconAt
+
+	End Sub
 
     Private Sub ReadedStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ReadedStripMenuItem.Click
         Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
@@ -6756,7 +6759,7 @@ RETRY:
         Dim al As Integer = 0
         Dim tur As Integer = 0
         Dim tal As Integer = 0
-        Dim slbl As String
+		Dim slbl As StringBuilder = New StringBuilder()
         For Each ts As TabStructure In _tabs
             ur += ts.unreadCount
             al += ts.allCount
@@ -6768,15 +6771,15 @@ RETRY:
         'StatusLabelUrl.Text = "タブ: " + tur.ToString() + "/" + tal.ToString() + " 全体:" + ur.ToString() + "/" + al.ToString() + _
         '        " (返信: " + urat.ToString() + ") POST残り " + RemainPostNum.ToString() + "回/最大 " + SettingDialog.MaxPostNum.ToString() + "回 更新間隔:" + (TimerTimeline.Interval / 1000).ToString
         'StatusLabelUrl.Text = "[タブ: " + tur.ToString() + "/" + tal.ToString() + " 全体: " + ur.ToString() + "/" + al.ToString() + _
-        '        " (返信: " + urat.ToString() + ")] [時速: 投 " + _postTimestamps.Count.ToString() + "/ ☆ " + _favTimestamps.Count.ToString() + "/ 流 " + _tlCount.ToString + "] [間隔: " + DirectCast(IIf(SettingDialog.TimelinePeriodInt = 0, "-", (TimerTimeline.Interval / 1000).ToString), String) + "]"
-        slbl = "[タブ: " + tur.ToString() + "/" + tal.ToString() + " 全体: " + ur.ToString() + "/" + al.ToString() + _
-                " (返信: " + urat.ToString() + ")] [時速: 投 " + _postTimestamps.Count.ToString() + "/ ☆ " + _favTimestamps.Count.ToString() + "/ 流 " + _tlCount.ToString + "] [間隔: "
-        If SettingDialog.TimelinePeriodInt = 0 Then
-            slbl += "-]"
+		'        " (返信: " + urat.ToString() + ")] [時速: 投 " + _postTimestamps.Count.ToString() + "/ ☆ " + _favTimestamps.Count.ToString() + "/ 流 " + _tlCount.ToString + "] [間隔: " + DirectCast(IIf(SettingDialog.TimelinePeriodInt = 0, "-", (TimerTimeline.Interval / 1000).ToString), String) + "]"
+
+		slbl.AppendFormat("[タブ: {0}/{1} 全体: {2}/{3} (返信: {4})] [時速: 投 {5}/ ☆ {6}/ 流 {7}] [間隔: ", tur, tal, ur, al, urat, _postTimestamps.Count, _favTimestamps.Count, _tlCount)
+		If SettingDialog.TimelinePeriodInt = 0 Then
+			slbl.Append("-]")
         Else
-            slbl += (TimerTimeline.Interval / 1000).ToString + "]"
+			slbl.Append((TimerTimeline.Interval / 1000).ToString() + "]")
         End If
-        StatusLabelUrl.Text = slbl
+		StatusLabelUrl.Text = slbl.ToString()
     End Sub
 
     Private Sub SetNotifyIconText()
