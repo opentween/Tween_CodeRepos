@@ -35,7 +35,7 @@ Public Class TweenMain
     Private _postCounter As Integer = 0 '取得発言数カウンタ（カウントしているが未使用。タブ別カウンタに変更＆未読数カウントとして未読アイコン表示パフォーマンスUPできるように改善したい）
     Private TIconList As ImageList      '発言詳細部用アイコン画像リスト
     Private TIconSmallList As ImageList 'リスト表示用アイコン画像リスト
-    Private _iconSz As Integer          'アイコンサイズ（現在は16、24、48の3種類。将来直接数字指定可能とする）
+    Private _iconSz As Integer          'アイコンサイズ（現在は16、24、48の3種類。将来直接数字指定可能とする 注：24x24の場合に26と指定しているのはMSゴシック系フォントのための仕様）
     Private _iconCol As Boolean         '1列表示の時True（48サイズのとき）
     Private NIconAt As Icon             'At.ico             タスクトレイアイコン：通常時
     Private NIconAtRed As Icon          'AtRed.ico          タスクトレイアイコン：通信エラー時
