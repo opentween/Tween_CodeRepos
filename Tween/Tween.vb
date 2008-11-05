@@ -2551,14 +2551,16 @@ Public Class TweenMain
         Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
         Dim myPost As Boolean = False
 
-        For Each item As ListViewItem In MyList.SelectedItems
-            If item.SubItems(4).Text.Equals(_username, StringComparison.CurrentCultureIgnoreCase) Then
-                myPost = True
-                Exit For
-            End If
-        Next
+        If ListTab.SelectedTab.Text <> "Direct" Then
+            For Each item As ListViewItem In MyList.SelectedItems
+                If item.SubItems(4).Text.Equals(_username, StringComparison.CurrentCultureIgnoreCase) Then
+                    myPost = True
+                    Exit For
+                End If
+            Next
 
-        If myPost = False Then Exit Sub
+            If myPost = False Then Exit Sub
+        End If
 
         If MessageBox.Show("選択されている自発言(またはDM)を削除してもよろしいですか？" + vbCrLf + _
              "注意　：　Twitterサーバからも削除されます！" + vbCrLf + _
