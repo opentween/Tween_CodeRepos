@@ -1444,7 +1444,7 @@ Public Class TweenMain
             GetTimelineWorker.RunWorkerAsync(args)
         End If
 
-
+        ListTab.SelectedTab.Controls(0).Focus()
     End Sub
 
     Private Sub EndToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles EndToolStripMenuItem.Click
