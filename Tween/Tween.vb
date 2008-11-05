@@ -6907,6 +6907,10 @@ RETRY:
             Me.TIconList.Images.Item(name).Save(Me.SaveFileDialog1.FileName)
         End If
     End Sub
+
+    Private Sub SplitContainer2_Panel2_Resize(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SplitContainer2.Panel2.Resize
+        Me.StatusText.Multiline = Me.SplitContainer2.Panel2.Height <> Me.SplitContainer2.Panel2MinSize
+    End Sub
 End Class
 
 Public Class TabStructure
