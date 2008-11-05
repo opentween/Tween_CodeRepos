@@ -9,7 +9,7 @@ Imports System.Runtime.InteropServices
 ' アセンブリ属性の値を確認します。
 
 <Assembly: AssemblyTitle("Tween")> 
-<Assembly: AssemblyDescription("Client of Twitter. Free software(GPL3)" & vbcrlf & "<Contacts>" & vbcrlf & "Twitter:kiri_feather" & vbcrlf & "Mail:kiri.feather@gmail.com" & vbcrlf & "<Associator developer>" & vbcrlf & "Developer:Moz(http://iddy.jp/profile/moz/)" & vbcrlf & "Icons:Minami(http://www.pi-kun.com/)")> 
+<Assembly: AssemblyDescription("Client of Twitter. Free software(GPL3)" & vbcrlf & "<Contacts>" & vbcrlf & "Twitter:kiri_feather" & vbcrlf & "Mail:kiri.feather@gmail.com" & vbcrlf & "<Associator developer>" & vbcrlf & "Developer:Takeshi KIRIYA(http://www.takeshik.org/)" & vbcrlf & "Developer:Moz(http://iddy.jp/profile/moz/)" & vbcrlf & "Icons:Minami(http://www.pi-kun.com/)")> 
 <Assembly: AssemblyCompany("")> 
 <Assembly: AssemblyProduct("Tween")> 
 <Assembly: AssemblyCopyright("(C)kiri_feather 2007-2008 All Rights Reserved.")> 
@@ -31,6 +31,6 @@ Imports System.Runtime.InteropServices
 ' 既定値にすることができます:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("0.1.0.0")> 
-<Assembly: AssemblyFileVersion("0.1.0.0")> 
+<Assembly: AssemblyVersion("0.1.0.1")> 
+<Assembly: AssemblyFileVersion("0.1.0.1")> 
 
