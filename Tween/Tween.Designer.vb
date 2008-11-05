@@ -84,6 +84,8 @@ Partial Class TweenMain
         Me.PlaySoundMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ListLockMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator15 = New System.Windows.Forms.ToolStripSeparator
+        Me.MultiLineMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.ToolStripSeparator21 = New System.Windows.Forms.ToolStripSeparator
         Me.EndToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.MenuItemFile = New System.Windows.Forms.ToolStripMenuItem
         Me.GetTimelineWorker = New System.ComponentModel.BackgroundWorker
@@ -159,60 +161,61 @@ Partial Class TweenMain
         '
         Me.ContextMenuStrip3.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.IconNameToolStripMenuItem, Me.ToolStripMenuItem1, Me.SaveOriginalSizeIconPictureToolStripMenuItem, Me.SaveIconPictureToolStripMenuItem})
         Me.ContextMenuStrip3.Name = "ContextMenuStrip3"
-        Me.ContextMenuStrip3.Size = New System.Drawing.Size(184, 76)
+        Me.ContextMenuStrip3.Size = New System.Drawing.Size(180, 76)
         '
         'IconNameToolStripMenuItem
         '
         Me.IconNameToolStripMenuItem.Name = "IconNameToolStripMenuItem"
-        Me.IconNameToolStripMenuItem.Size = New System.Drawing.Size(183, 22)
+        Me.IconNameToolStripMenuItem.Size = New System.Drawing.Size(179, 22)
         Me.IconNameToolStripMenuItem.Text = "IconName"
         '
         'ToolStripMenuItem1
         '
         Me.ToolStripMenuItem1.Name = "ToolStripMenuItem1"
-        Me.ToolStripMenuItem1.Size = New System.Drawing.Size(180, 6)
+        Me.ToolStripMenuItem1.Size = New System.Drawing.Size(176, 6)
         '
         'SaveOriginalSizeIconPictureToolStripMenuItem
         '
         Me.SaveOriginalSizeIconPictureToolStripMenuItem.Name = "SaveOriginalSizeIconPictureToolStripMenuItem"
-        Me.SaveOriginalSizeIconPictureToolStripMenuItem.Size = New System.Drawing.Size(183, 22)
+        Me.SaveOriginalSizeIconPictureToolStripMenuItem.Size = New System.Drawing.Size(179, 22)
         Me.SaveOriginalSizeIconPictureToolStripMenuItem.Text = "原寸大画像を保存(&O)"
         '
         'SaveIconPictureToolStripMenuItem
         '
         Me.SaveIconPictureToolStripMenuItem.Name = "SaveIconPictureToolStripMenuItem"
-        Me.SaveIconPictureToolStripMenuItem.Size = New System.Drawing.Size(183, 22)
+        Me.SaveIconPictureToolStripMenuItem.Size = New System.Drawing.Size(179, 22)
         Me.SaveIconPictureToolStripMenuItem.Text = "アイコンを保存(&I)"
         '
         'ContextMenuTabProperty
         '
         Me.ContextMenuTabProperty.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AddTabMenuItem, Me.ToolStripSeparator20, Me.UreadManageMenuItem, Me.NotifyDispMenuItem, Me.SoundFileComboBox, Me.ToolStripSeparator18, Me.FilterEditMenuItem, Me.ToolStripSeparator19, Me.ClearTabMenuItem, Me.ToolStripSeparator11, Me.DeleteTabMenuItem})
         Me.ContextMenuTabProperty.Name = "ContextMenuStrip3"
-        Me.ContextMenuTabProperty.Size = New System.Drawing.Size(186, 186)
+        Me.ContextMenuTabProperty.OwnerItem = Me.MenuItemTab
+        Me.ContextMenuTabProperty.Size = New System.Drawing.Size(182, 184)
         '
         'AddTabMenuItem
         '
         Me.AddTabMenuItem.Name = "AddTabMenuItem"
-        Me.AddTabMenuItem.Size = New System.Drawing.Size(185, 22)
+        Me.AddTabMenuItem.Size = New System.Drawing.Size(181, 22)
         Me.AddTabMenuItem.Text = "タブ作成(&N)"
         '
         'ToolStripSeparator20
         '
         Me.ToolStripSeparator20.Name = "ToolStripSeparator20"
-        Me.ToolStripSeparator20.Size = New System.Drawing.Size(182, 6)
+        Me.ToolStripSeparator20.Size = New System.Drawing.Size(178, 6)
         '
         'UreadManageMenuItem
         '
         Me.UreadManageMenuItem.CheckOnClick = True
         Me.UreadManageMenuItem.Name = "UreadManageMenuItem"
-        Me.UreadManageMenuItem.Size = New System.Drawing.Size(185, 22)
+        Me.UreadManageMenuItem.Size = New System.Drawing.Size(181, 22)
         Me.UreadManageMenuItem.Text = "未読管理(&U)"
         '
         'NotifyDispMenuItem
         '
         Me.NotifyDispMenuItem.CheckOnClick = True
         Me.NotifyDispMenuItem.Name = "NotifyDispMenuItem"
-        Me.NotifyDispMenuItem.Size = New System.Drawing.Size(185, 22)
+        Me.NotifyDispMenuItem.Size = New System.Drawing.Size(181, 22)
         Me.NotifyDispMenuItem.Text = "新着通知表示(&Q)"
         '
         'SoundFileComboBox
@@ -220,47 +223,47 @@ Partial Class TweenMain
         Me.SoundFileComboBox.AutoToolTip = True
         Me.SoundFileComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.SoundFileComboBox.Name = "SoundFileComboBox"
-        Me.SoundFileComboBox.Size = New System.Drawing.Size(121, 22)
+        Me.SoundFileComboBox.Size = New System.Drawing.Size(121, 20)
         Me.SoundFileComboBox.ToolTipText = "再生するwavファイルを指定してください"
         '
         'ToolStripSeparator18
         '
         Me.ToolStripSeparator18.Name = "ToolStripSeparator18"
-        Me.ToolStripSeparator18.Size = New System.Drawing.Size(182, 6)
+        Me.ToolStripSeparator18.Size = New System.Drawing.Size(178, 6)
         '
         'FilterEditMenuItem
         '
         Me.FilterEditMenuItem.Name = "FilterEditMenuItem"
-        Me.FilterEditMenuItem.Size = New System.Drawing.Size(185, 22)
+        Me.FilterEditMenuItem.Size = New System.Drawing.Size(181, 22)
         Me.FilterEditMenuItem.Text = "振り分けルール編集(&F)"
         '
         'ToolStripSeparator19
         '
         Me.ToolStripSeparator19.Name = "ToolStripSeparator19"
-        Me.ToolStripSeparator19.Size = New System.Drawing.Size(182, 6)
+        Me.ToolStripSeparator19.Size = New System.Drawing.Size(178, 6)
         '
         'ClearTabMenuItem
         '
         Me.ClearTabMenuItem.Name = "ClearTabMenuItem"
-        Me.ClearTabMenuItem.Size = New System.Drawing.Size(185, 22)
+        Me.ClearTabMenuItem.Size = New System.Drawing.Size(181, 22)
         Me.ClearTabMenuItem.Text = "このタブの発言をクリア"
         '
         'ToolStripSeparator11
         '
         Me.ToolStripSeparator11.Name = "ToolStripSeparator11"
-        Me.ToolStripSeparator11.Size = New System.Drawing.Size(182, 6)
+        Me.ToolStripSeparator11.Size = New System.Drawing.Size(178, 6)
         '
         'DeleteTabMenuItem
         '
         Me.DeleteTabMenuItem.Name = "DeleteTabMenuItem"
-        Me.DeleteTabMenuItem.Size = New System.Drawing.Size(185, 22)
+        Me.DeleteTabMenuItem.Size = New System.Drawing.Size(181, 22)
         Me.DeleteTabMenuItem.Text = "タブ削除(&D)"
         '
         'MenuItemTab
         '
         Me.MenuItemTab.DropDown = Me.ContextMenuTabProperty
         Me.MenuItemTab.Name = "MenuItemTab"
-        Me.MenuItemTab.Size = New System.Drawing.Size(51, 20)
+        Me.MenuItemTab.Size = New System.Drawing.Size(49, 20)
         Me.MenuItemTab.Text = "タブ(&T)"
         '
         'TabImage
@@ -273,14 +276,15 @@ Partial Class TweenMain
         '
         Me.ContextMenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ReplyStripMenuItem, Me.ReplyAllStripMenuItem, Me.DMStripMenuItem, Me.ToolStripSeparator2, Me.FavAddToolStripMenuItem, Me.FavRemoveToolStripMenuItem, Me.ToolStripSeparator1, Me.MoveToHomeToolStripMenuItem, Me.MoveToFavToolStripMenuItem, Me.StatusOpenMenuItem, Me.RepliedStatusOpenMenuItem, Me.FavorareMenuItem, Me.OpenURLMenuItem, Me.ToolStripSeparator3, Me.TabMenuItem, Me.IDRuleMenuItem, Me.ToolStripSeparator4, Me.ReadedStripMenuItem, Me.UnreadStripMenuItem, Me.JumpUnreadMenuItem, Me.ToolStripSeparator10, Me.SelectAllMenuItem, Me.ToolStripSeparator5, Me.UpdateFollowersMenuItem1, Me.ToolStripSeparator13, Me.DeleteStripMenuItem, Me.ToolStripSeparator8, Me.RefreshStripMenuItem})
         Me.ContextMenuStrip2.Name = "ContextMenuStrip2"
+        Me.ContextMenuStrip2.OwnerItem = Me.MenuItemOperate
         Me.ContextMenuStrip2.ShowImageMargin = False
-        Me.ContextMenuStrip2.Size = New System.Drawing.Size(219, 492)
+        Me.ContextMenuStrip2.Size = New System.Drawing.Size(213, 492)
         '
         'ReplyStripMenuItem
         '
         Me.ReplyStripMenuItem.Name = "ReplyStripMenuItem"
         Me.ReplyStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.R), System.Windows.Forms.Keys)
-        Me.ReplyStripMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.ReplyStripMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.ReplyStripMenuItem.Text = "@返信(&R)"
         '
         'ReplyAllStripMenuItem
@@ -288,26 +292,26 @@ Partial Class TweenMain
         Me.ReplyAllStripMenuItem.Name = "ReplyAllStripMenuItem"
         Me.ReplyAllStripMenuItem.ShortcutKeys = CType(((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Shift) _
                     Or System.Windows.Forms.Keys.R), System.Windows.Forms.Keys)
-        Me.ReplyAllStripMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.ReplyAllStripMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.ReplyAllStripMenuItem.Text = "@返信ALL"
         '
         'DMStripMenuItem
         '
         Me.DMStripMenuItem.Name = "DMStripMenuItem"
         Me.DMStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.M), System.Windows.Forms.Keys)
-        Me.DMStripMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.DMStripMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.DMStripMenuItem.Text = "DM送信(&M)"
         '
         'ToolStripSeparator2
         '
         Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
-        Me.ToolStripSeparator2.Size = New System.Drawing.Size(215, 6)
+        Me.ToolStripSeparator2.Size = New System.Drawing.Size(209, 6)
         '
         'FavAddToolStripMenuItem
         '
         Me.FavAddToolStripMenuItem.Name = "FavAddToolStripMenuItem"
         Me.FavAddToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.S), System.Windows.Forms.Keys)
-        Me.FavAddToolStripMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.FavAddToolStripMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.FavAddToolStripMenuItem.Text = "Fav追加(&F)"
         '
         'FavRemoveToolStripMenuItem
@@ -315,40 +319,40 @@ Partial Class TweenMain
         Me.FavRemoveToolStripMenuItem.Name = "FavRemoveToolStripMenuItem"
         Me.FavRemoveToolStripMenuItem.ShortcutKeys = CType(((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Shift) _
                     Or System.Windows.Forms.Keys.S), System.Windows.Forms.Keys)
-        Me.FavRemoveToolStripMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.FavRemoveToolStripMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.FavRemoveToolStripMenuItem.Text = "Fav削除"
         '
         'ToolStripSeparator1
         '
         Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
-        Me.ToolStripSeparator1.Size = New System.Drawing.Size(215, 6)
+        Me.ToolStripSeparator1.Size = New System.Drawing.Size(209, 6)
         '
         'MoveToHomeToolStripMenuItem
         '
         Me.MoveToHomeToolStripMenuItem.Name = "MoveToHomeToolStripMenuItem"
         Me.MoveToHomeToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.H), System.Windows.Forms.Keys)
-        Me.MoveToHomeToolStripMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.MoveToHomeToolStripMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.MoveToHomeToolStripMenuItem.Text = "ホームを開く(&H)"
         '
         'MoveToFavToolStripMenuItem
         '
         Me.MoveToFavToolStripMenuItem.Name = "MoveToFavToolStripMenuItem"
         Me.MoveToFavToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.G), System.Windows.Forms.Keys)
-        Me.MoveToFavToolStripMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.MoveToFavToolStripMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.MoveToFavToolStripMenuItem.Text = "Favを開く(&G)"
         '
         'StatusOpenMenuItem
         '
         Me.StatusOpenMenuItem.Name = "StatusOpenMenuItem"
         Me.StatusOpenMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.O), System.Windows.Forms.Keys)
-        Me.StatusOpenMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.StatusOpenMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.StatusOpenMenuItem.Text = "ステータスを開く(&O)"
         '
         'RepliedStatusOpenMenuItem
         '
         Me.RepliedStatusOpenMenuItem.Name = "RepliedStatusOpenMenuItem"
         Me.RepliedStatusOpenMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.I), System.Windows.Forms.Keys)
-        Me.RepliedStatusOpenMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.RepliedStatusOpenMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.RepliedStatusOpenMenuItem.Text = "返信元ステータスを開く(&I)"
         '
         'FavorareMenuItem
@@ -356,44 +360,44 @@ Partial Class TweenMain
         Me.FavorareMenuItem.Name = "FavorareMenuItem"
         Me.FavorareMenuItem.ShortcutKeys = CType(((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Shift) _
                     Or System.Windows.Forms.Keys.O), System.Windows.Forms.Keys)
-        Me.FavorareMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.FavorareMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.FavorareMenuItem.Text = "ふぁぼられを開く(&P)"
         '
         'OpenURLMenuItem
         '
         Me.OpenURLMenuItem.Name = "OpenURLMenuItem"
         Me.OpenURLMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.E), System.Windows.Forms.Keys)
-        Me.OpenURLMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.OpenURLMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.OpenURLMenuItem.Text = "発言内URLを開く(&U)"
         '
         'ToolStripSeparator3
         '
         Me.ToolStripSeparator3.Name = "ToolStripSeparator3"
-        Me.ToolStripSeparator3.Size = New System.Drawing.Size(215, 6)
+        Me.ToolStripSeparator3.Size = New System.Drawing.Size(209, 6)
         '
         'TabMenuItem
         '
         Me.TabMenuItem.Name = "TabMenuItem"
         Me.TabMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.N), System.Windows.Forms.Keys)
-        Me.TabMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.TabMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.TabMenuItem.Text = "タブ振り分けルール作成(&N)"
         '
         'IDRuleMenuItem
         '
         Me.IDRuleMenuItem.Name = "IDRuleMenuItem"
-        Me.IDRuleMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.IDRuleMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.IDRuleMenuItem.Text = "ID振り分けルール作成"
         '
         'ToolStripSeparator4
         '
         Me.ToolStripSeparator4.Name = "ToolStripSeparator4"
-        Me.ToolStripSeparator4.Size = New System.Drawing.Size(215, 6)
+        Me.ToolStripSeparator4.Size = New System.Drawing.Size(209, 6)
         '
         'ReadedStripMenuItem
         '
         Me.ReadedStripMenuItem.Name = "ReadedStripMenuItem"
         Me.ReadedStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.B), System.Windows.Forms.Keys)
-        Me.ReadedStripMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.ReadedStripMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.ReadedStripMenuItem.Text = "既読にする(&B)"
         '
         'UnreadStripMenuItem
@@ -401,67 +405,67 @@ Partial Class TweenMain
         Me.UnreadStripMenuItem.Name = "UnreadStripMenuItem"
         Me.UnreadStripMenuItem.ShortcutKeys = CType(((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Shift) _
                     Or System.Windows.Forms.Keys.B), System.Windows.Forms.Keys)
-        Me.UnreadStripMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.UnreadStripMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.UnreadStripMenuItem.Text = "未読にする"
         '
         'JumpUnreadMenuItem
         '
         Me.JumpUnreadMenuItem.Name = "JumpUnreadMenuItem"
         Me.JumpUnreadMenuItem.ShortcutKeyDisplayString = ""
-        Me.JumpUnreadMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.JumpUnreadMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.JumpUnreadMenuItem.Text = "未読へジャンプ"
         '
         'ToolStripSeparator10
         '
         Me.ToolStripSeparator10.Name = "ToolStripSeparator10"
-        Me.ToolStripSeparator10.Size = New System.Drawing.Size(215, 6)
+        Me.ToolStripSeparator10.Size = New System.Drawing.Size(209, 6)
         '
         'SelectAllMenuItem
         '
         Me.SelectAllMenuItem.Name = "SelectAllMenuItem"
-        Me.SelectAllMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.SelectAllMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.SelectAllMenuItem.Text = "全て選択(&A)"
         '
         'ToolStripSeparator5
         '
         Me.ToolStripSeparator5.Name = "ToolStripSeparator5"
-        Me.ToolStripSeparator5.Size = New System.Drawing.Size(215, 6)
+        Me.ToolStripSeparator5.Size = New System.Drawing.Size(209, 6)
         '
         'UpdateFollowersMenuItem1
         '
         Me.UpdateFollowersMenuItem1.Name = "UpdateFollowersMenuItem1"
-        Me.UpdateFollowersMenuItem1.Size = New System.Drawing.Size(218, 22)
+        Me.UpdateFollowersMenuItem1.Size = New System.Drawing.Size(212, 22)
         Me.UpdateFollowersMenuItem1.Text = "片思いユーザーリスト取得"
         '
         'ToolStripSeparator13
         '
         Me.ToolStripSeparator13.Name = "ToolStripSeparator13"
-        Me.ToolStripSeparator13.Size = New System.Drawing.Size(215, 6)
+        Me.ToolStripSeparator13.Size = New System.Drawing.Size(209, 6)
         '
         'DeleteStripMenuItem
         '
         Me.DeleteStripMenuItem.Name = "DeleteStripMenuItem"
         Me.DeleteStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.D), System.Windows.Forms.Keys)
-        Me.DeleteStripMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.DeleteStripMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.DeleteStripMenuItem.Text = "削除(&D)"
         '
         'ToolStripSeparator8
         '
         Me.ToolStripSeparator8.Name = "ToolStripSeparator8"
-        Me.ToolStripSeparator8.Size = New System.Drawing.Size(215, 6)
+        Me.ToolStripSeparator8.Size = New System.Drawing.Size(209, 6)
         '
         'RefreshStripMenuItem
         '
         Me.RefreshStripMenuItem.Name = "RefreshStripMenuItem"
         Me.RefreshStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5
-        Me.RefreshStripMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.RefreshStripMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.RefreshStripMenuItem.Text = "更新(&U)"
         '
         'MenuItemOperate
         '
         Me.MenuItemOperate.DropDown = Me.ContextMenuStrip2
         Me.MenuItemOperate.Name = "MenuItemOperate"
-        Me.MenuItemOperate.Size = New System.Drawing.Size(59, 20)
+        Me.MenuItemOperate.Size = New System.Drawing.Size(57, 20)
         Me.MenuItemOperate.Text = "操作(&O)"
         '
         'NotifyIcon1
@@ -472,46 +476,47 @@ Partial Class TweenMain
         '
         'ContextMenuStrip1
         '
-        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SettingStripMenuItem, Me.ToolStripSeparator9, Me.SaveLogMenuItem, Me.ToolStripSeparator17, Me.NewPostPopMenuItem, Me.PlaySoundMenuItem, Me.ListLockMenuItem, Me.ToolStripSeparator15, Me.EndToolStripMenuItem})
+        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SettingStripMenuItem, Me.ToolStripSeparator9, Me.SaveLogMenuItem, Me.ToolStripSeparator17, Me.NewPostPopMenuItem, Me.PlaySoundMenuItem, Me.ListLockMenuItem, Me.ToolStripSeparator15, Me.MultiLineMenuItem, Me.ToolStripSeparator21, Me.EndToolStripMenuItem})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
+        Me.ContextMenuStrip1.OwnerItem = Me.MenuItemFile
         Me.ContextMenuStrip1.ShowCheckMargin = True
         Me.ContextMenuStrip1.ShowImageMargin = False
-        Me.ContextMenuStrip1.Size = New System.Drawing.Size(211, 154)
+        Me.ContextMenuStrip1.Size = New System.Drawing.Size(221, 204)
         '
         'SettingStripMenuItem
         '
         Me.SettingStripMenuItem.Name = "SettingStripMenuItem"
-        Me.SettingStripMenuItem.Size = New System.Drawing.Size(210, 22)
+        Me.SettingStripMenuItem.Size = New System.Drawing.Size(220, 22)
         Me.SettingStripMenuItem.Text = "設定(&O)"
         '
         'ToolStripSeparator9
         '
         Me.ToolStripSeparator9.Name = "ToolStripSeparator9"
-        Me.ToolStripSeparator9.Size = New System.Drawing.Size(207, 6)
+        Me.ToolStripSeparator9.Size = New System.Drawing.Size(217, 6)
         '
         'SaveLogMenuItem
         '
         Me.SaveLogMenuItem.Name = "SaveLogMenuItem"
-        Me.SaveLogMenuItem.Size = New System.Drawing.Size(210, 22)
+        Me.SaveLogMenuItem.Size = New System.Drawing.Size(220, 22)
         Me.SaveLogMenuItem.Text = "ファイル保存(&S)"
         '
         'ToolStripSeparator17
         '
         Me.ToolStripSeparator17.Name = "ToolStripSeparator17"
-        Me.ToolStripSeparator17.Size = New System.Drawing.Size(207, 6)
+        Me.ToolStripSeparator17.Size = New System.Drawing.Size(217, 6)
         '
         'NewPostPopMenuItem
         '
         Me.NewPostPopMenuItem.CheckOnClick = True
         Me.NewPostPopMenuItem.Name = "NewPostPopMenuItem"
-        Me.NewPostPopMenuItem.Size = New System.Drawing.Size(210, 22)
+        Me.NewPostPopMenuItem.Size = New System.Drawing.Size(220, 22)
         Me.NewPostPopMenuItem.Text = "新着通知(&Q)"
         '
         'PlaySoundMenuItem
         '
         Me.PlaySoundMenuItem.CheckOnClick = True
         Me.PlaySoundMenuItem.Name = "PlaySoundMenuItem"
-        Me.PlaySoundMenuItem.Size = New System.Drawing.Size(210, 22)
+        Me.PlaySoundMenuItem.Size = New System.Drawing.Size(220, 22)
         Me.PlaySoundMenuItem.Text = "サウンド再生"
         '
         'ListLockMenuItem
@@ -519,27 +524,40 @@ Partial Class TweenMain
         Me.ListLockMenuItem.CheckOnClick = True
         Me.ListLockMenuItem.Name = "ListLockMenuItem"
         Me.ListLockMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.L), System.Windows.Forms.Keys)
-        Me.ListLockMenuItem.Size = New System.Drawing.Size(210, 22)
+        Me.ListLockMenuItem.Size = New System.Drawing.Size(220, 22)
         Me.ListLockMenuItem.Text = "新着時リスト固定(&L)"
         '
         'ToolStripSeparator15
         '
         Me.ToolStripSeparator15.Name = "ToolStripSeparator15"
-        Me.ToolStripSeparator15.Size = New System.Drawing.Size(207, 6)
+        Me.ToolStripSeparator15.Size = New System.Drawing.Size(217, 6)
+        '
+        'MultiLineMenuItem
+        '
+        Me.MultiLineMenuItem.CheckOnClick = True
+        Me.MultiLineMenuItem.Name = "MultiLineMenuItem"
+        Me.MultiLineMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.K), System.Windows.Forms.Keys)
+        Me.MultiLineMenuItem.Size = New System.Drawing.Size(220, 22)
+        Me.MultiLineMenuItem.Text = "発言欄複数行入力(&M)"
+        '
+        'ToolStripSeparator21
+        '
+        Me.ToolStripSeparator21.Name = "ToolStripSeparator21"
+        Me.ToolStripSeparator21.Size = New System.Drawing.Size(217, 6)
         '
         'EndToolStripMenuItem
         '
         Me.EndToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
         Me.EndToolStripMenuItem.Name = "EndToolStripMenuItem"
         Me.EndToolStripMenuItem.ShowShortcutKeys = False
-        Me.EndToolStripMenuItem.Size = New System.Drawing.Size(210, 22)
+        Me.EndToolStripMenuItem.Size = New System.Drawing.Size(220, 22)
         Me.EndToolStripMenuItem.Text = "終了(&X)"
         '
         'MenuItemFile
         '
         Me.MenuItemFile.DropDown = Me.ContextMenuStrip1
         Me.MenuItemFile.Name = "MenuItemFile"
-        Me.MenuItemFile.Size = New System.Drawing.Size(68, 20)
+        Me.MenuItemFile.Size = New System.Drawing.Size(66, 20)
         Me.MenuItemFile.Text = "ファイル(&F)"
         '
         'GetTimelineWorker
@@ -579,7 +597,7 @@ Partial Class TweenMain
         'ToolStripContainer1.ContentPanel
         '
         Me.ToolStripContainer1.ContentPanel.Controls.Add(Me.SplitContainer1)
-        Me.ToolStripContainer1.ContentPanel.Size = New System.Drawing.Size(468, 269)
+        Me.ToolStripContainer1.ContentPanel.Size = New System.Drawing.Size(468, 270)
         Me.ToolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.ToolStripContainer1.LeftToolStripPanelVisible = False
         Me.ToolStripContainer1.Location = New System.Drawing.Point(0, 0)
@@ -599,7 +617,7 @@ Partial Class TweenMain
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusLabelUrl, Me.StatusLabel})
         Me.StatusStrip1.Location = New System.Drawing.Point(0, 0)
         Me.StatusStrip1.Name = "StatusStrip1"
-        Me.StatusStrip1.Size = New System.Drawing.Size(468, 23)
+        Me.StatusStrip1.Size = New System.Drawing.Size(468, 22)
         Me.StatusStrip1.TabIndex = 11
         Me.StatusStrip1.Text = "StatusStrip1"
         '
@@ -608,7 +626,7 @@ Partial Class TweenMain
         Me.StatusLabelUrl.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
         Me.StatusLabelUrl.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
         Me.StatusLabelUrl.Name = "StatusLabelUrl"
-        Me.StatusLabelUrl.Size = New System.Drawing.Size(334, 18)
+        Me.StatusLabelUrl.Size = New System.Drawing.Size(336, 17)
         Me.StatusLabelUrl.Spring = True
         Me.StatusLabelUrl.Text = "ToolStripStatusLabel1"
         Me.StatusLabelUrl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -616,7 +634,7 @@ Partial Class TweenMain
         'StatusLabel
         '
         Me.StatusLabel.Name = "StatusLabel"
-        Me.StatusLabel.Size = New System.Drawing.Size(119, 18)
+        Me.StatusLabel.Size = New System.Drawing.Size(117, 17)
         Me.StatusLabel.Text = "ToolStripStatusLabel1"
         '
         'SplitContainer1
@@ -635,7 +653,7 @@ Partial Class TweenMain
         '
         Me.SplitContainer1.Panel2.Controls.Add(Me.SplitContainer2)
         Me.SplitContainer1.Panel2MinSize = 50
-        Me.SplitContainer1.Size = New System.Drawing.Size(468, 269)
+        Me.SplitContainer1.Size = New System.Drawing.Size(468, 270)
         Me.SplitContainer1.SplitterDistance = 166
         Me.SplitContainer1.SplitterWidth = 2
         Me.SplitContainer1.TabIndex = 9
@@ -676,8 +694,8 @@ Partial Class TweenMain
         Me.SplitContainer2.Panel2.Controls.Add(Me.lblLen)
         Me.SplitContainer2.Panel2.Controls.Add(Me.PostButton)
         Me.SplitContainer2.Panel2MinSize = 19
-        Me.SplitContainer2.Size = New System.Drawing.Size(464, 97)
-        Me.SplitContainer2.SplitterDistance = 76
+        Me.SplitContainer2.Size = New System.Drawing.Size(464, 98)
+        Me.SplitContainer2.SplitterDistance = 77
         Me.SplitContainer2.SplitterWidth = 2
         Me.SplitContainer2.TabIndex = 19
         Me.SplitContainer2.TabStop = False
@@ -701,7 +719,7 @@ Partial Class TweenMain
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20.0!))
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 80.0!))
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableLayoutPanel1.Size = New System.Drawing.Size(464, 76)
+        Me.TableLayoutPanel1.Size = New System.Drawing.Size(464, 77)
         Me.TableLayoutPanel1.TabIndex = 20
         '
         'UserPicture
@@ -733,7 +751,7 @@ Partial Class TweenMain
         Me.PostBrowser.Dock = System.Windows.Forms.DockStyle.Fill
         Me.PostBrowser.Location = New System.Drawing.Point(58, 18)
         Me.PostBrowser.Name = "PostBrowser"
-        Me.PostBrowser.Size = New System.Drawing.Size(403, 55)
+        Me.PostBrowser.Size = New System.Drawing.Size(403, 56)
         Me.PostBrowser.TabIndex = 12
         Me.PostBrowser.TabStop = False
         '
@@ -752,7 +770,6 @@ Partial Class TweenMain
         '
         Me.StatusText.Dock = System.Windows.Forms.DockStyle.Fill
         Me.StatusText.Location = New System.Drawing.Point(0, 0)
-        Me.StatusText.Multiline = True
         Me.StatusText.Name = "StatusText"
         Me.StatusText.Size = New System.Drawing.Size(370, 19)
         Me.StatusText.TabIndex = 25
@@ -792,121 +809,121 @@ Partial Class TweenMain
         '
         Me.MenuItemEdit.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CopySTOTMenuItem, Me.CopyURLMenuItem, Me.ToolStripSeparator6, Me.MenuItemSubSearch, Me.MenuItemSearchNext, Me.MenuItemSearchPrev})
         Me.MenuItemEdit.Name = "MenuItemEdit"
-        Me.MenuItemEdit.Size = New System.Drawing.Size(58, 20)
+        Me.MenuItemEdit.Size = New System.Drawing.Size(56, 20)
         Me.MenuItemEdit.Text = "編集(&E)"
         '
         'CopySTOTMenuItem
         '
         Me.CopySTOTMenuItem.Name = "CopySTOTMenuItem"
-        Me.CopySTOTMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.CopySTOTMenuItem.Size = New System.Drawing.Size(214, 22)
         Me.CopySTOTMenuItem.Text = "コピー（STOT形式テキスト）(&C)"
         '
         'CopyURLMenuItem
         '
         Me.CopyURLMenuItem.Name = "CopyURLMenuItem"
-        Me.CopyURLMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.CopyURLMenuItem.Size = New System.Drawing.Size(214, 22)
         Me.CopyURLMenuItem.Text = "コピー（ステータスURL）(&S)"
         '
         'ToolStripSeparator6
         '
         Me.ToolStripSeparator6.Name = "ToolStripSeparator6"
-        Me.ToolStripSeparator6.Size = New System.Drawing.Size(215, 6)
+        Me.ToolStripSeparator6.Size = New System.Drawing.Size(211, 6)
         '
         'MenuItemSubSearch
         '
         Me.MenuItemSubSearch.Name = "MenuItemSubSearch"
         Me.MenuItemSubSearch.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.F), System.Windows.Forms.Keys)
-        Me.MenuItemSubSearch.Size = New System.Drawing.Size(218, 22)
+        Me.MenuItemSubSearch.Size = New System.Drawing.Size(214, 22)
         Me.MenuItemSubSearch.Text = "検索(&F)"
         '
         'MenuItemSearchNext
         '
         Me.MenuItemSearchNext.Name = "MenuItemSearchNext"
         Me.MenuItemSearchNext.ShortcutKeys = System.Windows.Forms.Keys.F3
-        Me.MenuItemSearchNext.Size = New System.Drawing.Size(218, 22)
+        Me.MenuItemSearchNext.Size = New System.Drawing.Size(214, 22)
         Me.MenuItemSearchNext.Text = "次を検索(&X)"
         '
         'MenuItemSearchPrev
         '
         Me.MenuItemSearchPrev.Name = "MenuItemSearchPrev"
         Me.MenuItemSearchPrev.ShortcutKeys = CType((System.Windows.Forms.Keys.Shift Or System.Windows.Forms.Keys.F3), System.Windows.Forms.Keys)
-        Me.MenuItemSearchPrev.Size = New System.Drawing.Size(218, 22)
+        Me.MenuItemSearchPrev.Size = New System.Drawing.Size(214, 22)
         Me.MenuItemSearchPrev.Text = "前を検索(&P)"
         '
         'MenuItemCommand
         '
         Me.MenuItemCommand.Enabled = False
         Me.MenuItemCommand.Name = "MenuItemCommand"
-        Me.MenuItemCommand.Size = New System.Drawing.Size(70, 20)
+        Me.MenuItemCommand.Size = New System.Drawing.Size(68, 20)
         Me.MenuItemCommand.Text = "コマンド(&C)"
         '
         'MenuItemHelp
         '
         Me.MenuItemHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MatomeMenuItem, Me.ToolStripSeparator12, Me.OfficialMenuItem, Me.DLPageMenuItem, Me.ToolStripSeparator16, Me.VerUpMenuItem, Me.WedataMenuItem, Me.ToolStripSeparator14, Me.InfoTwitterMenuItem, Me.ToolStripSeparator7, Me.AboutMenuItem})
         Me.MenuItemHelp.Name = "MenuItemHelp"
-        Me.MenuItemHelp.Size = New System.Drawing.Size(64, 20)
+        Me.MenuItemHelp.Size = New System.Drawing.Size(62, 20)
         Me.MenuItemHelp.Text = "ヘルプ(&H)"
         '
         'MatomeMenuItem
         '
         Me.MatomeMenuItem.Name = "MatomeMenuItem"
-        Me.MatomeMenuItem.Size = New System.Drawing.Size(189, 22)
+        Me.MatomeMenuItem.Size = New System.Drawing.Size(185, 22)
         Me.MatomeMenuItem.Text = "Tweenまとめサイト(&H)"
         '
         'ToolStripSeparator12
         '
         Me.ToolStripSeparator12.Name = "ToolStripSeparator12"
-        Me.ToolStripSeparator12.Size = New System.Drawing.Size(186, 6)
+        Me.ToolStripSeparator12.Size = New System.Drawing.Size(182, 6)
         '
         'OfficialMenuItem
         '
         Me.OfficialMenuItem.Name = "OfficialMenuItem"
-        Me.OfficialMenuItem.Size = New System.Drawing.Size(189, 22)
+        Me.OfficialMenuItem.Size = New System.Drawing.Size(185, 22)
         Me.OfficialMenuItem.Text = "公式ページ(&O)"
         '
         'DLPageMenuItem
         '
         Me.DLPageMenuItem.Name = "DLPageMenuItem"
-        Me.DLPageMenuItem.Size = New System.Drawing.Size(189, 22)
+        Me.DLPageMenuItem.Size = New System.Drawing.Size(185, 22)
         Me.DLPageMenuItem.Text = "配布ページ(&D)"
         '
         'ToolStripSeparator16
         '
         Me.ToolStripSeparator16.Name = "ToolStripSeparator16"
-        Me.ToolStripSeparator16.Size = New System.Drawing.Size(186, 6)
+        Me.ToolStripSeparator16.Size = New System.Drawing.Size(182, 6)
         '
         'VerUpMenuItem
         '
         Me.VerUpMenuItem.Name = "VerUpMenuItem"
-        Me.VerUpMenuItem.Size = New System.Drawing.Size(189, 22)
+        Me.VerUpMenuItem.Size = New System.Drawing.Size(185, 22)
         Me.VerUpMenuItem.Text = "最新版の取得(&G)"
         '
         'WedataMenuItem
         '
         Me.WedataMenuItem.Name = "WedataMenuItem"
-        Me.WedataMenuItem.Size = New System.Drawing.Size(189, 22)
+        Me.WedataMenuItem.Size = New System.Drawing.Size(185, 22)
         Me.WedataMenuItem.Text = "解析キー情報更新"
         '
         'ToolStripSeparator14
         '
         Me.ToolStripSeparator14.Name = "ToolStripSeparator14"
-        Me.ToolStripSeparator14.Size = New System.Drawing.Size(186, 6)
+        Me.ToolStripSeparator14.Size = New System.Drawing.Size(182, 6)
         '
         'InfoTwitterMenuItem
         '
         Me.InfoTwitterMenuItem.Name = "InfoTwitterMenuItem"
-        Me.InfoTwitterMenuItem.Size = New System.Drawing.Size(189, 22)
+        Me.InfoTwitterMenuItem.Size = New System.Drawing.Size(185, 22)
         Me.InfoTwitterMenuItem.Text = "Twitterからのお知らせ(&I)"
         '
         'ToolStripSeparator7
         '
         Me.ToolStripSeparator7.Name = "ToolStripSeparator7"
-        Me.ToolStripSeparator7.Size = New System.Drawing.Size(186, 6)
+        Me.ToolStripSeparator7.Size = New System.Drawing.Size(182, 6)
         '
         'AboutMenuItem
         '
         Me.AboutMenuItem.Name = "AboutMenuItem"
-        Me.AboutMenuItem.Size = New System.Drawing.Size(189, 22)
+        Me.AboutMenuItem.Size = New System.Drawing.Size(185, 22)
         Me.AboutMenuItem.Text = "Tweenについて(&A)"
         '
         'TweenMain
@@ -1054,5 +1071,7 @@ Partial Class TweenMain
     Friend WithEvents StatusText As System.Windows.Forms.TextBox
     Friend WithEvents lblLen As System.Windows.Forms.Label
     Friend WithEvents PostButton As System.Windows.Forms.Button
+    Friend WithEvents MultiLineMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator21 As System.Windows.Forms.ToolStripSeparator
 
 End Class
