@@ -5173,15 +5173,12 @@ RETRY:
         '        e.SuppressKeyPress = True
         '    End If
         'End If
-        If e.Alt = False And e.Control = True And e.Shift = False Then
+        If e.Control = True AndAlso e.Alt = False AndAlso e.Shift = False Then
             If e.KeyCode = Keys.A Then
                 StatusText.SelectAll()
                 'StatusText.SelectionStart = StatusText.Text.Length
                 'StatusText.Focus()
-            End If
-        End If
-        If e.Alt = False And e.Control = False And e.Shift = False Then
-            If e.KeyCode = Keys.Up Or e.KeyCode = Keys.Down Then
+            ElseIf e.KeyCode = Keys.Up Or e.KeyCode = Keys.Down Then
                 If StatusText.Text.Trim <> "" Then _history(_hisIdx) = StatusText.Text
                 If e.KeyCode = Keys.Up Then
                     _hisIdx -= 1
@@ -6910,6 +6907,14 @@ RETRY:
 
     Private Sub SplitContainer2_Panel2_Resize(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SplitContainer2.Panel2.Resize
         Me.StatusText.Multiline = Me.SplitContainer2.Panel2.Height <> Me.SplitContainer2.Panel2MinSize
+    End Sub
+
+    Private Sub StatusText_MultilineChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusText.MultilineChanged
+        If Me.StatusText.Multiline Then
+            Me.StatusText.ScrollBars = ScrollBars.Vertical
+        Else
+            Me.StatusText.ScrollBars = ScrollBars.None
+        End If
     End Sub
 End Class
 

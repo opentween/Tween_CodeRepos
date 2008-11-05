@@ -188,7 +188,6 @@ Partial Class TweenMain
         '
         Me.ContextMenuTabProperty.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AddTabMenuItem, Me.ToolStripSeparator20, Me.UreadManageMenuItem, Me.NotifyDispMenuItem, Me.SoundFileComboBox, Me.ToolStripSeparator18, Me.FilterEditMenuItem, Me.ToolStripSeparator19, Me.ClearTabMenuItem, Me.ToolStripSeparator11, Me.DeleteTabMenuItem})
         Me.ContextMenuTabProperty.Name = "ContextMenuStrip3"
-        Me.ContextMenuTabProperty.OwnerItem = Me.MenuItemTab
         Me.ContextMenuTabProperty.Size = New System.Drawing.Size(186, 186)
         '
         'AddTabMenuItem
@@ -274,7 +273,6 @@ Partial Class TweenMain
         '
         Me.ContextMenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ReplyStripMenuItem, Me.ReplyAllStripMenuItem, Me.DMStripMenuItem, Me.ToolStripSeparator2, Me.FavAddToolStripMenuItem, Me.FavRemoveToolStripMenuItem, Me.ToolStripSeparator1, Me.MoveToHomeToolStripMenuItem, Me.MoveToFavToolStripMenuItem, Me.StatusOpenMenuItem, Me.RepliedStatusOpenMenuItem, Me.FavorareMenuItem, Me.OpenURLMenuItem, Me.ToolStripSeparator3, Me.TabMenuItem, Me.IDRuleMenuItem, Me.ToolStripSeparator4, Me.ReadedStripMenuItem, Me.UnreadStripMenuItem, Me.JumpUnreadMenuItem, Me.ToolStripSeparator10, Me.SelectAllMenuItem, Me.ToolStripSeparator5, Me.UpdateFollowersMenuItem1, Me.ToolStripSeparator13, Me.DeleteStripMenuItem, Me.ToolStripSeparator8, Me.RefreshStripMenuItem})
         Me.ContextMenuStrip2.Name = "ContextMenuStrip2"
-        Me.ContextMenuStrip2.OwnerItem = Me.MenuItemOperate
         Me.ContextMenuStrip2.ShowImageMargin = False
         Me.ContextMenuStrip2.Size = New System.Drawing.Size(219, 492)
         '
@@ -476,7 +474,6 @@ Partial Class TweenMain
         '
         Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SettingStripMenuItem, Me.ToolStripSeparator9, Me.SaveLogMenuItem, Me.ToolStripSeparator17, Me.NewPostPopMenuItem, Me.PlaySoundMenuItem, Me.ListLockMenuItem, Me.ToolStripSeparator15, Me.EndToolStripMenuItem})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip1.OwnerItem = Me.MenuItemFile
         Me.ContextMenuStrip1.ShowCheckMargin = True
         Me.ContextMenuStrip1.ShowImageMargin = False
         Me.ContextMenuStrip1.Size = New System.Drawing.Size(211, 154)
@@ -683,6 +680,7 @@ Partial Class TweenMain
         Me.SplitContainer2.SplitterDistance = 76
         Me.SplitContainer2.SplitterWidth = 2
         Me.SplitContainer2.TabIndex = 19
+        Me.SplitContainer2.TabStop = False
         '
         'TableLayoutPanel1
         '
