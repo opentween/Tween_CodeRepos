@@ -1597,6 +1597,26 @@ Public Property CloseToExit() As Boolean
         End Set
     End Property
 
+    <ConfigurationProperty("statusmultiline", DefaultValue:=False)> _
+    Public Property StatusMultiline() As Boolean
+        Get
+            Return CBool(Me("statusmultiline"))
+        End Get
+        Set(ByVal value As Boolean)
+            Me("statusmultiline") = value
+        End Set
+    End Property
+
+    <ConfigurationProperty("statustextheight", DefaultValue:=19)> _
+    Public Property StatusTextHeight() As Integer
+        Get
+            Return CInt(Me("statustextheight"))
+        End Get
+        Set(ByVal value As Integer)
+            Me("statustextheight") = value
+        End Set
+    End Property
+
     Private Function EncryptString(ByVal str As String) As String
         '文字列をバイト型配列にする
         Dim bytesIn As Byte() = System.Text.Encoding.UTF8.GetBytes(str)

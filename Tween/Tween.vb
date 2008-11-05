@@ -259,6 +259,14 @@ Public Class TweenMain
         SettingDialog.Readed = _section.Readed
         '新着取得時のリストスクロールをするか。Trueならスクロールしない
         ListLockMenuItem.Checked = _section.ListLock
+        '発言欄複数行
+        MultiLineMenuItem.Checked = _section.StatusMultiline
+        StatusText.Multiline = _section.StatusMultiline
+        If StatusText.Multiline Then
+            SplitContainer2.SplitterDistance = SplitContainer2.Height - _section.StatusTextHeight - SplitContainer2.SplitterWidth
+        Else
+            SplitContainer2.SplitterDistance = SplitContainer2.Height - SplitContainer2.Panel2MinSize - SplitContainer2.SplitterWidth
+        End If
         'リストのアイコンサイズ（いずれ直接数値指定へ）
         'Select Case _section.IconSize
         '    Case IconSizes.IconNone
@@ -2663,7 +2671,8 @@ Public Class TweenMain
             Next
 
             If msg <> "" Then
-                StatusLabel.Text = "削除失敗 " + msg
+                'StatusLabel.Text = "削除失敗 " + msg
+                StatusLabel.Text = "削除失敗 "
             Else
                 StatusLabel.Text = "削除成功"
             End If
@@ -5294,6 +5303,7 @@ RETRY:
             _section.StartupFollowers = SettingDialog.StartupFollowers
             _section.RestrictFavCheck = SettingDialog.RestrictFavCheck
             _section.AlwaysTop = SettingDialog.AlwaysTop
+            _section.StatusMultiline = StatusText.Multiline
 
             Dim tmpList As DetailsListView = Nothing
             For Each myTab As TabPage In ListTab.TabPages
@@ -5973,11 +5983,18 @@ RETRY:
         If StatusText.Focused AndAlso _
             (keyData And Keys.KeyCode) = Keys.Enter Then
             '改行
-            If ((keyData And Keys.Shift) = Keys.Shift) Or _
+            If StatusText.Multiline And _
+               ((keyData And Keys.Shift) = Keys.Shift) Or _
                ((keyData And Keys.Control) = Keys.Control And SettingDialog.PostCtrlEnter = False) Or _
                ((keyData And Keys.Shift) <> Keys.Shift And (keyData And Keys.Control) <> Keys.Control And SettingDialog.PostCtrlEnter) Then
                 StatusText.Text += vbCrLf
                 StatusText.SelectionStart = StatusText.Text.Length
+                Dim pos1 As Integer = StatusText.SelectionStart
+                If StatusText.SelectionLength > 0 Then
+                    StatusText.Text = StatusText.Text.Remove(pos1, StatusText.SelectionLength)  '選択状態文字列削除
+                End If
+                StatusText.Text = StatusText.Text.Insert(pos1, Environment.NewLine)  '改行挿入
+                StatusText.SelectionStart = pos1 + Environment.NewLine.Length    'カーソルを改行の次の文字へ移動
                 Return True
             End If
             '投稿
@@ -6918,6 +6935,8 @@ RETRY:
 
     Private Sub SplitContainer2_Panel2_Resize(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SplitContainer2.Panel2.Resize
         Me.StatusText.Multiline = Me.SplitContainer2.Panel2.Height <> Me.SplitContainer2.Panel2MinSize
+        MultiLineMenuItem.Checked = Me.StatusText.Multiline
+        If _section IsNot Nothing AndAlso StatusText.Multiline Then _section.StatusTextHeight = SplitContainer2.Panel2.Height
     End Sub
 
     Private Sub StatusText_MultilineChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusText.MultilineChanged
@@ -6925,6 +6944,16 @@ RETRY:
             Me.StatusText.ScrollBars = ScrollBars.Vertical
         Else
             Me.StatusText.ScrollBars = ScrollBars.None
+        End If
+    End Sub
+
+    Private Sub MultiLineMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MultiLineMenuItem.Click
+        '発言欄複数行
+        StatusText.Multiline = MultiLineMenuItem.Checked
+        If MultiLineMenuItem.Checked Then
+            SplitContainer2.SplitterDistance = SplitContainer2.Height - _section.StatusTextHeight - SplitContainer2.SplitterWidth
+        Else
+            SplitContainer2.SplitterDistance = SplitContainer2.Height - SplitContainer2.Panel2MinSize - SplitContainer2.SplitterWidth
         End If
     End Sub
 End Class
