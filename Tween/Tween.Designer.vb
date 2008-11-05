@@ -24,18 +24,12 @@ Partial Class TweenMain
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container
-        Me.PostButton = New System.Windows.Forms.Button
-        Me.StatusText = New System.Windows.Forms.TextBox
         Me.TimerTimeline = New System.Windows.Forms.Timer(Me.components)
-        Me.UserPicture = New System.Windows.Forms.PictureBox
         Me.ContextMenuStrip3 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.IconNameToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator
         Me.SaveOriginalSizeIconPictureToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.SaveIconPictureToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.NameLabel = New System.Windows.Forms.Label
-        Me.SplitContainer1 = New System.Windows.Forms.SplitContainer
-        Me.ListTab = New System.Windows.Forms.TabControl
         Me.ContextMenuTabProperty = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.AddTabMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator20 = New System.Windows.Forms.ToolStripSeparator
@@ -50,10 +44,6 @@ Partial Class TweenMain
         Me.DeleteTabMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.MenuItemTab = New System.Windows.Forms.ToolStripMenuItem
         Me.TabImage = New System.Windows.Forms.ImageList(Me.components)
-        Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel
-        Me.lblLen = New System.Windows.Forms.Label
-        Me.PostBrowser = New System.Windows.Forms.WebBrowser
-        Me.DateTimeLabel = New System.Windows.Forms.Label
         Me.ContextMenuStrip2 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.ReplyStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ReplyAllStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
@@ -97,6 +87,29 @@ Partial Class TweenMain
         Me.EndToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.MenuItemFile = New System.Windows.Forms.ToolStripMenuItem
         Me.GetTimelineWorker = New System.ComponentModel.BackgroundWorker
+        Me.TimerDM = New System.Windows.Forms.Timer(Me.components)
+        Me.GetLogWorker = New System.ComponentModel.BackgroundWorker
+        Me.ExecWorker = New System.ComponentModel.BackgroundWorker
+        Me.TimerColorize = New System.Windows.Forms.Timer(Me.components)
+        Me.SaveFileDialog1 = New System.Windows.Forms.SaveFileDialog
+        Me.TimerRefreshIcon = New System.Windows.Forms.Timer(Me.components)
+        Me.PostWorker = New System.ComponentModel.BackgroundWorker
+        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog
+        Me.ToolStripContainer1 = New System.Windows.Forms.ToolStripContainer
+        Me.StatusStrip1 = New System.Windows.Forms.StatusStrip
+        Me.StatusLabelUrl = New System.Windows.Forms.ToolStripStatusLabel
+        Me.StatusLabel = New System.Windows.Forms.ToolStripStatusLabel
+        Me.SplitContainer1 = New System.Windows.Forms.SplitContainer
+        Me.ListTab = New System.Windows.Forms.TabControl
+        Me.SplitContainer2 = New System.Windows.Forms.SplitContainer
+        Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel
+        Me.UserPicture = New System.Windows.Forms.PictureBox
+        Me.NameLabel = New System.Windows.Forms.Label
+        Me.PostBrowser = New System.Windows.Forms.WebBrowser
+        Me.DateTimeLabel = New System.Windows.Forms.Label
+        Me.StatusText = New System.Windows.Forms.TextBox
+        Me.lblLen = New System.Windows.Forms.Label
+        Me.PostButton = New System.Windows.Forms.Button
         Me.MenuStrip1 = New System.Windows.Forms.MenuStrip
         Me.MenuItemEdit = New System.Windows.Forms.ToolStripMenuItem
         Me.CopySTOTMenuItem = New System.Windows.Forms.ToolStripMenuItem
@@ -118,71 +131,35 @@ Partial Class TweenMain
         Me.InfoTwitterMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator7 = New System.Windows.Forms.ToolStripSeparator
         Me.AboutMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.StatusStrip1 = New System.Windows.Forms.StatusStrip
-        Me.StatusLabelUrl = New System.Windows.Forms.ToolStripStatusLabel
-        Me.StatusLabel = New System.Windows.Forms.ToolStripStatusLabel
-        Me.TimerDM = New System.Windows.Forms.Timer(Me.components)
-        Me.GetLogWorker = New System.ComponentModel.BackgroundWorker
-        Me.ExecWorker = New System.ComponentModel.BackgroundWorker
-        Me.TimerColorize = New System.Windows.Forms.Timer(Me.components)
-        Me.SaveFileDialog1 = New System.Windows.Forms.SaveFileDialog
-        Me.TimerRefreshIcon = New System.Windows.Forms.Timer(Me.components)
-        Me.PostWorker = New System.ComponentModel.BackgroundWorker
-        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog
-        CType(Me.UserPicture, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.ContextMenuStrip3.SuspendLayout()
+        Me.ContextMenuTabProperty.SuspendLayout()
+        Me.ContextMenuStrip2.SuspendLayout()
+        Me.ContextMenuStrip1.SuspendLayout()
+        Me.ToolStripContainer1.BottomToolStripPanel.SuspendLayout()
+        Me.ToolStripContainer1.ContentPanel.SuspendLayout()
+        Me.ToolStripContainer1.TopToolStripPanel.SuspendLayout()
+        Me.ToolStripContainer1.SuspendLayout()
+        Me.StatusStrip1.SuspendLayout()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
         Me.SplitContainer1.SuspendLayout()
-        Me.ContextMenuTabProperty.SuspendLayout()
+        Me.SplitContainer2.Panel1.SuspendLayout()
+        Me.SplitContainer2.Panel2.SuspendLayout()
+        Me.SplitContainer2.SuspendLayout()
         Me.TableLayoutPanel1.SuspendLayout()
-        Me.ContextMenuStrip2.SuspendLayout()
-        Me.ContextMenuStrip1.SuspendLayout()
+        CType(Me.UserPicture, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.MenuStrip1.SuspendLayout()
-        Me.StatusStrip1.SuspendLayout()
         Me.SuspendLayout()
-        '
-        'PostButton
-        '
-        Me.PostButton.Location = New System.Drawing.Point(408, 63)
-        Me.PostButton.Name = "PostButton"
-        Me.PostButton.Size = New System.Drawing.Size(50, 20)
-        Me.PostButton.TabIndex = 1
-        Me.PostButton.TabStop = False
-        Me.PostButton.Text = "Post"
-        Me.PostButton.UseVisualStyleBackColor = True
-        '
-        'StatusText
-        '
-        Me.StatusText.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.TableLayoutPanel1.SetColumnSpan(Me.StatusText, 3)
-        Me.StatusText.Location = New System.Drawing.Point(3, 63)
-        Me.StatusText.Name = "StatusText"
-        Me.StatusText.Size = New System.Drawing.Size(349, 19)
-        Me.StatusText.TabIndex = 0
         '
         'TimerTimeline
         '
         Me.TimerTimeline.Interval = 60000
         '
-        'UserPicture
-        '
-        Me.UserPicture.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.UserPicture.ContextMenuStrip = Me.ContextMenuStrip3
-        Me.UserPicture.Location = New System.Drawing.Point(3, 3)
-        Me.UserPicture.Name = "UserPicture"
-        Me.TableLayoutPanel1.SetRowSpan(Me.UserPicture, 2)
-        Me.UserPicture.Size = New System.Drawing.Size(48, 48)
-        Me.UserPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
-        Me.UserPicture.TabIndex = 5
-        Me.UserPicture.TabStop = False
-        '
         'ContextMenuStrip3
         '
         Me.ContextMenuStrip3.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.IconNameToolStripMenuItem, Me.ToolStripMenuItem1, Me.SaveOriginalSizeIconPictureToolStripMenuItem, Me.SaveIconPictureToolStripMenuItem})
         Me.ContextMenuStrip3.Name = "ContextMenuStrip3"
-        Me.ContextMenuStrip3.Size = New System.Drawing.Size(184, 98)
+        Me.ContextMenuStrip3.Size = New System.Drawing.Size(184, 76)
         '
         'IconNameToolStripMenuItem
         '
@@ -206,56 +183,6 @@ Partial Class TweenMain
         Me.SaveIconPictureToolStripMenuItem.Name = "SaveIconPictureToolStripMenuItem"
         Me.SaveIconPictureToolStripMenuItem.Size = New System.Drawing.Size(183, 22)
         Me.SaveIconPictureToolStripMenuItem.Text = "アイコンを保存(&I)"
-        '
-        'NameLabel
-        '
-        Me.NameLabel.AutoSize = True
-        Me.NameLabel.Font = New System.Drawing.Font("MS UI Gothic", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-        Me.NameLabel.Location = New System.Drawing.Point(58, 0)
-        Me.NameLabel.Name = "NameLabel"
-        Me.NameLabel.Size = New System.Drawing.Size(53, 12)
-        Me.NameLabel.TabIndex = 6
-        Me.NameLabel.Text = "lblName"
-        '
-        'SplitContainer1
-        '
-        Me.SplitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.SplitContainer1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainer1.Location = New System.Drawing.Point(0, 0)
-        Me.SplitContainer1.Name = "SplitContainer1"
-        Me.SplitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal
-        '
-        'SplitContainer1.Panel1
-        '
-        Me.SplitContainer1.Panel1.Controls.Add(Me.ListTab)
-        '
-        'SplitContainer1.Panel2
-        '
-        Me.SplitContainer1.Panel2.Controls.Add(Me.TableLayoutPanel1)
-        Me.SplitContainer1.Panel2MinSize = 50
-        Me.SplitContainer1.Size = New System.Drawing.Size(468, 316)
-        Me.SplitContainer1.SplitterDistance = 197
-        Me.SplitContainer1.TabIndex = 8
-        Me.SplitContainer1.TabStop = False
-        '
-        'ListTab
-        '
-        Me.ListTab.Alignment = System.Windows.Forms.TabAlignment.Bottom
-        Me.ListTab.AllowDrop = True
-        Me.ListTab.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ListTab.ContextMenuStrip = Me.ContextMenuTabProperty
-        Me.ListTab.ImageList = Me.TabImage
-        Me.ListTab.ImeMode = System.Windows.Forms.ImeMode.Disable
-        Me.ListTab.Location = New System.Drawing.Point(0, 25)
-        Me.ListTab.Margin = New System.Windows.Forms.Padding(0)
-        Me.ListTab.Multiline = True
-        Me.ListTab.Name = "ListTab"
-        Me.ListTab.SelectedIndex = 0
-        Me.ListTab.Size = New System.Drawing.Size(468, 168)
-        Me.ListTab.TabIndex = 4
-        Me.ListTab.TabStop = False
         '
         'ContextMenuTabProperty
         '
@@ -342,64 +269,6 @@ Partial Class TweenMain
         Me.TabImage.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit
         Me.TabImage.ImageSize = New System.Drawing.Size(16, 16)
         Me.TabImage.TransparentColor = System.Drawing.Color.Transparent
-        '
-        'TableLayoutPanel1
-        '
-        Me.TableLayoutPanel1.ColumnCount = 5
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 55.0!))
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 60.0!))
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40.0!))
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50.0!))
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 59.0!))
-        Me.TableLayoutPanel1.Controls.Add(Me.PostButton, 4, 2)
-        Me.TableLayoutPanel1.Controls.Add(Me.lblLen, 3, 2)
-        Me.TableLayoutPanel1.Controls.Add(Me.StatusText, 0, 2)
-        Me.TableLayoutPanel1.Controls.Add(Me.UserPicture, 0, 0)
-        Me.TableLayoutPanel1.Controls.Add(Me.NameLabel, 1, 0)
-        Me.TableLayoutPanel1.Controls.Add(Me.PostBrowser, 1, 1)
-        Me.TableLayoutPanel1.Controls.Add(Me.DateTimeLabel, 2, 0)
-        Me.TableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TableLayoutPanel1.Location = New System.Drawing.Point(0, 0)
-        Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
-        Me.TableLayoutPanel1.RowCount = 3
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20.0!))
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 80.0!))
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50.0!))
-        Me.TableLayoutPanel1.Size = New System.Drawing.Size(464, 111)
-        Me.TableLayoutPanel1.TabIndex = 16
-        '
-        'lblLen
-        '
-        Me.lblLen.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.lblLen.Location = New System.Drawing.Point(358, 60)
-        Me.lblLen.Name = "lblLen"
-        Me.lblLen.Size = New System.Drawing.Size(44, 19)
-        Me.lblLen.TabIndex = 13
-        Me.lblLen.Text = "999"
-        Me.lblLen.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'PostBrowser
-        '
-        Me.PostBrowser.AllowWebBrowserDrop = False
-        Me.TableLayoutPanel1.SetColumnSpan(Me.PostBrowser, 4)
-        Me.PostBrowser.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.PostBrowser.Location = New System.Drawing.Point(58, 15)
-        Me.PostBrowser.Name = "PostBrowser"
-        Me.PostBrowser.Size = New System.Drawing.Size(403, 42)
-        Me.PostBrowser.TabIndex = 12
-        Me.PostBrowser.TabStop = False
-        '
-        'DateTimeLabel
-        '
-        Me.DateTimeLabel.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.TableLayoutPanel1.SetColumnSpan(Me.DateTimeLabel, 3)
-        Me.DateTimeLabel.Location = New System.Drawing.Point(331, 0)
-        Me.DateTimeLabel.Name = "DateTimeLabel"
-        Me.DateTimeLabel.Size = New System.Drawing.Size(130, 12)
-        Me.DateTimeLabel.TabIndex = 7
-        Me.DateTimeLabel.Text = "Label1"
-        Me.DateTimeLabel.TextAlign = System.Drawing.ContentAlignment.TopRight
         '
         'ContextMenuStrip2
         '
@@ -679,13 +548,246 @@ Partial Class TweenMain
         'GetTimelineWorker
         '
         '
+        'TimerDM
+        '
+        Me.TimerDM.Interval = 600000
+        '
+        'GetLogWorker
+        '
+        '
+        'ExecWorker
+        '
+        '
+        'TimerColorize
+        '
+        '
+        'TimerRefreshIcon
+        '
+        Me.TimerRefreshIcon.Interval = 50
+        '
+        'PostWorker
+        '
+        '
+        'OpenFileDialog1
+        '
+        Me.OpenFileDialog1.FileName = "OpenFileDialog1"
+        '
+        'ToolStripContainer1
+        '
+        '
+        'ToolStripContainer1.BottomToolStripPanel
+        '
+        Me.ToolStripContainer1.BottomToolStripPanel.Controls.Add(Me.StatusStrip1)
+        '
+        'ToolStripContainer1.ContentPanel
+        '
+        Me.ToolStripContainer1.ContentPanel.Controls.Add(Me.SplitContainer1)
+        Me.ToolStripContainer1.ContentPanel.Size = New System.Drawing.Size(468, 269)
+        Me.ToolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.ToolStripContainer1.LeftToolStripPanelVisible = False
+        Me.ToolStripContainer1.Location = New System.Drawing.Point(0, 0)
+        Me.ToolStripContainer1.Name = "ToolStripContainer1"
+        Me.ToolStripContainer1.RightToolStripPanelVisible = False
+        Me.ToolStripContainer1.Size = New System.Drawing.Size(468, 316)
+        Me.ToolStripContainer1.TabIndex = 11
+        Me.ToolStripContainer1.Text = "ToolStripContainer1"
+        '
+        'ToolStripContainer1.TopToolStripPanel
+        '
+        Me.ToolStripContainer1.TopToolStripPanel.Controls.Add(Me.MenuStrip1)
+        '
+        'StatusStrip1
+        '
+        Me.StatusStrip1.Dock = System.Windows.Forms.DockStyle.None
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusLabelUrl, Me.StatusLabel})
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 0)
+        Me.StatusStrip1.Name = "StatusStrip1"
+        Me.StatusStrip1.Size = New System.Drawing.Size(468, 23)
+        Me.StatusStrip1.TabIndex = 11
+        Me.StatusStrip1.Text = "StatusStrip1"
+        '
+        'StatusLabelUrl
+        '
+        Me.StatusLabelUrl.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
+        Me.StatusLabelUrl.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.StatusLabelUrl.Name = "StatusLabelUrl"
+        Me.StatusLabelUrl.Size = New System.Drawing.Size(334, 18)
+        Me.StatusLabelUrl.Spring = True
+        Me.StatusLabelUrl.Text = "ToolStripStatusLabel1"
+        Me.StatusLabelUrl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'StatusLabel
+        '
+        Me.StatusLabel.Name = "StatusLabel"
+        Me.StatusLabel.Size = New System.Drawing.Size(119, 18)
+        Me.StatusLabel.Text = "ToolStripStatusLabel1"
+        '
+        'SplitContainer1
+        '
+        Me.SplitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.SplitContainer1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer1.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer1.Name = "SplitContainer1"
+        Me.SplitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer1.Panel1
+        '
+        Me.SplitContainer1.Panel1.Controls.Add(Me.ListTab)
+        '
+        'SplitContainer1.Panel2
+        '
+        Me.SplitContainer1.Panel2.Controls.Add(Me.SplitContainer2)
+        Me.SplitContainer1.Panel2MinSize = 50
+        Me.SplitContainer1.Size = New System.Drawing.Size(468, 269)
+        Me.SplitContainer1.SplitterDistance = 166
+        Me.SplitContainer1.SplitterWidth = 2
+        Me.SplitContainer1.TabIndex = 9
+        Me.SplitContainer1.TabStop = False
+        '
+        'ListTab
+        '
+        Me.ListTab.Alignment = System.Windows.Forms.TabAlignment.Bottom
+        Me.ListTab.AllowDrop = True
+        Me.ListTab.ContextMenuStrip = Me.ContextMenuTabProperty
+        Me.ListTab.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.ListTab.ImageList = Me.TabImage
+        Me.ListTab.ImeMode = System.Windows.Forms.ImeMode.Disable
+        Me.ListTab.Location = New System.Drawing.Point(0, 0)
+        Me.ListTab.Margin = New System.Windows.Forms.Padding(0)
+        Me.ListTab.Multiline = True
+        Me.ListTab.Name = "ListTab"
+        Me.ListTab.SelectedIndex = 0
+        Me.ListTab.Size = New System.Drawing.Size(464, 162)
+        Me.ListTab.TabIndex = 5
+        Me.ListTab.TabStop = False
+        '
+        'SplitContainer2
+        '
+        Me.SplitContainer2.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel2
+        Me.SplitContainer2.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer2.Name = "SplitContainer2"
+        Me.SplitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer2.Panel1
+        '
+        Me.SplitContainer2.Panel1.Controls.Add(Me.TableLayoutPanel1)
+        '
+        'SplitContainer2.Panel2
+        '
+        Me.SplitContainer2.Panel2.Controls.Add(Me.StatusText)
+        Me.SplitContainer2.Panel2.Controls.Add(Me.lblLen)
+        Me.SplitContainer2.Panel2.Controls.Add(Me.PostButton)
+        Me.SplitContainer2.Panel2MinSize = 19
+        Me.SplitContainer2.Size = New System.Drawing.Size(464, 97)
+        Me.SplitContainer2.SplitterDistance = 76
+        Me.SplitContainer2.SplitterWidth = 2
+        Me.SplitContainer2.TabIndex = 19
+        '
+        'TableLayoutPanel1
+        '
+        Me.TableLayoutPanel1.ColumnCount = 5
+        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 55.0!))
+        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 60.0!))
+        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40.0!))
+        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50.0!))
+        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 59.0!))
+        Me.TableLayoutPanel1.Controls.Add(Me.UserPicture, 0, 0)
+        Me.TableLayoutPanel1.Controls.Add(Me.NameLabel, 1, 0)
+        Me.TableLayoutPanel1.Controls.Add(Me.PostBrowser, 1, 1)
+        Me.TableLayoutPanel1.Controls.Add(Me.DateTimeLabel, 2, 0)
+        Me.TableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TableLayoutPanel1.Location = New System.Drawing.Point(0, 0)
+        Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
+        Me.TableLayoutPanel1.RowCount = 2
+        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20.0!))
+        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 80.0!))
+        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableLayoutPanel1.Size = New System.Drawing.Size(464, 76)
+        Me.TableLayoutPanel1.TabIndex = 20
+        '
+        'UserPicture
+        '
+        Me.UserPicture.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.UserPicture.ContextMenuStrip = Me.ContextMenuStrip3
+        Me.UserPicture.Location = New System.Drawing.Point(3, 3)
+        Me.UserPicture.Name = "UserPicture"
+        Me.TableLayoutPanel1.SetRowSpan(Me.UserPicture, 2)
+        Me.UserPicture.Size = New System.Drawing.Size(48, 48)
+        Me.UserPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
+        Me.UserPicture.TabIndex = 5
+        Me.UserPicture.TabStop = False
+        '
+        'NameLabel
+        '
+        Me.NameLabel.AutoSize = True
+        Me.NameLabel.Font = New System.Drawing.Font("MS UI Gothic", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
+        Me.NameLabel.Location = New System.Drawing.Point(58, 0)
+        Me.NameLabel.Name = "NameLabel"
+        Me.NameLabel.Size = New System.Drawing.Size(53, 12)
+        Me.NameLabel.TabIndex = 6
+        Me.NameLabel.Text = "lblName"
+        '
+        'PostBrowser
+        '
+        Me.PostBrowser.AllowWebBrowserDrop = False
+        Me.TableLayoutPanel1.SetColumnSpan(Me.PostBrowser, 4)
+        Me.PostBrowser.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.PostBrowser.Location = New System.Drawing.Point(58, 18)
+        Me.PostBrowser.Name = "PostBrowser"
+        Me.PostBrowser.Size = New System.Drawing.Size(403, 55)
+        Me.PostBrowser.TabIndex = 12
+        Me.PostBrowser.TabStop = False
+        '
+        'DateTimeLabel
+        '
+        Me.DateTimeLabel.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.TableLayoutPanel1.SetColumnSpan(Me.DateTimeLabel, 3)
+        Me.DateTimeLabel.Location = New System.Drawing.Point(331, 0)
+        Me.DateTimeLabel.Name = "DateTimeLabel"
+        Me.DateTimeLabel.Size = New System.Drawing.Size(130, 14)
+        Me.DateTimeLabel.TabIndex = 7
+        Me.DateTimeLabel.Text = "Label1"
+        Me.DateTimeLabel.TextAlign = System.Drawing.ContentAlignment.TopRight
+        '
+        'StatusText
+        '
+        Me.StatusText.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.StatusText.Location = New System.Drawing.Point(0, 0)
+        Me.StatusText.Multiline = True
+        Me.StatusText.Name = "StatusText"
+        Me.StatusText.Size = New System.Drawing.Size(370, 19)
+        Me.StatusText.TabIndex = 25
+        '
+        'lblLen
+        '
+        Me.lblLen.Dock = System.Windows.Forms.DockStyle.Right
+        Me.lblLen.Location = New System.Drawing.Point(370, 0)
+        Me.lblLen.Name = "lblLen"
+        Me.lblLen.Size = New System.Drawing.Size(44, 19)
+        Me.lblLen.TabIndex = 24
+        Me.lblLen.Text = "999"
+        Me.lblLen.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'PostButton
+        '
+        Me.PostButton.Dock = System.Windows.Forms.DockStyle.Right
+        Me.PostButton.Location = New System.Drawing.Point(414, 0)
+        Me.PostButton.Name = "PostButton"
+        Me.PostButton.Size = New System.Drawing.Size(50, 19)
+        Me.PostButton.TabIndex = 23
+        Me.PostButton.TabStop = False
+        Me.PostButton.Text = "Post"
+        Me.PostButton.UseVisualStyleBackColor = True
+        '
         'MenuStrip1
         '
+        Me.MenuStrip1.Dock = System.Windows.Forms.DockStyle.None
         Me.MenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuItemFile, Me.MenuItemEdit, Me.MenuItemOperate, Me.MenuItemTab, Me.MenuItemCommand, Me.MenuItemHelp})
         Me.MenuStrip1.Location = New System.Drawing.Point(0, 0)
         Me.MenuStrip1.Name = "MenuStrip1"
         Me.MenuStrip1.Size = New System.Drawing.Size(468, 24)
-        Me.MenuStrip1.TabIndex = 9
+        Me.MenuStrip1.TabIndex = 10
         Me.MenuStrip1.Text = "MenuStrip1"
         '
         'MenuItemEdit
@@ -809,108 +911,55 @@ Partial Class TweenMain
         Me.AboutMenuItem.Size = New System.Drawing.Size(189, 22)
         Me.AboutMenuItem.Text = "Tweenについて(&A)"
         '
-        'StatusStrip1
-        '
-        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusLabelUrl, Me.StatusLabel})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 293)
-        Me.StatusStrip1.Name = "StatusStrip1"
-        Me.StatusStrip1.Size = New System.Drawing.Size(468, 23)
-        Me.StatusStrip1.TabIndex = 10
-        Me.StatusStrip1.Text = "StatusStrip1"
-        '
-        'StatusLabelUrl
-        '
-        Me.StatusLabelUrl.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
-        Me.StatusLabelUrl.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.StatusLabelUrl.Name = "StatusLabelUrl"
-        Me.StatusLabelUrl.Size = New System.Drawing.Size(334, 18)
-        Me.StatusLabelUrl.Spring = True
-        Me.StatusLabelUrl.Text = "ToolStripStatusLabel1"
-        Me.StatusLabelUrl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'StatusLabel
-        '
-        Me.StatusLabel.Name = "StatusLabel"
-        Me.StatusLabel.Size = New System.Drawing.Size(119, 18)
-        Me.StatusLabel.Text = "ToolStripStatusLabel1"
-        '
-        'TimerDM
-        '
-        Me.TimerDM.Interval = 600000
-        '
-        'GetLogWorker
-        '
-        '
-        'ExecWorker
-        '
-        '
-        'TimerColorize
-        '
-        '
-        'TimerRefreshIcon
-        '
-        Me.TimerRefreshIcon.Interval = 50
-        '
-        'PostWorker
-        '
-        '
-        'OpenFileDialog1
-        '
-        Me.OpenFileDialog1.FileName = "OpenFileDialog1"
-        '
         'TweenMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(468, 316)
-        Me.Controls.Add(Me.StatusStrip1)
-        Me.Controls.Add(Me.MenuStrip1)
-        Me.Controls.Add(Me.SplitContainer1)
+        Me.Controls.Add(Me.ToolStripContainer1)
         Me.ImeMode = System.Windows.Forms.ImeMode.Off
-        Me.MainMenuStrip = Me.MenuStrip1
         Me.Name = "TweenMain"
         Me.Text = "Tween"
-        CType(Me.UserPicture, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ContextMenuStrip3.ResumeLayout(False)
+        Me.ContextMenuTabProperty.ResumeLayout(False)
+        Me.ContextMenuStrip2.ResumeLayout(False)
+        Me.ContextMenuStrip1.ResumeLayout(False)
+        Me.ToolStripContainer1.BottomToolStripPanel.ResumeLayout(False)
+        Me.ToolStripContainer1.BottomToolStripPanel.PerformLayout()
+        Me.ToolStripContainer1.ContentPanel.ResumeLayout(False)
+        Me.ToolStripContainer1.TopToolStripPanel.ResumeLayout(False)
+        Me.ToolStripContainer1.TopToolStripPanel.PerformLayout()
+        Me.ToolStripContainer1.ResumeLayout(False)
+        Me.ToolStripContainer1.PerformLayout()
+        Me.StatusStrip1.ResumeLayout(False)
+        Me.StatusStrip1.PerformLayout()
         Me.SplitContainer1.Panel1.ResumeLayout(False)
         Me.SplitContainer1.Panel2.ResumeLayout(False)
         Me.SplitContainer1.ResumeLayout(False)
-        Me.ContextMenuTabProperty.ResumeLayout(False)
+        Me.SplitContainer2.Panel1.ResumeLayout(False)
+        Me.SplitContainer2.Panel2.ResumeLayout(False)
+        Me.SplitContainer2.Panel2.PerformLayout()
+        Me.SplitContainer2.ResumeLayout(False)
         Me.TableLayoutPanel1.ResumeLayout(False)
         Me.TableLayoutPanel1.PerformLayout()
-        Me.ContextMenuStrip2.ResumeLayout(False)
-        Me.ContextMenuStrip1.ResumeLayout(False)
+        CType(Me.UserPicture, System.ComponentModel.ISupportInitialize).EndInit()
         Me.MenuStrip1.ResumeLayout(False)
         Me.MenuStrip1.PerformLayout()
-        Me.StatusStrip1.ResumeLayout(False)
-        Me.StatusStrip1.PerformLayout()
         Me.ResumeLayout(False)
-        Me.PerformLayout()
 
     End Sub
-    Friend WithEvents PostButton As System.Windows.Forms.Button
-    Friend WithEvents StatusText As System.Windows.Forms.TextBox
     Friend WithEvents TimerTimeline As System.Windows.Forms.Timer
-    Friend WithEvents UserPicture As System.Windows.Forms.PictureBox
-    Friend WithEvents NameLabel As System.Windows.Forms.Label
-    Friend WithEvents SplitContainer1 As System.Windows.Forms.SplitContainer
-    Friend WithEvents DateTimeLabel As System.Windows.Forms.Label
     Friend WithEvents NotifyIcon1 As System.Windows.Forms.NotifyIcon
     Friend WithEvents ContextMenuStrip1 As System.Windows.Forms.ContextMenuStrip
     Friend WithEvents EndToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents GetTimelineWorker As System.ComponentModel.BackgroundWorker
-    Friend WithEvents MenuStrip1 As System.Windows.Forms.MenuStrip
-    Friend WithEvents MenuItemFile As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents StatusStrip1 As System.Windows.Forms.StatusStrip
-    Friend WithEvents StatusLabel As System.Windows.Forms.ToolStripStatusLabel
     Friend WithEvents ContextMenuStrip2 As System.Windows.Forms.ContextMenuStrip
     Friend WithEvents FavAddToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents FavRemoveToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents MoveToHomeToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents MoveToFavToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents ListTab As System.Windows.Forms.TabControl
     Friend WithEvents ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents ReplyStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents DMStripMenuItem As System.Windows.Forms.ToolStripMenuItem
@@ -921,39 +970,21 @@ Partial Class TweenMain
     Friend WithEvents UnreadStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator5 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents GetLogWorker As System.ComponentModel.BackgroundWorker
-    Friend WithEvents MenuItemOperate As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator8 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents RefreshStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents SettingStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator9 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents PostBrowser As System.Windows.Forms.WebBrowser
-    Friend WithEvents StatusLabelUrl As System.Windows.Forms.ToolStripStatusLabel
     Friend WithEvents TabImage As System.Windows.Forms.ImageList
     Friend WithEvents ExecWorker As System.ComponentModel.BackgroundWorker
-    Friend WithEvents lblLen As System.Windows.Forms.Label
     Friend WithEvents NewPostPopMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents MenuItemEdit As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents MenuItemSubSearch As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents MenuItemSearchNext As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents MenuItemSearchPrev As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ListLockMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents JumpUnreadMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents StatusOpenMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents FavorareMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator15 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents TimerColorize As System.Windows.Forms.Timer
-    Friend WithEvents MenuItemCommand As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents MenuItemHelp As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents TabMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator4 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents AboutMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents VerUpMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents MatomeMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents ToolStripSeparator12 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents OfficialMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents DLPageMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents ToolStripSeparator16 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents ToolStripSeparator14 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents SaveLogMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator17 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents SaveFileDialog1 As System.Windows.Forms.SaveFileDialog
@@ -968,19 +999,11 @@ Partial Class TweenMain
     Friend WithEvents ToolStripSeparator19 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents AddTabMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator20 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents MenuItemTab As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents InfoTwitterMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents ToolStripSeparator7 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents ReplyAllStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents PostWorker As System.ComponentModel.BackgroundWorker
     Friend WithEvents IDRuleMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents CopySTOTMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents CopyURLMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents ToolStripSeparator6 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents ToolStripSeparator10 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents SelectAllMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents WedataMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents TableLayoutPanel1 As System.Windows.Forms.TableLayoutPanel
     Friend WithEvents OpenURLMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ClearTabMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator11 As System.Windows.Forms.ToolStripSeparator
@@ -994,5 +1017,44 @@ Partial Class TweenMain
     Friend WithEvents ToolStripMenuItem1 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents SaveOriginalSizeIconPictureToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents SaveIconPictureToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripContainer1 As System.Windows.Forms.ToolStripContainer
+    Friend WithEvents SplitContainer1 As System.Windows.Forms.SplitContainer
+    Friend WithEvents ListTab As System.Windows.Forms.TabControl
+    Friend WithEvents MenuItemTab As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents MenuItemOperate As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents StatusStrip1 As System.Windows.Forms.StatusStrip
+    Friend WithEvents StatusLabelUrl As System.Windows.Forms.ToolStripStatusLabel
+    Friend WithEvents StatusLabel As System.Windows.Forms.ToolStripStatusLabel
+    Friend WithEvents MenuStrip1 As System.Windows.Forms.MenuStrip
+    Friend WithEvents MenuItemFile As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents MenuItemEdit As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents CopySTOTMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents CopyURLMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator6 As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents MenuItemSubSearch As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents MenuItemSearchNext As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents MenuItemSearchPrev As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents MenuItemCommand As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents MenuItemHelp As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents MatomeMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator12 As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents OfficialMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents DLPageMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator16 As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents VerUpMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents WedataMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator14 As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents InfoTwitterMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator7 As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents AboutMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents SplitContainer2 As System.Windows.Forms.SplitContainer
+    Friend WithEvents TableLayoutPanel1 As System.Windows.Forms.TableLayoutPanel
+    Friend WithEvents UserPicture As System.Windows.Forms.PictureBox
+    Friend WithEvents NameLabel As System.Windows.Forms.Label
+    Friend WithEvents PostBrowser As System.Windows.Forms.WebBrowser
+    Friend WithEvents DateTimeLabel As System.Windows.Forms.Label
+    Friend WithEvents StatusText As System.Windows.Forms.TextBox
+    Friend WithEvents lblLen As System.Windows.Forms.Label
+    Friend WithEvents PostButton As System.Windows.Forms.Button
 
 End Class
