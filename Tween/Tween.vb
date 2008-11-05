@@ -5970,6 +5970,15 @@ RETRY:
         'TextBox1でEnterを押してもビープ音が鳴らないようにする
         If StatusText.Focused AndAlso _
             (keyData And Keys.KeyCode) = Keys.Enter Then
+            '改行
+            If ((keyData And Keys.Shift) = Keys.Shift) Or _
+               ((keyData And Keys.Control) = Keys.Control And SettingDialog.PostCtrlEnter = False) Or _
+               ((keyData And Keys.Shift) <> Keys.Shift And (keyData And Keys.Control) <> Keys.Control And SettingDialog.PostCtrlEnter) Then
+                StatusText.Text += vbCrLf
+                StatusText.SelectionStart = StatusText.Text.Length
+                Return True
+            End If
+            '投稿
             If ((keyData And Keys.Control) = Keys.Control And SettingDialog.PostCtrlEnter) Or _
                ((keyData And Keys.Control) <> Keys.Control And SettingDialog.PostCtrlEnter = False) Then
                 Call PostButton_Click(Nothing, Nothing)
