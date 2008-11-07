@@ -4662,13 +4662,12 @@ RETRY:
         UserPicture.Image = TIconList.Images(_item.SubItems(6).Text)
         If ListTab.SelectedTab.Text = "Direct" Then
             NameLabel.Text = _item.SubItems(1).Text
-            DateTimeLabel.Text = ""
         Else
             NameLabel.Text = _item.SubItems(1).Text + "/" + _item.SubItems(4).Text
-            DateTimeLabel.Text = _item.SubItems(3).Text.ToString()
         End If
 
         NameLabel.ForeColor = System.Drawing.SystemColors.ControlText
+        DateTimeLabel.Text = _item.SubItems(3).Text.ToString()
         If _item.SubItems(10).Text = "True" AndAlso (SettingDialog.OneWayLove OrElse ListTab.SelectedTab.Text = "Direct") Then NameLabel.ForeColor = _clOWL
         If _item.SubItems(9).Text = "True" Then NameLabel.ForeColor = _clFav
 
