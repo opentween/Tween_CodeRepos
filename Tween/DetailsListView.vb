@@ -17,7 +17,7 @@ Namespace TweenCustomControl
 
         Private changeBounds As Rectangle
         Private multiSelected As Boolean
-        Private _handlers As New System.ComponentModel.EventHandlerList
+        Private _handlers As New System.ComponentModel.EventHandlerList()
 
         Custom Event Scrolled As System.EventHandler
             AddHandler(ByVal value As System.EventHandler)

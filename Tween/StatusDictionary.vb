@@ -77,7 +77,7 @@ End Class
 '            Return False
 '        End If
 
-'        Call DoFilter(Item, Initial, DirectMessage)
+'        DoFilter(Item, Initial, DirectMessage)
 
 '        _statuses.Add(Item.Id, Item)
 '        Return True
@@ -289,7 +289,7 @@ End Class
 Public Class TabInformations
     '個別タブの情報をDictionaryで保持
     Private _sorter As ListViewItemComparerClass
-    Private _tabs As New Dictionary(Of String, TabClass)
+    Private _tabs As New Dictionary(Of String, TabClass)()
     Private _statuses As Statuses
 
     Public Sub New()
@@ -516,7 +516,7 @@ End Class
 
 Public Class FiltersClass
     Public IDFilter As String
-    Public BodyFilter As New Collections.Specialized.StringCollection
+    Public BodyFilter As New List(Of String)()
     Public SearchBoth As Boolean
     Public moveFrom As Boolean
     Public SetMark As Boolean
