@@ -56,6 +56,6 @@ Public Class OpenURL
         If UrlList.Items(UrlList.IndexFromPoint(UrlList.PointToClient(Control.MousePosition))) Is Nothing Then
             Exit Sub
         End If
-        Call OK_Button_Click(sender, e)
+        OK_Button_Click(sender, e)
     End Sub
 End Class

@@ -76,7 +76,7 @@ Public Class FilterDialog
         ListFilters.Enabled = True
         ListFilters.Focus()
         If ListFilters.SelectedIndex <> -1 Then
-            Call ShowDetail()
+            ShowDetail()
         End If
         EditFilterGroup.Enabled = False
         ButtonNew.Enabled = True
@@ -201,7 +201,7 @@ Public Class FilterDialog
         ComboTabs.Enabled = False
         ListFilters.Enabled = False
 
-        Call ShowDetail()
+        ShowDetail()
         _mode = EDITMODE.Edit
     End Sub
 
@@ -229,7 +229,7 @@ Public Class FilterDialog
         ListFilters.Enabled = True
         ListFilters.Focus()
         If ListFilters.SelectedIndex <> -1 Then
-            Call ShowDetail()
+            ShowDetail()
         End If
         EditFilterGroup.Enabled = False
         ButtonNew.Enabled = True
@@ -415,7 +415,7 @@ Public Class FilterDialog
                 Exit For
             End If
         Next
-        Call SetFilters(ComboTabs.SelectedItem.ToString)
+        SetFilters(ComboTabs.SelectedItem.ToString)
         If _mode = EDITMODE.AddNew Then
             ListFilters.SelectedIndex = ListFilters.Items.Count - 1
         Else
@@ -435,7 +435,7 @@ Public Class FilterDialog
     End Sub
 
     Private Sub ListFilters_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ListFilters.SelectedIndexChanged
-        Call ShowDetail()
+        ShowDetail()
     End Sub
 
     Private Sub ButtonClose_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonClose.Click
@@ -443,20 +443,20 @@ Public Class FilterDialog
     End Sub
 
     Private Sub ComboTabs_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ComboTabs.SelectedIndexChanged
-        Call SetFilters(ComboTabs.SelectedItem.ToString)
+        SetFilters(ComboTabs.SelectedItem.ToString)
     End Sub
 
     Private Sub FilterDialog_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyDown
         If e.KeyCode = Keys.Enter Then
             If EditFilterGroup.Enabled Then
-                Call ButtonOK_Click(Nothing, Nothing)
+                ButtonOK_Click(Nothing, Nothing)
             End If
         End If
         If e.KeyCode = Keys.Escape Then
             If EditFilterGroup.Enabled Then
-                Call ButtonCancel_Click(Nothing, Nothing)
+                ButtonCancel_Click(Nothing, Nothing)
             Else
-                Call ButtonClose_Click(Nothing, Nothing)
+                ButtonClose_Click(Nothing, Nothing)
             End If
         End If
     End Sub
@@ -473,6 +473,6 @@ Public Class FilterDialog
         If ListFilters.Items(ListFilters.IndexFromPoint(ListFilters.PointToClient(Control.MousePosition))) Is Nothing Then
             Exit Sub
         End If
-        Call ButtonEdit_Click(sender, e)
+        ButtonEdit_Click(sender, e)
     End Sub
 End Class
