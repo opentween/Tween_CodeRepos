@@ -1469,11 +1469,25 @@ Public Class TweenMain
             _endingFlag = True
             If clsTw IsNot Nothing Then clsTw.Ending = True
             If clsTwPost IsNot Nothing Then clsTwPost.Ending = True
+            TimerTimeline.Enabled = False
+            TimerDM.Enabled = False
+
+            '終了時エラー対応
+            Do While GetTimelineWorker.IsBusy
+                Threading.Thread.Sleep(1)
+                Application.DoEvents()
+            Loop
+            Do While PostWorker.IsBusy
+                Threading.Thread.Sleep(1)
+                Application.DoEvents()
+            Loop
+            For i As Integer = 0 To 1000
+                Threading.Thread.Sleep(1)
+                Application.DoEvents()
+            Next
 
             NotifyIcon1.Visible = False
             Me.Visible = False
-            TimerTimeline.Enabled = False
-            TimerDM.Enabled = False
 
             Call SaveConfigs()
 
@@ -3229,10 +3243,9 @@ Public Class TweenMain
                     UnreadStripMenuItem.Enabled = True
                 End If
                 If SettingDialog.OneWayLove = True Then
-                    For Each myTab As TabPage In ListTab.TabPages
-                        If myTab.Text <> "Direct" Then
-                            Dim myList As DetailsListView = DirectCast(myTab.Controls(0), DetailsListView)
-                            For Each myItem As ListViewItem In myList.Items
+                    For Each ts As TabStructure In _tabs
+                        If ts.tabName <> "Direct" Then
+                            For Each myItem As ListViewItem In ts.listCustom.Items
                                 If clsTw.follower.Contains(myItem.SubItems(4).Text) Then
                                     myItem.SubItems(10).Text = "False"
                                 Else
@@ -5309,26 +5322,28 @@ RETRY:
                 _section.StatusMultiline = StatusText.Multiline
 
                 Dim tmpList As DetailsListView = Nothing
-                For Each myTab As TabPage In ListTab.TabPages
-                    If myTab.Text = _curTabText Then
-                        tmpList = DirectCast(myTab.Controls(0), DetailsListView)
+                For Each ts As TabStructure In _tabs
+                    If ts.tabName = _curTabText Then
+                        tmpList = ts.listCustom
                         Exit For
                     End If
                 Next
-                _section.DisplayIndex1 = tmpList.Columns(0).DisplayIndex
-                _section.Width1 = tmpList.Columns(0).Width
-                If _iconCol = False Then
-                    _section.DisplayIndex2 = tmpList.Columns(1).DisplayIndex
-                    _section.DisplayIndex3 = tmpList.Columns(2).DisplayIndex
-                    _section.DisplayIndex4 = tmpList.Columns(3).DisplayIndex
-                    _section.DisplayIndex5 = tmpList.Columns(4).DisplayIndex
-                    _section.Width2 = tmpList.Columns(1).Width
-                    _section.Width3 = tmpList.Columns(2).Width
-                    _section.Width4 = tmpList.Columns(3).Width
-                    _section.Width5 = tmpList.Columns(4).Width
+                If tmpList.Columns.Count > 0 Then   '起動処理中に終了処理が走ると参照できないため
+                    _section.DisplayIndex1 = tmpList.Columns(0).DisplayIndex
+                    _section.Width1 = tmpList.Columns(0).Width
+                    If _iconCol = False Then
+                        _section.DisplayIndex2 = tmpList.Columns(1).DisplayIndex
+                        _section.DisplayIndex3 = tmpList.Columns(2).DisplayIndex
+                        _section.DisplayIndex4 = tmpList.Columns(3).DisplayIndex
+                        _section.DisplayIndex5 = tmpList.Columns(4).DisplayIndex
+                        _section.Width2 = tmpList.Columns(1).Width
+                        _section.Width3 = tmpList.Columns(2).Width
+                        _section.Width4 = tmpList.Columns(3).Width
+                        _section.Width5 = tmpList.Columns(4).Width
+                    End If
+                    _section.SortColumn = listViewItemSorter.Column
+                    _section.SortOrder = listViewItemSorter.Order
                 End If
-                _section.SortColumn = listViewItemSorter.Column
-                _section.SortOrder = listViewItemSorter.Order
 
                 _section.ListElement.Clear()
 
@@ -5374,34 +5389,34 @@ RETRY:
                 'Next
 
                 Dim cnt As Integer = 0
-                For idx As Integer = 0 To ListTab.TabCount - 1
-                    Dim tabName As String = ListTab.TabPages(idx).Text
-                    Dim myList As DetailsListView = DirectCast(ListTab.TabPages(idx).Controls(0), DetailsListView)
+                For Each ts As TabStructure In _tabs
+                    Dim tabName As String = ts.tabName
+                    Dim myList As DetailsListView = ts.listCustom
                     _section.ListElement.Add(New ListElement(tabName))
-                    For Each myTab As TabStructure In _tabs
-                        If myTab.tabName = tabName Then
-                            _section.ListElement(tabName).Notify = myTab.notify
-                            _section.ListElement(tabName).SoundFile = myTab.soundFile
-                            _section.ListElement(tabName).UnreadManage = myTab.unreadManage
-                            For Each fc As FilterClass In myTab.filters
-                                Dim bf As String = ""
-                                For Each bfs As String In fc.BodyFilter
-                                    bf += " " + bfs
-                                Next
-                                Dim su As New SelectedUser(cnt.ToString)
-                                cnt += 1
-                                su.BodyFilter = bf
-                                su.IdFilter = fc.IDFilter
-                                su.MoveFrom = fc.moveFrom
-                                su.SetMark = fc.SetMark
-                                su.SearchBoth = fc.SearchBoth
-                                su.UrlSearch = fc.SearchURL
-                                su.RegexEnable = fc.UseRegex
-                                su.TabName = tabName
-                                _section.SelectedUser.Add(su)
-                            Next
-                        End If
+                    'For Each myTab As TabStructure In _tabs
+                    '    If myTab.tabName = tabName Then
+                    _section.ListElement(tabName).Notify = ts.notify
+                    _section.ListElement(tabName).SoundFile = ts.soundFile
+                    _section.ListElement(tabName).UnreadManage = ts.unreadManage
+                    For Each fc As FilterClass In ts.filters
+                        Dim bf As String = ""
+                        For Each bfs As String In fc.BodyFilter
+                            bf += " " + bfs
+                        Next
+                        Dim su As New SelectedUser(cnt.ToString)
+                        cnt += 1
+                        su.BodyFilter = bf
+                        su.IdFilter = fc.IDFilter
+                        su.MoveFrom = fc.moveFrom
+                        su.SetMark = fc.SetMark
+                        su.SearchBoth = fc.SearchBoth
+                        su.UrlSearch = fc.SearchURL
+                        su.RegexEnable = fc.UseRegex
+                        su.TabName = tabName
+                        _section.SelectedUser.Add(su)
                     Next
+                    '    End If
+                    'Next
                 Next
 
             End SyncLock
