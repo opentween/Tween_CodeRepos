@@ -1465,13 +1465,16 @@ Public Class TweenMain
 
         Else
             _endingFlag = True
+            GetTimelineWorker.CancelAsync()
             If clsTw IsNot Nothing Then clsTw.Ending = True
             If clsTwPost IsNot Nothing Then clsTwPost.Ending = True
 
             TimerTimeline.Enabled = False
             TimerDM.Enabled = False
 
+
             '終了時エラー対応 
+#If 0 Then
             Do While GetTimelineWorker.IsBusy
                 Threading.Thread.Sleep(1)
                 Application.DoEvents()
@@ -1484,7 +1487,7 @@ Public Class TweenMain
                 Threading.Thread.Sleep(1)
                 Application.DoEvents()
             Next
-
+#End If
             NotifyIcon1.Visible = False
             Me.Visible = False
 
