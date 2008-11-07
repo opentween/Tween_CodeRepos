@@ -62,6 +62,7 @@ Public Class TweenMain
     Private _favTimestamps As New List(Of Date)
     Private _tlTimestamps As New Dictionary(Of Date, Integer)
     Private _tlCount As Integer
+    Private ReadOnly _syncObject As New Object 'ロック用  
 
     Friend Class Win32Api
         '画面をブリンクするためのWin32API。起動時に10ページ読み取りごとに継続確認メッセージを表示する際の通知強調用
@@ -3128,157 +3129,159 @@ Public Class TweenMain
         TimerColorize.Stop()
 
         If SettingDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
-            _username = SettingDialog.UserID
-            _password = SettingDialog.PasswordStr
-            clsTw.Username = _username
-            clsTw.Password = _password
-            clsTwPost.Username = _username
-            clsTwPost.Password = _password
-            'TimerTimeline.Interval = IIf(SettingDialog.TimelinePeriodInt > 0, SettingDialog.TimelinePeriodInt * 1000, 600000)
-            If SettingDialog.TimelinePeriodInt > 0 Then
-                If SettingDialog.PeriodAdjust Then
-                    If SettingDialog.TimelinePeriodInt * 1000 < TimerTimeline.Interval Then
+            SyncLock _syncObject
+                _username = SettingDialog.UserID
+                _password = SettingDialog.PasswordStr
+                clsTw.Username = _username
+                clsTw.Password = _password
+                clsTwPost.Username = _username
+                clsTwPost.Password = _password
+                'TimerTimeline.Interval = IIf(SettingDialog.TimelinePeriodInt > 0, SettingDialog.TimelinePeriodInt * 1000, 600000)
+                If SettingDialog.TimelinePeriodInt > 0 Then
+                    If SettingDialog.PeriodAdjust Then
+                        If SettingDialog.TimelinePeriodInt * 1000 < TimerTimeline.Interval Then
+                            TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
+                        End If
+                    Else
                         TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
                     End If
+                    TimerTimeline.Enabled = True
                 Else
-                    TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
+                    TimerTimeline.Interval = 600000
+                    TimerTimeline.Enabled = False
                 End If
-                TimerTimeline.Enabled = True
-            Else
-                TimerTimeline.Interval = 600000
-                TimerTimeline.Enabled = False
-            End If
-            If SettingDialog.DMPeriodInt > 0 Then
-                TimerDM.Interval = SettingDialog.DMPeriodInt * 1000
-                TimerDM.Enabled = True
-            Else
-                TimerDM.Interval = 600000
-                TimerDM.Enabled = False
-            End If
-            clsTw.NextThreshold = SettingDialog.NextPageThreshold
-            clsTw.NextPages = SettingDialog.NextPagesInt
-            clsTwPost.UseAPI = SettingDialog.UseAPI
-            clsTw.HubServer = SettingDialog.HubServer
-            clsTwPost.HubServer = SettingDialog.HubServer
-            clsTw.TinyUrlResolve = SettingDialog.TinyUrlResolve
-            clsTw.RestrictFavCheck = SettingDialog.RestrictFavCheck
+                If SettingDialog.DMPeriodInt > 0 Then
+                    TimerDM.Interval = SettingDialog.DMPeriodInt * 1000
+                    TimerDM.Enabled = True
+                Else
+                    TimerDM.Interval = 600000
+                    TimerDM.Enabled = False
+                End If
+                clsTw.NextThreshold = SettingDialog.NextPageThreshold
+                clsTw.NextPages = SettingDialog.NextPagesInt
+                clsTwPost.UseAPI = SettingDialog.UseAPI
+                clsTw.HubServer = SettingDialog.HubServer
+                clsTwPost.HubServer = SettingDialog.HubServer
+                clsTw.TinyUrlResolve = SettingDialog.TinyUrlResolve
+                clsTw.RestrictFavCheck = SettingDialog.RestrictFavCheck
 
-            clsTw.ProxyType = SettingDialog.ProxyType
-            clsTw.ProxyAddress = SettingDialog.ProxyAddress
-            clsTw.ProxyPort = SettingDialog.ProxyPort
-            clsTw.ProxyUser = SettingDialog.ProxyUser
-            clsTw.ProxyPassword = SettingDialog.ProxyPassword
-            Dim args As New GetWorkerArg
-            args.type = WORKERTYPE.CreateNewSocket
-            Do While GetTimelineWorker.IsBusy
-                Threading.Thread.Sleep(1)
-                Application.DoEvents()
-            Loop
-            GetTimelineWorker.RunWorkerAsync(args)
-            clsTwPost.ProxyType = SettingDialog.ProxyType
-            clsTwPost.ProxyAddress = SettingDialog.ProxyAddress
-            clsTwPost.ProxyPort = SettingDialog.ProxyPort
-            clsTwPost.ProxyUser = SettingDialog.ProxyUser
-            clsTwPost.ProxyPassword = SettingDialog.ProxyPassword
-            Do While PostWorker.IsBusy
-                Threading.Thread.Sleep(1)
-                Application.DoEvents()
-            Loop
-            PostWorker.RunWorkerAsync(args)
-            'If isz <> SettingDialog.IconSz Then
-            '    Select Case SettingDialog.IconSz
-            '        Case Setting.IconSizes.IconNone
-            '            _iconSz = 0
-            '        Case Setting.IconSizes.Icon16
-            '            _iconSz = 16
-            '        Case Setting.IconSizes.Icon24
-            '            _iconSz = 26
-            '        Case Setting.IconSizes.Icon48
-            '            _iconSz = 48
-            '    End Select
-            '    ChangeImageSize()
+                clsTw.ProxyType = SettingDialog.ProxyType
+                clsTw.ProxyAddress = SettingDialog.ProxyAddress
+                clsTw.ProxyPort = SettingDialog.ProxyPort
+                clsTw.ProxyUser = SettingDialog.ProxyUser
+                clsTw.ProxyPassword = SettingDialog.ProxyPassword
+                Dim args As New GetWorkerArg
+                args.type = WORKERTYPE.CreateNewSocket
+                Do While GetTimelineWorker.IsBusy
+                    Threading.Thread.Sleep(1)
+                    Application.DoEvents()
+                Loop
+                GetTimelineWorker.RunWorkerAsync(args)
+                clsTwPost.ProxyType = SettingDialog.ProxyType
+                clsTwPost.ProxyAddress = SettingDialog.ProxyAddress
+                clsTwPost.ProxyPort = SettingDialog.ProxyPort
+                clsTwPost.ProxyUser = SettingDialog.ProxyUser
+                clsTwPost.ProxyPassword = SettingDialog.ProxyPassword
+                Do While PostWorker.IsBusy
+                    Threading.Thread.Sleep(1)
+                    Application.DoEvents()
+                Loop
+                PostWorker.RunWorkerAsync(args)
+                'If isz <> SettingDialog.IconSz Then
+                '    Select Case SettingDialog.IconSz
+                '        Case Setting.IconSizes.IconNone
+                '            _iconSz = 0
+                '        Case Setting.IconSizes.Icon16
+                '            _iconSz = 16
+                '        Case Setting.IconSizes.Icon24
+                '            _iconSz = 26
+                '        Case Setting.IconSizes.Icon48
+                '            _iconSz = 48
+                '    End Select
+                '    ChangeImageSize()
 
-            '    Dim idx As Integer = 0
-            '    For idx = 0 To ListTab.TabCount - 1
-            '        Dim myList As DetailsListView = CType(ListTab.TabPages(idx).Controls(0), DetailsListView)
-            '        myList.SmallImageList = TIconSmallList
-            '    Next
+                '    Dim idx As Integer = 0
+                '    For idx = 0 To ListTab.TabCount - 1
+                '        Dim myList As DetailsListView = CType(ListTab.TabPages(idx).Controls(0), DetailsListView)
+                '        myList.SmallImageList = TIconSmallList
+                '    Next
 
-            '    Dim myList2 As DetailsListView = CType(ListTab.SelectedTab.Controls(0), DetailsListView)
-            '    If myList2.SelectedItems.Count > 0 Then
-            '        myList2.EnsureVisible(myList2.SelectedItems(0).Index)
-            '    Else
-            '        If myList2.Items.Count > 0 Then
-            '            myList2.EnsureVisible(0)
-            '        End If
-            '    End If
+                '    Dim myList2 As DetailsListView = CType(ListTab.SelectedTab.Controls(0), DetailsListView)
+                '    If myList2.SelectedItems.Count > 0 Then
+                '        myList2.EnsureVisible(myList2.SelectedItems(0).Index)
+                '    Else
+                '        If myList2.Items.Count > 0 Then
+                '            myList2.EnsureVisible(0)
+                '        End If
+                '    End If
 
-            '    CType(ListTab.SelectedTab.Controls(0), DetailsListView).Refresh()
-            '    'CType(ListTab.SelectedTab.Controls(0), ListView).Focus()
-            'End If
-            If SettingDialog.UnreadManage = False Then
-                ReadedStripMenuItem.Enabled = False
-                UnreadStripMenuItem.Enabled = False
-                For Each myTab As TabPage In ListTab.TabPages
-                    myTab.ImageIndex = -1
+                '    CType(ListTab.SelectedTab.Controls(0), DetailsListView).Refresh()
+                '    'CType(ListTab.SelectedTab.Controls(0), ListView).Focus()
+                'End If
+                If SettingDialog.UnreadManage = False Then
+                    ReadedStripMenuItem.Enabled = False
+                    UnreadStripMenuItem.Enabled = False
+                    For Each myTab As TabPage In ListTab.TabPages
+                        myTab.ImageIndex = -1
+                    Next
+                Else
+                    ReadedStripMenuItem.Enabled = True
+                    UnreadStripMenuItem.Enabled = True
+                End If
+                If SettingDialog.OneWayLove = True Then
+                    For Each myTab As TabPage In ListTab.TabPages
+                        If myTab.Text <> "Direct" Then
+                            Dim myList As DetailsListView = DirectCast(myTab.Controls(0), DetailsListView)
+                            For Each myItem As ListViewItem In myList.Items
+                                If clsTw.follower.Contains(myItem.SubItems(4).Text) Then
+                                    myItem.SubItems(10).Text = "False"
+                                Else
+                                    myItem.SubItems(10).Text = "True"
+                                End If
+                            Next
+                        End If
+                    Next
+                End If
+                _fntUnread = SettingDialog.FontUnread
+                _clUnread = SettingDialog.ColorUnread
+                _fntReaded = SettingDialog.FontReaded
+                _clReaded = SettingDialog.ColorReaded
+                _clFav = SettingDialog.ColorFav
+                _clOWL = SettingDialog.ColorOWL
+                _fntDetail = SettingDialog.FontDetail
+                _clSelf = SettingDialog.ColorSelf
+                _clAtSelf = SettingDialog.ColorAtSelf
+                _clTarget = SettingDialog.ColorTarget
+                _clAtTarget = SettingDialog.ColorAtTarget
+                _clAtFromTarget = SettingDialog.ColorAtFromTarget
+                For Each ts As TabStructure In _tabs
+                    For Each myItem As ListViewItem In ts.listCustom.Items
+                        If SettingDialog.UnreadManage = True And ts.unreadManage Then
+                            'If myItem.SubItems(8).Text = "True" Then
+                            '    myItem.ForeColor = _clReaded
+                            '    myItem.Font = _fntReaded
+                            'Else
+                            '    myItem.ForeColor = _clUnread
+                            '    myItem.Font = _fntUnread
+                            'End If
+                        Else
+                            'myItem.ForeColor = _clReaded
+                            'myItem.Font = _fntReaded
+                            Dim fcl As Color = _clReaded
+                            If myItem.SubItems(10).Text = "True" And SettingDialog.OneWayLove Then fcl = _clOWL
+                            If myItem.SubItems(9).Text = "True" Then fcl = _clFav
+                            ts.listCustom.ChangeItemStyles(myItem.Index, myItem.BackColor, fcl, _fntReaded)
+                            ts.oldestUnreadItem = Nothing
+                            ts.unreadCount = 0
+                        End If
+                    Next
                 Next
-            Else
-                ReadedStripMenuItem.Enabled = True
-                UnreadStripMenuItem.Enabled = True
-            End If
-            If SettingDialog.OneWayLove = True Then
-                For Each myTab As TabPage In ListTab.TabPages
-                    If myTab.Text <> "Direct" Then
-                        Dim myList As DetailsListView = DirectCast(myTab.Controls(0), DetailsListView)
-                        For Each myItem As ListViewItem In myList.Items
-                            If clsTw.follower.Contains(myItem.SubItems(4).Text) Then
-                                myItem.SubItems(10).Text = "False"
-                            Else
-                                myItem.SubItems(10).Text = "True"
-                            End If
-                        Next
-                    End If
-                Next
-            End If
-            _fntUnread = SettingDialog.FontUnread
-            _clUnread = SettingDialog.ColorUnread
-            _fntReaded = SettingDialog.FontReaded
-            _clReaded = SettingDialog.ColorReaded
-            _clFav = SettingDialog.ColorFav
-            _clOWL = SettingDialog.ColorOWL
-            _fntDetail = SettingDialog.FontDetail
-            _clSelf = SettingDialog.ColorSelf
-            _clAtSelf = SettingDialog.ColorAtSelf
-            _clTarget = SettingDialog.ColorTarget
-            _clAtTarget = SettingDialog.ColorAtTarget
-            _clAtFromTarget = SettingDialog.ColorAtFromTarget
-            For Each ts As TabStructure In _tabs
-                For Each myItem As ListViewItem In ts.listCustom.Items
-                    If SettingDialog.UnreadManage = True And ts.unreadManage Then
-                        'If myItem.SubItems(8).Text = "True" Then
-                        '    myItem.ForeColor = _clReaded
-                        '    myItem.Font = _fntReaded
-                        'Else
-                        '    myItem.ForeColor = _clUnread
-                        '    myItem.Font = _fntUnread
-                        'End If
-                    Else
-                        'myItem.ForeColor = _clReaded
-                        'myItem.Font = _fntReaded
-                        Dim fcl As Color = _clReaded
-                        If myItem.SubItems(10).Text = "True" And SettingDialog.OneWayLove Then fcl = _clOWL
-                        If myItem.SubItems(9).Text = "True" Then fcl = _clFav
-                        ts.listCustom.ChangeItemStyles(myItem.Index, myItem.BackColor, fcl, _fntReaded)
-                        ts.oldestUnreadItem = Nothing
-                        ts.unreadCount = 0
-                    End If
-                Next
-            Next
-            'ColorizeList(False)
-            TimerColorize.Start()
+                'ColorizeList(False)
+                TimerColorize.Start()
 
-            SetMainWindowTitle()
-            SetNotifyIconText()
+                SetMainWindowTitle()
+                SetNotifyIconText()
+            End SyncLock
         End If
 
         Me.TopMost = SettingDialog.AlwaysTop
@@ -5210,197 +5213,198 @@ RETRY:
 
     Private Sub SaveConfigs()
         If _username <> "" And _password <> "" Then
+            SyncLock _syncObject
+                _section.FormSize = _mySize
+                _section.FormLocation = _myLoc
+                _section.SplitterDistance = _mySpDis
+                _section.UserName = _username
+                _section.Password = _password
+                '_section.NextPageThreshold = clsTw.NextThreshold
+                '_section.NextPages = clsTw.NextPages
+                _section.NextPageThreshold = SettingDialog.NextPageThreshold
+                _section.NextPages = SettingDialog.NextPagesInt
+                _section.TimelinePeriod = SettingDialog.TimelinePeriodInt
+                _section.DMPeriod = SettingDialog.DMPeriodInt
+                _section.MaxPostNum = SettingDialog.MaxPostNum
+                '_section.LogDays = SettingDialog.LogDays
+                'Select Case SettingDialog.LogUnit
+                '    Case Setting.LogUnitEnum.Minute
+                '        _section.LogUnit = ListSection.LogUnitEnum.Minute
+                '    Case Setting.LogUnitEnum.Hour
+                '        _section.LogUnit = ListSection.LogUnitEnum.Hour
+                '    Case Setting.LogUnitEnum.Day
+                '        _section.LogUnit = ListSection.LogUnitEnum.Day
+                'End Select
+                _section.ReadPages = SettingDialog.ReadPages
+                _section.Readed = SettingDialog.Readed
+                _section.ListLock = ListLockMenuItem.Checked
+                'Select Case SettingDialog.IconSz
+                '    Case Setting.IconSizes.IconNone
+                '        _section.IconSize = ListSection.IconSizes.IconNone
+                '    Case Setting.IconSizes.Icon16
+                '        _section.IconSize = ListSection.IconSizes.Icon16
+                '    Case Setting.IconSizes.Icon24
+                '        _section.IconSize = ListSection.IconSizes.Icon24
+                '    Case Setting.IconSizes.Icon48
+                '        _section.IconSize = ListSection.IconSizes.Icon48
+                '    Case Setting.IconSizes.Icon48_2
+                '        _section.IconSize = ListSection.IconSizes.Icon48_2
+                'End Select
+                _section.IconSize = SettingDialog.IconSz
+                '_section.selecteduser（collection)
+                '_section.favuser
+                _section.StatusText = SettingDialog.Status
+                _section.NewAllPop = NewPostPopMenuItem.Checked
+                _section.UnreadManage = SettingDialog.UnreadManage
+                _section.PlaySound = SettingDialog.PlaySound
+                _section.OneWayLove = SettingDialog.OneWayLove
 
-            _section.FormSize = _mySize
-            _section.FormLocation = _myLoc
-            _section.SplitterDistance = _mySpDis
-            _section.UserName = _username
-            _section.Password = _password
-            '_section.NextPageThreshold = clsTw.NextThreshold
-            '_section.NextPages = clsTw.NextPages
-            _section.NextPageThreshold = SettingDialog.NextPageThreshold
-            _section.NextPages = SettingDialog.NextPagesInt
-            _section.TimelinePeriod = SettingDialog.TimelinePeriodInt
-            _section.DMPeriod = SettingDialog.DMPeriodInt
-            _section.MaxPostNum = SettingDialog.MaxPostNum
-            '_section.LogDays = SettingDialog.LogDays
-            'Select Case SettingDialog.LogUnit
-            '    Case Setting.LogUnitEnum.Minute
-            '        _section.LogUnit = ListSection.LogUnitEnum.Minute
-            '    Case Setting.LogUnitEnum.Hour
-            '        _section.LogUnit = ListSection.LogUnitEnum.Hour
-            '    Case Setting.LogUnitEnum.Day
-            '        _section.LogUnit = ListSection.LogUnitEnum.Day
-            'End Select
-            _section.ReadPages = SettingDialog.ReadPages
-            _section.Readed = SettingDialog.Readed
-            _section.ListLock = ListLockMenuItem.Checked
-            'Select Case SettingDialog.IconSz
-            '    Case Setting.IconSizes.IconNone
-            '        _section.IconSize = ListSection.IconSizes.IconNone
-            '    Case Setting.IconSizes.Icon16
-            '        _section.IconSize = ListSection.IconSizes.Icon16
-            '    Case Setting.IconSizes.Icon24
-            '        _section.IconSize = ListSection.IconSizes.Icon24
-            '    Case Setting.IconSizes.Icon48
-            '        _section.IconSize = ListSection.IconSizes.Icon48
-            '    Case Setting.IconSizes.Icon48_2
-            '        _section.IconSize = ListSection.IconSizes.Icon48_2
-            'End Select
-            _section.IconSize = SettingDialog.IconSz
-            '_section.selecteduser（collection)
-            '_section.favuser
-            _section.StatusText = SettingDialog.Status
-            _section.NewAllPop = NewPostPopMenuItem.Checked
-            _section.UnreadManage = SettingDialog.UnreadManage
-            _section.PlaySound = SettingDialog.PlaySound
-            _section.OneWayLove = SettingDialog.OneWayLove
+                _section.FontUnread = _fntUnread
+                _section.ColorUnread = _clUnread
+                _section.FontReaded = _fntReaded
+                _section.ColorReaded = _clReaded
+                _section.FontDetail = _fntDetail
+                _section.ColorFav = _clFav
+                _section.ColorOWL = _clOWL
+                _section.ColorSelf = _clSelf
+                _section.ColorAtSelf = _clAtSelf
+                _section.ColorTarget = _clTarget
+                _section.ColorAtTarget = _clAtTarget
+                _section.ColorAtFromTarget = _clAtFromTarget
 
-            _section.FontUnread = _fntUnread
-            _section.ColorUnread = _clUnread
-            _section.FontReaded = _fntReaded
-            _section.ColorReaded = _clReaded
-            _section.FontDetail = _fntDetail
-            _section.ColorFav = _clFav
-            _section.ColorOWL = _clOWL
-            _section.ColorSelf = _clSelf
-            _section.ColorAtSelf = _clAtSelf
-            _section.ColorTarget = _clTarget
-            _section.ColorAtTarget = _clAtTarget
-            _section.ColorAtFromTarget = _clAtFromTarget
+                'Select Case SettingDialog.NameBalloon
+                '    Case Setting.NameBalloonEnum.None
+                '        _section.NameBalloon = ListSection.NameBalloonEnum.None
+                '    Case Setting.NameBalloonEnum.UserID
+                '        _section.NameBalloon = ListSection.NameBalloonEnum.UserID
+                '    Case Setting.NameBalloonEnum.NickName
+                '        _section.NameBalloon = ListSection.NameBalloonEnum.NickName
+                'End Select
+                _section.NameBalloon = SettingDialog.NameBalloon
 
-            'Select Case SettingDialog.NameBalloon
-            '    Case Setting.NameBalloonEnum.None
-            '        _section.NameBalloon = ListSection.NameBalloonEnum.None
-            '    Case Setting.NameBalloonEnum.UserID
-            '        _section.NameBalloon = ListSection.NameBalloonEnum.UserID
-            '    Case Setting.NameBalloonEnum.NickName
-            '        _section.NameBalloon = ListSection.NameBalloonEnum.NickName
-            'End Select
-            _section.NameBalloon = SettingDialog.NameBalloon
+                _section.PostCtrlEnter = SettingDialog.PostCtrlEnter
+                '_section.UseAPI = SettingDialog.UseAPI
+                _section.UseAPI = True
+                _section.HubServer = SettingDialog.HubServer
+                _section.BrowserPath = SettingDialog.BrowserPath
+                _section.CheckReply = SettingDialog.CheckReply
+                _section.UseRecommendStatus = SettingDialog.UseRecommendStatus
+                _section.DispUsername = SettingDialog.DispUsername
+                _section.MinimizeToTray = SettingDialog.MinimizeToTray
+                _section.CloseToExit = SettingDialog.CloseToExit
+                _section.DispLatestPost = SettingDialog.DispLatestPost
+                _section.SortOrderLock = SettingDialog.SortOrderLock
+                _section.TinyURLResolve = SettingDialog.TinyUrlResolve
+                _section.ProxyType = SettingDialog.ProxyType
+                _section.ProxyAddress = SettingDialog.ProxyAddress
+                _section.ProxyPort = SettingDialog.ProxyPort
+                _section.ProxyUser = SettingDialog.ProxyUser
+                _section.ProxyPassword = SettingDialog.ProxyPassword
+                _section.PeriodAdjust = SettingDialog.PeriodAdjust
+                _section.StartupVersion = SettingDialog.StartupVersion
+                _section.StartupKey = SettingDialog.StartupKey
+                _section.StartupFollowers = SettingDialog.StartupFollowers
+                _section.RestrictFavCheck = SettingDialog.RestrictFavCheck
+                _section.AlwaysTop = SettingDialog.AlwaysTop
+                _section.StatusMultiline = StatusText.Multiline
 
-            _section.PostCtrlEnter = SettingDialog.PostCtrlEnter
-            '_section.UseAPI = SettingDialog.UseAPI
-            _section.UseAPI = True
-            _section.HubServer = SettingDialog.HubServer
-            _section.BrowserPath = SettingDialog.BrowserPath
-            _section.CheckReply = SettingDialog.CheckReply
-            _section.UseRecommendStatus = SettingDialog.UseRecommendStatus
-            _section.DispUsername = SettingDialog.DispUsername
-            _section.MinimizeToTray = SettingDialog.MinimizeToTray
-            _section.CloseToExit = SettingDialog.CloseToExit
-            _section.DispLatestPost = SettingDialog.DispLatestPost
-            _section.SortOrderLock = SettingDialog.SortOrderLock
-            _section.TinyURLResolve = SettingDialog.TinyUrlResolve
-            _section.ProxyType = SettingDialog.ProxyType
-            _section.ProxyAddress = SettingDialog.ProxyAddress
-            _section.ProxyPort = SettingDialog.ProxyPort
-            _section.ProxyUser = SettingDialog.ProxyUser
-            _section.ProxyPassword = SettingDialog.ProxyPassword
-            _section.PeriodAdjust = SettingDialog.PeriodAdjust
-            _section.StartupVersion = SettingDialog.StartupVersion
-            _section.StartupKey = SettingDialog.StartupKey
-            _section.StartupFollowers = SettingDialog.StartupFollowers
-            _section.RestrictFavCheck = SettingDialog.RestrictFavCheck
-            _section.AlwaysTop = SettingDialog.AlwaysTop
-            _section.StatusMultiline = StatusText.Multiline
-
-            Dim tmpList As DetailsListView = Nothing
-            For Each myTab As TabPage In ListTab.TabPages
-                If myTab.Text = _curTabText Then
-                    tmpList = DirectCast(myTab.Controls(0), DetailsListView)
-                    Exit For
-                End If
-            Next
-            _section.DisplayIndex1 = tmpList.Columns(0).DisplayIndex
-            _section.Width1 = tmpList.Columns(0).Width
-            If _iconCol = False Then
-                _section.DisplayIndex2 = tmpList.Columns(1).DisplayIndex
-                _section.DisplayIndex3 = tmpList.Columns(2).DisplayIndex
-                _section.DisplayIndex4 = tmpList.Columns(3).DisplayIndex
-                _section.DisplayIndex5 = tmpList.Columns(4).DisplayIndex
-                _section.Width2 = tmpList.Columns(1).Width
-                _section.Width3 = tmpList.Columns(2).Width
-                _section.Width4 = tmpList.Columns(3).Width
-                _section.Width5 = tmpList.Columns(4).Width
-            End If
-            _section.SortColumn = listViewItemSorter.Column
-            _section.SortOrder = listViewItemSorter.Order
-
-            _section.ListElement.Clear()
-
-            ''Recentタブ
-            '_section.ListElement.Add(New ListElement("Recent"))
-            'For Each ts As TabStructure In _tabs
-            '    If ts.tabName = "Recent" Then
-            '        _section.ListElement("Recent").Notify = ts.notify
-            '        _section.ListElement("Recent").SoundFile = ts.soundFile
-            '        _section.ListElement("Recent").UnreadManage = ts.unreadManage
-            '        Exit For
-            '    End If
-            'Next
-
-            ''Replyタブ
-            '_section.ListElement.Add(New ListElement("Reply"))
-            'For Each ts As TabStructure In _tabs
-            '    If ts.tabName = "Reply" Then
-            '        _section.ListElement("Reply").Notify = ts.notify
-            '        _section.ListElement("Reply").SoundFile = ts.soundFile
-            '        _section.ListElement("Reply").UnreadManage = ts.unreadManage
-            '        Exit For
-            '    End If
-            'Next
-
-
-            ''DirectMsgタブ
-            '_section.ListElement.Add(New ListElement("DirectMsg"))
-            'For Each ts As TabStructure In _tabs
-            '    If ts.tabName = "DirectMsg" Then
-            '        _section.ListElement("DirectMsg").Notify = ts.notify
-            '        _section.ListElement("DirectMsg").SoundFile = ts.soundFile
-            '        _section.ListElement("DirectMsg").UnreadManage = ts.unreadManage
-            '        Exit For
-            '    End If
-            'Next
-
-
-            _section.SelectedUser.Clear()
-            'Dim sID As String
-            'For Each sID In _notId
-            '    _section.SelectedUser.Add(New SelectedUser("Recent->" + sID))
-            'Next
-
-            Dim cnt As Integer = 0
-            For idx As Integer = 0 To ListTab.TabCount - 1
-                Dim tabName As String = ListTab.TabPages(idx).Text
-                Dim myList As DetailsListView = DirectCast(ListTab.TabPages(idx).Controls(0), DetailsListView)
-                _section.ListElement.Add(New ListElement(tabName))
-                For Each myTab As TabStructure In _tabs
-                    If myTab.tabName = tabName Then
-                        _section.ListElement(tabName).Notify = myTab.notify
-                        _section.ListElement(tabName).SoundFile = myTab.soundFile
-                        _section.ListElement(tabName).UnreadManage = myTab.unreadManage
-                        For Each fc As FilterClass In myTab.filters
-                            Dim bf As String = ""
-                            For Each bfs As String In fc.BodyFilter
-                                bf += " " + bfs
-                            Next
-                            Dim su As New SelectedUser(cnt.ToString)
-                            cnt += 1
-                            su.BodyFilter = bf
-                            su.IdFilter = fc.IDFilter
-                            su.MoveFrom = fc.moveFrom
-                            su.SetMark = fc.SetMark
-                            su.SearchBoth = fc.SearchBoth
-                            su.UrlSearch = fc.SearchURL
-                            su.RegexEnable = fc.UseRegex
-                            su.TabName = tabName
-                            _section.SelectedUser.Add(su)
-                        Next
+                Dim tmpList As DetailsListView = Nothing
+                For Each myTab As TabPage In ListTab.TabPages
+                    If myTab.Text = _curTabText Then
+                        tmpList = DirectCast(myTab.Controls(0), DetailsListView)
+                        Exit For
                     End If
                 Next
-            Next
+                _section.DisplayIndex1 = tmpList.Columns(0).DisplayIndex
+                _section.Width1 = tmpList.Columns(0).Width
+                If _iconCol = False Then
+                    _section.DisplayIndex2 = tmpList.Columns(1).DisplayIndex
+                    _section.DisplayIndex3 = tmpList.Columns(2).DisplayIndex
+                    _section.DisplayIndex4 = tmpList.Columns(3).DisplayIndex
+                    _section.DisplayIndex5 = tmpList.Columns(4).DisplayIndex
+                    _section.Width2 = tmpList.Columns(1).Width
+                    _section.Width3 = tmpList.Columns(2).Width
+                    _section.Width4 = tmpList.Columns(3).Width
+                    _section.Width5 = tmpList.Columns(4).Width
+                End If
+                _section.SortColumn = listViewItemSorter.Column
+                _section.SortOrder = listViewItemSorter.Order
 
+                _section.ListElement.Clear()
+
+                ''Recentタブ
+                '_section.ListElement.Add(New ListElement("Recent"))
+                'For Each ts As TabStructure In _tabs
+                '    If ts.tabName = "Recent" Then
+                '        _section.ListElement("Recent").Notify = ts.notify
+                '        _section.ListElement("Recent").SoundFile = ts.soundFile
+                '        _section.ListElement("Recent").UnreadManage = ts.unreadManage
+                '        Exit For
+                '    End If
+                'Next
+
+                ''Replyタブ
+                '_section.ListElement.Add(New ListElement("Reply"))
+                'For Each ts As TabStructure In _tabs
+                '    If ts.tabName = "Reply" Then
+                '        _section.ListElement("Reply").Notify = ts.notify
+                '        _section.ListElement("Reply").SoundFile = ts.soundFile
+                '        _section.ListElement("Reply").UnreadManage = ts.unreadManage
+                '        Exit For
+                '    End If
+                'Next
+
+
+                ''DirectMsgタブ
+                '_section.ListElement.Add(New ListElement("DirectMsg"))
+                'For Each ts As TabStructure In _tabs
+                '    If ts.tabName = "DirectMsg" Then
+                '        _section.ListElement("DirectMsg").Notify = ts.notify
+                '        _section.ListElement("DirectMsg").SoundFile = ts.soundFile
+                '        _section.ListElement("DirectMsg").UnreadManage = ts.unreadManage
+                '        Exit For
+                '    End If
+                'Next
+
+
+                _section.SelectedUser.Clear()
+                'Dim sID As String
+                'For Each sID In _notId
+                '    _section.SelectedUser.Add(New SelectedUser("Recent->" + sID))
+                'Next
+
+                Dim cnt As Integer = 0
+                For idx As Integer = 0 To ListTab.TabCount - 1
+                    Dim tabName As String = ListTab.TabPages(idx).Text
+                    Dim myList As DetailsListView = DirectCast(ListTab.TabPages(idx).Controls(0), DetailsListView)
+                    _section.ListElement.Add(New ListElement(tabName))
+                    For Each myTab As TabStructure In _tabs
+                        If myTab.tabName = tabName Then
+                            _section.ListElement(tabName).Notify = myTab.notify
+                            _section.ListElement(tabName).SoundFile = myTab.soundFile
+                            _section.ListElement(tabName).UnreadManage = myTab.unreadManage
+                            For Each fc As FilterClass In myTab.filters
+                                Dim bf As String = ""
+                                For Each bfs As String In fc.BodyFilter
+                                    bf += " " + bfs
+                                Next
+                                Dim su As New SelectedUser(cnt.ToString)
+                                cnt += 1
+                                su.BodyFilter = bf
+                                su.IdFilter = fc.IDFilter
+                                su.MoveFrom = fc.moveFrom
+                                su.SetMark = fc.SetMark
+                                su.SearchBoth = fc.SearchBoth
+                                su.UrlSearch = fc.SearchURL
+                                su.RegexEnable = fc.UseRegex
+                                su.TabName = tabName
+                                _section.SelectedUser.Add(su)
+                            Next
+                        End If
+                    Next
+                Next
+
+            End SyncLock
             'RemoveAllTabs()
 
             'listViewItemSorter.Column = 3
