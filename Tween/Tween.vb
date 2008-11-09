@@ -1472,22 +1472,6 @@ Public Class TweenMain
             TimerTimeline.Enabled = False
             TimerDM.Enabled = False
 
-
-            '終了時エラー対応 
-#If 0 Then
-            Do While GetTimelineWorker.IsBusy
-                Threading.Thread.Sleep(1)
-                Application.DoEvents()
-            Loop
-            Do While PostWorker.IsBusy
-                Threading.Thread.Sleep(1)
-                Application.DoEvents()
-            Loop
-            For i As Integer = 0 To 1000
-                Threading.Thread.Sleep(1)
-                Application.DoEvents()
-            Next
-#End If
             NotifyIcon1.Visible = False
             Me.Visible = False
 
