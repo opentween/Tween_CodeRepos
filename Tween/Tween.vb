@@ -64,7 +64,9 @@ Public Class TweenMain
     Private _favTimestamps As New List(Of Date)()
     Private _tlTimestamps As New Dictionary(Of Date, Integer)()
     Private _tlCount As Integer
-    Private ReadOnly _syncObject As New Object() 'ロック用  
+    Private ReadOnly _syncObject As New Object()    'ロック用  
+    Private _StatusSelectionStart As Integer        ' 一時退避用
+    Private _StatusSelectionLength As Integer       ' 一時退避用
 
     Friend Class Win32Api
         '画面をブリンクするためのWin32API。起動時に10ページ読み取りごとに継続確認メッセージを表示する際の通知強調用
@@ -6962,6 +6964,42 @@ RETRY:
         Else
             SplitContainer2.SplitterDistance = SplitContainer2.Height - SplitContainer2.Panel2MinSize - SplitContainer2.SplitterWidth
         End If
+    End Sub
+    Public Function MakeShortUrl(ByVal ConverterType As Integer, ByRef SrcUrl As String) As String
+        Dim ret As String = ""
+        Dim resStatus As String = ""
+        Dim _mySock As New MySocket("UTF-8", "", "", _
+                                SettingDialog.ProxyType, _
+                                SettingDialog.ProxyAddress, _
+                                SettingDialog.ProxyPort, _
+                                SettingDialog.ProxyUser, _
+                                SettingDialog.ProxyPassword)
+
+        Select Case ConverterType
+            Case 0      'tinyurl
+                If SrcUrl.StartsWith("http") Then
+                    ret = DirectCast(_mySock.GetWebResponse("http://tinyurl.com/api-create.php?url=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
+                End If
+                If Not ret.StartsWith("http://tinyurl.com/") Then
+                    ret = ""
+                End If
+        End Select
+
+        Return ret
+    End Function
+
+    Private Sub TinyUrlConvertToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TinyUrlConvertToolStripMenuItem.Click
+        Dim result As String = MakeShortUrl(0, StatusText.SelectedText)
+
+        If Not result = "" Then
+            StatusText.Select(_StatusSelectionStart, _StatusSelectionLength)
+            StatusText.SelectedText = result
+        End If
+    End Sub
+
+    Private Sub MenuStrip1_ItemClicked(ByVal sender As System.Object, ByVal e As System.Windows.Forms.ToolStripItemClickedEventArgs) Handles MenuStrip1.ItemClicked
+        _StatusSelectionLength = StatusText.SelectionLength
+        _StatusSelectionStart = StatusText.SelectionStart
     End Sub
 End Class
 

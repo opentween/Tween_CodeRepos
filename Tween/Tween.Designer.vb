@@ -121,6 +121,7 @@ Partial Class TweenMain
         Me.MenuItemSearchNext = New System.Windows.Forms.ToolStripMenuItem
         Me.MenuItemSearchPrev = New System.Windows.Forms.ToolStripMenuItem
         Me.MenuItemCommand = New System.Windows.Forms.ToolStripMenuItem
+        Me.TinyUrlConvertToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.MenuItemHelp = New System.Windows.Forms.ToolStripMenuItem
         Me.MatomeMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator12 = New System.Windows.Forms.ToolStripSeparator
@@ -478,6 +479,7 @@ Partial Class TweenMain
         '
         Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SettingStripMenuItem, Me.ToolStripSeparator9, Me.SaveLogMenuItem, Me.ToolStripSeparator17, Me.NewPostPopMenuItem, Me.PlaySoundMenuItem, Me.ListLockMenuItem, Me.ToolStripSeparator15, Me.MultiLineMenuItem, Me.ToolStripSeparator21, Me.EndToolStripMenuItem})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
+        Me.ContextMenuStrip1.OwnerItem = Me.MenuItemFile
         Me.ContextMenuStrip1.ShowCheckMargin = True
         Me.ContextMenuStrip1.ShowImageMargin = False
         Me.ContextMenuStrip1.Size = New System.Drawing.Size(240, 182)
@@ -852,10 +854,16 @@ Partial Class TweenMain
         '
         'MenuItemCommand
         '
-        Me.MenuItemCommand.Enabled = False
+        Me.MenuItemCommand.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TinyUrlConvertToolStripMenuItem})
         Me.MenuItemCommand.Name = "MenuItemCommand"
         Me.MenuItemCommand.Size = New System.Drawing.Size(86, 22)
         Me.MenuItemCommand.Text = "コマンド(&C)"
+        '
+        'TinyUrlConvertToolStripMenuItem
+        '
+        Me.TinyUrlConvertToolStripMenuItem.Name = "TinyUrlConvertToolStripMenuItem"
+        Me.TinyUrlConvertToolStripMenuItem.Size = New System.Drawing.Size(220, 22)
+        Me.TinyUrlConvertToolStripMenuItem.Text = "選択文字列を短縮URL変換"
         '
         'MenuItemHelp
         '
@@ -1073,5 +1081,6 @@ Partial Class TweenMain
     Friend WithEvents PostButton As System.Windows.Forms.Button
     Friend WithEvents MultiLineMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator21 As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents TinyUrlConvertToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class
