@@ -68,8 +68,6 @@ Partial Class TweenMain
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator
         Me.SelectAllMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator
-        Me.UpdateFollowersMenuItem1 = New System.Windows.Forms.ToolStripMenuItem
-        Me.ToolStripSeparator13 = New System.Windows.Forms.ToolStripSeparator
         Me.DeleteStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator8 = New System.Windows.Forms.ToolStripSeparator
         Me.RefreshStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
@@ -122,6 +120,7 @@ Partial Class TweenMain
         Me.MenuItemSearchPrev = New System.Windows.Forms.ToolStripMenuItem
         Me.MenuItemCommand = New System.Windows.Forms.ToolStripMenuItem
         Me.TinyUrlConvertToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.UpdateFollowersMenuItem1 = New System.Windows.Forms.ToolStripMenuItem
         Me.MenuItemHelp = New System.Windows.Forms.ToolStripMenuItem
         Me.MatomeMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator12 = New System.Windows.Forms.ToolStripSeparator
@@ -275,11 +274,11 @@ Partial Class TweenMain
         '
         'ContextMenuStrip2
         '
-        Me.ContextMenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ReplyStripMenuItem, Me.ReplyAllStripMenuItem, Me.DMStripMenuItem, Me.ToolStripSeparator2, Me.FavAddToolStripMenuItem, Me.FavRemoveToolStripMenuItem, Me.ToolStripSeparator1, Me.MoveToHomeToolStripMenuItem, Me.MoveToFavToolStripMenuItem, Me.StatusOpenMenuItem, Me.RepliedStatusOpenMenuItem, Me.FavorareMenuItem, Me.OpenURLMenuItem, Me.ToolStripSeparator3, Me.TabMenuItem, Me.IDRuleMenuItem, Me.ToolStripSeparator4, Me.ReadedStripMenuItem, Me.UnreadStripMenuItem, Me.JumpUnreadMenuItem, Me.ToolStripSeparator10, Me.SelectAllMenuItem, Me.ToolStripSeparator5, Me.UpdateFollowersMenuItem1, Me.ToolStripSeparator13, Me.DeleteStripMenuItem, Me.ToolStripSeparator8, Me.RefreshStripMenuItem})
+        Me.ContextMenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ReplyStripMenuItem, Me.ReplyAllStripMenuItem, Me.DMStripMenuItem, Me.ToolStripSeparator2, Me.FavAddToolStripMenuItem, Me.FavRemoveToolStripMenuItem, Me.ToolStripSeparator1, Me.MoveToHomeToolStripMenuItem, Me.MoveToFavToolStripMenuItem, Me.StatusOpenMenuItem, Me.RepliedStatusOpenMenuItem, Me.FavorareMenuItem, Me.OpenURLMenuItem, Me.ToolStripSeparator3, Me.TabMenuItem, Me.IDRuleMenuItem, Me.ToolStripSeparator4, Me.ReadedStripMenuItem, Me.UnreadStripMenuItem, Me.JumpUnreadMenuItem, Me.ToolStripSeparator10, Me.SelectAllMenuItem, Me.ToolStripSeparator5, Me.DeleteStripMenuItem, Me.ToolStripSeparator8, Me.RefreshStripMenuItem})
         Me.ContextMenuStrip2.Name = "ContextMenuStrip2"
         Me.ContextMenuStrip2.OwnerItem = Me.MenuItemOperate
         Me.ContextMenuStrip2.ShowImageMargin = False
-        Me.ContextMenuStrip2.Size = New System.Drawing.Size(251, 492)
+        Me.ContextMenuStrip2.Size = New System.Drawing.Size(251, 464)
         '
         'ReplyStripMenuItem
         '
@@ -431,17 +430,6 @@ Partial Class TweenMain
         '
         Me.ToolStripSeparator5.Name = "ToolStripSeparator5"
         Me.ToolStripSeparator5.Size = New System.Drawing.Size(247, 6)
-        '
-        'UpdateFollowersMenuItem1
-        '
-        Me.UpdateFollowersMenuItem1.Name = "UpdateFollowersMenuItem1"
-        Me.UpdateFollowersMenuItem1.Size = New System.Drawing.Size(250, 22)
-        Me.UpdateFollowersMenuItem1.Text = "片思いユーザーリスト取得"
-        '
-        'ToolStripSeparator13
-        '
-        Me.ToolStripSeparator13.Name = "ToolStripSeparator13"
-        Me.ToolStripSeparator13.Size = New System.Drawing.Size(247, 6)
         '
         'DeleteStripMenuItem
         '
@@ -854,7 +842,7 @@ Partial Class TweenMain
         '
         'MenuItemCommand
         '
-        Me.MenuItemCommand.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TinyUrlConvertToolStripMenuItem})
+        Me.MenuItemCommand.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TinyUrlConvertToolStripMenuItem, Me.UpdateFollowersMenuItem1})
         Me.MenuItemCommand.Name = "MenuItemCommand"
         Me.MenuItemCommand.Size = New System.Drawing.Size(86, 22)
         Me.MenuItemCommand.Text = "コマンド(&C)"
@@ -864,6 +852,12 @@ Partial Class TweenMain
         Me.TinyUrlConvertToolStripMenuItem.Name = "TinyUrlConvertToolStripMenuItem"
         Me.TinyUrlConvertToolStripMenuItem.Size = New System.Drawing.Size(220, 22)
         Me.TinyUrlConvertToolStripMenuItem.Text = "選択文字列を短縮URL変換"
+        '
+        'UpdateFollowersMenuItem1
+        '
+        Me.UpdateFollowersMenuItem1.Name = "UpdateFollowersMenuItem1"
+        Me.UpdateFollowersMenuItem1.Size = New System.Drawing.Size(220, 22)
+        Me.UpdateFollowersMenuItem1.Text = "片思いユーザーリスト取得"
         '
         'MenuItemHelp
         '
@@ -1031,8 +1025,6 @@ Partial Class TweenMain
     Friend WithEvents ClearTabMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator11 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents PlaySoundMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents UpdateFollowersMenuItem1 As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents ToolStripSeparator13 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents RepliedStatusOpenMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents OpenFileDialog1 As System.Windows.Forms.OpenFileDialog
     Friend WithEvents ContextMenuStrip3 As System.Windows.Forms.ContextMenuStrip
@@ -1082,5 +1074,6 @@ Partial Class TweenMain
     Friend WithEvents MultiLineMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator21 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents TinyUrlConvertToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents UpdateFollowersMenuItem1 As System.Windows.Forms.ToolStripMenuItem
 
 End Class
