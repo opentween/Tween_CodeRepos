@@ -6989,18 +6989,43 @@ RETRY:
     End Function
 
     Private Sub TinyUrlConvertToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TinyUrlConvertToolStripMenuItem.Click
-        Dim result As String = MakeShortUrl(0, StatusText.SelectedText)
+        Dim result As String = ""
+        Dim url As Regex = New Regex("https?://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+")
+        Dim urls As RegularExpressions.MatchCollection = Nothing
+        Dim src As String = ""
+
+        urls = url.Matches(StatusText.Text)
+
+        ' 正規表現にマッチしたURLからキャレットのあるURLを選び出す
+        For Each tmp2 As Match In urls
+            Dim tmp As String = tmp2.ToString
+            ' URLらしき文字列の範囲内にキャレットがあるか
+            If StatusText.SelectionStart >= StatusText.Text.IndexOf(tmp) AndAlso StatusText.SelectionStart <= StatusText.Text.IndexOf(tmp) + tmp.Length Then
+                src = tmp
+            End If
+        Next
+
+        ' それっぽい文字列が見つからない
+        If src = "" Then
+            Exit Sub
+        End If
+
+        ' tinyurlで圧縮されたURLは対象としない
+        If src.StartsWith("http://tinyurl.com/") Then
+            Exit Sub
+        End If
+
+        '選んだURLを選択（？）
+        StatusText.Select(StatusText.Text.IndexOf(src), src.Length)
+
+        result = MakeShortUrl(0, StatusText.SelectedText)
 
         If Not result = "" Then
-            StatusText.Select(_StatusSelectionStart, _StatusSelectionLength)
+            StatusText.Select(StatusText.Text.IndexOf(src), src.Length)
             StatusText.SelectedText = result
         End If
     End Sub
 
-    Private Sub MenuStrip1_ItemClicked(ByVal sender As System.Object, ByVal e As System.Windows.Forms.ToolStripItemClickedEventArgs) Handles MenuStrip1.ItemClicked
-        _StatusSelectionLength = StatusText.SelectionLength
-        _StatusSelectionStart = StatusText.SelectionStart
-    End Sub
 End Class
 
 Public Class TabStructure
