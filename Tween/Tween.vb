@@ -1601,7 +1601,7 @@ Public Class TweenMain
     End Function
 
     Private Sub GetTimelineWorker_RunWorkerCompleted(ByVal sender As System.Object, ByVal e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles GetTimelineWorker.RunWorkerCompleted
-        If _endingFlag Or e.Cancelled Then
+        If _endingFlag OrElse e.Cancelled Then
             Exit Sub
         End If
 
