@@ -444,6 +444,7 @@ Public Class Setting
         'TweenMain.SetNotifyIconText()
 
         TabControl1.SelectedIndex = 0
+        ActiveControl = Username
 
     End Sub
 
