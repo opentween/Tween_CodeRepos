@@ -6885,7 +6885,6 @@ RETRY:
         _mySpDis = SplitContainer1.SplitterDistance
     End Sub
 
-    ' Added by Takeshi KIRIYA (aka @takeshik) <me@takeshik.org> BEGIN.
     Private Sub RepliedStatusOpenMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RepliedStatusOpenMenuItem.Click
         Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
         Dim id As Integer = clsTw.GetReplyStatusID(Integer.Parse(MyList.SelectedItems(0).SubItems(5).Text))
@@ -6893,7 +6892,6 @@ RETRY:
             ExecWorker.RunWorkerAsync("http://twitter.com/" + Regex.Match(MyList.SelectedItems(0).SubItems(2).Text, "@[A-Za-z0-9_]+").Value.Substring(1) + "/statuses/" + id.ToString())
         End If
     End Sub
-    ' Added by Takeshi KIRIYA (aka @takeshik) <me@takeshik.org> END.
 
     Private Sub ContextMenuStrip3_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuStrip3.Opening
         Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)

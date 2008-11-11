@@ -1686,7 +1686,6 @@ Partial Public Class Twitter
         _signed = False
     End Sub
 
-    ' Added by Takeshi KIRIYA (aka @takeshik) <me@takeshik.org> BEGIN.
     Public Function GetReplyStatusID(ByVal id As Integer) As Integer
         Dim resStatus As String = ""
         Dim resMsg As String = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _ShowStatus + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2), String)
@@ -1702,8 +1701,6 @@ Partial Public Class Twitter
             Return -2
         End Try
     End Function
-
-    ' Added by Takeshi KIRIYA (aka @takeshik) <me@takeshik.org> END.
 
 #If DEBUG Then
     Public Sub GenerateAnalyzeKey()
