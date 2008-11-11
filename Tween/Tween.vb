@@ -6978,14 +6978,22 @@ RETRY:
         Select Case ConverterType
             Case UrlConverter.TinyUrl       'tinyurl
                 If SrcUrl.StartsWith("http") Then
-                    ret = DirectCast(_mySock.GetWebResponse("http://tinyurl.com/api-create.php?url=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
+                    Try
+                        ret = DirectCast(_mySock.GetWebResponse("http://tinyurl.com/api-create.php?url=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
+                    Catch ex As Exception
+                        '
+                    End Try
                 End If
                 If Not ret.StartsWith("http://tinyurl.com/") Then
                     ret = ""
                 End If
             Case UrlConverter.Isgd
                 If SrcUrl.StartsWith("http") Then
-                    ret = DirectCast(_mySock.GetWebResponse("http://is.gd/api.php?longurl=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
+                    Try
+                        ret = DirectCast(_mySock.GetWebResponse("http://is.gd/api.php?longurl=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
+                    Catch ex As Exception
+                        '
+                    End Try
                 End If
                 If Not ret.StartsWith("http://is.gd/") Then
                     ret = ""

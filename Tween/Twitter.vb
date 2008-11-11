@@ -448,6 +448,23 @@ Partial Public Class Twitter
                                 If retUrlStr.Length > 0 Then
                                     orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
                                 End If
+                            ElseIf orgData.IndexOf("<a href=""http://is.gd/", posl2) > -1 Then
+                                Dim urlStr As String
+                                Try
+                                    posl1 = orgData.IndexOf("<a href=""http://is.gd/", posl2)
+                                    posl1 = orgData.IndexOf("http://is.gd/", posl1)
+                                    posl2 = orgData.IndexOf("""", posl1)
+                                    urlStr = orgData.Substring(posl1, posl2 - posl1)
+                                Catch ex As Exception
+                                    _signed = False
+                                    Return "GetTimeline -> Err: Can't get is.gd."
+                                End Try
+                                Dim Response As String = ""
+                                Dim retUrlStr As String = ""
+                                retUrlStr = DirectCast(_mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
+                                If retUrlStr.Length > 0 Then
+                                    orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
+                                End If
                             Else
                                 Exit Do
                             End If
