@@ -5992,11 +5992,9 @@ RETRY:
             (keyData And Keys.KeyCode) = Keys.Enter Then
             '改行
             If StatusText.Multiline AndAlso _
-               ((keyData And Keys.Shift) = Keys.Shift) OrElse _
+               ((keyData And Keys.Shift) = Keys.Shift OrElse _
                ((keyData And Keys.Control) = Keys.Control AndAlso Not SettingDialog.PostCtrlEnter) OrElse _
-               ((keyData And Keys.Shift) <> Keys.Shift AndAlso (keyData And Keys.Control) <> Keys.Control AndAlso SettingDialog.PostCtrlEnter) Then
-                StatusText.Text += vbCrLf
-                StatusText.SelectionStart = StatusText.Text.Length
+               ((keyData And Keys.Shift) <> Keys.Shift AndAlso (keyData And Keys.Control) <> Keys.Control AndAlso SettingDialog.PostCtrlEnter)) Then
                 Dim pos1 As Integer = StatusText.SelectionStart
                 If StatusText.SelectionLength > 0 Then
                     StatusText.Text = StatusText.Text.Remove(pos1, StatusText.SelectionLength)  '選択状態文字列削除
