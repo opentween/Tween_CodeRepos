@@ -73,6 +73,10 @@ Public Class TweenMain
         Friend Declare Function FlashWindow Lib "user32.dll" ( _
             ByVal hwnd As Integer, ByVal bInvert As Integer) As Integer
     End Class
+    Private Enum UrlConverter
+        TinyUrl
+        Isgd
+    End Enum
 
     'Backgroundworkerへ処理種別を通知するための引数用Enum
     Private Enum WORKERTYPE
@@ -6974,11 +6978,18 @@ RETRY:
                                 SettingDialog.ProxyPassword)
 
         Select Case ConverterType
-            Case 0      'tinyurl
+            Case UrlConverter.TinyUrl       'tinyurl
                 If SrcUrl.StartsWith("http") Then
                     ret = DirectCast(_mySock.GetWebResponse("http://tinyurl.com/api-create.php?url=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
                 End If
                 If Not ret.StartsWith("http://tinyurl.com/") Then
+                    ret = ""
+                End If
+            Case UrlConverter.Isgd
+                If SrcUrl.StartsWith("http") Then
+                    ret = DirectCast(_mySock.GetWebResponse("http://is.gd/api.php?longurl=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
+                End If
+                If Not ret.StartsWith("http://is.gd/") Then
                     ret = ""
                 End If
         End Select
@@ -6986,7 +6997,7 @@ RETRY:
         Return ret
     End Function
 
-    Private Sub TinyUrlConvertToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TinyUrlConvertToolStripMenuItem.Click
+    Private Sub UrlConvert(ByVal Converter_Type As UrlConverter, ByRef ExcludeString As String)
         Dim result As String = ""
         Dim url As Regex = New Regex("https?://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+")
         Dim urls As RegularExpressions.MatchCollection = Nothing
@@ -6994,36 +7005,37 @@ RETRY:
 
         urls = url.Matches(StatusText.Text)
 
-        ' 正規表現にマッチしたURLからキャレットのあるURLを選び出す
+        ' 正規表現にマッチしたURL文字列をtinyurl化
         For Each tmp2 As Match In urls
             Dim tmp As String = tmp2.ToString
-            ' URLらしき文字列の範囲内にキャレットがあるか
-            If StatusText.SelectionStart >= StatusText.Text.IndexOf(tmp) AndAlso StatusText.SelectionStart <= StatusText.Text.IndexOf(tmp) + tmp.Length Then
-                src = tmp
+
+            ' ExcludeStringで指定された文字列で始まる場合は対象としない
+            If tmp.StartsWith(ExcludeString) Then
+                ' Nothing
+            Else
+                '選んだURLを選択（？）
+                StatusText.Select(StatusText.Text.IndexOf(tmp), tmp.Length)
+
+                'tinyurl変換
+                result = MakeShortUrl(Converter_Type, StatusText.SelectedText)
+
+                If Not result = "" Then
+                    StatusText.Select(StatusText.Text.IndexOf(tmp), tmp.Length)
+                    StatusText.SelectedText = result
+                End If
+
             End If
         Next
 
-        ' それっぽい文字列が見つからない
-        If src = "" Then
-            Exit Sub
-        End If
-
-        ' tinyurlで圧縮されたURLは対象としない
-        If src.StartsWith("http://tinyurl.com/") Then
-            Exit Sub
-        End If
-
-        '選んだURLを選択（？）
-        StatusText.Select(StatusText.Text.IndexOf(src), src.Length)
-
-        result = MakeShortUrl(0, StatusText.SelectedText)
-
-        If Not result = "" Then
-            StatusText.Select(StatusText.Text.IndexOf(src), src.Length)
-            StatusText.SelectedText = result
-        End If
     End Sub
 
+    Private Sub TinyURLToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TinyURLToolStripMenuItem.Click
+        UrlConvert(UrlConverter.TinyUrl, "http://tinyurl.com/")
+    End Sub
+
+    Private Sub IsgdToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles IsgdToolStripMenuItem.Click
+        UrlConvert(UrlConverter.Isgd, "http://is.gd/")
+    End Sub
 End Class
 
 Public Class TabStructure

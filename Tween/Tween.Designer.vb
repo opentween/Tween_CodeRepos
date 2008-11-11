@@ -133,6 +133,8 @@ Partial Class TweenMain
         Me.InfoTwitterMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator7 = New System.Windows.Forms.ToolStripSeparator
         Me.AboutMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.TinyURLToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.IsgdToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ContextMenuStrip3.SuspendLayout()
         Me.ContextMenuTabProperty.SuspendLayout()
         Me.ContextMenuStrip2.SuspendLayout()
@@ -849,14 +851,15 @@ Partial Class TweenMain
         '
         'TinyUrlConvertToolStripMenuItem
         '
+        Me.TinyUrlConvertToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TinyURLToolStripMenuItem, Me.IsgdToolStripMenuItem})
         Me.TinyUrlConvertToolStripMenuItem.Name = "TinyUrlConvertToolStripMenuItem"
         Me.TinyUrlConvertToolStripMenuItem.Size = New System.Drawing.Size(220, 22)
-        Me.TinyUrlConvertToolStripMenuItem.Text = "選択文字列を短縮URL変換"
+        Me.TinyUrlConvertToolStripMenuItem.Text = "入力欄のURLを短縮変換"
         '
         'UpdateFollowersMenuItem1
         '
         Me.UpdateFollowersMenuItem1.Name = "UpdateFollowersMenuItem1"
-        Me.UpdateFollowersMenuItem1.Size = New System.Drawing.Size(220, 22)
+        Me.UpdateFollowersMenuItem1.Size = New System.Drawing.Size(221, 22)
         Me.UpdateFollowersMenuItem1.Text = "片思いユーザーリスト取得"
         '
         'MenuItemHelp
@@ -927,6 +930,18 @@ Partial Class TweenMain
         Me.AboutMenuItem.Name = "AboutMenuItem"
         Me.AboutMenuItem.Size = New System.Drawing.Size(217, 22)
         Me.AboutMenuItem.Text = "Tweenについて(&A)"
+        '
+        'TinyURLToolStripMenuItem
+        '
+        Me.TinyURLToolStripMenuItem.Name = "TinyURLToolStripMenuItem"
+        Me.TinyURLToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.TinyURLToolStripMenuItem.Text = "TinyURL"
+        '
+        'IsgdToolStripMenuItem
+        '
+        Me.IsgdToolStripMenuItem.Name = "IsgdToolStripMenuItem"
+        Me.IsgdToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.IsgdToolStripMenuItem.Text = "is.gd"
         '
         'TweenMain
         '
@@ -1075,5 +1090,7 @@ Partial Class TweenMain
     Friend WithEvents ToolStripSeparator21 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents TinyUrlConvertToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents UpdateFollowersMenuItem1 As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents TinyURLToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents IsgdToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class
