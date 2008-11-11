@@ -105,8 +105,6 @@ Partial Class Setting
         Me.Label25 = New System.Windows.Forms.Label
         Me.CheckPostCtrlEnter = New System.Windows.Forms.CheckBox
         Me.Label27 = New System.Windows.Forms.Label
-        Me.CheckBox5 = New System.Windows.Forms.CheckBox
-        Me.Label29 = New System.Windows.Forms.Label
         Me.Label31 = New System.Windows.Forms.Label
         Me.Label33 = New System.Windows.Forms.Label
         Me.Label35 = New System.Windows.Forms.Label
@@ -965,27 +963,6 @@ Partial Class Setting
         Me.Label27.TabIndex = 15
         Me.Label27.Text = "POSTキー（デフォルトEnter）"
         '
-        'CheckBox5
-        '
-        Me.CheckBox5.AutoSize = True
-        Me.CheckBox5.Enabled = False
-        Me.CheckBox5.Location = New System.Drawing.Point(157, 415)
-        Me.CheckBox5.Name = "CheckBox5"
-        Me.CheckBox5.Size = New System.Drawing.Size(76, 16)
-        Me.CheckBox5.TabIndex = 33
-        Me.CheckBox5.Text = "有効にする"
-        Me.CheckBox5.UseVisualStyleBackColor = True
-        '
-        'Label29
-        '
-        Me.Label29.AutoSize = True
-        Me.Label29.Enabled = False
-        Me.Label29.Location = New System.Drawing.Point(11, 416)
-        Me.Label29.Name = "Label29"
-        Me.Label29.Size = New System.Drawing.Size(111, 12)
-        Me.Label29.TabIndex = 32
-        Me.Label29.Text = "発言欄の複数行編集"
-        '
         'Label31
         '
         Me.Label31.AutoSize = True
@@ -1389,11 +1366,9 @@ Partial Class Setting
         Me.TabPage2.Controls.Add(Me.CheckTinyURL)
         Me.TabPage2.Controls.Add(Me.Label50)
         Me.TabPage2.Controls.Add(Me.Button3)
-        Me.TabPage2.Controls.Add(Me.CheckBox5)
         Me.TabPage2.Controls.Add(Me.PlaySnd)
         Me.TabPage2.Controls.Add(Me.Label14)
         Me.TabPage2.Controls.Add(Me.Label15)
-        Me.TabPage2.Controls.Add(Me.Label29)
         Me.TabPage2.Controls.Add(Me.Label21)
         Me.TabPage2.Controls.Add(Me.CheckSortOrderLock)
         Me.TabPage2.Controls.Add(Me.Label38)
@@ -1783,8 +1758,6 @@ Partial Class Setting
     Friend WithEvents Label25 As System.Windows.Forms.Label
     Friend WithEvents CheckPostCtrlEnter As System.Windows.Forms.CheckBox
     Friend WithEvents Label27 As System.Windows.Forms.Label
-    Friend WithEvents CheckBox5 As System.Windows.Forms.CheckBox
-    Friend WithEvents Label29 As System.Windows.Forms.Label
     Friend WithEvents Label31 As System.Windows.Forms.Label
     Friend WithEvents Label33 As System.Windows.Forms.Label
     Friend WithEvents Label35 As System.Windows.Forms.Label
