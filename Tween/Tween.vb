@@ -7180,8 +7180,7 @@ Public Class ListViewItemComparer
                 result = String.Compare(itemx.SubItems(_column).Text, _
                     itemy.SubItems(_column).Text)
             Case ComparerMode.Integer
-                result = Integer.Parse(itemx.SubItems(_column).Text) - _
-                    Integer.Parse(itemy.SubItems(_column).Text)
+                result = Long.Parse(itemx.SubItems(_column).Text).CompareTo(Long.Parse(itemy.SubItems(_column).Text))
             Case ComparerMode.DateTime
                 'result = DateTime.Compare( _
                 '    DateTime.Parse(itemx.SubItems(_column).Text, datetimeformatinfo), _
@@ -7190,9 +7189,7 @@ Public Class ListViewItemComparer
                 '    itemx.SubItems(_column).Text, _
                 '    itemy.SubItems(_column).Text)
                 'StatusID(?)でソート
-                result = String.Compare( _
-                    itemx.SubItems(5).Text, _
-                    itemy.SubItems(5).Text)
+                result = Long.Parse(itemx.SubItems(5).Text).CompareTo(Long.Parse(itemy.SubItems(5).Text))
             Case ComparerMode.None
                 result = 0
         End Select
