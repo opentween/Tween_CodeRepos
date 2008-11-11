@@ -5225,7 +5225,7 @@ RETRY:
     End Sub
 
     Private Sub SaveConfigs()
-        If _username <> "" AndAlso _password <> "" Then
+        If _username <> "" AndAlso _password <> "" AndAlso Not _initial Then
             SyncLock _syncObject
                 _section.FormSize = _mySize
                 _section.FormLocation = _myLoc
@@ -5470,16 +5470,6 @@ RETRY:
             '    End If
             'Next
 
-            '終了処理中の保存でエラーが発生した場合は無視
-            If Not _endingFlag Then
-                _config.Save()
-            Else
-                Try
-                    _config.Save()
-                Catch ex As Exception
-
-                End Try
-            End If
         End If
     End Sub
 
@@ -6943,7 +6933,7 @@ RETRY:
     End Sub
 
     Private Sub SplitContainer2_Panel2_Resize(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SplitContainer2.Panel2.Resize
-        Me.StatusText.Multiline = Me.SplitContainer2.Panel2.Height <> Me.SplitContainer2.Panel2MinSize
+        Me.StatusText.Multiline = Me.SplitContainer2.Panel2.Height > Me.SplitContainer2.Panel2MinSize + 2
         MultiLineMenuItem.Checked = Me.StatusText.Multiline
         If _section IsNot Nothing AndAlso StatusText.Multiline Then _section.StatusTextHeight = SplitContainer2.Panel2.Height
     End Sub

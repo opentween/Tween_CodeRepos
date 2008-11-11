@@ -1607,7 +1607,7 @@ Public Property CloseToExit() As Boolean
         End Set
     End Property
 
-    <ConfigurationProperty("statustextheight", DefaultValue:=19)> _
+    <ConfigurationProperty("statustextheight", DefaultValue:=38)> _
     Public Property StatusTextHeight() As Integer
         Get
             Return CInt(Me("statustextheight"))
