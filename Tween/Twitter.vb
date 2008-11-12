@@ -1,5 +1,7 @@
 ﻿Imports System.Web
 Imports System.Xml
+Imports System.Text
+Imports System.Text.RegularExpressions
 
 Partial Public Class Twitter
     Public links As New Collections.Specialized.StringCollection
@@ -131,6 +133,11 @@ Partial Public Class Twitter
         GET_DMRCV
         GET_DMSNT
     End Enum
+    Public Enum UrlConverter
+        TinyUrl
+        Isgd
+    End Enum
+
 
     Public Sub New(ByVal Username As String, _
                 ByVal Password As String, _
@@ -1717,6 +1724,76 @@ Partial Public Class Twitter
         Catch ex As Xml.XmlException
             Return -2
         End Try
+    End Function
+
+    Public Function MakeShortUrl(ByVal ConverterType As Integer, ByRef SrcUrl As String) As String
+        Dim ret As String = ""
+        Dim resStatus As String = ""
+
+        Select Case ConverterType
+            Case UrlConverter.TinyUrl       'tinyurl
+                If SrcUrl.StartsWith("http") Then
+                    Try
+                        ret = DirectCast(_mySock.GetWebResponse("http://tinyurl.com/api-create.php?url=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
+                    Catch ex As Exception
+                        Return "Can't convert"
+                    End Try
+                End If
+                If Not ret.StartsWith("http://tinyurl.com/") Then
+                    Return "Can't convert"
+                End If
+            Case UrlConverter.Isgd
+                If SrcUrl.StartsWith("http") Then
+                    Try
+                        ret = DirectCast(_mySock.GetWebResponse("http://is.gd/api.php?longurl=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
+                    Catch ex As Exception
+                        Return "Can't convert"
+                    End Try
+                End If
+                If Not ret.StartsWith("http://is.gd/") Then
+                    Return "Can't convert"
+                End If
+        End Select
+
+        Return ret
+    End Function
+
+    Public Function UrlConvert(ByVal Converter_Type As UrlConverter, ByRef ExcludeString As String) As Boolean
+        Dim result As String = ""
+        Dim url As Regex = New Regex("https?://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+")
+        Dim urls As RegularExpressions.MatchCollection = Nothing
+        Dim src As String = ""
+
+        urls = url.Matches(TweenMain.StatusText.Text)
+
+        ' 正規表現にマッチしたURL文字列をtinyurl化
+        For Each tmp2 As Match In urls
+            Dim tmp As String = tmp2.ToString
+
+            ' ExcludeStringで指定された文字列で始まる場合は対象としない
+            If tmp.StartsWith(ExcludeString) Then
+                ' Nothing
+            Else
+                '選んだURLを選択（？）
+                TweenMain.StatusText.Select(TweenMain.StatusText.Text.IndexOf(tmp), tmp.Length)
+
+                'tinyurl変換
+                result = MakeShortUrl(Converter_Type, TweenMain.StatusText.SelectedText)
+
+                If result.Equals("Can't convert") Then
+                    Return False
+                End If
+
+                If Not result = "" Then
+                    TweenMain.StatusText.Select(TweenMain.StatusText.Text.IndexOf(tmp), tmp.Length)
+                    TweenMain.StatusText.SelectedText = result
+                End If
+
+            End If
+        Next
+
+        Return True
+
     End Function
 
 #If DEBUG Then

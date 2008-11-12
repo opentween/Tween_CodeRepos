@@ -73,10 +73,6 @@ Public Class TweenMain
         Friend Declare Function FlashWindow Lib "user32.dll" ( _
             ByVal hwnd As Integer, ByVal bInvert As Integer) As Integer
     End Class
-    Private Enum UrlConverter
-        TinyUrl
-        Isgd
-    End Enum
 
     'Backgroundworkerへ処理種別を通知するための引数用Enum
     Private Enum WORKERTYPE
@@ -6957,82 +6953,19 @@ RETRY:
             SplitContainer2.SplitterDistance = SplitContainer2.Height - SplitContainer2.Panel2MinSize - SplitContainer2.SplitterWidth
         End If
     End Sub
-    Public Function MakeShortUrl(ByVal ConverterType As Integer, ByRef SrcUrl As String) As String
-        Dim ret As String = ""
-        Dim resStatus As String = ""
-        Dim _mySock As New MySocket("UTF-8", "", "", _
-                                SettingDialog.ProxyType, _
-                                SettingDialog.ProxyAddress, _
-                                SettingDialog.ProxyPort, _
-                                SettingDialog.ProxyUser, _
-                                SettingDialog.ProxyPassword)
-
-        Select Case ConverterType
-            Case UrlConverter.TinyUrl       'tinyurl
-                If SrcUrl.StartsWith("http") Then
-                    Try
-                        ret = DirectCast(_mySock.GetWebResponse("http://tinyurl.com/api-create.php?url=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
-                    Catch ex As Exception
-                        '
-                    End Try
-                End If
-                If Not ret.StartsWith("http://tinyurl.com/") Then
-                    ret = ""
-                End If
-            Case UrlConverter.Isgd
-                If SrcUrl.StartsWith("http") Then
-                    Try
-                        ret = DirectCast(_mySock.GetWebResponse("http://is.gd/api.php?longurl=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
-                    Catch ex As Exception
-                        '
-                    End Try
-                End If
-                If Not ret.StartsWith("http://is.gd/") Then
-                    ret = ""
-                End If
-        End Select
-
-        Return ret
-    End Function
-
-    Private Sub UrlConvert(ByVal Converter_Type As UrlConverter, ByRef ExcludeString As String)
-        Dim result As String = ""
-        Dim url As Regex = New Regex("https?://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+")
-        Dim urls As RegularExpressions.MatchCollection = Nothing
-        Dim src As String = ""
-
-        urls = url.Matches(StatusText.Text)
-
-        ' 正規表現にマッチしたURL文字列をtinyurl化
-        For Each tmp2 As Match In urls
-            Dim tmp As String = tmp2.ToString
-
-            ' ExcludeStringで指定された文字列で始まる場合は対象としない
-            If tmp.StartsWith(ExcludeString) Then
-                ' Nothing
-            Else
-                '選んだURLを選択（？）
-                StatusText.Select(StatusText.Text.IndexOf(tmp), tmp.Length)
-
-                'tinyurl変換
-                result = MakeShortUrl(Converter_Type, StatusText.SelectedText)
-
-                If Not result = "" Then
-                    StatusText.Select(StatusText.Text.IndexOf(tmp), tmp.Length)
-                    StatusText.SelectedText = result
-                End If
-
-            End If
-        Next
-
-    End Sub
 
     Private Sub TinyURLToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TinyURLToolStripMenuItem.Click
-        UrlConvert(UrlConverter.TinyUrl, "http://tinyurl.com/")
+        clsTw.UrlConvert(Twitter.UrlConverter.TinyUrl, "http://tinyurl.com/")
     End Sub
 
     Private Sub IsgdToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles IsgdToolStripMenuItem.Click
-        UrlConvert(UrlConverter.Isgd, "http://is.gd/")
+        clsTw.UrlConvert(Twitter.UrlConverter.Isgd, "http://is.gd/")
+    End Sub
+
+    Private Sub UrlConvertAutoToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UrlConvertAutoToolStripMenuItem.Click
+        If Not clsTw.UrlConvert(Twitter.UrlConverter.TinyUrl, "http://tinyurl.com/") Then
+            clsTw.UrlConvert(Twitter.UrlConverter.Isgd, "http://is.gd/")
+        End If
     End Sub
 End Class
 
