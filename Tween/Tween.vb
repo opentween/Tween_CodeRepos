@@ -6090,6 +6090,8 @@ RETRY:
         Dim rslt As GetWorkerResult = DirectCast(e.Result, GetWorkerResult)
         Dim args As New GetWorkerArg()
 
+        UrlUndoToolStripMenuItem.Enabled = False  'Undoをできないように設定 Twitter.vb側でUndoバッファはクリアしているはず
+
         TimerRefreshIcon.Enabled = False
         If My.Computer.Network.IsAvailable Then
             NotifyIcon1.Icon = NIconAt
@@ -6966,6 +6968,10 @@ RETRY:
         If Not clsTw.UrlConvert(Twitter.UrlConverter.TinyUrl, "http://tinyurl.com/") Then
             clsTw.UrlConvert(Twitter.UrlConverter.Isgd, "http://is.gd/")
         End If
+    End Sub
+
+    Private Sub UrlUndoToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UrlUndoToolStripMenuItem.Click
+        clsTw.doUrlUndo()
     End Sub
 End Class
 
