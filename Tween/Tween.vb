@@ -378,6 +378,8 @@ Public Class TweenMain
             '他の設定項目は、随時設定画面で保持している値を読み出して使用
         End If
 
+        _initial = True
+
         'バージョンチェック（引数：起動時チェックの場合はTrue･･･チェック結果のメッセージを表示しない）
         If SettingDialog.StartupVersion Then
             CheckNewVersion(True)
@@ -624,7 +626,6 @@ Public Class TweenMain
         '    GetLogWorker.RunWorkerAsync(0)
         'End If
 
-        _initial = True
         If My.Computer.Network.IsAvailable Then
             NotifyIcon1.Icon = NIconRefresh(0)
             _refreshIconCnt = 0
@@ -5470,6 +5471,7 @@ RETRY:
             '    End If
             'Next
 
+            _config.Save()
         End If
     End Sub
 
