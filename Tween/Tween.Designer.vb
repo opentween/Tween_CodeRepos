@@ -120,6 +120,8 @@ Partial Class TweenMain
         Me.MenuItemSearchPrev = New System.Windows.Forms.ToolStripMenuItem
         Me.MenuItemCommand = New System.Windows.Forms.ToolStripMenuItem
         Me.TinyUrlConvertToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.UrlConvertAutoToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.UrlUndoToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.TinyURLToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.IsgdToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.UpdateFollowersMenuItem1 = New System.Windows.Forms.ToolStripMenuItem
@@ -135,7 +137,6 @@ Partial Class TweenMain
         Me.InfoTwitterMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator7 = New System.Windows.Forms.ToolStripSeparator
         Me.AboutMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.UrlConvertAutoToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ContextMenuStrip3.SuspendLayout()
         Me.ContextMenuTabProperty.SuspendLayout()
         Me.ContextMenuStrip2.SuspendLayout()
@@ -468,6 +469,7 @@ Partial Class TweenMain
         '
         Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SettingStripMenuItem, Me.ToolStripSeparator9, Me.SaveLogMenuItem, Me.ToolStripSeparator17, Me.NewPostPopMenuItem, Me.PlaySoundMenuItem, Me.ListLockMenuItem, Me.ToolStripSeparator15, Me.MultiLineMenuItem, Me.ToolStripSeparator21, Me.EndToolStripMenuItem})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
+        Me.ContextMenuStrip1.OwnerItem = Me.MenuItemFile
         Me.ContextMenuStrip1.ShowCheckMargin = True
         Me.ContextMenuStrip1.ShowImageMargin = False
         Me.ContextMenuStrip1.Size = New System.Drawing.Size(240, 182)
@@ -851,21 +853,35 @@ Partial Class TweenMain
         '
         'TinyUrlConvertToolStripMenuItem
         '
-        Me.TinyUrlConvertToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.UrlConvertAutoToolStripMenuItem, Me.TinyURLToolStripMenuItem, Me.IsgdToolStripMenuItem})
+        Me.TinyUrlConvertToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.UrlConvertAutoToolStripMenuItem, Me.UrlUndoToolStripMenuItem, Me.TinyURLToolStripMenuItem, Me.IsgdToolStripMenuItem})
         Me.TinyUrlConvertToolStripMenuItem.Name = "TinyUrlConvertToolStripMenuItem"
         Me.TinyUrlConvertToolStripMenuItem.Size = New System.Drawing.Size(220, 22)
         Me.TinyUrlConvertToolStripMenuItem.Text = "入力欄のURLを短縮変換"
         '
+        'UrlConvertAutoToolStripMenuItem
+        '
+        Me.UrlConvertAutoToolStripMenuItem.Name = "UrlConvertAutoToolStripMenuItem"
+        Me.UrlConvertAutoToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.L), System.Windows.Forms.Keys)
+        Me.UrlConvertAutoToolStripMenuItem.Size = New System.Drawing.Size(242, 22)
+        Me.UrlConvertAutoToolStripMenuItem.Text = "短縮サービス自動選択"
+        '
+        'UrlUndoToolStripMenuItem
+        '
+        Me.UrlUndoToolStripMenuItem.Enabled = False
+        Me.UrlUndoToolStripMenuItem.Name = "UrlUndoToolStripMenuItem"
+        Me.UrlUndoToolStripMenuItem.Size = New System.Drawing.Size(218, 22)
+        Me.UrlUndoToolStripMenuItem.Text = "元に戻す"
+        '
         'TinyURLToolStripMenuItem
         '
         Me.TinyURLToolStripMenuItem.Name = "TinyURLToolStripMenuItem"
-        Me.TinyURLToolStripMenuItem.Size = New System.Drawing.Size(170, 22)
+        Me.TinyURLToolStripMenuItem.Size = New System.Drawing.Size(218, 22)
         Me.TinyURLToolStripMenuItem.Text = "TinyURL"
         '
         'IsgdToolStripMenuItem
         '
         Me.IsgdToolStripMenuItem.Name = "IsgdToolStripMenuItem"
-        Me.IsgdToolStripMenuItem.Size = New System.Drawing.Size(170, 22)
+        Me.IsgdToolStripMenuItem.Size = New System.Drawing.Size(218, 22)
         Me.IsgdToolStripMenuItem.Text = "is.gd"
         '
         'UpdateFollowersMenuItem1
@@ -942,13 +958,6 @@ Partial Class TweenMain
         Me.AboutMenuItem.Name = "AboutMenuItem"
         Me.AboutMenuItem.Size = New System.Drawing.Size(217, 22)
         Me.AboutMenuItem.Text = "Tweenについて(&A)"
-        '
-        'UrlConvertAutoToolStripMenuItem
-        '
-        Me.UrlConvertAutoToolStripMenuItem.Name = "UrlConvertAutoToolStripMenuItem"
-        Me.UrlConvertAutoToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.L), System.Windows.Forms.Keys)
-        Me.UrlConvertAutoToolStripMenuItem.Size = New System.Drawing.Size(170, 22)
-        Me.UrlConvertAutoToolStripMenuItem.Text = "自動判定"
         '
         'TweenMain
         '
@@ -1100,5 +1109,6 @@ Partial Class TweenMain
     Friend WithEvents TinyURLToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents IsgdToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents UrlConvertAutoToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents UrlUndoToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class
