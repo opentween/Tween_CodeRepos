@@ -69,10 +69,10 @@ Public Class TweenMain
     Private _StatusSelectionStart As Integer        ' 一時退避用
     Private _StatusSelectionLength As Integer       ' 一時退避用
 
-    Private Class urlUndo
+    Private Structure urlUndo
         Public Before As String
         Public After As String
-    End Class
+    End Structure
 
     Private urlUndoBuffer As Generic.List(Of urlUndo) = Nothing
 
