@@ -1491,7 +1491,9 @@ Public Class TweenMain
             NotifyIcon1.Visible = False
             Me.Visible = False
 
-            SaveConfigs()
+            If Not _initial Then
+                SaveConfigs()
+            End If
 
             'Do While GetTimelineWorker.IsBusy
             '    Threading.Thread.Sleep(100)
@@ -5246,7 +5248,7 @@ RETRY:
     End Sub
 
     Private Sub SaveConfigs()
-        If _username <> "" AndAlso _password <> "" AndAlso Not _initial Then
+        If _username <> "" AndAlso _password <> "" Then
             SyncLock _syncObject
                 _section.FormSize = _mySize
                 _section.FormLocation = _myLoc
