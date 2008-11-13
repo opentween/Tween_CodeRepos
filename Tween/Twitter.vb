@@ -135,18 +135,6 @@ Partial Public Class Twitter
         GET_DMSNT
     End Enum
 
-    Public Enum UrlConverter
-        TinyUrl
-        Isgd
-    End Enum
-
-    Private Class urlUndo
-        Public Before As String
-        Public After As String
-    End Class
-
-    Private urlUndoBuffer As Generic.List(Of urlUndo) = Nothing
-
 
     Public Sub New(ByVal Username As String, _
                 ByVal Password As String, _
@@ -1239,7 +1227,6 @@ Partial Public Class Twitter
         Dim resMsg As String = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _statusUpdatePathAPI, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI, dataStr), String)
 
         If resStatus.StartsWith("OK") Then
-            urlUndoBuffer = Nothing
             Return ""
         Else
             Return resStatus
@@ -1735,137 +1722,6 @@ Partial Public Class Twitter
             Return -2
         End Try
     End Function
-
-    Public Function MakeShortUrl(ByVal ConverterType As Integer, ByRef SrcUrl As String) As String
-        Dim ret As String = ""
-        Dim resStatus As String = ""
-
-        Select Case ConverterType
-            Case UrlConverter.TinyUrl       'tinyurl
-                If SrcUrl.StartsWith("http") Then
-                    Try
-                        ret = DirectCast(_mySock.GetWebResponse("http://tinyurl.com/api-create.php?url=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
-                    Catch ex As Exception
-                        Return "Can't convert"
-                    End Try
-                End If
-                If Not ret.StartsWith("http://tinyurl.com/") Then
-                    Return "Can't convert"
-                End If
-            Case UrlConverter.Isgd
-                If SrcUrl.StartsWith("http") Then
-                    Try
-                        ret = DirectCast(_mySock.GetWebResponse("http://is.gd/api.php?longurl=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
-                    Catch ex As Exception
-                        Return "Can't convert"
-                    End Try
-                End If
-                If Not ret.StartsWith("http://is.gd/") Then
-                    Return "Can't convert"
-                End If
-        End Select
-
-        Return ret
-    End Function
-
-    Public Function UrlConvert(ByVal Converter_Type As UrlConverter, ByRef ExcludeString As String) As Boolean
-        Dim result As String = ""
-        Dim url As Regex = New Regex("https?://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+")
-
-        Dim urls As RegularExpressions.MatchCollection = Nothing
-        Dim src As String = ""
-
-        urls = url.Matches(TweenMain.StatusText.Text)
-
-        If TweenMain.StatusText.SelectionLength > 0 Then
-            Dim tmp As String = TweenMain.StatusText.SelectedText
-            ' httpから始まらない場合、ExcludeStringで指定された文字列で始まる場合は対象としない
-            If Not tmp.StartsWith("http") OrElse tmp.StartsWith(ExcludeString) Then
-                ' Nothing
-            Else
-                ' 文字列が選択されている場合はその文字列について処理
-
-                '短縮URL変換 日本語を含むかもしれないのでURLエンコードする
-                result = MakeShortUrl(Converter_Type, HttpUtility.UrlEncode(TweenMain.StatusText.SelectedText))
-
-                If result.Equals("Can't convert") Then
-                    Return False
-                End If
-
-                If Not result = "" Then
-                    Dim undotmp As New urlUndo
-
-                    TweenMain.StatusText.Select(TweenMain.StatusText.Text.IndexOf(tmp), tmp.Length)
-                    TweenMain.StatusText.SelectedText = result
-
-                    'undoバッファにセット
-                    undotmp.Before = tmp
-                    undotmp.After = result
-
-                    If urlUndoBuffer Is Nothing Then
-                        urlUndoBuffer = New List(Of urlUndo)
-                        TweenMain.UrlUndoToolStripMenuItem.Enabled = True
-                    End If
-
-                    urlUndoBuffer.Add(undotmp)
-                End If
-            End If
-        Else
-            ' 正規表現にマッチしたURL文字列をtinyurl化
-            For Each tmp2 As Match In urls
-                Dim tmp As String = tmp2.ToString
-                Dim undotmp As New urlUndo
-
-                ' ExcludeStringで指定された文字列で始まる場合は対象としない
-                If tmp.StartsWith(ExcludeString) Then
-                    ' Nothing
-                Else
-                    '選んだURLを選択（？）
-                    TweenMain.StatusText.Select(TweenMain.StatusText.Text.IndexOf(tmp), tmp.Length)
-
-                    '短縮URL変換
-                    result = MakeShortUrl(Converter_Type, TweenMain.StatusText.SelectedText)
-
-                    If result.Equals("Can't convert") Then
-                        Return False
-                    End If
-
-                    If Not result = "" Then
-                        TweenMain.StatusText.Select(TweenMain.StatusText.Text.IndexOf(tmp), tmp.Length)
-                        TweenMain.StatusText.SelectedText = result
-                        'undoバッファにセット
-                        undotmp.Before = tmp
-                        undotmp.After = result
-
-                        If urlUndoBuffer Is Nothing Then
-                            urlUndoBuffer = New List(Of urlUndo)
-                            TweenMain.UrlUndoToolStripMenuItem.Enabled = True
-                        End If
-
-                        urlUndoBuffer.Add(undotmp)
-                    End If
-
-                End If
-            Next
-
-
-        End If
-
-
-            Return True
-
-    End Function
-    Public Sub doUrlUndo()
-        If urlUndoBuffer IsNot Nothing Then
-            Dim tmp As String = TweenMain.StatusText.Text
-            For Each data As urlUndo In urlUndoBuffer
-                tmp = tmp.Replace(data.After, data.Before)
-            Next
-            TweenMain.StatusText.Text = tmp
-            urlUndoBuffer = Nothing
-            TweenMain.UrlUndoToolStripMenuItem.Enabled = False
-        End If
-    End Sub
 #If DEBUG Then
     Public Sub GenerateAnalyzeKey()
         '解析キー情報部分のソースをwedataから作成する
