@@ -1617,12 +1617,6 @@ Public Class TweenMain
     End Function
 
     Private Sub GetTimelineWorker_RunWorkerCompleted(ByVal sender As System.Object, ByVal e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles GetTimelineWorker.RunWorkerCompleted
-        TimerRefreshIcon.Enabled = False
-        If My.Computer.Network.IsAvailable Then
-            NotifyIcon1.Icon = NIconAt
-        Else
-            NotifyIcon1.Icon = NIconAtSmoke
-        End If
 
         If e.Error IsNot Nothing Then
             If My.Computer.Network.IsAvailable Then
@@ -1635,6 +1629,13 @@ Public Class TweenMain
 
         If _endingFlag OrElse e.Cancelled Then
             Exit Sub
+        End If
+
+        TimerRefreshIcon.Enabled = False
+        If My.Computer.Network.IsAvailable Then
+            NotifyIcon1.Icon = NIconAt
+        Else
+            NotifyIcon1.Icon = NIconAtSmoke
         End If
 
         Dim rslt As GetWorkerResult = DirectCast(e.Result, GetWorkerResult)
