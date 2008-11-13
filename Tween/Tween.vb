@@ -4,6 +4,7 @@ Imports System.Text
 Imports System.Text.RegularExpressions
 Imports Tween.TweenCustomControl
 Imports System.IO
+Imports System.Web
 
 Public Class TweenMain
     Private clsTw As Twitter            'Twitter用通信データ処理カスタムクラス
@@ -68,6 +69,13 @@ Public Class TweenMain
     Private _StatusSelectionStart As Integer        ' 一時退避用
     Private _StatusSelectionLength As Integer       ' 一時退避用
 
+    Private Class urlUndo
+        Public Before As String
+        Public After As String
+    End Class
+
+    Private urlUndoBuffer As Generic.List(Of urlUndo) = Nothing
+
     Friend Class Win32Api
         '画面をブリンクするためのWin32API。起動時に10ページ読み取りごとに継続確認メッセージを表示する際の通知強調用
         Friend Declare Function FlashWindow Lib "user32.dll" ( _
@@ -84,6 +92,11 @@ Public Class TweenMain
         FavAdd                  'Fav追加
         FavRemove               'Fav削除
         CreateNewSocket         'Socket再作成
+    End Enum
+
+    Public Enum UrlConverter
+        TinyUrl
+        Isgd
     End Enum
 
     'Backgroundworkerの処理結果通知用引数構造体
@@ -6100,7 +6113,8 @@ RETRY:
         Dim rslt As GetWorkerResult = DirectCast(e.Result, GetWorkerResult)
         Dim args As New GetWorkerArg()
 
-        UrlUndoToolStripMenuItem.Enabled = False  'Undoをできないように設定 Twitter.vb側でUndoバッファはクリアしているはず
+        urlUndoBuffer = Nothing
+        UrlUndoToolStripMenuItem.Enabled = False  'Undoをできないように設定
 
         TimerRefreshIcon.Enabled = False
         If My.Computer.Network.IsAvailable Then
@@ -6966,22 +6980,158 @@ RETRY:
         End If
     End Sub
 
+    Public Function MakeShortUrl(ByVal ConverterType As Integer, ByRef SrcUrl As String, ByRef _mySock As MySocket) As String
+        Dim ret As String = ""
+        Dim resStatus As String = ""
+
+        Select Case ConverterType
+            Case UrlConverter.TinyUrl       'tinyurl
+                If SrcUrl.StartsWith("http") Then
+                    Try
+                        ret = DirectCast(_mySock.GetWebResponse("http://tinyurl.com/api-create.php?url=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
+                    Catch ex As Exception
+                        Return "Can't convert"
+                    End Try
+                End If
+                If Not ret.StartsWith("http://tinyurl.com/") Then
+                    Return "Can't convert"
+                End If
+            Case UrlConverter.Isgd
+                If SrcUrl.StartsWith("http") Then
+                    Try
+                        ret = DirectCast(_mySock.GetWebResponse("http://is.gd/api.php?longurl=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
+                    Catch ex As Exception
+                        Return "Can't convert"
+                    End Try
+                End If
+                If Not ret.StartsWith("http://is.gd/") Then
+                    Return "Can't convert"
+                End If
+        End Select
+
+        Return ret
+    End Function
+
+    Public Function UrlConvert(ByVal Converter_Type As UrlConverter, ByRef ExcludeString As String) As Boolean
+        Dim _mySock As New MySocket("Shift_JIS", "", "", _
+                        SettingDialog.ProxyType, _
+                        SettingDialog.ProxyAddress, _
+                        SettingDialog.ProxyPort, _
+                        SettingDialog.ProxyUser, _
+                        SettingDialog.ProxyPassword)
+        Dim result As String = ""
+        Dim url As Regex = New Regex("https?://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+")
+
+        Dim urls As RegularExpressions.MatchCollection = Nothing
+        Dim src As String = ""
+
+        urls = url.Matches(StatusText.Text)
+
+        If StatusText.SelectionLength > 0 Then
+            Dim tmp As String = StatusText.SelectedText
+            ' httpから始まらない場合、ExcludeStringで指定された文字列で始まる場合は対象としない
+            If Not tmp.StartsWith("http") OrElse tmp.StartsWith(ExcludeString) Then
+                ' Nothing
+            Else
+                ' 文字列が選択されている場合はその文字列について処理
+
+                '短縮URL変換 日本語を含むかもしれないのでURLエンコードする
+                result = MakeShortUrl(Converter_Type, HttpUtility.UrlEncode(StatusText.SelectedText), _mySock)
+
+                If result.Equals("Can't convert") Then
+                    Return False
+                End If
+
+                If Not result = "" Then
+                    Dim undotmp As New urlUndo
+
+                    StatusText.Select(StatusText.Text.IndexOf(tmp), tmp.Length)
+                    StatusText.SelectedText = result
+
+                    'undoバッファにセット
+                    undotmp.Before = tmp
+                    undotmp.After = result
+
+                    If urlUndoBuffer Is Nothing Then
+                        urlUndoBuffer = New List(Of urlUndo)
+                        UrlUndoToolStripMenuItem.Enabled = True
+                    End If
+
+                    urlUndoBuffer.Add(undotmp)
+                End If
+            End If
+        Else
+            ' 正規表現にマッチしたURL文字列をtinyurl化
+            For Each tmp2 As Match In urls
+                Dim tmp As String = tmp2.ToString
+                Dim undotmp As New urlUndo
+
+                ' ExcludeStringで指定された文字列で始まる場合は対象としない
+                If tmp.StartsWith(ExcludeString) Then
+                    ' Nothing
+                Else
+                    '選んだURLを選択（？）
+                    StatusText.Select(StatusText.Text.IndexOf(tmp), tmp.Length)
+
+                    '短縮URL変換
+                    result = MakeShortUrl(Converter_Type, StatusText.SelectedText, _mySock)
+
+                    If result.Equals("Can't convert") Then
+                        Return False
+                    End If
+
+                    If Not result = "" Then
+                        StatusText.Select(StatusText.Text.IndexOf(tmp), tmp.Length)
+                        StatusText.SelectedText = result
+                        'undoバッファにセット
+                        undotmp.Before = tmp
+                        undotmp.After = result
+
+                        If urlUndoBuffer Is Nothing Then
+                            urlUndoBuffer = New List(Of urlUndo)
+                            UrlUndoToolStripMenuItem.Enabled = True
+                        End If
+
+                        urlUndoBuffer.Add(undotmp)
+                    End If
+
+                End If
+            Next
+
+
+        End If
+
+        Return True
+
+    End Function
+    Public Sub doUrlUndo()
+        If urlUndoBuffer IsNot Nothing Then
+            Dim tmp As String = StatusText.Text
+            For Each data As urlUndo In urlUndoBuffer
+                tmp = tmp.Replace(data.After, data.Before)
+            Next
+            StatusText.Text = tmp
+            urlUndoBuffer = Nothing
+            UrlUndoToolStripMenuItem.Enabled = False
+        End If
+    End Sub
+
     Private Sub TinyURLToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TinyURLToolStripMenuItem.Click
-        clsTw.UrlConvert(Twitter.UrlConverter.TinyUrl, "http://tinyurl.com/")
+        UrlConvert(UrlConverter.TinyUrl, "http://tinyurl.com/")
     End Sub
 
     Private Sub IsgdToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles IsgdToolStripMenuItem.Click
-        clsTw.UrlConvert(Twitter.UrlConverter.Isgd, "http://is.gd/")
+        UrlConvert(UrlConverter.Isgd, "http://is.gd/")
     End Sub
 
     Private Sub UrlConvertAutoToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UrlConvertAutoToolStripMenuItem.Click
-        If Not clsTw.UrlConvert(Twitter.UrlConverter.TinyUrl, "http://tinyurl.com/") Then
-            clsTw.UrlConvert(Twitter.UrlConverter.Isgd, "http://is.gd/")
+        If Not UrlConvert(UrlConverter.TinyUrl, "http://tinyurl.com/") Then
+            UrlConvert(UrlConverter.Isgd, "http://is.gd/")
         End If
     End Sub
 
     Private Sub UrlUndoToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UrlUndoToolStripMenuItem.Click
-        clsTw.doUrlUndo()
+        doUrlUndo()
     End Sub
 End Class
 
