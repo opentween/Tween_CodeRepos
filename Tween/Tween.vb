@@ -1512,91 +1512,91 @@ Public Class TweenMain
         imgs.ColorDepth = ColorDepth.Depth32Bit
 
         Dim args As GetWorkerArg = DirectCast(e.Argument, GetWorkerArg)
-        Try
-            If args.type = WORKERTYPE.PostMessage Then CheckReplyTo(args.status)
-            For i As Integer = 0 To 1
-                Select Case args.type
-                    Case WORKERTYPE.Timeline
-                        ret = clsTw.GetTimeline(tlList, args.page, _initial, args.endPage, Twitter.GetTypes.GET_TIMELINE, TIconList.Images.Keys, imgs, getDM)
-                    Case WORKERTYPE.Reply
-                        ret = clsTw.GetTimeline(tlList, args.page, _initial, args.endPage, Twitter.GetTypes.GET_REPLY, TIconList.Images.Keys, imgs, getDM)
-                    Case WORKERTYPE.DirectMessegeRcv
-                        ret = clsTw.GetDirectMessage(tlList, args.page, args.endPage, Twitter.GetTypes.GET_DMRCV, TIconList.Images.Keys, imgs)
-                        If ret = "" AndAlso _initial AndAlso SettingDialog.StartupFollowers Then
-                            ret = clsTw.GetFollowers()
+        '        Try
+        If args.type = WORKERTYPE.PostMessage Then CheckReplyTo(args.status)
+        For i As Integer = 0 To 1
+            Select Case args.type
+                Case WORKERTYPE.Timeline
+                    ret = clsTw.GetTimeline(tlList, args.page, _initial, args.endPage, Twitter.GetTypes.GET_TIMELINE, TIconList.Images.Keys, imgs, getDM)
+                Case WORKERTYPE.Reply
+                    ret = clsTw.GetTimeline(tlList, args.page, _initial, args.endPage, Twitter.GetTypes.GET_REPLY, TIconList.Images.Keys, imgs, getDM)
+                Case WORKERTYPE.DirectMessegeRcv
+                    ret = clsTw.GetDirectMessage(tlList, args.page, args.endPage, Twitter.GetTypes.GET_DMRCV, TIconList.Images.Keys, imgs)
+                    If ret = "" AndAlso _initial AndAlso SettingDialog.StartupFollowers Then
+                        ret = clsTw.GetFollowers()
+                    End If
+                Case WORKERTYPE.DirectMessegeSnt
+                    ret = clsTw.GetDirectMessage(tlList, args.page, args.endPage, Twitter.GetTypes.GET_DMSNT, TIconList.Images.Keys, imgs)
+                Case WORKERTYPE.PostMessage
+                    ret = clsTw.PostStatus(args.status, _reply_to_id)
+                Case WORKERTYPE.FavAdd
+                    ret = clsTw.PostFavAdd(args.ids(args.page))
+                    If ret = "" Then
+                        _favTimestamps.Add(Now)
+                    End If
+                    Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
+                    For _i As Integer = _favTimestamps.Count - 1 To 0 Step -1
+                        If _favTimestamps(_i).CompareTo(oneHour) < 0 Then
+                            _favTimestamps.RemoveAt(_i)
                         End If
-                    Case WORKERTYPE.DirectMessegeSnt
-                        ret = clsTw.GetDirectMessage(tlList, args.page, args.endPage, Twitter.GetTypes.GET_DMSNT, TIconList.Images.Keys, imgs)
-                    Case WORKERTYPE.PostMessage
-                        ret = clsTw.PostStatus(args.status, _reply_to_id)
-                    Case WORKERTYPE.FavAdd
-                        ret = clsTw.PostFavAdd(args.ids(args.page))
-                        If ret = "" Then
-                            _favTimestamps.Add(Now)
-                        End If
-                        Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
-                        For _i As Integer = _favTimestamps.Count - 1 To 0 Step -1
-                            If _favTimestamps(_i).CompareTo(oneHour) < 0 Then
-                                _favTimestamps.RemoveAt(_i)
-                            End If
-                        Next
-                    Case WORKERTYPE.FavRemove
-                        ret = clsTw.PostFavRemove(args.ids(args.page))
-                    Case WORKERTYPE.CreateNewSocket
-                        clsTw.CreateNewSocket()
-                End Select
-                If args.type = WORKERTYPE.PostMessage Then
-                    _reply_to_id = 0
-                    _reply_to_name = Nothing
-                End If
-                If ret = "" OrElse (ret <> "" AndAlso (args.type = WORKERTYPE.PostMessage OrElse args.type = WORKERTYPE.FavAdd OrElse args.type = WORKERTYPE.FavRemove)) Then Exit For
-                Threading.Thread.Sleep(500)
-            Next
-
-            If args.type = WORKERTYPE.FavAdd OrElse args.type = WORKERTYPE.FavRemove Then
-                rslt.ids = args.ids
-                rslt.sIds = args.sIds
-                If ret = "" Then rslt.sIds.Add(args.ids(args.page))
-                args.page += 1
+                    Next
+                Case WORKERTYPE.FavRemove
+                    ret = clsTw.PostFavRemove(args.ids(args.page))
+                Case WORKERTYPE.CreateNewSocket
+                    clsTw.CreateNewSocket()
+            End Select
+            If args.type = WORKERTYPE.PostMessage Then
+                _reply_to_id = 0
+                _reply_to_name = Nothing
             End If
-            rslt.retMsg = ret
-            rslt.TLine = tlList
-            rslt.page = args.page
-            rslt.endPage = args.endPage
-            rslt.type = args.type
-            rslt.imgs = imgs
-            rslt.tName = args.tName
-            If getDM Then _getDM = True
+            If ret = "" OrElse (ret <> "" AndAlso (args.type = WORKERTYPE.PostMessage OrElse args.type = WORKERTYPE.FavAdd OrElse args.type = WORKERTYPE.FavRemove)) Then Exit For
+            Threading.Thread.Sleep(500)
+        Next
 
-            If _endingFlag Then
-                e.Cancel = True
-                Exit Sub
-            End If
+        If args.type = WORKERTYPE.FavAdd OrElse args.type = WORKERTYPE.FavRemove Then
+            rslt.ids = args.ids
+            rslt.sIds = args.sIds
+            If ret = "" Then rslt.sIds.Add(args.ids(args.page))
+            args.page += 1
+        End If
+        rslt.retMsg = ret
+        rslt.TLine = tlList
+        rslt.page = args.page
+        rslt.endPage = args.endPage
+        rslt.type = args.type
+        rslt.imgs = imgs
+        rslt.tName = args.tName
+        If getDM Then _getDM = True
 
-            e.Result = rslt
-        Catch ex As Exception
-            If _endingFlag Then
-                e.Cancel = True
-                Exit Sub
-            End If
-            My.Application.Log.DefaultFileLogWriter.Location = Logging.LogFileLocation.ExecutableDirectory
-            My.Application.Log.DefaultFileLogWriter.MaxFileSize = 102400
-            My.Application.Log.DefaultFileLogWriter.AutoFlush = True
-            My.Application.Log.DefaultFileLogWriter.Append = False
-            'My.Application.Log.WriteException(ex, _
-            '    Diagnostics.TraceEventType.Critical, _
-            '    "Source=" + ex.Source + " StackTrace=" + ex.StackTrace + " InnerException=" + IIf(ex.InnerException Is Nothing, "", ex.InnerException.Message))
-            My.Application.Log.WriteException(ex, _
-                Diagnostics.TraceEventType.Critical, _
-                ex.StackTrace + vbCrLf + Now.ToString + vbCrLf + args.type.ToString + vbCrLf + clsTw.savePost)
-            rslt.retMsg = "Tween 例外発生(GetTimelineWorker_DoWork)"
-            rslt.TLine = tlList
-            rslt.page = args.page
-            rslt.endPage = args.endPage
-            rslt.type = args.type
+        If _endingFlag Then
+            e.Cancel = True
+            Exit Sub
+        End If
 
-            e.Result = rslt
-        End Try
+        e.Result = rslt
+        'Catch ex As Exception
+        '    If _endingFlag Then
+        '        e.Cancel = True
+        '        Exit Sub
+        '    End If
+        '    My.Application.Log.DefaultFileLogWriter.Location = Logging.LogFileLocation.ExecutableDirectory
+        '    My.Application.Log.DefaultFileLogWriter.MaxFileSize = 102400
+        '    My.Application.Log.DefaultFileLogWriter.AutoFlush = True
+        '    My.Application.Log.DefaultFileLogWriter.Append = False
+        '    'My.Application.Log.WriteException(ex, _
+        '    '    Diagnostics.TraceEventType.Critical, _
+        '    '    "Source=" + ex.Source + " StackTrace=" + ex.StackTrace + " InnerException=" + IIf(ex.InnerException Is Nothing, "", ex.InnerException.Message))
+        '    My.Application.Log.WriteException(ex, _
+        '        Diagnostics.TraceEventType.Critical, _
+        '        ex.StackTrace + vbCrLf + Now.ToString + vbCrLf + args.type.ToString + vbCrLf + clsTw.savePost)
+        '    rslt.retMsg = "Tween 例外発生(GetTimelineWorker_DoWork)"
+        '    rslt.TLine = tlList
+        '    rslt.page = args.page
+        '    rslt.endPage = args.endPage
+        '    rslt.type = args.type
+
+        '    e.Result = rslt
+        'End Try
     End Sub
 
     Private Function dmy() As Boolean
@@ -1604,6 +1604,22 @@ Public Class TweenMain
     End Function
 
     Private Sub GetTimelineWorker_RunWorkerCompleted(ByVal sender As System.Object, ByVal e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles GetTimelineWorker.RunWorkerCompleted
+        TimerRefreshIcon.Enabled = False
+        If My.Computer.Network.IsAvailable Then
+            NotifyIcon1.Icon = NIconAt
+        Else
+            NotifyIcon1.Icon = NIconAtSmoke
+        End If
+
+        If e.Error IsNot Nothing Then
+            If My.Computer.Network.IsAvailable Then
+                'TimerRefreshIcon.Enabled = False
+                NotifyIcon1.Icon = NIconAtRed
+            End If
+            Throw e.Error
+            Exit Sub
+        End If
+
         If _endingFlag OrElse e.Cancelled Then
             Exit Sub
         End If
@@ -1611,12 +1627,6 @@ Public Class TweenMain
         Dim rslt As GetWorkerResult = DirectCast(e.Result, GetWorkerResult)
         Dim args As New GetWorkerArg()
 
-        TimerRefreshIcon.Enabled = False
-        If My.Computer.Network.IsAvailable Then
-            NotifyIcon1.Icon = NIconAt
-        Else
-            NotifyIcon1.Icon = NIconAtSmoke
-        End If
 
         If rslt.retMsg <> "" Then
             '''''エラー通知方法の変更も設定できるように！
