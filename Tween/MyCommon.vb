@@ -34,4 +34,11 @@ Public Module MyCommon
         IE
         Specified
     End Enum
+
+    Public Enum UrlConverter
+        TinyUrl
+        Isgd
+    End Enum
+
+    Public follower As New Collections.Specialized.StringCollection
 End Module
