@@ -63,7 +63,7 @@ Public Class Post
     Private ReadOnly _imageUri As Uri
     Private ReadOnly _text As String
     Private ReadOnly _hyperText As String
-    Private ReadOnly _tags As List(Of String)
+    Private ReadOnly _tagList As List(Of String)
     Private ReadOnly _inReplyToUser As String
     Private ReadOnly _inReplyToId As Nullable(Of Long)
 
@@ -171,9 +171,20 @@ Public Class Post
     ''' </summary>
     ''' <value>投稿に付与されたタグのコレクション。</value>
     ''' <remarks>タグとは投稿を抽出するのに便利となる文字列で、検索や条件付操作に使用されます。</remarks>
-    Public ReadOnly Property Tags() As List(Of String)
+    Public ReadOnly Property TagList() As List(Of String)
         Get
-            Return Me._tags
+            Return Me._tagList
+        End Get
+    End Property
+
+    Public ReadOnly Property Tags() As String
+        Get
+            Dim sb As Text.StringBuilder = New Text.StringBuilder()
+            For i As Integer = 0 To Me.TagList.Count - 1
+                sb.Append(Me.TagList(i))
+                sb.Append(","c)
+            Next
+            Return sb.ToString(0, sb.Length - 2)
         End Get
     End Property
 
@@ -277,7 +288,7 @@ Public Class Post
         ByVal imageUri As Uri, _
         ByVal text As String, _
         ByVal hyperText As String, _
-        ByVal tags As List(Of String), _
+        ByVal tagList As List(Of String), _
         ByVal inReplyToUser As String, _
         ByVal inReplyToId As Nullable(Of Long) _
     )
@@ -289,7 +300,7 @@ Public Class Post
         Me._imageUri = imageUri
         Me._text = text
         Me._hyperText = Markup(Me.Text)
-        Me._tags = tags
+        Me._tagList = tagList
         Me._inReplyToUser = inReplyToUser
         Me._inReplyToId = inReplyToId
     End Sub
