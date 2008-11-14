@@ -128,6 +128,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="StatusDictionary.vb" />
+    <Compile Include="Storage.vb" />
     <Compile Include="TabDialog.Designer.vb">
       <DependentUpon>TabDialog.vb</DependentUpon>
     </Compile>

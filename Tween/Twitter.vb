@@ -6,7 +6,6 @@ Imports System.Text.RegularExpressions
 
 Partial Public Class Twitter
     Public links As New Collections.Specialized.StringCollection
-    Public follower As New Collections.Specialized.StringCollection
 
     Private _authKey As String              'StatusUpdate、発言削除で使用
     Private _authKeyDM As String              'DM送信、DM削除で使用
@@ -37,6 +36,7 @@ Partial Public Class Twitter
     Private _tinyUrlResolve As Boolean
     Private _dmCount As Integer
     Private _restrictFavCheck As Boolean
+    Private _ShortUrlService As New List(Of String)
 
     Private Const _baseUrlStr As String = "twitter.com"
     Private Const _loginPath As String = "/sessions"
@@ -156,6 +156,24 @@ Partial Public Class Twitter
         _proxyPort = ProxyPort
         _proxyUser = ProxyUser
         _proxyPassword = ProxyPassword
+
+        _ShortUrlService.Add("http://tinyurl.com/")
+        _ShortUrlService.Add("http://is.gd/")
+        _ShortUrlService.Add("http://snipurl.com/")
+        _ShortUrlService.Add("http://snurl.com/")
+        _ShortUrlService.Add("http://nsfw.in/")
+        _ShortUrlService.Add("http://qurlyq.com/")
+        _ShortUrlService.Add("http://dwarfurl.com/")
+        _ShortUrlService.Add("http://icanhaz.com/")
+        _ShortUrlService.Add("http://tiny.cc/")
+        _ShortUrlService.Add("http://urlenco.de/")
+        _ShortUrlService.Add("http://bit.ly/")
+        _ShortUrlService.Add("http://piurl.com/")
+        _ShortUrlService.Add("http://linkbee.com/")
+        _ShortUrlService.Add("http://traceurl.com/")
+        _ShortUrlService.Add("http://twurl.nl/")
+        _ShortUrlService.Add("http://cli.gs/")
+        _ShortUrlService.Add("http://rubyurl.com/")
     End Sub
 
     Private Function SignIn() As String
@@ -434,45 +452,50 @@ Partial Public Class Twitter
                     Dim posl3 As Integer
 
                     If _tinyUrlResolve Then
-                        Do While True
-                            If orgData.IndexOf("<a href=""http://tinyurl.com/", posl2) > -1 Then
-                                Dim urlStr As String
-                                Try
-                                    posl1 = orgData.IndexOf("<a href=""http://tinyurl.com/", posl2)
-                                    posl1 = orgData.IndexOf("http://tinyurl.com/", posl1)
-                                    posl2 = orgData.IndexOf("""", posl1)
-                                    urlStr = orgData.Substring(posl1, posl2 - posl1)
-                                Catch ex As Exception
-                                    _signed = False
-                                    Return "GetTimeline -> Err: Can't get tinyurl."
-                                End Try
-                                Dim Response As String = ""
-                                Dim retUrlStr As String = ""
-                                retUrlStr = DirectCast(_mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
-                                If retUrlStr.Length > 0 Then
-                                    orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
+                        For Each svc As String In _ShortUrlService
+                            posl1 = 0
+                            posl2 = 0
+                            posl3 = 0
+                            Do While True
+                                If orgData.IndexOf("<a href=""" + svc, posl2) > -1 Then
+                                    Dim urlStr As String = ""
+                                    Try
+                                        posl1 = orgData.IndexOf("<a href=""" + svc, posl2)
+                                        posl1 = orgData.IndexOf(svc, posl1)
+                                        posl2 = orgData.IndexOf("""", posl1)
+                                        urlStr = orgData.Substring(posl1, posl2 - posl1)
+                                        Dim Response As String = ""
+                                        Dim retUrlStr As String = ""
+                                        retUrlStr = DirectCast(_mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
+                                        If retUrlStr.Length > 0 Then
+                                            orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
+                                        End If
+                                    Catch ex As Exception
+                                        '_signed = False
+                                        'Return "GetTimeline -> Err: Can't get tinyurl."
+                                    End Try
+                                    'ElseIf orgData.IndexOf("<a href=""http://is.gd/", posl2) > -1 Then
+                                    '    Dim urlStr As String
+                                    '    Try
+                                    '        posl1 = orgData.IndexOf("<a href=""http://is.gd/", posl2)
+                                    '        posl1 = orgData.IndexOf("http://is.gd/", posl1)
+                                    '        posl2 = orgData.IndexOf("""", posl1)
+                                    '        urlStr = orgData.Substring(posl1, posl2 - posl1)
+                                    '    Catch ex As Exception
+                                    '        _signed = False
+                                    '        Return "GetTimeline -> Err: Can't get is.gd."
+                                    '    End Try
+                                    '    Dim Response As String = ""
+                                    '    Dim retUrlStr As String = ""
+                                    '    retUrlStr = DirectCast(_mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
+                                    '    If retUrlStr.Length > 0 Then
+                                    '        orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
+                                    '    End If
+                                Else
+                                    Exit Do
                                 End If
-                            ElseIf orgData.IndexOf("<a href=""http://is.gd/", posl2) > -1 Then
-                                Dim urlStr As String
-                                Try
-                                    posl1 = orgData.IndexOf("<a href=""http://is.gd/", posl2)
-                                    posl1 = orgData.IndexOf("http://is.gd/", posl1)
-                                    posl2 = orgData.IndexOf("""", posl1)
-                                    urlStr = orgData.Substring(posl1, posl2 - posl1)
-                                Catch ex As Exception
-                                    _signed = False
-                                    Return "GetTimeline -> Err: Can't get is.gd."
-                                End Try
-                                Dim Response As String = ""
-                                Dim retUrlStr As String = ""
-                                retUrlStr = DirectCast(_mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
-                                If retUrlStr.Length > 0 Then
-                                    orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
-                                End If
-                            Else
-                                Exit Do
-                            End If
-                        Loop
+                            Loop
+                        Next
 
                     End If
 
@@ -823,29 +846,75 @@ Partial Public Class Twitter
                     Dim posl2 As Integer = 0
                     Dim posl3 As Integer
 
+                    'If _tinyUrlResolve Then
+                    '    Try
+                    '        Do While True
+                    '            If orgData.IndexOf("<a href=""http://tinyurl.com/", posl2) > -1 Then
+                    '                Dim urlStr As String
+                    '                posl1 = orgData.IndexOf("<a href=""http://tinyurl.com/", posl2)
+                    '                posl1 = orgData.IndexOf("http://tinyurl.com/", posl1)
+                    '                posl2 = orgData.IndexOf("""", posl1)
+                    '                urlStr = orgData.Substring(posl1, posl2 - posl1)
+                    '                Dim Response As String = ""
+                    '                Dim retUrlStr As String = ""
+                    '                retUrlStr = DirectCast(_mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
+                    '                If retUrlStr.Length > 0 Then
+                    '                    orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
+                    '                End If
+                    '            Else
+                    '                Exit Do
+                    '            End If
+                    '        Loop
+                    '    Catch ex As Exception
+                    '        _signed = False
+                    '        Return "GetDirectMessage -> Err: Can't parse tinyurl"
+                    '    End Try
+                    'End If
                     If _tinyUrlResolve Then
-                        Try
+                        For Each svc As String In _ShortUrlService
+                            posl1 = 0
+                            posl2 = 0
+                            posl3 = 0
                             Do While True
-                                If orgData.IndexOf("<a href=""http://tinyurl.com/", posl2) > -1 Then
-                                    Dim urlStr As String
-                                    posl1 = orgData.IndexOf("<a href=""http://tinyurl.com/", posl2)
-                                    posl1 = orgData.IndexOf("http://tinyurl.com/", posl1)
-                                    posl2 = orgData.IndexOf("""", posl1)
-                                    urlStr = orgData.Substring(posl1, posl2 - posl1)
-                                    Dim Response As String = ""
-                                    Dim retUrlStr As String = ""
-                                    retUrlStr = DirectCast(_mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
-                                    If retUrlStr.Length > 0 Then
-                                        orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
-                                    End If
+                                If orgData.IndexOf("<a href=""" + svc, posl2) > -1 Then
+                                    Dim urlStr As String = ""
+                                    Try
+                                        posl1 = orgData.IndexOf("<a href=""" + svc, posl2)
+                                        posl1 = orgData.IndexOf(svc, posl1)
+                                        posl2 = orgData.IndexOf("""", posl1)
+                                        urlStr = orgData.Substring(posl1, posl2 - posl1)
+                                        Dim Response As String = ""
+                                        Dim retUrlStr As String = ""
+                                        retUrlStr = DirectCast(_mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
+                                        If retUrlStr.Length > 0 Then
+                                            orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
+                                        End If
+                                    Catch ex As Exception
+                                        '_signed = False
+                                        'Return "GetTimeline -> Err: Can't get tinyurl."
+                                    End Try
+                                    'ElseIf orgData.IndexOf("<a href=""http://is.gd/", posl2) > -1 Then
+                                    '    Dim urlStr As String
+                                    '    Try
+                                    '        posl1 = orgData.IndexOf("<a href=""http://is.gd/", posl2)
+                                    '        posl1 = orgData.IndexOf("http://is.gd/", posl1)
+                                    '        posl2 = orgData.IndexOf("""", posl1)
+                                    '        urlStr = orgData.Substring(posl1, posl2 - posl1)
+                                    '    Catch ex As Exception
+                                    '        _signed = False
+                                    '        Return "GetTimeline -> Err: Can't get is.gd."
+                                    '    End Try
+                                    '    Dim Response As String = ""
+                                    '    Dim retUrlStr As String = ""
+                                    '    retUrlStr = DirectCast(_mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
+                                    '    If retUrlStr.Length > 0 Then
+                                    '        orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
+                                    '    End If
                                 Else
                                     Exit Do
                                 End If
                             Loop
-                        Catch ex As Exception
-                            _signed = False
-                            Return "GetDirectMessage -> Err: Can't parse tinyurl"
-                        End Try
+                        Next
                     End If
 
                     lItem.OrgData = orgData
@@ -1722,6 +1791,66 @@ Partial Public Class Twitter
             Return -2
         End Try
     End Function
+
+    Public Function MakeShortUrl(ByVal ConverterType As UrlConverter, ByRef SrcUrl As String) As String
+        Dim ret As String = ""
+        Dim resStatus As String = ""
+
+        For Each svc As String In _ShortUrlService
+            If SrcUrl.StartsWith(svc) Then
+                Return "Can't convert"
+            End If
+        Next
+
+        SrcUrl = HttpUtility.UrlEncode(SrcUrl)
+        Select Case ConverterType
+            Case UrlConverter.TinyUrl       'tinyurl
+                If SrcUrl.StartsWith("http") Then
+                    If SrcUrl.StartsWith("http://tinyurl.com/") Then
+                        Return "Can't convert"
+                    End If
+                    Try
+                        ret = DirectCast(_mySock.GetWebResponse("http://tinyurl.com/api-create.php?url=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
+                    Catch ex As Exception
+                        Return "Can't convert"
+                    End Try
+                End If
+                If Not ret.StartsWith("http://tinyurl.com/") Then
+                    Return "Can't convert"
+                End If
+            Case UrlConverter.Isgd
+                If SrcUrl.StartsWith("http") Then
+                    If SrcUrl.StartsWith("http://is.gd/") Then
+                        Return "Can't convert"
+                    End If
+                    Try
+                        ret = DirectCast(_mySock.GetWebResponse("http://is.gd/api.php?longurl=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
+                    Catch ex As Exception
+                        Return "Can't convert"
+                    End Try
+                End If
+                If Not ret.StartsWith("http://is.gd/") Then
+                    Return "Can't convert"
+                End If
+        End Select
+
+        Return ret
+    End Function
+
+    Public Function GetVersionInfo() As String
+        Dim resStatus As String = ""
+        Return DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/version2.txt?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus), String)
+    End Function
+
+    Public Function GetTweenBinary(ByVal strVer As String) As String
+        Dim resStatus As String = ""
+        Return DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/Tween" + strVer + ".gz", resStatus, MySocket.REQ_TYPE.ReqGETFile), String)
+    End Function
+
+    Public Function GetTweenUpBinary() As String
+        Dim resStatus As String = ""
+        Return DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/TweenUp.gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileUp), String)
+    End Function
 #If DEBUG Then
     Public Sub GenerateAnalyzeKey()
         '解析キー情報部分のソースをwedataから作成する
@@ -1730,46 +1859,46 @@ Partial Public Class Twitter
             False, _
             System.Text.Encoding.UTF8)
 
-        sw.WriteLine("Public Partial Class Twitter")
+        sw.WriteLine("Public Module AnalyzeKey")
         sw.WriteLine("'    このファイルはデバッグビルドのTweenにより自動作成されました   作成日時  " + DateAndTime.Now.ToString())
         sw.WriteLine("")
 
-        sw.WriteLine("    Private _splitPost As String = " + Chr(34) + _splitPost.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _splitPostRecent As String = " + Chr(34) + _splitPostRecent.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _statusIdTo As String = " + Chr(34) + _statusIdTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _splitDM As String = " + Chr(34) + _splitDM.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseName As String = " + Chr(34) + _parseName.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseNameTo As String = " + Chr(34) + _parseNameTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseNick As String = " + Chr(34) + _parseNick.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseNickTo As String = " + Chr(34) + _parseNickTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private  _parseImg As String = " + Chr(34) + _parseImg.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseImgTo As String = " + Chr(34) + _parseImgTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseMsg1 As String = " + Chr(34) + _parseMsg1.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseMsg2 As String = " + Chr(34) + _parseMsg2.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseDM1 As String = " + Chr(34) + _parseDM1.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseDM2 As String = " + Chr(34) + _parseDM2.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseDate As String = " + Chr(34) + _parseDate.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseDateTo As String = " + Chr(34) + _parseDateTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _getAuthKey As String = " + Chr(34) + _getAuthKey.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _getAuthKeyTo As String = " + Chr(34) + _getAuthKeyTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseStar As String = " + Chr(34) + _parseStar.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseStarTo As String = " + Chr(34) + _parseStarTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseStarEmpty As String = " + Chr(34) + _parseStarEmpty.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _followerList As String = " + Chr(34) + _followerList.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _followerMbr1 As String = " + Chr(34) + _followerMbr1.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _followerMbr2 As String = " + Chr(34) + _followerMbr2.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _followerMbr3 As String = " + Chr(34) + _followerMbr3.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _getInfoTwitter As String = " + Chr(34) + _getInfoTwitter.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _getInfoTwitterTo As String = " + Chr(34) + _getInfoTwitterTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _isProtect As String = " + Chr(34) + _isProtect.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _isReplyEng As String = " + Chr(34) + _isReplyEng.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _isReplyJpn As String = " + Chr(34) + _isReplyJpn.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _isReplyTo As String = " + Chr(34) + _isReplyTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseProtectMsg1 As String = " + Chr(34) + _parseProtectMsg1.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseProtectMsg2 As String = " + Chr(34) + _parseProtectMsg2.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseDMcountFrom As String = " + Chr(34) + _parseDMcountFrom.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Private _parseDMcountTo As String = " + Chr(34) + _parseDMcountTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("End Class")
+        sw.WriteLine("    Public _splitPost As String = " + Chr(34) + _splitPost.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _splitPostRecent As String = " + Chr(34) + _splitPostRecent.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _statusIdTo As String = " + Chr(34) + _statusIdTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _splitDM As String = " + Chr(34) + _splitDM.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseName As String = " + Chr(34) + _parseName.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseNameTo As String = " + Chr(34) + _parseNameTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseNick As String = " + Chr(34) + _parseNick.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseNickTo As String = " + Chr(34) + _parseNickTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public  _parseImg As String = " + Chr(34) + _parseImg.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseImgTo As String = " + Chr(34) + _parseImgTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseMsg1 As String = " + Chr(34) + _parseMsg1.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseMsg2 As String = " + Chr(34) + _parseMsg2.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseDM1 As String = " + Chr(34) + _parseDM1.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseDM2 As String = " + Chr(34) + _parseDM2.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseDate As String = " + Chr(34) + _parseDate.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseDateTo As String = " + Chr(34) + _parseDateTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _getAuthKey As String = " + Chr(34) + _getAuthKey.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _getAuthKeyTo As String = " + Chr(34) + _getAuthKeyTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseStar As String = " + Chr(34) + _parseStar.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseStarTo As String = " + Chr(34) + _parseStarTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseStarEmpty As String = " + Chr(34) + _parseStarEmpty.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _followerList As String = " + Chr(34) + _followerList.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _followerMbr1 As String = " + Chr(34) + _followerMbr1.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _followerMbr2 As String = " + Chr(34) + _followerMbr2.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _followerMbr3 As String = " + Chr(34) + _followerMbr3.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _getInfoTwitter As String = " + Chr(34) + _getInfoTwitter.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _getInfoTwitterTo As String = " + Chr(34) + _getInfoTwitterTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _isProtect As String = " + Chr(34) + _isProtect.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _isReplyEng As String = " + Chr(34) + _isReplyEng.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _isReplyJpn As String = " + Chr(34) + _isReplyJpn.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _isReplyTo As String = " + Chr(34) + _isReplyTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseProtectMsg1 As String = " + Chr(34) + _parseProtectMsg1.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseProtectMsg2 As String = " + Chr(34) + _parseProtectMsg2.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseDMcountFrom As String = " + Chr(34) + _parseDMcountFrom.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseDMcountTo As String = " + Chr(34) + _parseDMcountTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("End Module")
 
         sw.Close()
         MessageBox.Show("解析キー情報定義ファイル AnalyzeKey.vbを生成しました")

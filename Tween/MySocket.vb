@@ -219,7 +219,8 @@ Public Class MySocket
                         strm.Close()
                         strm.Dispose()
                         Dim rtStr As String = ""
-                        If webRes.StatusCode = HttpStatusCode.Moved Then
+                        If webRes.StatusCode = HttpStatusCode.Moved OrElse _
+                           webRes.StatusCode = HttpStatusCode.Found Then
                             rtStr = webRes.Headers.GetValues("Location")(0)
                             Return rtStr
                         End If

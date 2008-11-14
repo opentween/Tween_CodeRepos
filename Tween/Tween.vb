@@ -4,11 +4,12 @@ Imports System.Text
 Imports System.Text.RegularExpressions
 Imports Tween.TweenCustomControl
 Imports System.IO
-Imports System.Web
+'Imports System.Web
 
 Public Class TweenMain
     Private clsTw As Twitter            'Twitter用通信データ処理カスタムクラス
     Private clsTwPost As Twitter            'Twitter用通信データ処理カスタムクラス
+    Private clsTwSync As Twitter            'Twitter用通信データ処理カスタムクラス
     Private _username As String         'ユーザー名
     Private _password As String         'パスワード（デクリプト済み）
     Private _mySize As Size             '画面サイズ
@@ -92,11 +93,6 @@ Public Class TweenMain
         FavAdd                  'Fav追加
         FavRemove               'Fav削除
         CreateNewSocket         'Socket再作成
-    End Enum
-
-    Public Enum UrlConverter
-        TinyUrl
-        Isgd
     End Enum
 
     'Backgroundworkerの処理結果通知用引数構造体
@@ -356,6 +352,8 @@ Public Class TweenMain
         SettingDialog.RestrictFavCheck = _section.RestrictFavCheck
         SettingDialog.AlwaysTop = _section.AlwaysTop
 
+        _initial = True
+
         'ユーザー名、パスワードが未設定なら設定画面を表示（初回起動時など）
         If _username = "" Or _password = "" Then
             '設定せずにキャンセルされた場合はプログラム終了
@@ -387,12 +385,6 @@ Public Class TweenMain
             '他の設定項目は、随時設定画面で保持している値を読み出して使用
         End If
 
-        _initial = True
-
-        'バージョンチェック（引数：起動時チェックの場合はTrue･･･チェック結果のメッセージを表示しない）
-        If SettingDialog.StartupVersion Then
-            CheckNewVersion(True)
-        End If
 
         'ウィンドウ設定
         Me.WindowState = FormWindowState.Normal     '通常状態
@@ -439,6 +431,7 @@ Public Class TweenMain
         'Twitter用通信クラス初期化
         clsTw = New Twitter(_username, _password, SettingDialog.ProxyType, SettingDialog.ProxyAddress, SettingDialog.ProxyPort, SettingDialog.ProxyUser, SettingDialog.ProxyPassword)
         clsTwPost = New Twitter(_username, _password, SettingDialog.ProxyType, SettingDialog.ProxyAddress, SettingDialog.ProxyPort, SettingDialog.ProxyUser, SettingDialog.ProxyPassword)
+        clsTwSync = New Twitter(_username, _password, SettingDialog.ProxyType, SettingDialog.ProxyAddress, SettingDialog.ProxyPort, SettingDialog.ProxyUser, SettingDialog.ProxyPassword)
         If SettingDialog.StartupKey Then
             clsTw.GetWedata()
         End If
@@ -467,6 +460,7 @@ Public Class TweenMain
         clsTwPost.UseAPI = SettingDialog.UseAPI
         clsTw.HubServer = SettingDialog.HubServer
         clsTwPost.HubServer = SettingDialog.HubServer
+        clsTwSync.HubServer = SettingDialog.HubServer
         clsTw.TinyUrlResolve = SettingDialog.TinyUrlResolve
 
         '発言詳細部アイコンをリストアイコンにサイズ変更
@@ -635,6 +629,11 @@ Public Class TweenMain
         '    GetLogWorker.RunWorkerAsync(0)
         'End If
 
+        'バージョンチェック（引数：起動時チェックの場合はTrue･･･チェック結果のメッセージを表示しない）
+        If SettingDialog.StartupVersion Then
+            CheckNewVersion(True)
+        End If
+
         If My.Computer.Network.IsAvailable Then
             NotifyIcon1.Icon = NIconRefresh(0)
             _refreshIconCnt = 0
@@ -676,6 +675,7 @@ Public Class TweenMain
                 Application.DoEvents()
             Loop
             PostWorker.RunWorkerAsync(args)
+            clsTwSync.CreateNewSocket()
             PostButton.Enabled = True
             'ReplyStripMenuItem.Enabled = True
             'DMStripMenuItem.Enabled = True
@@ -823,8 +823,8 @@ Public Class TweenMain
             _onewaylove = False
             _fav = False
             lItem = tlList(cnt)
-            If clsTw.follower.Count > 1 Then
-                If clsTw.follower.Contains(lItem.Name) = False Then
+            If follower.Count > 1 Then
+                If follower.Contains(lItem.Name) = False Then
                     _onewaylove = True
                 End If
             End If
@@ -1489,12 +1489,13 @@ Public Class TweenMain
             TimerDM.Enabled = False
 
             NotifyIcon1.Visible = False
+
+            'If Not _initial Then
+            '    SaveConfigs()
+            'End If
+            SaveConfigs()
+
             Me.Visible = False
-
-            If Not _initial Then
-                SaveConfigs()
-            End If
-
             'Do While GetTimelineWorker.IsBusy
             '    Threading.Thread.Sleep(100)
             '    Application.DoEvents()
@@ -1661,9 +1662,9 @@ Public Class TweenMain
             'End Select
             'NotifyIcon1.BalloonTipText = StatusLabel.Text + IIf(_initial, vbCrLf + "初期読み込みを中断します。", "")
             'NotifyIcon1.ShowBalloonTip(500)
-            If rslt.retMsg.StartsWith("Tween 例外発生") Then
-                MessageBox.Show("エラーが発生しました。申し訳ありません。ログをexeファイルのある場所にTween.logとして作ったので、kiri.feather@gmail.comまで送っていただけると助かります。ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。", "エラー発生", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            End If
+            'If rslt.retMsg.StartsWith("Tween 例外発生") Then
+            '    MessageBox.Show("エラーが発生しました。申し訳ありません。ログをexeファイルのある場所にTween.logとして作ったので、kiri.feather@gmail.comまで送っていただけると助かります。ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。", "エラー発生", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            'End If
         End If
 
         If _iconSz <> 0 Then
@@ -2139,7 +2140,7 @@ Public Class TweenMain
                                 If rslt.sIds.Contains(itm.SubItems(5).Text) Then
                                     itm.SubItems(9).Text = "False"
                                     flw = False
-                                    If clsTw.follower.Contains(itm.SubItems(4).Text) Then
+                                    If follower.Contains(itm.SubItems(4).Text) Then
                                         flw = True
                                         itm.SubItems(10).Text = "False"
                                     End If
@@ -2618,7 +2619,7 @@ Public Class TweenMain
 
             For cnt = 0 To MyList.SelectedItems.Count - 1
                 If MyList.SelectedItems(cnt2).SubItems(4).Text.Equals(_username, StringComparison.CurrentCultureIgnoreCase) Then    'IgnoreCase
-                    rtn = clsTw.RemoveStatus(MyList.SelectedItems(cnt2).SubItems(5).Text)
+                    rtn = clsTwSync.RemoveStatus(MyList.SelectedItems(cnt2).SubItems(5).Text)
                     If rtn.Length > 0 Then
                         'エラー
                         msg = rtn + vbCrLf
@@ -2660,7 +2661,8 @@ Public Class TweenMain
             Next
 
             If msg <> "" Then
-                StatusLabel.Text = "削除失敗 " + msg
+                'StatusLabel.Text = "削除失敗 " + msg
+                StatusLabel.Text = "削除失敗"
             Else
                 StatusLabel.Text = "削除成功"
             End If
@@ -2671,7 +2673,7 @@ Public Class TweenMain
             Dim msg As String = ""
 
             For cnt = 0 To MyList.SelectedItems.Count - 1
-                rtn = clsTw.RemoveDirectMessage(MyList.SelectedItems(cnt2).SubItems(5).Text)
+                rtn = clsTwSync.RemoveDirectMessage(MyList.SelectedItems(cnt2).SubItems(5).Text)
                 If rtn.Length > 0 Then
                     msg = rtn + vbCrLf
                     msg += MyList.SelectedItems(cnt2).SubItems(1).Text + ":"
@@ -2697,7 +2699,7 @@ Public Class TweenMain
 
             If msg <> "" Then
                 'StatusLabel.Text = "削除失敗 " + msg
-                StatusLabel.Text = "削除失敗 "
+                StatusLabel.Text = "削除失敗"
             Else
                 StatusLabel.Text = "削除成功"
             End If
@@ -3160,6 +3162,8 @@ Public Class TweenMain
                 clsTw.Password = _password
                 clsTwPost.Username = _username
                 clsTwPost.Password = _password
+                clsTwSync.Username = _username
+                clsTwSync.Password = _password
                 'TimerTimeline.Interval = IIf(SettingDialog.TimelinePeriodInt > 0, SettingDialog.TimelinePeriodInt * 1000, 600000)
                 If SettingDialog.TimelinePeriodInt > 0 Then
                     If SettingDialog.PeriodAdjust Then
@@ -3186,6 +3190,7 @@ Public Class TweenMain
                 clsTwPost.UseAPI = SettingDialog.UseAPI
                 clsTw.HubServer = SettingDialog.HubServer
                 clsTwPost.HubServer = SettingDialog.HubServer
+                clsTwSync.HubServer = SettingDialog.HubServer
                 clsTw.TinyUrlResolve = SettingDialog.TinyUrlResolve
                 clsTw.RestrictFavCheck = SettingDialog.RestrictFavCheck
 
@@ -3206,11 +3211,20 @@ Public Class TweenMain
                 clsTwPost.ProxyPort = SettingDialog.ProxyPort
                 clsTwPost.ProxyUser = SettingDialog.ProxyUser
                 clsTwPost.ProxyPassword = SettingDialog.ProxyPassword
+
                 Do While PostWorker.IsBusy
                     Threading.Thread.Sleep(1)
                     Application.DoEvents()
                 Loop
                 PostWorker.RunWorkerAsync(args)
+
+                clsTwSync.ProxyType = SettingDialog.ProxyType
+                clsTwSync.ProxyAddress = SettingDialog.ProxyAddress
+                clsTwSync.ProxyPort = SettingDialog.ProxyPort
+                clsTwSync.ProxyUser = SettingDialog.ProxyUser
+                clsTwSync.ProxyPassword = SettingDialog.ProxyPassword
+                clsTw.CreateNewSocket()
+
                 'If isz <> SettingDialog.IconSz Then
                 '    Select Case SettingDialog.IconSz
                 '        Case Setting.IconSizes.IconNone
@@ -3256,7 +3270,7 @@ Public Class TweenMain
                     For Each ts As TabStructure In _tabs
                         If ts.tabName <> "Direct" Then
                             For Each myItem As ListViewItem In ts.listCustom.Items
-                                If clsTw.follower.Contains(myItem.SubItems(4).Text) Then
+                                If follower.Contains(myItem.SubItems(4).Text) Then
                                     myItem.SubItems(10).Text = "False"
                                 Else
                                     myItem.SubItems(10).Text = "True"
@@ -4578,25 +4592,28 @@ RETRY:
     End Sub
 
     Private Sub CheckNewVersion(Optional ByVal startup As Boolean = False)
-        Dim _mySock As New MySocket("Shift_JIS", "", "", _
-                                SettingDialog.ProxyType, _
-                                SettingDialog.ProxyAddress, _
-                                SettingDialog.ProxyPort, _
-                                SettingDialog.ProxyUser, _
-                                SettingDialog.ProxyPassword)
+        'Dim _mySock As New MySocket("Shift_JIS", "", "", _
+        '                        SettingDialog.ProxyType, _
+        '                        SettingDialog.ProxyAddress, _
+        '                        SettingDialog.ProxyPort, _
+        '                        SettingDialog.ProxyUser, _
+        '                        SettingDialog.ProxyPassword)
         Dim retMsg As String
         Dim resStatus As String = ""
         Dim strVer As String
         Dim forceUpdate As Boolean = My.Computer.Keyboard.ShiftKeyDown
 
-        retMsg = DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/version2.txt?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus), String)
+        'retMsg = DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/version2.txt?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus), String)
+        retMsg = clsTwSync.GetVersionInfo()
         If retMsg.Length > 0 Then
             strVer = retMsg.Substring(0, 4)
             If strVer.CompareTo(My.Application.Info.Version.ToString.Replace(".", "")) > 0 Then
                 If MessageBox.Show("新しいバージョン " + strVer + " が公開されています。更新しますか？", "Tween更新確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
-                    retMsg = DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/Tween" + strVer + ".gz", resStatus, MySocket.REQ_TYPE.ReqGETFile), String)
+                    'retMsg = DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/Tween" + strVer + ".gz", resStatus, MySocket.REQ_TYPE.ReqGETFile), String)
+                    retMsg = clsTwSync.GetTweenBinary(strVer)
                     If retMsg.Length = 0 Then
-                        retMsg = DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/TweenUp.gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileUp), String)
+                        'retMsg = DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/TweenUp.gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileUp), String)
+                        retMsg = clsTwSync.GetTweenUpBinary()
                         If retMsg.Length = 0 Then
                             System.Diagnostics.Process.Start(My.Application.Info.DirectoryPath + "\TweenUp.exe")
                             Application.Exit()
@@ -4611,9 +4628,11 @@ RETRY:
             Else
                 If forceUpdate Then
                     If MessageBox.Show("新しいバージョンは見つかりません。 " + strVer + " が公開されています。強制的に更新しますか？", "Tween更新確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
-                        retMsg = DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/Tween" + strVer + ".gz", resStatus, MySocket.REQ_TYPE.ReqGETFile), String)
+                        'retMsg = DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/Tween" + strVer + ".gz", resStatus, MySocket.REQ_TYPE.ReqGETFile), String)
+                        retMsg = clsTwSync.GetTweenBinary(strVer)
                         If retMsg.Length = 0 Then
-                            retMsg = DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/TweenUp.gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileUp), String)
+                            'retMsg = DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/TweenUp.gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileUp), String)
+                            retMsg = clsTwSync.GetTweenUpBinary()
                             If retMsg.Length = 0 Then
                                 System.Diagnostics.Process.Start(My.Application.Info.DirectoryPath + "\TweenUp.exe")
                                 Application.Exit()
@@ -5273,7 +5292,7 @@ RETRY:
                 'End Select
                 _section.ReadPages = SettingDialog.ReadPages
                 _section.Readed = SettingDialog.Readed
-                _section.ListLock = ListLockMenuItem.Checked
+                '_section.ListLock = ListLockMenuItem.Checked
                 'Select Case SettingDialog.IconSz
                 '    Case Setting.IconSizes.IconNone
                 '        _section.IconSize = ListSection.IconSizes.IconNone
@@ -5290,7 +5309,7 @@ RETRY:
                 '_section.selecteduser（collection)
                 '_section.favuser
                 _section.StatusText = SettingDialog.Status
-                _section.NewAllPop = NewPostPopMenuItem.Checked
+                '_section.NewAllPop = NewPostPopMenuItem.Checked
                 _section.UnreadManage = SettingDialog.UnreadManage
                 _section.PlaySound = SettingDialog.PlaySound
                 _section.OneWayLove = SettingDialog.OneWayLove
@@ -5342,31 +5361,46 @@ RETRY:
                 _section.StartupFollowers = SettingDialog.StartupFollowers
                 _section.RestrictFavCheck = SettingDialog.RestrictFavCheck
                 _section.AlwaysTop = SettingDialog.AlwaysTop
-                _section.StatusMultiline = StatusText.Multiline
+                '_section.StatusMultiline = StatusText.Multiline
 
-                Dim tmpList As DetailsListView = Nothing
-                For Each ts As TabStructure In _tabs
-                    If ts.tabName = _curTabText Then
-                        tmpList = ts.listCustom
-                        Exit For
-                    End If
-                Next
-                If tmpList.Columns.Count > 0 Then   '起動処理中に終了処理が走ると参照できないため 
-                    _section.DisplayIndex1 = tmpList.Columns(0).DisplayIndex
-                    _section.Width1 = tmpList.Columns(0).Width
-                    If _iconCol = False Then
-                        _section.DisplayIndex2 = tmpList.Columns(1).DisplayIndex
-                        _section.DisplayIndex3 = tmpList.Columns(2).DisplayIndex
-                        _section.DisplayIndex4 = tmpList.Columns(3).DisplayIndex
-                        _section.DisplayIndex5 = tmpList.Columns(4).DisplayIndex
-                        _section.Width2 = tmpList.Columns(1).Width
-                        _section.Width3 = tmpList.Columns(2).Width
-                        _section.Width4 = tmpList.Columns(3).Width
-                        _section.Width5 = tmpList.Columns(4).Width
-                    End If
-                    _section.SortColumn = listViewItemSorter.Column
-                    _section.SortOrder = listViewItemSorter.Order
+                'Dim tmpList As DetailsListView = Nothing
+                'For Each ts As TabStructure In _tabs
+                '    If ts.tabName = _curTabText Then
+                '        tmpList = ts.listCustom
+                '        Exit For
+                '    End If
+                'Next
+                'If tmpList.Columns.Count > 0 Then   '起動処理中に終了処理が走ると参照できないため 
+                '    _section.DisplayIndex1 = tmpList.Columns(0).DisplayIndex
+                '    _section.Width1 = tmpList.Columns(0).Width
+                '    If _iconCol = False Then
+                '        _section.DisplayIndex2 = tmpList.Columns(1).DisplayIndex
+                '        _section.DisplayIndex3 = tmpList.Columns(2).DisplayIndex
+                '        _section.DisplayIndex4 = tmpList.Columns(3).DisplayIndex
+                '        _section.DisplayIndex5 = tmpList.Columns(4).DisplayIndex
+                '        _section.Width2 = tmpList.Columns(1).Width
+                '        _section.Width3 = tmpList.Columns(2).Width
+                '        _section.Width4 = tmpList.Columns(3).Width
+                '        _section.Width5 = tmpList.Columns(4).Width
+                '    End If
+                '    _section.SortColumn = listViewItemSorter.Column
+                '    _section.SortOrder = listViewItemSorter.Order
+                'End If
+                _section.DisplayIndex1 = _tabs(0).colHd1.DisplayIndex
+                _section.Width1 = _tabs(0).colHd1.Width
+                If _iconCol = False Then
+                    _section.DisplayIndex2 = _tabs(0).colHd2.DisplayIndex
+                    _section.DisplayIndex3 = _tabs(0).colHd3.DisplayIndex
+                    _section.DisplayIndex4 = _tabs(0).colHd4.DisplayIndex
+                    _section.DisplayIndex5 = _tabs(0).colHd5.DisplayIndex
+                    _section.Width2 = _tabs(0).colHd2.Width
+                    _section.Width3 = _tabs(0).colHd3.Width
+                    _section.Width4 = _tabs(0).colHd4.Width
+                    _section.Width5 = _tabs(0).colHd5.Width
                 End If
+                _section.SortColumn = listViewItemSorter.Column
+                _section.SortOrder = listViewItemSorter.Order
+
                 _section.ListElement.Clear()
 
                 ''Recentタブ
@@ -6342,8 +6376,8 @@ RETRY:
     End Sub
 
     Private Sub WedataMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles WedataMenuItem.Click
-        If clsTw IsNot Nothing Then
-            clsTw.GetWedata()
+        If clsTwSync IsNot Nothing Then
+            clsTwSync.GetWedata()
         End If
     End Sub
 
@@ -6890,7 +6924,7 @@ RETRY:
     Private Sub UpdateFollowersMenuItem1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UpdateFollowersMenuItem1.Click
         StatusLabel.Text = "Followers取得中..."
         Dim ret As String
-        ret = clsTw.GetFollowers()
+        ret = clsTwSync.GetFollowers()
         If ret <> "" Then
             StatusLabel.Text = "Followers取得エラー：" & ret
             Exit Sub
@@ -6904,7 +6938,7 @@ RETRY:
 
     Private Sub RepliedStatusOpenMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RepliedStatusOpenMenuItem.Click
         Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim id As Integer = clsTw.GetReplyStatusID(Integer.Parse(MyList.SelectedItems(0).SubItems(5).Text))
+        Dim id As Integer = clsTwSync.GetReplyStatusID(Integer.Parse(MyList.SelectedItems(0).SubItems(5).Text))
         If id > 0 Then
             ExecWorker.RunWorkerAsync("http://twitter.com/" + Regex.Match(MyList.SelectedItems(0).SubItems(2).Text, "@[A-Za-z0-9_]+").Value.Substring(1) + "/statuses/" + id.ToString())
         End If
@@ -6962,7 +6996,10 @@ RETRY:
     Private Sub SplitContainer2_Panel2_Resize(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SplitContainer2.Panel2.Resize
         Me.StatusText.Multiline = Me.SplitContainer2.Panel2.Height > Me.SplitContainer2.Panel2MinSize + 2
         MultiLineMenuItem.Checked = Me.StatusText.Multiline
-        If _section IsNot Nothing AndAlso StatusText.Multiline Then _section.StatusTextHeight = SplitContainer2.Panel2.Height
+        If _section IsNot Nothing Then
+            _section.StatusMultiline = MultiLineMenuItem.Checked
+            If StatusText.Multiline Then _section.StatusTextHeight = SplitContainer2.Panel2.Height
+        End If
     End Sub
 
     Private Sub StatusText_MultilineChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusText.MultilineChanged
@@ -6976,6 +7013,7 @@ RETRY:
     Private Sub MultiLineMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MultiLineMenuItem.Click
         '発言欄複数行
         StatusText.Multiline = MultiLineMenuItem.Checked
+        _section.StatusMultiline = MultiLineMenuItem.Checked
         If MultiLineMenuItem.Checked Then
             SplitContainer2.SplitterDistance = SplitContainer2.Height - _section.StatusTextHeight - SplitContainer2.SplitterWidth
         Else
@@ -6983,63 +7021,29 @@ RETRY:
         End If
     End Sub
 
-    Public Function MakeShortUrl(ByVal ConverterType As Integer, ByRef SrcUrl As String, ByRef _mySock As MySocket) As String
-        Dim ret As String = ""
-        Dim resStatus As String = ""
 
-        Select Case ConverterType
-            Case UrlConverter.TinyUrl       'tinyurl
-                If SrcUrl.StartsWith("http") Then
-                    Try
-                        ret = DirectCast(_mySock.GetWebResponse("http://tinyurl.com/api-create.php?url=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
-                    Catch ex As Exception
-                        Return "Can't convert"
-                    End Try
-                End If
-                If Not ret.StartsWith("http://tinyurl.com/") Then
-                    Return "Can't convert"
-                End If
-            Case UrlConverter.Isgd
-                If SrcUrl.StartsWith("http") Then
-                    Try
-                        ret = DirectCast(_mySock.GetWebResponse("http://is.gd/api.php?longurl=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
-                    Catch ex As Exception
-                        Return "Can't convert"
-                    End Try
-                End If
-                If Not ret.StartsWith("http://is.gd/") Then
-                    Return "Can't convert"
-                End If
-        End Select
-
-        Return ret
-    End Function
-
-    Public Function UrlConvert(ByVal Converter_Type As UrlConverter, ByRef ExcludeString As String) As Boolean
-        Dim _mySock As New MySocket("Shift_JIS", "", "", _
-                        SettingDialog.ProxyType, _
-                        SettingDialog.ProxyAddress, _
-                        SettingDialog.ProxyPort, _
-                        SettingDialog.ProxyUser, _
-                        SettingDialog.ProxyPassword)
+    Private Function UrlConvert(ByVal Converter_Type As UrlConverter) As Boolean
+        'Dim _mySock As New MySocket("Shift_JIS", "", "", _
+        '                SettingDialog.ProxyType, _
+        '                SettingDialog.ProxyAddress, _
+        '                SettingDialog.ProxyPort, _
+        '                SettingDialog.ProxyUser, _
+        '                SettingDialog.ProxyPassword)
         Dim result As String = ""
         Dim url As Regex = New Regex("https?://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+")
 
-        Dim urls As RegularExpressions.MatchCollection = Nothing
         Dim src As String = ""
-
-        urls = url.Matches(StatusText.Text)
 
         If StatusText.SelectionLength > 0 Then
             Dim tmp As String = StatusText.SelectedText
             ' httpから始まらない場合、ExcludeStringで指定された文字列で始まる場合は対象としない
-            If Not tmp.StartsWith("http") OrElse tmp.StartsWith(ExcludeString) Then
+            If Not tmp.StartsWith("http") Then
                 ' Nothing
             Else
                 ' 文字列が選択されている場合はその文字列について処理
 
                 '短縮URL変換 日本語を含むかもしれないのでURLエンコードする
-                result = MakeShortUrl(Converter_Type, HttpUtility.UrlEncode(StatusText.SelectedText), _mySock)
+                result = clsTwSync.MakeShortUrl(Converter_Type, StatusText.SelectedText)
 
                 If result.Equals("Can't convert") Then
                     Return False
@@ -7064,50 +7068,46 @@ RETRY:
                 End If
             End If
         Else
+            Dim urls As RegularExpressions.MatchCollection = Nothing
+            urls = url.Matches(StatusText.Text)
+
             ' 正規表現にマッチしたURL文字列をtinyurl化
             For Each tmp2 As Match In urls
                 Dim tmp As String = tmp2.ToString
                 Dim undotmp As New urlUndo
 
-                ' ExcludeStringで指定された文字列で始まる場合は対象としない
-                If tmp.StartsWith(ExcludeString) Then
-                    ' Nothing
-                Else
-                    '選んだURLを選択（？）
+                '選んだURLを選択（？）
+                StatusText.Select(StatusText.Text.IndexOf(tmp), tmp.Length)
+
+                '短縮URL変換
+                result = clsTwSync.MakeShortUrl(Converter_Type, StatusText.SelectedText)
+
+                If result.Equals("Can't convert") Then
+                    Return False
+                End If
+
+                If Not result = "" Then
                     StatusText.Select(StatusText.Text.IndexOf(tmp), tmp.Length)
+                    StatusText.SelectedText = result
+                    'undoバッファにセット
+                    undotmp.Before = tmp
+                    undotmp.After = result
 
-                    '短縮URL変換
-                    result = MakeShortUrl(Converter_Type, StatusText.SelectedText, _mySock)
-
-                    If result.Equals("Can't convert") Then
-                        Return False
+                    If urlUndoBuffer Is Nothing Then
+                        urlUndoBuffer = New List(Of urlUndo)
+                        UrlUndoToolStripMenuItem.Enabled = True
                     End If
 
-                    If Not result = "" Then
-                        StatusText.Select(StatusText.Text.IndexOf(tmp), tmp.Length)
-                        StatusText.SelectedText = result
-                        'undoバッファにセット
-                        undotmp.Before = tmp
-                        undotmp.After = result
-
-                        If urlUndoBuffer Is Nothing Then
-                            urlUndoBuffer = New List(Of urlUndo)
-                            UrlUndoToolStripMenuItem.Enabled = True
-                        End If
-
-                        urlUndoBuffer.Add(undotmp)
-                    End If
-
+                    urlUndoBuffer.Add(undotmp)
                 End If
             Next
-
-
         End If
 
         Return True
 
     End Function
-    Public Sub doUrlUndo()
+
+    Private Sub doUrlUndo()
         If urlUndoBuffer IsNot Nothing Then
             Dim tmp As String = StatusText.Text
             For Each data As urlUndo In urlUndoBuffer
@@ -7120,22 +7120,31 @@ RETRY:
     End Sub
 
     Private Sub TinyURLToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TinyURLToolStripMenuItem.Click
-        UrlConvert(UrlConverter.TinyUrl, "http://tinyurl.com/")
+        UrlConvert(UrlConverter.TinyUrl)
     End Sub
 
     Private Sub IsgdToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles IsgdToolStripMenuItem.Click
-        UrlConvert(UrlConverter.Isgd, "http://is.gd/")
+        UrlConvert(UrlConverter.Isgd)
     End Sub
 
     Private Sub UrlConvertAutoToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UrlConvertAutoToolStripMenuItem.Click
-        If Not UrlConvert(UrlConverter.TinyUrl, "http://tinyurl.com/") Then
-            UrlConvert(UrlConverter.Isgd, "http://is.gd/")
+        If Not UrlConvert(UrlConverter.TinyUrl) Then
+            UrlConvert(UrlConverter.Isgd)
         End If
     End Sub
 
     Private Sub UrlUndoToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UrlUndoToolStripMenuItem.Click
         doUrlUndo()
     End Sub
+
+    Private Sub NewPostPopMenuItem_CheckStateChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles NewPostPopMenuItem.CheckStateChanged
+        _section.NewAllPop = NewPostPopMenuItem.Checked
+    End Sub
+
+    Private Sub ListLockMenuItem_CheckStateChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ListLockMenuItem.CheckStateChanged
+        _section.ListLock = ListLockMenuItem.Checked
+    End Sub
+
 End Class
 
 Public Class TabStructure
