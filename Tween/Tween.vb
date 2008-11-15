@@ -5445,35 +5445,38 @@ RETRY:
                 'Next
 
                 Dim cnt As Integer = 0
-                For Each ts As TabStructure In _tabs
-                    Dim tabName As String = ts.tabName
-                    Dim myList As DetailsListView = ts.listCustom
-                    _section.ListElement.Add(New ListElement(tabName))
-                    'For Each myTab As TabStructure In _tabs 
-                    '    If myTab.tabName = tabName Then 
-                    _section.ListElement(tabName).Notify = ts.notify
-                    _section.ListElement(tabName).SoundFile = ts.soundFile
-                    _section.ListElement(tabName).UnreadManage = ts.unreadManage
-                    For Each fc As FilterClass In ts.filters
-                        Dim bf As String = ""
-                        For Each bfs As String In fc.BodyFilter
-                            bf += " " + bfs
+                If ListTab IsNot Nothing AndAlso _
+                   ListTab.TabPages.Count > 0 Then
+                    For Each tp As TabPage In ListTab.TabPages
+                        Dim tabName As String = tp.Text
+                        'Dim myList As DetailsListView = ts.listCustom
+                        _section.ListElement.Add(New ListElement(tabName))
+                        For Each ts As TabStructure In _tabs
+                            If ts.tabName = tabName Then
+                                _section.ListElement(tabName).Notify = ts.notify
+                                _section.ListElement(tabName).SoundFile = ts.soundFile
+                                _section.ListElement(tabName).UnreadManage = ts.unreadManage
+                                For Each fc As FilterClass In ts.filters
+                                    Dim bf As String = ""
+                                    For Each bfs As String In fc.BodyFilter
+                                        bf += " " + bfs
+                                    Next
+                                    Dim su As New SelectedUser(cnt.ToString)
+                                    cnt += 1
+                                    su.BodyFilter = bf
+                                    su.IdFilter = fc.IDFilter
+                                    su.MoveFrom = fc.moveFrom
+                                    su.SetMark = fc.SetMark
+                                    su.SearchBoth = fc.SearchBoth
+                                    su.UrlSearch = fc.SearchURL
+                                    su.RegexEnable = fc.UseRegex
+                                    su.TabName = tabName
+                                    _section.SelectedUser.Add(su)
+                                Next
+                            End If
                         Next
-                        Dim su As New SelectedUser(cnt.ToString)
-                        cnt += 1
-                        su.BodyFilter = bf
-                        su.IdFilter = fc.IDFilter
-                        su.MoveFrom = fc.moveFrom
-                        su.SetMark = fc.SetMark
-                        su.SearchBoth = fc.SearchBoth
-                        su.UrlSearch = fc.SearchURL
-                        su.RegexEnable = fc.UseRegex
-                        su.TabName = tabName
-                        _section.SelectedUser.Add(su)
                     Next
-                    '    End If 
-                    'Next 
-                Next
+                End If
 
             End SyncLock
             'RemoveAllTabs()
