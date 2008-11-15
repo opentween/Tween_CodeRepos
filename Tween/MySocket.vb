@@ -19,6 +19,7 @@ Public Class MySocket
         ReqPOSTEncode
         ReqPOSTEncodeProtoVer1
         ReqPOSTEncodeProtoVer2
+        ReqPOSTEncodeProtoVer3
         ReqGETForwardTo
         ReqGETFile
         ReqGETFileUp
@@ -87,8 +88,11 @@ Public Class MySocket
 
             If referer <> "" Then webReq.Referer = referer
             'POST系
-            If reqType = REQ_TYPE.ReqPOST Or reqType = REQ_TYPE.ReqPOSTEncode Or _
-               reqType = REQ_TYPE.ReqPOSTEncodeProtoVer1 Or reqType = REQ_TYPE.ReqPOSTEncodeProtoVer2 Or _
+            If reqType = REQ_TYPE.ReqPOST OrElse _
+               reqType = REQ_TYPE.ReqPOSTEncode OrElse _
+               reqType = REQ_TYPE.ReqPOSTEncodeProtoVer1 OrElse _
+               reqType = REQ_TYPE.ReqPOSTEncodeProtoVer2 OrElse _
+               reqType = REQ_TYPE.ReqPOSTEncodeProtoVer3 OrElse _
                reqType = REQ_TYPE.ReqPOSTAPI Then
                 webReq.Method = "POST"
                 webReq.Timeout = timeout
@@ -115,6 +119,14 @@ Public Class MySocket
                         webReq.Headers.Add("x-requested-with", "XMLHttpRequest")
                         webReq.Headers.Add("Accept-Language", "ja,en-us;q=0.7,en;q=0.3")
                         webReq.Headers.Add("Accept-Charset", "Shift_JIS,utf-8;q=0.7,*;q=0.7")
+                    Case REQ_TYPE.ReqPOSTEncodeProtoVer3
+                        webReq.ContentType = "application/x-www-form-urlencoded; charset=" + _enc.WebName
+                        webReq.Accept = "application/json, text/javascript, */*"
+                        webReq.Headers.Add("x-prototype-version", "1.6.0.1")
+                        webReq.Headers.Add("x-requested-with", "XMLHttpRequest")
+                        webReq.Headers.Add("Accept-Language", "ja,en-us;q=0.7,en;q=0.3")
+                        webReq.Headers.Add("Accept-Charset", "Shift_JIS,utf-8;q=0.7,*;q=0.7")
+
                     Case REQ_TYPE.ReqPOSTAPI
                         webReq.ContentType = "application/x-www-form-urlencoded"
                         webReq.Accept = "text/html, */*"
@@ -162,7 +174,7 @@ Public Class MySocket
                 strm = webRes.GetResponseStream()
 
                 Select Case reqType
-                    Case REQ_TYPE.ReqGET, REQ_TYPE.ReqPOST, REQ_TYPE.ReqPOSTEncode, REQ_TYPE.ReqPOSTEncodeProtoVer1, REQ_TYPE.ReqPOSTEncodeProtoVer2, REQ_TYPE.ReqGetNoCache, REQ_TYPE.ReqPOSTAPI, REQ_TYPE.ReqGetAPI
+                    Case REQ_TYPE.ReqGET, REQ_TYPE.ReqPOST, REQ_TYPE.ReqPOSTEncode, REQ_TYPE.ReqPOSTEncodeProtoVer1, REQ_TYPE.ReqPOSTEncodeProtoVer2, REQ_TYPE.ReqPOSTEncodeProtoVer3, REQ_TYPE.ReqGetNoCache, REQ_TYPE.ReqPOSTAPI, REQ_TYPE.ReqGetAPI
                         Dim rtStr As String
                         Using sr As New StreamReader(strm, _enc)
                             rtStr = sr.ReadToEnd()
