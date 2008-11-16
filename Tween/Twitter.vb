@@ -1792,7 +1792,7 @@ Partial Public Class Twitter
         End Try
     End Function
 
-    Public Function MakeShortUrl(ByVal ConverterType As UrlConverter, ByRef SrcUrl As String) As String
+    Public Function MakeShortUrl(ByVal ConverterType As UrlConverter, ByVal SrcUrl As String) As String
         Dim ret As String = ""
         Dim resStatus As String = ""
 
