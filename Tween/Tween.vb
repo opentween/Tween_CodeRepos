@@ -98,10 +98,12 @@ Public Class TweenMain
     Private _brsForeColorReaded As SolidBrush
     Private _brsForeColorFav As SolidBrush
     Private _brsForeColorOWL As SolidBrush
+    Private sf As New StringFormat()
 
-    'Private _drawcount As Long = 0
-    'Private _drawtime As Long = 0
-
+#If DEBUG Then
+    Private _drawcount As Long = 0
+    Private _drawtime As Long = 0
+#End If
 
     Private Structure urlUndo
         Public Before As String
@@ -272,6 +274,10 @@ Public Class TweenMain
         _brsForeColorReaded = New SolidBrush(_clReaded)
         _brsForeColorFav = New SolidBrush(_clFav)
         _brsForeColorOWL = New SolidBrush(_clOWL)
+
+        ' StringFormatオブジェクトへの事前設定
+        sf.Alignment = StringAlignment.Near
+        sf.LineAlignment = StringAlignment.Near
 
         '設定画面への反映
         SettingDialog.UserID = _username                                'ユーザ名
@@ -3856,62 +3862,19 @@ Public Class TweenMain
     End Sub
 
     Private Sub MyList_DrawItem(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DrawListViewItemEventArgs)
-        'Dim iStart As Integer = System.Environment.TickCount
+#If DEBUG Then
+        Dim iStart As Integer = System.Environment.TickCount
+#End If
 
         If _iconSz = 48 OrElse _
            _iconSz = 26 Then
             If e.State = 0 Then Exit Sub
 
-
-
-            'Dim dspstr As String = e.Item.SubItems(0).Text + " " + e.Item.SubItems(1).Text + "/" + e.Item.SubItems(4).Text + "     " + e.Item.SubItems(3).Text + vbCrLf + _
-            '                       e.Item.SubItems(2).Text
-
-            'Dim rct As New Rectangle(e.Item.Bounds.X + 2, e.Item.Bounds.Y + 1, MyList.SmallImageList.ImageSize.Width, MyList.SmallImageList.ImageSize.Height)
-            'Dim sRct As New Rectangle(e.Item.Bounds.X + MyList.SmallImageList.ImageSize.Width + 5, e.Item.Bounds.Y + 1, e.Item.Bounds.Width - MyList.SmallImageList.ImageSize.Width - 7, e.Item.Bounds.Height - 2)
-
-            'sf.Alignment = StringAlignment.Near
-            'sf.LineAlignment = StringAlignment.Near
-
-            'If e.Item.Selected = True Then
-            '    brs = New SolidBrush(Color.FromKnownColor(KnownColor.Highlight))
-            '    e.Graphics.FillRectangle(brs, e.Bounds)
-            '    brs.Dispose()
-            '    If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
-            '        e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
-            '    End If
-            '    brs = New SolidBrush(Color.FromKnownColor(KnownColor.HighlightText))
-
-            '    e.Graphics.DrawString(dspstr, e.Item.Font, brs, sRct, sf)
-            '    brs.Dispose()
-            'Else
-            '    e.DrawBackground()
-
-            '    If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
-            '        e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
-            '    End If
-
-
-
-            '    brs = New SolidBrush(e.Item.ForeColor)
-            '    e.Graphics.DrawString(dspstr, e.Item.Font, brs, sRct, sf)
-            '    brs.Dispose()
-            '    'e.DrawText()
-
-            '    'End If
-            'End If
-            'e.DrawFocusRectangle()
-
-            'sf.Dispose()
-
             'アイコンカラム位置取得
             Dim rct As Rectangle = Nothing
             Dim MyList As DetailsListView = DirectCast(e.Item.ListView, Tween.TweenCustomControl.DetailsListView)
-            Dim sf As New StringFormat()
-            sf.Alignment = StringAlignment.Near
-            sf.LineAlignment = StringAlignment.Near
+
             If Not _iconCol Then
-                'Dim MyList As DetailsListView = CType(sender, DetailsListView)
                 Dim cnt As Integer
                 Dim x As Integer = 0
                 Dim wd As Integer
@@ -3938,17 +3901,11 @@ Public Class TweenMain
                 End If
                 rct = New Rectangle(x, e.Item.SubItems(idx).Bounds.Y + 1, wd, MyList.SmallImageList.ImageSize.Height)
 
-                sf.Alignment = StringAlignment.Near
-                sf.LineAlignment = StringAlignment.Near
-
                 If e.Item.Selected Then
-                    'Using brs As SolidBrush = New SolidBrush(Color.FromKnownColor(KnownColor.Highlight))
                     e.Graphics.FillRectangle(_brsHighLight, e.Bounds)
-                    'End Using
                     If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
                         e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
                     End If
-                    'Using brs As SolidBrush = New SolidBrush(Color.FromKnownColor(KnownColor.HighlightText))
                     For i As Integer = 0 To 4
                         If i = 0 Then
                             If wd2 - MyList.SmallImageList.ImageSize.Width > 0 Then
@@ -3960,7 +3917,6 @@ Public Class TweenMain
                             e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, _brsHighLightText, sRct, sf)
                         End If
                     Next
-                    'End Using
                 Else
                     e.DrawBackground()
 
@@ -3968,9 +3924,6 @@ Public Class TweenMain
                         e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
                     End If
 
-
-
-                    'Using brs As SolidBrush = New SolidBrush(e.Item.ForeColor)
                     Dim brs As SolidBrush = Nothing
                     Select Case e.Item.ForeColor
                         Case _clUnread
@@ -3992,13 +3945,7 @@ Public Class TweenMain
                             Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 3)
                             e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
                         End If
-                        'Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y + 1, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 2)
-                        'e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
                     Next
-                    'End Using
-                    'e.DrawText()
-
-                    'End If
                 End If
             Else
                 Dim wd As Integer
@@ -4010,13 +3957,10 @@ Public Class TweenMain
                 rct = New Rectangle(e.Item.Bounds.X, e.Item.Bounds.Y + 1, wd, _iconSz)
 
                 If e.Item.Selected = True Then
-                    'Using brs As SolidBrush = New SolidBrush(Color.FromKnownColor(KnownColor.Highlight))
                     e.Graphics.FillRectangle(_brsHighLight, e.Bounds)
-                    'End Using
                     If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
                         e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
                     End If
-                    'Using brs As SolidBrush = New SolidBrush(Color.FromKnownColor(KnownColor.HighlightText))
                     If wd2 - _iconSz - 5 > 0 Then
                         Dim sRct As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y, wd2 - _iconSz - 5, e.Item.Font.Height)
                         Dim sRct2 As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y + e.Item.Font.Height, wd2 - _iconSz - 5, _iconSz - e.Item.Font.Height)
@@ -4024,14 +3968,12 @@ Public Class TweenMain
                         e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text, fnt, _brsHighLightText, sRct, sf)
                         e.Graphics.DrawString(e.Item.SubItems(2).Text, e.Item.Font, _brsHighLightText, sRct2, sf)
                     End If
-                    'End Using
                 Else
                     e.DrawBackground()
 
                     If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
                         e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
                     End If
-                    'Using brs As SolidBrush = New SolidBrush(e.Item.ForeColor)
                     Dim brs As SolidBrush = Nothing
                     Select Case e.Item.ForeColor
                         Case _clUnread
@@ -4050,23 +3992,17 @@ Public Class TweenMain
                         e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text, fnt, brs, sRct, sf)
                         e.Graphics.DrawString(e.Item.SubItems(2).Text, e.Item.Font, brs, sRct2, sf)
                     End If
-                    'End Using
-                    'e.DrawText()
-
-                    'End If
                 End If
             End If
-
-
             e.DrawFocusRectangle()
-
-            sf.Dispose()
         Else
             e.DrawDefault = True
         End If
-        '_drawcount += 1
-        '_drawtime += System.Environment.TickCount - iStart
-        'System.Diagnostics.Debug.WriteLine("呼び出し回数" & _drawcount.ToString() & "total処理時間：" & _drawtime.ToString() & "ミリ秒")
+#If DEBUG Then
+        _drawcount += 1
+        _drawtime += System.Environment.TickCount - iStart
+        System.Diagnostics.Debug.WriteLine("呼び出し回数" & _drawcount.ToString() & "total処理時間：" & _drawtime.ToString() & "ミリ秒")
+#End If
     End Sub
 
     Private Sub MenuItemSubSearch_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemSubSearch.Click
