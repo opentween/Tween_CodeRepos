@@ -69,6 +69,12 @@ Public Class TweenMain
     Private ReadOnly _syncObject As New Object()    'ロック用  
     Private _StatusSelectionStart As Integer        ' 一時退避用
     Private _StatusSelectionLength As Integer       ' 一時退避用
+    Private _brsHighLight As New SolidBrush(Color.FromKnownColor(KnownColor.Highlight))
+    Private _brsHighLightText As New SolidBrush(Color.FromKnownColor(KnownColor.HighlightText))
+    Private _brsForeColorUnread As SolidBrush
+    Private _brsForeColorReaded As SolidBrush
+    Private _brsForeColorFav As SolidBrush
+    Private _brsForeColorOWL As SolidBrush
 
     Private Structure urlUndo
         Public Before As String
@@ -246,6 +252,10 @@ Public Class TweenMain
         _clTarget = _section.ColorTarget                '選択発言者の他の発言背景色
         _clAtTarget = _section.ColorAtTarget            '選択発言の＠先
         _clAtFromTarget = _section.ColorAtFromTarget    '選択発言者への＠
+        _brsForeColorUnread = New SolidBrush(_clUnread)
+        _brsForeColorReaded = New SolidBrush(_clReaded)
+        _brsForeColorFav = New SolidBrush(_clFav)
+        _brsForeColorOWL = New SolidBrush(_clOWL)
 
         '設定画面への反映
         SettingDialog.UserID = _username                                'ユーザ名
@@ -382,6 +392,14 @@ Public Class TweenMain
             _clTarget = SettingDialog.ColorTarget
             _clAtTarget = SettingDialog.ColorAtTarget
             _clAtFromTarget = SettingDialog.ColorAtFromTarget
+            _brsForeColorUnread.Dispose()
+            _brsForeColorReaded.Dispose()
+            _brsForeColorFav.Dispose()
+            _brsForeColorOWL.Dispose()
+            _brsForeColorUnread = New SolidBrush(_clUnread)
+            _brsForeColorReaded = New SolidBrush(_clReaded)
+            _brsForeColorFav = New SolidBrush(_clFav)
+            _brsForeColorOWL = New SolidBrush(_clOWL)
             '他の設定項目は、随時設定画面で保持している値を読み出して使用
         End If
 
@@ -3291,6 +3309,14 @@ Public Class TweenMain
                 _clTarget = SettingDialog.ColorTarget
                 _clAtTarget = SettingDialog.ColorAtTarget
                 _clAtFromTarget = SettingDialog.ColorAtFromTarget
+                _brsForeColorUnread.Dispose()
+                _brsForeColorReaded.Dispose()
+                _brsForeColorFav.Dispose()
+                _brsForeColorOWL.Dispose()
+                _brsForeColorUnread = New SolidBrush(_clUnread)
+                _brsForeColorReaded = New SolidBrush(_clReaded)
+                _brsForeColorFav = New SolidBrush(_clFav)
+                _brsForeColorOWL = New SolidBrush(_clOWL)
                 For Each ts As TabStructure In _tabs
                     For Each myItem As ListViewItem In ts.listCustom.Items
                         If SettingDialog.UnreadManage AndAlso ts.unreadManage Then
@@ -3899,25 +3925,25 @@ Public Class TweenMain
                 sf.LineAlignment = StringAlignment.Near
 
                 If e.Item.Selected Then
-                    Using brs As SolidBrush = New SolidBrush(Color.FromKnownColor(KnownColor.Highlight))
-                        e.Graphics.FillRectangle(brs, e.Bounds)
-                    End Using
+                    'Using brs As SolidBrush = New SolidBrush(Color.FromKnownColor(KnownColor.Highlight))
+                    e.Graphics.FillRectangle(_brsHighLight, e.Bounds)
+                    'End Using
                     If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
                         e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
                     End If
-                    Using brs As SolidBrush = New SolidBrush(Color.FromKnownColor(KnownColor.HighlightText))
-                        For i As Integer = 0 To 4
-                            If i = 0 Then
-                                If wd2 - MyList.SmallImageList.ImageSize.Width > 0 Then
-                                    Dim sRct As New Rectangle(x + 1 + MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Y, wd2 - MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Height - 3)
-                                    e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
-                                End If
-                            Else
-                                Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 3)
-                                e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
+                    'Using brs As SolidBrush = New SolidBrush(Color.FromKnownColor(KnownColor.HighlightText))
+                    For i As Integer = 0 To 4
+                        If i = 0 Then
+                            If wd2 - MyList.SmallImageList.ImageSize.Width > 0 Then
+                                Dim sRct As New Rectangle(x + 1 + MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Y, wd2 - MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Height - 3)
+                                e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, _brsHighLightText, sRct, sf)
                             End If
-                        Next
-                    End Using
+                        Else
+                            Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 3)
+                            e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, _brsHighLightText, sRct, sf)
+                        End If
+                    Next
+                    'End Using
                 Else
                     e.DrawBackground()
 
@@ -3927,21 +3953,32 @@ Public Class TweenMain
 
 
 
-                    Using brs As SolidBrush = New SolidBrush(e.Item.ForeColor)
-                        For i As Integer = 0 To 4
-                            If i = 0 Then
-                                If wd2 - MyList.SmallImageList.ImageSize.Width > 0 Then
-                                    Dim sRct As New Rectangle(x + 1 + MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Y, wd2 - MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Height - 3)
-                                    e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
-                                End If
-                            Else
-                                Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 3)
+                    'Using brs As SolidBrush = New SolidBrush(e.Item.ForeColor)
+                    Dim brs As SolidBrush = Nothing
+                    Select Case e.Item.ForeColor
+                        Case _clUnread
+                            brs = _brsForeColorUnread
+                        Case _clReaded
+                            brs = _brsForeColorReaded
+                        Case _clFav
+                            brs = _brsForeColorFav
+                        Case _clOWL
+                            brs = _brsForeColorOWL
+                    End Select
+                    For i As Integer = 0 To 4
+                        If i = 0 Then
+                            If wd2 - MyList.SmallImageList.ImageSize.Width > 0 Then
+                                Dim sRct As New Rectangle(x + 1 + MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Y, wd2 - MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Height - 3)
                                 e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
                             End If
-                            'Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y + 1, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 2)
-                            'e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
-                        Next
-                    End Using
+                        Else
+                            Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 3)
+                            e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
+                        End If
+                        'Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y + 1, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 2)
+                        'e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
+                    Next
+                    'End Using
                     'e.DrawText()
 
                     'End If
@@ -3956,36 +3993,47 @@ Public Class TweenMain
                 rct = New Rectangle(e.Item.Bounds.X, e.Item.Bounds.Y + 1, wd, _iconSz)
 
                 If e.Item.Selected = True Then
-                    Using brs As SolidBrush = New SolidBrush(Color.FromKnownColor(KnownColor.Highlight))
-                        e.Graphics.FillRectangle(brs, e.Bounds)
-                    End Using
+                    'Using brs As SolidBrush = New SolidBrush(Color.FromKnownColor(KnownColor.Highlight))
+                    e.Graphics.FillRectangle(_brsHighLight, e.Bounds)
+                    'End Using
                     If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
                         e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
                     End If
-                    Using brs As SolidBrush = New SolidBrush(Color.FromKnownColor(KnownColor.HighlightText))
-                        If wd2 - _iconSz - 5 > 0 Then
-                            Dim sRct As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y, wd2 - _iconSz - 5, e.Item.Font.Height)
-                            Dim sRct2 As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y + e.Item.Font.Height, wd2 - _iconSz - 5, _iconSz - e.Item.Font.Height)
-                            Dim fnt As New Font(e.Item.Font, FontStyle.Bold)
-                            e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text, fnt, brs, sRct, sf)
-                            e.Graphics.DrawString(e.Item.SubItems(2).Text, e.Item.Font, brs, sRct2, sf)
-                        End If
-                    End Using
+                    'Using brs As SolidBrush = New SolidBrush(Color.FromKnownColor(KnownColor.HighlightText))
+                    If wd2 - _iconSz - 5 > 0 Then
+                        Dim sRct As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y, wd2 - _iconSz - 5, e.Item.Font.Height)
+                        Dim sRct2 As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y + e.Item.Font.Height, wd2 - _iconSz - 5, _iconSz - e.Item.Font.Height)
+                        Dim fnt As New Font(e.Item.Font, FontStyle.Bold)
+                        e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text, fnt, _brsHighLightText, sRct, sf)
+                        e.Graphics.DrawString(e.Item.SubItems(2).Text, e.Item.Font, _brsHighLightText, sRct2, sf)
+                    End If
+                    'End Using
                 Else
                     e.DrawBackground()
 
                     If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
                         e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
                     End If
-                    Using brs As SolidBrush = New SolidBrush(e.Item.ForeColor)
-                        If wd2 - _iconSz - 5 > 0 Then
-                            Dim sRct As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y, wd2 - _iconSz - 5, e.Item.Font.Height)
-                            Dim sRct2 As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y + e.Item.Font.Height, wd2 - _iconSz - 5, _iconSz - e.Item.Font.Height)
-                            Dim fnt As New Font(e.Item.Font, FontStyle.Bold)
-                            e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text, fnt, brs, sRct, sf)
-                            e.Graphics.DrawString(e.Item.SubItems(2).Text, e.Item.Font, brs, sRct2, sf)
-                        End If
-                    End Using
+                    'Using brs As SolidBrush = New SolidBrush(e.Item.ForeColor)
+                    Dim brs As SolidBrush = Nothing
+                    Select Case e.Item.ForeColor
+                        Case _clUnread
+                            brs = _brsForeColorUnread
+                        Case _clReaded
+                            brs = _brsForeColorReaded
+                        Case _clFav
+                            brs = _brsForeColorFav
+                        Case _clOWL
+                            brs = _brsForeColorOWL
+                    End Select
+                    If wd2 - _iconSz - 5 > 0 Then
+                        Dim sRct As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y, wd2 - _iconSz - 5, e.Item.Font.Height)
+                        Dim sRct2 As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y + e.Item.Font.Height, wd2 - _iconSz - 5, _iconSz - e.Item.Font.Height)
+                        Dim fnt As New Font(e.Item.Font, FontStyle.Bold)
+                        e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text, fnt, brs, sRct, sf)
+                        e.Graphics.DrawString(e.Item.SubItems(2).Text, e.Item.Font, brs, sRct2, sf)
+                    End If
+                    'End Using
                     'e.DrawText()
 
                     'End If
