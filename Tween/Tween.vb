@@ -99,6 +99,10 @@ Public Class TweenMain
     Private _brsForeColorFav As SolidBrush
     Private _brsForeColorOWL As SolidBrush
 
+    'Private _drawcount As Long = 0
+    'Private _drawtime As Long = 0
+
+
     Private Structure urlUndo
         Public Before As String
         Public After As String
@@ -3863,7 +3867,8 @@ Public Class TweenMain
     End Sub
 
     Private Sub MyList_DrawItem(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DrawListViewItemEventArgs)
-        'e.DrawDefault = True
+        'Dim iStart As Integer = System.Environment.TickCount
+
         If _iconSz = 48 OrElse _
            _iconSz = 26 Then
             If e.State = 0 Then Exit Sub
@@ -4070,6 +4075,9 @@ Public Class TweenMain
         Else
             e.DrawDefault = True
         End If
+        '_drawcount += 1
+        '_drawtime += System.Environment.TickCount - iStart
+        'System.Diagnostics.Debug.WriteLine("呼び出し回数" & _drawcount.ToString() & "total処理時間：" & _drawtime.ToString() & "ミリ秒")
     End Sub
 
     Private Sub MenuItemSubSearch_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemSubSearch.Click
