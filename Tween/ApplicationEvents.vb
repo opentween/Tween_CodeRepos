@@ -66,6 +66,7 @@ Namespace My
                 writer.WriteLine("動作環境:")
                 writer.WriteLine("   オペレーティング システム: {0}", Environment.OSVersion.VersionString)
                 writer.WriteLine("   共通言語ランタイム       : {0}", Environment.Version.ToString())
+                writer.WriteLine("   Tween.exeのバージョン    : {0}", Application.Info.Version.ToString())
                 writer.WriteLine("例外 {0}: {1}", e.Exception.GetType().FullName, e.Exception.Message)
                 writer.WriteLine(e.Exception.StackTrace)
                 writer.WriteLine()
