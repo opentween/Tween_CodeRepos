@@ -153,17 +153,6 @@ Public Class TweenMain
     End Structure
 
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        'OSバージョン判定。ビジュアルスタイルのRenderMode切り替え（メニュー関連の描画方法）
-        If Environment.OSVersion.Version.Major = 4 OrElse _
-           Environment.OSVersion.Version.Major = 5 AndAlso System.Environment.OSVersion.Version.Minor = 0 Then
-            'Win9x,NT,2k
-            ToolStripManager.RenderMode = ToolStripManagerRenderMode.Professional
-        ElseIf System.Environment.OSVersion.Version.Major = 5 AndAlso System.Environment.OSVersion.Version.Minor > 0 OrElse _
-               System.Environment.OSVersion.Version.Major >= 6 Then
-            'XP,2003,Vista
-            ToolStripManager.RenderMode = ToolStripManagerRenderMode.System
-        End If
-
         '着せ替えアイコン対応
         'タスクトレイ通常時アイコン
         Try
@@ -5302,10 +5291,12 @@ RETRY:
     End Sub
 
     Private Sub StatusText_Enter(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusText.Enter
+        Me.Tag = StatusText
         StatusText.BackColor = Color.LemonChiffon
     End Sub
 
     Private Sub StatusText_Leave(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusText.Leave
+        If MenuStrip1.Tag Is Nothing Then Me.Tag = DirectCast(MenuStrip1.Tag, Control)
         StatusText.BackColor = Color.FromKnownColor(KnownColor.Window)
     End Sub
 
@@ -7035,13 +7026,10 @@ RETRY:
             name = name.Substring(0, name.Length - 7) ' "_normal".Length
             Me.IconNameToolStripMenuItem.Enabled = True
             Me.SaveIconPictureToolStripMenuItem.Enabled = True
-            ' TODO: 現在無効状態。消すか対応させるかのどちらか
-            Me.SaveOriginalSizeIconPictureToolStripMenuItem.Enabled = False
             Me.IconNameToolStripMenuItem.Text = name
         Else
             Me.IconNameToolStripMenuItem.Enabled = False
             Me.SaveIconPictureToolStripMenuItem.Enabled = False
-            Me.SaveOriginalSizeIconPictureToolStripMenuItem.Enabled = False
             Me.IconNameToolStripMenuItem.Text = "(発言を選択してください)"
         End If
     End Sub
@@ -7052,7 +7040,7 @@ RETRY:
         ExecWorker.RunWorkerAsync(name.Remove(name.LastIndexOf("_normal"), 7)) ' "_normal".Length
     End Sub
 
-    Private Sub SaveOriginalSizeIconPictureToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SaveOriginalSizeIconPictureToolStripMenuItem.Click
+    Private Sub SaveOriginalSizeIconPictureToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
         Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
         Dim name As String = MyList.SelectedItems(0).SubItems(6).Text
         name = IO.Path.GetFileNameWithoutExtension(name.Substring(name.LastIndexOf("/"c)))
@@ -7102,7 +7090,6 @@ RETRY:
             SplitContainer2.SplitterDistance = SplitContainer2.Height - SplitContainer2.Panel2MinSize - SplitContainer2.SplitterWidth
         End If
     End Sub
-
 
     Private Function UrlConvert(ByVal Converter_Type As UrlConverter) As Boolean
         'Dim _mySock As New MySocket("Shift_JIS", "", "", _
@@ -7227,6 +7214,20 @@ RETRY:
         _section.ListLock = ListLockMenuItem.Checked
     End Sub
 
+    Private Sub MenuStrip1_MenuActivate(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuStrip1.MenuActivate
+        MenuStrip1.Tag = New Object()
+        MenuStrip1.Select()
+    End Sub
+
+    Private Sub MenuStrip1_MenuDeactivate(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuStrip1.MenuDeactivate
+        If Me.Tag IsNot Nothing Then
+            DirectCast(Me.Tag, Control).Select()
+        Else
+            Me.Tag = ListTab.SelectedTab.Controls(0)
+            DirectCast(Me.Tag, Control).Select()
+        End If
+        MenuStrip1.Tag = Nothing
+    End Sub
 End Class
 
 Public Class TabStructure
