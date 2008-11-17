@@ -188,7 +188,6 @@ Partial Class TweenMain
         '
         Me.ContextMenuTabProperty.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AddTabMenuItem, Me.ToolStripSeparator20, Me.UreadManageMenuItem, Me.NotifyDispMenuItem, Me.SoundFileComboBox, Me.ToolStripSeparator18, Me.FilterEditMenuItem, Me.ToolStripSeparator19, Me.ClearTabMenuItem, Me.ToolStripSeparator11, Me.DeleteTabMenuItem})
         Me.ContextMenuTabProperty.Name = "ContextMenuStrip3"
-        Me.ContextMenuTabProperty.OwnerItem = Me.MenuItemTab
         Me.ContextMenuTabProperty.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
         Me.ContextMenuTabProperty.Size = New System.Drawing.Size(194, 186)
         '
@@ -275,7 +274,6 @@ Partial Class TweenMain
         '
         Me.ContextMenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ReplyStripMenuItem, Me.ReplyAllStripMenuItem, Me.DMStripMenuItem, Me.ToolStripSeparator2, Me.FavAddToolStripMenuItem, Me.FavRemoveToolStripMenuItem, Me.ToolStripSeparator1, Me.MoveToHomeToolStripMenuItem, Me.MoveToFavToolStripMenuItem, Me.StatusOpenMenuItem, Me.RepliedStatusOpenMenuItem, Me.FavorareMenuItem, Me.OpenURLMenuItem, Me.ToolStripSeparator3, Me.TabMenuItem, Me.IDRuleMenuItem, Me.ToolStripSeparator4, Me.ReadedStripMenuItem, Me.UnreadStripMenuItem, Me.JumpUnreadMenuItem, Me.ToolStripSeparator10, Me.SelectAllMenuItem, Me.ToolStripSeparator5, Me.DeleteStripMenuItem, Me.ToolStripSeparator8, Me.RefreshStripMenuItem})
         Me.ContextMenuStrip2.Name = "ContextMenuStrip2"
-        Me.ContextMenuStrip2.OwnerItem = Me.MenuItemOperate
         Me.ContextMenuStrip2.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
         Me.ContextMenuStrip2.Size = New System.Drawing.Size(255, 464)
         '
@@ -896,63 +894,64 @@ Partial Class TweenMain
         'MatomeMenuItem
         '
         Me.MatomeMenuItem.Name = "MatomeMenuItem"
-        Me.MatomeMenuItem.Size = New System.Drawing.Size(200, 22)
+        Me.MatomeMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1
+        Me.MatomeMenuItem.Size = New System.Drawing.Size(205, 22)
         Me.MatomeMenuItem.Text = "Tweenまとめサイト(&H)"
         '
         'ToolStripSeparator12
         '
         Me.ToolStripSeparator12.Name = "ToolStripSeparator12"
-        Me.ToolStripSeparator12.Size = New System.Drawing.Size(197, 6)
+        Me.ToolStripSeparator12.Size = New System.Drawing.Size(202, 6)
         '
         'OfficialMenuItem
         '
         Me.OfficialMenuItem.Name = "OfficialMenuItem"
-        Me.OfficialMenuItem.Size = New System.Drawing.Size(200, 22)
+        Me.OfficialMenuItem.Size = New System.Drawing.Size(205, 22)
         Me.OfficialMenuItem.Text = "公式ページ(&O)"
         '
         'DLPageMenuItem
         '
         Me.DLPageMenuItem.Name = "DLPageMenuItem"
-        Me.DLPageMenuItem.Size = New System.Drawing.Size(200, 22)
+        Me.DLPageMenuItem.Size = New System.Drawing.Size(205, 22)
         Me.DLPageMenuItem.Text = "配布ページ(&D)"
         '
         'ToolStripSeparator16
         '
         Me.ToolStripSeparator16.Name = "ToolStripSeparator16"
-        Me.ToolStripSeparator16.Size = New System.Drawing.Size(197, 6)
+        Me.ToolStripSeparator16.Size = New System.Drawing.Size(202, 6)
         '
         'VerUpMenuItem
         '
         Me.VerUpMenuItem.Name = "VerUpMenuItem"
-        Me.VerUpMenuItem.Size = New System.Drawing.Size(200, 22)
+        Me.VerUpMenuItem.Size = New System.Drawing.Size(205, 22)
         Me.VerUpMenuItem.Text = "最新版の取得(&G)"
         '
         'WedataMenuItem
         '
         Me.WedataMenuItem.Name = "WedataMenuItem"
-        Me.WedataMenuItem.Size = New System.Drawing.Size(200, 22)
+        Me.WedataMenuItem.Size = New System.Drawing.Size(205, 22)
         Me.WedataMenuItem.Text = "解析キー情報更新"
         '
         'ToolStripSeparator14
         '
         Me.ToolStripSeparator14.Name = "ToolStripSeparator14"
-        Me.ToolStripSeparator14.Size = New System.Drawing.Size(197, 6)
+        Me.ToolStripSeparator14.Size = New System.Drawing.Size(202, 6)
         '
         'InfoTwitterMenuItem
         '
         Me.InfoTwitterMenuItem.Name = "InfoTwitterMenuItem"
-        Me.InfoTwitterMenuItem.Size = New System.Drawing.Size(200, 22)
+        Me.InfoTwitterMenuItem.Size = New System.Drawing.Size(205, 22)
         Me.InfoTwitterMenuItem.Text = "Twitterからのお知らせ(&I)"
         '
         'ToolStripSeparator7
         '
         Me.ToolStripSeparator7.Name = "ToolStripSeparator7"
-        Me.ToolStripSeparator7.Size = New System.Drawing.Size(197, 6)
+        Me.ToolStripSeparator7.Size = New System.Drawing.Size(202, 6)
         '
         'AboutMenuItem
         '
         Me.AboutMenuItem.Name = "AboutMenuItem"
-        Me.AboutMenuItem.Size = New System.Drawing.Size(200, 22)
+        Me.AboutMenuItem.Size = New System.Drawing.Size(205, 22)
         Me.AboutMenuItem.Text = "Tweenについて(&A)"
         '
         'TweenMain
