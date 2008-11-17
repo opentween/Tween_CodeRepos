@@ -1,4 +1,27 @@
-﻿Imports System.Xml
+﻿' Tween - Client of Twitter
+' Copyright © 2007-2008 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
+'           © 2008      Moz (@syo68k) <http://iddy.jp/profile/moz/>
+'           © 2008      takeshik (@takeshik) <http://www.takeshik.org/>
+' All rights reserved.
+' 
+' This file is part of Tween.
+' 
+' This program is free software; you can redistribute it and/or modify it
+' under the terms of the GNU General Public License as published by the Free
+' Software Foundation; either version 3 of the License, or (at your option)
+' any later version.
+' 
+' This program is distributed in the hope that it will be useful, but
+' WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+' or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+' for more details. 
+' 
+' You should have received a copy of the GNU General Public License along
+' with this program. If not, see <http://www.gnu.org/licenses/>, or write to
+' the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+' Boston, MA 02110-1301, USA.
+
+Imports System.Xml
 
 Public Class Setting
     Private _xrootElement As XmlElement
@@ -453,13 +476,13 @@ Public Class Setting
         Try
             prd = CType(TimelinePeriod.Text, Integer)
         Catch ex As Exception
-            MessageBox.Show("更新間隔には数値（0または15〜600）を指定してください。")
+            MessageBox.Show("更新間隔には数値（0または15～600）を指定してください。")
             e.Cancel = True
             Exit Sub
         End Try
 
         If prd <> 0 And (prd < 15 Or prd > 600) Then
-            MessageBox.Show("更新間隔には数値（0または15〜600）を指定してください。")
+            MessageBox.Show("更新間隔には数値（0または15～600）を指定してください。")
             e.Cancel = True
         End If
     End Sub
@@ -469,13 +492,13 @@ Public Class Setting
         Try
             thr = CType(NextThreshold.Text, Integer)
         Catch ex As Exception
-            MessageBox.Show("閾値には数値（1〜20）を指定してください。")
+            MessageBox.Show("閾値には数値（1～20）を指定してください。")
             e.Cancel = True
             Exit Sub
         End Try
 
         If thr < 1 Or thr > 20 Then
-            MessageBox.Show("閾値には数値（1〜20）を指定してください。")
+            MessageBox.Show("閾値には数値（1～20）を指定してください。")
             e.Cancel = True
         End If
     End Sub
@@ -485,13 +508,13 @@ Public Class Setting
         Try
             thr = CType(NextPages.Text, Integer)
         Catch ex As Exception
-            MessageBox.Show("ページ数には数値（1〜20）を指定してください。")
+            MessageBox.Show("ページ数には数値（1～20）を指定してください。")
             e.Cancel = True
             Exit Sub
         End Try
 
         If thr < 1 Or thr > 20 Then
-            MessageBox.Show("ページ数には数値（1〜20）を指定してください。")
+            MessageBox.Show("ページ数には数値（1～20）を指定してください。")
             e.Cancel = True
         End If
     End Sub
@@ -501,13 +524,13 @@ Public Class Setting
         Try
             prd = CType(DMPeriod.Text, Integer)
         Catch ex As Exception
-            MessageBox.Show("更新間隔には数値（0または15〜600）を指定してください。")
+            MessageBox.Show("更新間隔には数値（0または15～600）を指定してください。")
             e.Cancel = True
             Exit Sub
         End Try
 
         If prd <> 0 And (prd < 15 Or prd > 600) Then
-            MessageBox.Show("更新間隔には数値（0または15〜600）を指定してください。")
+            MessageBox.Show("更新間隔には数値（0または15～600）を指定してください。")
             e.Cancel = True
         End If
     End Sub
@@ -517,13 +540,13 @@ Public Class Setting
         'Try
         '    days = CType(ReadLogDays.Text, Integer)
         'Catch ex As Exception
-        '    MessageBox.Show("読み込み日数には数値（0〜7）を指定してください。")
+        '    MessageBox.Show("読み込み日数には数値（0～7）を指定してください。")
         '    e.Cancel = True
         '    Exit Sub
         'End Try
 
         'If days < 0 Or days > 7 Then
-        '    MessageBox.Show("読み込み日数には数値（0〜7）を指定してください。")
+        '    MessageBox.Show("読み込み日数には数値（0～7）を指定してください。")
         '    e.Cancel = True
         'End If
     End Sub
@@ -533,13 +556,13 @@ Public Class Setting
         Try
             pages = CType(StartupReadPages.Text, Integer)
         Catch ex As Exception
-            MessageBox.Show("読み込みページ数には数値（1〜999）を指定してください。")
+            MessageBox.Show("読み込みページ数には数値（1～999）を指定してください。")
             e.Cancel = True
             Exit Sub
         End Try
 
         If pages < 1 Or pages > 999 Then
-            MessageBox.Show("読み込みページ数には数値（1〜999）を指定してください。")
+            MessageBox.Show("読み込みページ数には数値（1～999）を指定してください。")
             e.Cancel = True
         End If
     End Sub
@@ -549,13 +572,13 @@ Public Class Setting
         Try
             pages = CType(StartupReadReply.Text, Integer)
         Catch ex As Exception
-            MessageBox.Show("読み込みページ数には数値（0〜999）を指定してください。")
+            MessageBox.Show("読み込みページ数には数値（0～999）を指定してください。")
             e.Cancel = True
             Exit Sub
         End Try
 
         If pages < 0 Or pages > 999 Then
-            MessageBox.Show("読み込みページ数には数値（0〜999）を指定してください。")
+            MessageBox.Show("読み込みページ数には数値（0～999）を指定してください。")
             e.Cancel = True
         End If
     End Sub
@@ -565,13 +588,13 @@ Public Class Setting
         Try
             pages = CType(StartupReadDM.Text, Integer)
         Catch ex As Exception
-            MessageBox.Show("読み込みページ数には数値（1〜999）を指定してください。")
+            MessageBox.Show("読み込みページ数には数値（1～999）を指定してください。")
             e.Cancel = True
             Exit Sub
         End Try
 
         If pages < 1 Or pages > 999 Then
-            MessageBox.Show("読み込みページ数には数値（1〜999）を指定してください。")
+            MessageBox.Show("読み込みページ数には数値（1～999）を指定してください。")
             e.Cancel = True
         End If
     End Sub
@@ -1222,7 +1245,7 @@ Public Class Setting
             Exit Sub
         End If
         If port < 0 Or port > 65535 Then
-            MessageBox.Show("ポート番号には0〜65535を指定してください。")
+            MessageBox.Show("ポート番号には0～65535を指定してください。")
             e.Cancel = True
             Exit Sub
         End If
@@ -1233,13 +1256,13 @@ Public Class Setting
         Try
             pstnm = CType(MaxPost.Text, Integer)
         Catch ex As Exception
-            MessageBox.Show("1時間当たり最大POST回数には数値（1〜999）を指定してください。")
+            MessageBox.Show("1時間当たり最大POST回数には数値（1～999）を指定してください。")
             e.Cancel = True
             Exit Sub
         End Try
 
         If pstnm < 1 Or pstnm > 999 Then
-            MessageBox.Show("1時間当たり最大POST回数には数値（1〜999）を指定してください。")
+            MessageBox.Show("1時間当たり最大POST回数には数値（1～999）を指定してください。")
             e.Cancel = True
         End If
     End Sub
