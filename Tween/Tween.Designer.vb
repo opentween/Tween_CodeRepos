@@ -697,12 +697,10 @@ Partial Class TweenMain
         '
         'TableLayoutPanel1
         '
-        Me.TableLayoutPanel1.ColumnCount = 5
+        Me.TableLayoutPanel1.ColumnCount = 3
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 55.0!))
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 60.0!))
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40.0!))
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50.0!))
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 59.0!))
+        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 130.0!))
         Me.TableLayoutPanel1.Controls.Add(Me.UserPicture, 0, 0)
         Me.TableLayoutPanel1.Controls.Add(Me.NameLabel, 1, 0)
         Me.TableLayoutPanel1.Controls.Add(Me.PostBrowser, 1, 1)
@@ -742,7 +740,7 @@ Partial Class TweenMain
         'PostBrowser
         '
         Me.PostBrowser.AllowWebBrowserDrop = False
-        Me.TableLayoutPanel1.SetColumnSpan(Me.PostBrowser, 4)
+        Me.TableLayoutPanel1.SetColumnSpan(Me.PostBrowser, 2)
         Me.PostBrowser.Dock = System.Windows.Forms.DockStyle.Fill
         Me.PostBrowser.Location = New System.Drawing.Point(58, 17)
         Me.PostBrowser.Name = "PostBrowser"
@@ -753,11 +751,10 @@ Partial Class TweenMain
         'DateTimeLabel
         '
         Me.DateTimeLabel.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.TableLayoutPanel1.SetColumnSpan(Me.DateTimeLabel, 3)
-        Me.DateTimeLabel.Location = New System.Drawing.Point(331, 3)
+        Me.DateTimeLabel.Location = New System.Drawing.Point(337, 3)
         Me.DateTimeLabel.Margin = New System.Windows.Forms.Padding(3, 3, 3, 0)
         Me.DateTimeLabel.Name = "DateTimeLabel"
-        Me.DateTimeLabel.Size = New System.Drawing.Size(130, 11)
+        Me.DateTimeLabel.Size = New System.Drawing.Size(124, 11)
         Me.DateTimeLabel.TabIndex = 7
         Me.DateTimeLabel.Text = "Label1"
         Me.DateTimeLabel.TextAlign = System.Drawing.ContentAlignment.TopRight
