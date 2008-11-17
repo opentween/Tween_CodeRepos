@@ -5291,12 +5291,14 @@ RETRY:
     End Sub
 
     Private Sub StatusText_Enter(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusText.Enter
+        ' フォーカスの戻り先を StatusText に設定
         Me.Tag = StatusText
         StatusText.BackColor = Color.LemonChiffon
     End Sub
 
     Private Sub StatusText_Leave(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusText.Leave
-        If MenuStrip1.Tag Is Nothing Then Me.Tag = DirectCast(MenuStrip1.Tag, Control)
+        ' フォーカスがメニューに遷移しないならばフォーカスはタブに移ることを期待
+        If MenuStrip1.Tag Is Nothing Then Me.Tag = ListTab.SelectedTab.Controls(0)
         StatusText.BackColor = Color.FromKnownColor(KnownColor.Window)
     End Sub
 
@@ -7215,17 +7217,19 @@ RETRY:
     End Sub
 
     Private Sub MenuStrip1_MenuActivate(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuStrip1.MenuActivate
+        ' フォーカスがメニューに移る (MenuStrip1.Tag フラグを立てる)
         MenuStrip1.Tag = New Object()
-        MenuStrip1.Select()
+        MenuStrip1.Select() ' StatusText がフォーカスを持っている場合 Leave が発生
     End Sub
 
     Private Sub MenuStrip1_MenuDeactivate(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuStrip1.MenuDeactivate
-        If Me.Tag IsNot Nothing Then
+        If Me.Tag IsNot Nothing Then ' 設定された戻り先へ遷移
             DirectCast(Me.Tag, Control).Select()
-        Else
+        Else ' 戻り先が指定されていない (初期状態) 場合はタブに遷移
             Me.Tag = ListTab.SelectedTab.Controls(0)
             DirectCast(Me.Tag, Control).Select()
         End If
+        ' フォーカスがメニューに遷移したかどうかを表すフラグを降ろす
         MenuStrip1.Tag = Nothing
     End Sub
 End Class
