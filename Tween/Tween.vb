@@ -92,6 +92,8 @@ Public Class TweenMain
     Private ReadOnly _syncObject As New Object()    'ロック用  
     Private _StatusSelectionStart As Integer        ' 一時退避用
     Private _StatusSelectionLength As Integer       ' 一時退避用
+
+    ' 以下DrawItem関連
     Private _brsHighLight As New SolidBrush(Color.FromKnownColor(KnownColor.Highlight))
     Private _brsHighLightText As New SolidBrush(Color.FromKnownColor(KnownColor.HighlightText))
     Private _brsForeColorUnread As SolidBrush
@@ -3884,13 +3886,14 @@ Public Class TweenMain
                 Dim wd2 As Integer
                 Dim idx As Integer = _columnIdx     '手抜き
 
-                For cnt = 0 To 4
-                    If e.Item.ListView.Columns(cnt).Text = "" Then
-                        'idx = MyList.Columns(cnt).DisplayIndex
-                        wd2 = MyList.Columns(cnt).Width - 2
-                        Exit For
-                    End If
-                Next
+                'For cnt = 0 To 4
+                '   If e.Item.ListView.Columns(cnt).Text = "" Then
+                '       idx = MyList.Columns(cnt).DisplayIndex
+                '       wd2 = MyList.Columns(cnt).Width - 2
+                '   Exit For
+                '   End If
+                'Next
+                wd2 = MyList.Columns(idx).Width - 2
                 x = e.Item.Bounds.X
                 For cnt = 0 To 4
                     If MyList.Columns(cnt).DisplayIndex < idx Then
@@ -7190,6 +7193,7 @@ RETRY:
                 Exit For
             Next
         End If
+
     End Sub
 End Class
 
