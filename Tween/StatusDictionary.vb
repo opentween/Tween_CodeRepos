@@ -26,16 +26,16 @@ Imports System.Collections.ObjectModel
 Imports Tween.TweenCustomControl
 
 Public Class Statuses
-    Private _statuses As Dictionary(Of String, MyListItem)
-    Private _addedIds As Specialized.StringCollection
+    Private _statuses As Dictionary(Of Long, MyListItem)
+    Private _addedIds As List(Of Long)
     Private _tabs As TabInformations
 
     Public Sub New()
-        _statuses = New Dictionary(Of String, MyListItem)
+        _statuses = New Dictionary(Of Long, MyListItem)
     End Sub
 
     Public Sub BeginUpdate()
-        _addedIds = New Specialized.StringCollection()  'タブ追加用IDコレクション準備
+        _addedIds = New List(Of Long)  'タブ追加用IDコレクション準備
     End Sub
 
     Public Function EndUpdate() As String
@@ -45,11 +45,12 @@ Public Class Statuses
     End Function
 
     Public Sub Add(ByRef Item As MyListItem)
+        If _addedIds Is Nothing Then Throw New Exception("You must call 'BeginUpdate' before to add.")
         _statuses.Add(Item.Id, Item)
         _addedIds.Add(Item.Id)
     End Sub
 
-    Public Function Remove(ByVal Key As String) As Integer
+    Public Function Remove(ByVal Key As Long) As Integer
         _statuses.Remove(Key)
     End Function
 
@@ -294,19 +295,153 @@ End Class
 'End Class
 
 Public Class MyListItem
-    Public Nick As String
-    Public Data As String
-    Public ImageUrl As String
-    Public Name As String
-    Public PDate As DateTime
-    Public Id As String
-    Public Fav As Boolean
-    Public OrgData As String
-    Public Read As Boolean
-    Public Reply As Boolean
-    Public Protect As Boolean
-    Public OWL As Boolean
-    Public Mark As Boolean
+    Private _Nick As String
+    Private _Data As String
+    Private _ImageUrl As String
+    Private _Name As String
+    Private _PDate As Date
+    Private _Id As Long
+    Private _IsFav As Boolean
+    Private _OrgData As String
+    Private _IsRead As Boolean
+    Private _IsReply As Boolean
+    Private _IsProtect As Boolean
+    Private _IsOWL As Boolean
+    Private _IsMark As Boolean
+    Private _InReplyToUser As String
+    Private _InReplyToId As Long
+    Private _Source As String
+    Private _ReplyToList As List(Of String)
+
+    Public Sub New(ByVal Nickname As String, _
+            ByVal Data As String, _
+            ByVal OriginalData As String, _
+            ByVal ImageUrl As String, _
+            ByVal Name As String, _
+            ByVal PDate As Date, _
+            ByVal Id As Long, _
+            ByVal IsFav As Boolean, _
+            ByVal IsRead As Boolean, _
+            ByVal IsReply As Boolean, _
+            ByVal IsProtect As Boolean, _
+            ByVal IsOwl As Boolean, _
+            ByVal IsMark As Boolean, _
+            ByVal InReplyToUser As String, _
+            ByVal InReplyToId As Long, _
+            ByVal Source As String, _
+            ByVal ReplyToList As List(Of String))
+        _Nick = Nickname
+        _Data = Data
+        _ImageUrl = ImageUrl
+        _Name = Name
+        _PDate = PDate
+        _Id = Id
+        _IsFav = IsFav
+        _OrgData = OriginalData
+        _IsRead = IsRead
+        _IsReply = IsReply
+        _IsProtect = IsProtect
+        _IsOWL = IsOwl
+        _IsMark = IsMark
+        _InReplyToUser = InReplyToUser
+        _InReplyToId = InReplyToId
+        _Source = Source
+        _ReplyToList = ReplyToList
+    End Sub
+    Public ReadOnly Property Nickname() As String
+        Get
+            Return _Nick
+        End Get
+    End Property
+    Public ReadOnly Property Data() As String
+        Get
+            Return _Data
+        End Get
+    End Property
+    Public ReadOnly Property ImageUrl() As String
+        Get
+            Return _ImageUrl
+        End Get
+    End Property
+    Public ReadOnly Property Name() As String
+        Get
+            Return _Name
+        End Get
+    End Property
+    Public ReadOnly Property PDate() As Date
+        Get
+            Return _PDate
+        End Get
+    End Property
+    Public ReadOnly Property Id() As Long
+        Get
+            Return _Id
+        End Get
+    End Property
+    Public Property IsFav() As Boolean
+        Get
+            Return _IsFav
+        End Get
+        Set(ByVal value As Boolean)
+            _IsFav = value
+        End Set
+    End Property
+    Public ReadOnly Property OriginalData() As String
+        Get
+            Return _OrgData
+        End Get
+    End Property
+    Public Property IsRead() As Boolean
+        Get
+            Return _IsRead
+        End Get
+        Set(ByVal value As Boolean)
+            _IsRead = value
+        End Set
+    End Property
+    Public ReadOnly Property IsReply() As Boolean
+        Get
+            Return _IsReply
+        End Get
+    End Property
+    Public ReadOnly Property IsProtect() As Boolean
+        Get
+            Return _IsProtect
+        End Get
+    End Property
+    Public ReadOnly Property IsOwl() As Boolean
+        Get
+            Return _IsOWL
+        End Get
+    End Property
+    Public Property IsMark() As Boolean
+        Get
+            Return _IsMark
+        End Get
+        Set(ByVal value As Boolean)
+            _IsMark = value
+        End Set
+    End Property
+    Public ReadOnly Property InReplyToUser() As String
+        Get
+            Return _InReplyToUser
+        End Get
+    End Property
+    Public ReadOnly Property InReplyToId() As Long
+        Get
+            Return _InReplyToId
+        End Get
+    End Property
+    Public ReadOnly Property Source() As String
+        Get
+            Return _Source
+        End Get
+    End Property
+    Public ReadOnly Property ReplyToList() As List(Of String)
+        Get
+            Return _ReplyToList
+        End Get
+    End Property
 End Class
 
 Public Class TabInformations
@@ -370,7 +505,7 @@ Public Class TabInformations
         End Set
     End Property
 
-    Public Function Distribute(ByVal AddedIDs As Specialized.StringCollection) As String
+    Public Function Distribute(ByVal AddedIDs As List(Of Long)) As String
         '各タブのフィルターと照合。合致したらタブにID追加
         Return "通知メッセージ"
     End Function
