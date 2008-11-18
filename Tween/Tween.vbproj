@@ -135,6 +135,11 @@
     </Compile>
     <Compile Include="StatusDictionary.vb" />
     <Compile Include="Storage.vb" />
+    <Compile Include="StorageDataSet.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>StorageDataSet.xsd</DependentUpon>
+    </Compile>
     <Compile Include="TabDialog.Designer.vb">
       <DependentUpon>TabDialog.vb</DependentUpon>
     </Compile>
@@ -234,6 +239,17 @@
     <None Include="Resources\5r.ico" />
     <None Include="Resources\5y.ico" />
     <None Include="Resources\5b.ico" />
+    <None Include="StorageDataSet.xsc">
+      <DependentUpon>StorageDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="StorageDataSet.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>StorageDataSet.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="StorageDataSet.xss">
+      <DependentUpon>StorageDataSet.xsd</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
