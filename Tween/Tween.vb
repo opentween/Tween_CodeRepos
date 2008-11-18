@@ -99,6 +99,7 @@ Public Class TweenMain
     Private _brsForeColorFav As SolidBrush
     Private _brsForeColorOWL As SolidBrush
     Private sf As New StringFormat()
+    Private _columnIdx As Integer   'ListviewのDisplayIndex退避用（DrawItemで使用）
 
 #If DEBUG Then
     Private _drawcount As Long = 0
@@ -3446,6 +3447,7 @@ Public Class TweenMain
             AddHandler myTab.listCustom.DrawItem, AddressOf MyList_DrawItem
             AddHandler myTab.listCustom.Scrolled, AddressOf Mylist_Scrolled
             AddHandler myTab.listCustom.MouseClick, AddressOf MyList_MouseDown
+            AddHandler myTab.listCustom.ColumnReordered, AddressOf MyList_ColumnReordered
 
             myTab.colHd1.Text = ""
             myTab.colHd1.Width = 26
@@ -3485,7 +3487,7 @@ Public Class TweenMain
                 myTab.listCustom.Columns(3).DisplayIndex = _section.DisplayIndex4
                 myTab.listCustom.Columns(4).DisplayIndex = _section.DisplayIndex5
             End If
-
+            _columnIdx = myTab.colHd1.DisplayIndex
             myTab.tabPage.ResumeLayout(False)
             'End If
         Next
@@ -3580,6 +3582,7 @@ Public Class TweenMain
         AddHandler myTab.listCustom.DrawItem, AddressOf MyList_DrawItem
         AddHandler myTab.listCustom.Scrolled, AddressOf Mylist_Scrolled
         AddHandler myTab.listCustom.MouseClick, AddressOf MyList_MouseDown
+        AddHandler myTab.listCustom.ColumnReordered, AddressOf MyList_ColumnReordered
 
         myTab.colHd1.Text = ""
         myTab.colHd1.Width = 26
@@ -3879,11 +3882,11 @@ Public Class TweenMain
                 Dim x As Integer = 0
                 Dim wd As Integer
                 Dim wd2 As Integer
-                Dim idx As Integer
+                Dim idx As Integer = _columnIdx     '手抜き
 
                 For cnt = 0 To 4
                     If e.Item.ListView.Columns(cnt).Text = "" Then
-                        idx = MyList.Columns(cnt).DisplayIndex
+                        'idx = MyList.Columns(cnt).DisplayIndex
                         wd2 = MyList.Columns(cnt).Width - 2
                         Exit For
                     End If
@@ -7167,6 +7170,26 @@ RETRY:
         End If
         ' フォーカスがメニューに遷移したかどうかを表すフラグを降ろす
         MenuStrip1.Tag = Nothing
+    End Sub
+
+    Private Sub MyList_ColumnReordered(ByVal sender As System.Object, ByVal e As ColumnReorderedEventArgs)
+        If e.Header.Text = "" Then
+            _columnIdx = e.NewDisplayIndex
+        Else
+            Dim MyList As DetailsListView = DirectCast(sender, DetailsListView)
+            Dim cIdx As Integer = 0
+            For Each clm As ColumnHeader In MyList.Columns
+                If clm.Text = "" Then
+                    cIdx = clm.DisplayIndex
+                    If cIdx >= e.NewDisplayIndex AndAlso cIdx < e.OldDisplayIndex Then
+                        _columnIdx = cIdx + 1
+                    ElseIf cIdx <= e.NewDisplayIndex AndAlso cIdx > e.OldDisplayIndex Then
+                        _columnIdx = cIdx - 1
+                    End If
+                End If
+                Exit For
+            Next
+        End If
     End Sub
 End Class
 
