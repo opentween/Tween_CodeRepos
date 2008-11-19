@@ -64,4 +64,5 @@ Public Module MyCommon
     End Enum
 
     Public follower As New Collections.Specialized.StringCollection
+    Public cCon As New System.Net.CookieContainer()
 End Module

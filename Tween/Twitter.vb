@@ -1338,11 +1338,11 @@ Partial Public Class Twitter
 
         'データ部分の生成
         'Dim dataStr As String = "_method=delete&" + _authKeyHeader + HttpUtility.UrlEncode(_authKey)
-        Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
+        'Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim resStatus As String = ""
-        Dim resMsg As String = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _StDestroyPath + id, resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer3, dataStr, "https://" + _baseUrlStr + _homePath), String)
+        Dim resMsg As String = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _StDestroyPath + id + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
 
-        If resMsg.StartsWith("<html>") = False Then
+        If resMsg.StartsWith("<?xml") = False OrElse resStatus.StartsWith("OK") = False Then
             Return resStatus
         End If
 
@@ -1358,9 +1358,9 @@ Partial Public Class Twitter
         'データ部分の生成
         Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim resStatus As String = ""
-        Dim resMsg As String = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _DMDestroyPath + id, resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer3, dataStr), String)
+        Dim resMsg As String = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _DMDestroyPath + id, resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer3, dataStr, "https://" + _baseUrlStr + _DMPathRcv), String)
 
-        If resMsg.StartsWith("<html>") = False Then
+        If resMsg <> " " OrElse resStatus.StartsWith("OK") = False Then
             Return resStatus
         End If
 
