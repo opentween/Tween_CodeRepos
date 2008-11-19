@@ -21,16 +21,3 @@
 ' the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
 ' Boston, MA 02110-1301, USA.
 
-Imports System
-Imports System.Collections.Generic
-Imports System.Data
-Imports System.Data.SQLite
-Imports System.Data.Common
-
-Public Class x
-    Sub x()
-        Dim a As New StorageDataSet.PostsRow()
-        a.
-
-    End Sub
-End Class
