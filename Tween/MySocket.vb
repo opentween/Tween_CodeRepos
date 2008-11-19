@@ -27,7 +27,6 @@ Imports System.Text
 
 Public Class MySocket
     Private _enc As Encoding
-    Private _cCon As New CookieContainer()
     Private _version As String
     Private _cre As String
     Private _uid As String
@@ -96,7 +95,7 @@ Public Class MySocket
                 CType(WebRequest.Create(url), HttpWebRequest)
             webReq.Timeout = timeout
             If reqType <> REQ_TYPE.ReqPOSTAPI And reqType <> REQ_TYPE.ReqGetAPI Then
-                webReq.CookieContainer = _cCon
+                webReq.CookieContainer = cCon
                 webReq.AutomaticDecompression = DecompressionMethods.Deflate Or DecompressionMethods.GZip
             End If
             webReq.KeepAlive = False
@@ -189,7 +188,7 @@ Public Class MySocket
                     For Each ck As Cookie In webRes.Cookies
                         If ck.Domain.StartsWith(".") Then
                             ck.Domain = ck.Domain.Substring(1, ck.Domain.Length - 1)
-                            _cCon.Add(ck)
+                            cCon.Add(ck)
                         End If
                     Next
                 End If
