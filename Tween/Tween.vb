@@ -6969,7 +6969,11 @@ RETRY:
             name = IO.Path.GetFileNameWithoutExtension(name.Substring(name.LastIndexOf("/"c)))
             name = name.Substring(0, name.Length - 7) ' "_normal".Length
             Me.IconNameToolStripMenuItem.Enabled = True
-            Me.SaveIconPictureToolStripMenuItem.Enabled = True
+            If Me.TIconList.Images.Item(name) Is Nothing Then
+                Me.SaveIconPictureToolStripMenuItem.Enabled = True
+            Else
+                Me.SaveIconPictureToolStripMenuItem.Enabled = False
+            End If
             Me.IconNameToolStripMenuItem.Text = name
         Else
             Me.IconNameToolStripMenuItem.Enabled = False
