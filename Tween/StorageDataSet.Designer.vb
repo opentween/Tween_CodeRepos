@@ -220,7 +220,7 @@ Partial Public Class StorageDataSet
         MyBase.Tables.Add(Me.tablePosts)
         Me.tableIcons = New IconsDataTable
         MyBase.Tables.Add(Me.tableIcons)
-        Me.relationIcons_Posts = New Global.System.Data.DataRelation("Icons_Posts", New Global.System.Data.DataColumn() {Me.tableIcons.imageUriColumn}, New Global.System.Data.DataColumn() {Me.tablePosts.imageUriColumn}, false)
+        Me.relationIcons_Posts = New Global.System.Data.DataRelation("Icons_Posts", New Global.System.Data.DataColumn() {Me.tableIcons.ImageUriColumn}, New Global.System.Data.DataColumn() {Me.tablePosts.ImageUriColumn}, false)
         Me.Relations.Add(Me.relationIcons_Posts)
     End Sub
     
@@ -304,37 +304,37 @@ Partial Public Class StorageDataSet
         Inherits Global.System.Data.DataTable
         Implements Global.System.Collections.IEnumerable
         
-        Private columnid As Global.System.Data.DataColumn
+        Private columnId As Global.System.Data.DataColumn
         
-        Private columntimestamp As Global.System.Data.DataColumn
+        Private columnTimestamp As Global.System.Data.DataColumn
         
-        Private columnname As Global.System.Data.DataColumn
+        Private columnName As Global.System.Data.DataColumn
         
-        Private columnscreenName As Global.System.Data.DataColumn
+        Private columnScreenName As Global.System.Data.DataColumn
         
-        Private columnimageUri As Global.System.Data.DataColumn
+        Private columnImageUri As Global.System.Data.DataColumn
         
-        Private columntext As Global.System.Data.DataColumn
+        Private columnText As Global.System.Data.DataColumn
         
-        Private columnhyperText As Global.System.Data.DataColumn
+        Private columnHyperText As Global.System.Data.DataColumn
         
-        Private columnsource As Global.System.Data.DataColumn
+        Private columnSource As Global.System.Data.DataColumn
         
-        Private columninReplyToUser As Global.System.Data.DataColumn
+        Private columnInReplyToUser As Global.System.Data.DataColumn
         
-        Private columninReplyToId As Global.System.Data.DataColumn
+        Private columnInReplyToId As Global.System.Data.DataColumn
         
-        Private columnisRead As Global.System.Data.DataColumn
+        Private columnIsRead As Global.System.Data.DataColumn
         
-        Private columnisFavorited As Global.System.Data.DataColumn
+        Private columnIsFavorited As Global.System.Data.DataColumn
         
-        Private columnisReply As Global.System.Data.DataColumn
+        Private columnIsReply As Global.System.Data.DataColumn
         
-        Private columnisProtected As Global.System.Data.DataColumn
+        Private columnIsProtected As Global.System.Data.DataColumn
         
-        Private columnisOneWayLove As Global.System.Data.DataColumn
+        Private columnIsOneWayLove As Global.System.Data.DataColumn
         
-        Private columntags As Global.System.Data.DataColumn
+        Private columnTags As Global.System.Data.DataColumn
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Public Sub New()
@@ -369,114 +369,114 @@ Partial Public Class StorageDataSet
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property idColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property IdColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columnid
+                Return Me.columnId
             End Get
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property timestampColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property TimestampColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columntimestamp
+                Return Me.columnTimestamp
             End Get
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property nameColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property NameColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columnname
+                Return Me.columnName
             End Get
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property screenNameColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property ScreenNameColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columnscreenName
+                Return Me.columnScreenName
             End Get
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property imageUriColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property ImageUriColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columnimageUri
+                Return Me.columnImageUri
             End Get
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property textColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property TextColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columntext
+                Return Me.columnText
             End Get
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property hyperTextColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property HyperTextColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columnhyperText
+                Return Me.columnHyperText
             End Get
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property sourceColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property SourceColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columnsource
+                Return Me.columnSource
             End Get
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property inReplyToUserColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property InReplyToUserColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columninReplyToUser
+                Return Me.columnInReplyToUser
             End Get
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property inReplyToIdColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property InReplyToIdColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columninReplyToId
+                Return Me.columnInReplyToId
             End Get
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property isReadColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property IsReadColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columnisRead
+                Return Me.columnIsRead
             End Get
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property isFavoritedColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property IsFavoritedColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columnisFavorited
+                Return Me.columnIsFavorited
             End Get
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property isReplyColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property IsReplyColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columnisReply
+                Return Me.columnIsReply
             End Get
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property isProtectedColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property IsProtectedColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columnisProtected
+                Return Me.columnIsProtected
             End Get
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property isOneWayLoveColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property IsOneWayLoveColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columnisOneWayLove
+                Return Me.columnIsOneWayLove
             End Get
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property tagsColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property TagsColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columntags
+                Return Me.columnTags
             End Get
         End Property
         
@@ -510,24 +510,24 @@ Partial Public Class StorageDataSet
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Public Overloads Function AddPostsRow( _
-                    ByVal id As Long,  _
-                    ByVal timestamp As Date,  _
-                    ByVal name As String,  _
-                    ByVal screenName As String,  _
+                    ByVal Id As Long,  _
+                    ByVal Timestamp As Date,  _
+                    ByVal Name As String,  _
+                    ByVal ScreenName As String,  _
                     ByVal parentIconsRowByIcons_Posts As IconsRow,  _
-                    ByVal text As String,  _
-                    ByVal hyperText As String,  _
-                    ByVal source As String,  _
-                    ByVal inReplyToUser As String,  _
-                    ByVal inReplyToId As Long,  _
-                    ByVal isRead As Boolean,  _
-                    ByVal isFavorited As Boolean,  _
-                    ByVal isReply As Boolean,  _
-                    ByVal isProtected As Boolean,  _
-                    ByVal isOneWayLove As Boolean,  _
-                    ByVal tags As String) As PostsRow
+                    ByVal Text As String,  _
+                    ByVal HyperText As String,  _
+                    ByVal Source As String,  _
+                    ByVal InReplyToUser As String,  _
+                    ByVal InReplyToId As Long,  _
+                    ByVal IsRead As Boolean,  _
+                    ByVal IsFavorited As Boolean,  _
+                    ByVal IsReply As Boolean,  _
+                    ByVal IsProtected As Boolean,  _
+                    ByVal IsOneWayLove As Boolean,  _
+                    ByVal Tags As String) As PostsRow
             Dim rowPostsRow As PostsRow = CType(Me.NewRow,PostsRow)
-            Dim columnValuesArray() As Object = New Object() {id, timestamp, name, screenName, Nothing, text, hyperText, source, inReplyToUser, inReplyToId, isRead, isFavorited, isReply, isProtected, isOneWayLove, tags}
+            Dim columnValuesArray() As Object = New Object() {Id, Timestamp, Name, ScreenName, Nothing, Text, HyperText, Source, InReplyToUser, InReplyToId, IsRead, IsFavorited, IsReply, IsProtected, IsOneWayLove, Tags}
             If (Not (parentIconsRowByIcons_Posts) Is Nothing) Then
                 columnValuesArray(4) = parentIconsRowByIcons_Posts(0)
             End If
@@ -537,8 +537,8 @@ Partial Public Class StorageDataSet
         End Function
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Function FindByid(ByVal id As Long) As PostsRow
-            Return CType(Me.Rows.Find(New Object() {id}),PostsRow)
+        Public Function FindById(ByVal Id As Long) As PostsRow
+            Return CType(Me.Rows.Find(New Object() {Id}),PostsRow)
         End Function
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
@@ -560,95 +560,95 @@ Partial Public Class StorageDataSet
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Friend Sub InitVars()
-            Me.columnid = MyBase.Columns("id")
-            Me.columntimestamp = MyBase.Columns("timestamp")
-            Me.columnname = MyBase.Columns("name")
-            Me.columnscreenName = MyBase.Columns("screenName")
-            Me.columnimageUri = MyBase.Columns("imageUri")
-            Me.columntext = MyBase.Columns("text")
-            Me.columnhyperText = MyBase.Columns("hyperText")
-            Me.columnsource = MyBase.Columns("source")
-            Me.columninReplyToUser = MyBase.Columns("inReplyToUser")
-            Me.columninReplyToId = MyBase.Columns("inReplyToId")
-            Me.columnisRead = MyBase.Columns("isRead")
-            Me.columnisFavorited = MyBase.Columns("isFavorited")
-            Me.columnisReply = MyBase.Columns("isReply")
-            Me.columnisProtected = MyBase.Columns("isProtected")
-            Me.columnisOneWayLove = MyBase.Columns("isOneWayLove")
-            Me.columntags = MyBase.Columns("tags")
+            Me.columnId = MyBase.Columns("Id")
+            Me.columnTimestamp = MyBase.Columns("Timestamp")
+            Me.columnName = MyBase.Columns("Name")
+            Me.columnScreenName = MyBase.Columns("ScreenName")
+            Me.columnImageUri = MyBase.Columns("ImageUri")
+            Me.columnText = MyBase.Columns("Text")
+            Me.columnHyperText = MyBase.Columns("HyperText")
+            Me.columnSource = MyBase.Columns("Source")
+            Me.columnInReplyToUser = MyBase.Columns("InReplyToUser")
+            Me.columnInReplyToId = MyBase.Columns("InReplyToId")
+            Me.columnIsRead = MyBase.Columns("IsRead")
+            Me.columnIsFavorited = MyBase.Columns("IsFavorited")
+            Me.columnIsReply = MyBase.Columns("IsReply")
+            Me.columnIsProtected = MyBase.Columns("IsProtected")
+            Me.columnIsOneWayLove = MyBase.Columns("IsOneWayLove")
+            Me.columnTags = MyBase.Columns("Tags")
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Private Sub InitClass()
-            Me.columnid = New Global.System.Data.DataColumn("id", GetType(Long), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columnid)
-            Me.columntimestamp = New Global.System.Data.DataColumn("timestamp", GetType(Date), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columntimestamp)
-            Me.columnname = New Global.System.Data.DataColumn("name", GetType(String), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columnname)
-            Me.columnscreenName = New Global.System.Data.DataColumn("screenName", GetType(String), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columnscreenName)
-            Me.columnimageUri = New Global.System.Data.DataColumn("imageUri", GetType(String), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columnimageUri)
-            Me.columntext = New Global.System.Data.DataColumn("text", GetType(String), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columntext)
-            Me.columnhyperText = New Global.System.Data.DataColumn("hyperText", GetType(String), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columnhyperText)
-            Me.columnsource = New Global.System.Data.DataColumn("source", GetType(String), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columnsource)
-            Me.columninReplyToUser = New Global.System.Data.DataColumn("inReplyToUser", GetType(String), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columninReplyToUser)
-            Me.columninReplyToId = New Global.System.Data.DataColumn("inReplyToId", GetType(Long), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columninReplyToId)
-            Me.columnisRead = New Global.System.Data.DataColumn("isRead", GetType(Boolean), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columnisRead)
-            Me.columnisFavorited = New Global.System.Data.DataColumn("isFavorited", GetType(Boolean), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columnisFavorited)
-            Me.columnisReply = New Global.System.Data.DataColumn("isReply", GetType(Boolean), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columnisReply)
-            Me.columnisProtected = New Global.System.Data.DataColumn("isProtected", GetType(Boolean), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columnisProtected)
-            Me.columnisOneWayLove = New Global.System.Data.DataColumn("isOneWayLove", GetType(Boolean), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columnisOneWayLove)
-            Me.columntags = New Global.System.Data.DataColumn("tags", GetType(String), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columntags)
-            Me.Constraints.Add(New Global.System.Data.UniqueConstraint("Constraint1", New Global.System.Data.DataColumn() {Me.columnid}, true))
-            Me.columnid.AllowDBNull = false
-            Me.columnid.ReadOnly = true
-            Me.columnid.Unique = true
-            Me.columntimestamp.AllowDBNull = false
-            Me.columntimestamp.ReadOnly = true
-            Me.columntimestamp.DateTimeMode = Global.System.Data.DataSetDateTime.Utc
-            Me.columnname.AllowDBNull = false
-            Me.columnname.ReadOnly = true
-            Me.columnname.MaxLength = 2147483647
-            Me.columnscreenName.AllowDBNull = false
-            Me.columnscreenName.ReadOnly = true
-            Me.columnscreenName.MaxLength = 2147483647
-            Me.columnimageUri.AllowDBNull = false
-            Me.columnimageUri.ReadOnly = true
-            Me.columnimageUri.MaxLength = 2147483647
-            Me.columntext.AllowDBNull = false
-            Me.columntext.ReadOnly = true
-            Me.columntext.MaxLength = 2147483647
-            Me.columnhyperText.AllowDBNull = false
-            Me.columnhyperText.ReadOnly = true
-            Me.columnhyperText.MaxLength = 2147483647
-            Me.columnsource.AllowDBNull = false
-            Me.columnsource.ReadOnly = true
-            Me.columnsource.MaxLength = 2147483647
-            Me.columninReplyToUser.ReadOnly = true
-            Me.columninReplyToUser.MaxLength = 2147483647
-            Me.columninReplyToId.ReadOnly = true
-            Me.columnisRead.AllowDBNull = false
-            Me.columnisFavorited.AllowDBNull = false
-            Me.columnisReply.AllowDBNull = false
-            Me.columnisReply.ReadOnly = true
-            Me.columnisProtected.AllowDBNull = false
-            Me.columnisProtected.ReadOnly = true
-            Me.columnisOneWayLove.AllowDBNull = false
-            Me.columntags.AllowDBNull = false
-            Me.columntags.MaxLength = 2147483647
+            Me.columnId = New Global.System.Data.DataColumn("Id", GetType(Long), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnId)
+            Me.columnTimestamp = New Global.System.Data.DataColumn("Timestamp", GetType(Date), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnTimestamp)
+            Me.columnName = New Global.System.Data.DataColumn("Name", GetType(String), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnName)
+            Me.columnScreenName = New Global.System.Data.DataColumn("ScreenName", GetType(String), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnScreenName)
+            Me.columnImageUri = New Global.System.Data.DataColumn("ImageUri", GetType(String), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnImageUri)
+            Me.columnText = New Global.System.Data.DataColumn("Text", GetType(String), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnText)
+            Me.columnHyperText = New Global.System.Data.DataColumn("HyperText", GetType(String), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnHyperText)
+            Me.columnSource = New Global.System.Data.DataColumn("Source", GetType(String), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnSource)
+            Me.columnInReplyToUser = New Global.System.Data.DataColumn("InReplyToUser", GetType(String), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnInReplyToUser)
+            Me.columnInReplyToId = New Global.System.Data.DataColumn("InReplyToId", GetType(Long), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnInReplyToId)
+            Me.columnIsRead = New Global.System.Data.DataColumn("IsRead", GetType(Boolean), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnIsRead)
+            Me.columnIsFavorited = New Global.System.Data.DataColumn("IsFavorited", GetType(Boolean), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnIsFavorited)
+            Me.columnIsReply = New Global.System.Data.DataColumn("IsReply", GetType(Boolean), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnIsReply)
+            Me.columnIsProtected = New Global.System.Data.DataColumn("IsProtected", GetType(Boolean), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnIsProtected)
+            Me.columnIsOneWayLove = New Global.System.Data.DataColumn("IsOneWayLove", GetType(Boolean), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnIsOneWayLove)
+            Me.columnTags = New Global.System.Data.DataColumn("Tags", GetType(String), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnTags)
+            Me.Constraints.Add(New Global.System.Data.UniqueConstraint("Constraint1", New Global.System.Data.DataColumn() {Me.columnId}, true))
+            Me.columnId.AllowDBNull = false
+            Me.columnId.ReadOnly = true
+            Me.columnId.Unique = true
+            Me.columnTimestamp.AllowDBNull = false
+            Me.columnTimestamp.ReadOnly = true
+            Me.columnTimestamp.DateTimeMode = Global.System.Data.DataSetDateTime.Utc
+            Me.columnName.AllowDBNull = false
+            Me.columnName.ReadOnly = true
+            Me.columnName.MaxLength = 2147483647
+            Me.columnScreenName.AllowDBNull = false
+            Me.columnScreenName.ReadOnly = true
+            Me.columnScreenName.MaxLength = 2147483647
+            Me.columnImageUri.AllowDBNull = false
+            Me.columnImageUri.ReadOnly = true
+            Me.columnImageUri.MaxLength = 2147483647
+            Me.columnText.AllowDBNull = false
+            Me.columnText.ReadOnly = true
+            Me.columnText.MaxLength = 2147483647
+            Me.columnHyperText.AllowDBNull = false
+            Me.columnHyperText.ReadOnly = true
+            Me.columnHyperText.MaxLength = 2147483647
+            Me.columnSource.AllowDBNull = false
+            Me.columnSource.ReadOnly = true
+            Me.columnSource.MaxLength = 2147483647
+            Me.columnInReplyToUser.ReadOnly = true
+            Me.columnInReplyToUser.MaxLength = 2147483647
+            Me.columnInReplyToId.ReadOnly = true
+            Me.columnIsRead.AllowDBNull = false
+            Me.columnIsFavorited.AllowDBNull = false
+            Me.columnIsReply.AllowDBNull = false
+            Me.columnIsReply.ReadOnly = true
+            Me.columnIsProtected.AllowDBNull = false
+            Me.columnIsProtected.ReadOnly = true
+            Me.columnIsOneWayLove.AllowDBNull = false
+            Me.columnTags.AllowDBNull = false
+            Me.columnTags.MaxLength = 2147483647
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
@@ -779,13 +779,13 @@ Partial Public Class StorageDataSet
         Inherits Global.System.Data.DataTable
         Implements Global.System.Collections.IEnumerable
         
-        Private columnimageUri As Global.System.Data.DataColumn
+        Private columnImageUri As Global.System.Data.DataColumn
         
-        Private columnwidth As Global.System.Data.DataColumn
+        Private columnWidth As Global.System.Data.DataColumn
         
-        Private columnheight As Global.System.Data.DataColumn
+        Private columnHeight As Global.System.Data.DataColumn
         
-        Private columnimage As Global.System.Data.DataColumn
+        Private columnImage As Global.System.Data.DataColumn
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Public Sub New()
@@ -820,30 +820,30 @@ Partial Public Class StorageDataSet
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property imageUriColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property ImageUriColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columnimageUri
+                Return Me.columnImageUri
             End Get
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property widthColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property WidthColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columnwidth
+                Return Me.columnWidth
             End Get
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property heightColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property HeightColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columnheight
+                Return Me.columnHeight
             End Get
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property imageColumn() As Global.System.Data.DataColumn
+        Public ReadOnly Property ImageColumn() As Global.System.Data.DataColumn
             Get
-                Return Me.columnimage
+                Return Me.columnImage
             End Get
         End Property
         
@@ -876,17 +876,17 @@ Partial Public Class StorageDataSet
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Overloads Function AddIconsRow(ByVal imageUri As String, ByVal width As Integer, ByVal height As Integer, ByVal image() As Byte) As IconsRow
+        Public Overloads Function AddIconsRow(ByVal ImageUri As String, ByVal Width As Integer, ByVal Height As Integer, ByVal Image() As Byte) As IconsRow
             Dim rowIconsRow As IconsRow = CType(Me.NewRow,IconsRow)
-            Dim columnValuesArray() As Object = New Object() {imageUri, width, height, image}
+            Dim columnValuesArray() As Object = New Object() {ImageUri, Width, Height, Image}
             rowIconsRow.ItemArray = columnValuesArray
             Me.Rows.Add(rowIconsRow)
             Return rowIconsRow
         End Function
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Function FindByimageUri(ByVal imageUri As String) As IconsRow
-            Return CType(Me.Rows.Find(New Object() {imageUri}),IconsRow)
+        Public Function FindByImageUri(ByVal ImageUri As String) As IconsRow
+            Return CType(Me.Rows.Find(New Object() {ImageUri}),IconsRow)
         End Function
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
@@ -908,33 +908,33 @@ Partial Public Class StorageDataSet
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Friend Sub InitVars()
-            Me.columnimageUri = MyBase.Columns("imageUri")
-            Me.columnwidth = MyBase.Columns("width")
-            Me.columnheight = MyBase.Columns("height")
-            Me.columnimage = MyBase.Columns("image")
+            Me.columnImageUri = MyBase.Columns("ImageUri")
+            Me.columnWidth = MyBase.Columns("Width")
+            Me.columnHeight = MyBase.Columns("Height")
+            Me.columnImage = MyBase.Columns("Image")
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Private Sub InitClass()
-            Me.columnimageUri = New Global.System.Data.DataColumn("imageUri", GetType(String), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columnimageUri)
-            Me.columnwidth = New Global.System.Data.DataColumn("width", GetType(Integer), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columnwidth)
-            Me.columnheight = New Global.System.Data.DataColumn("height", GetType(Integer), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columnheight)
-            Me.columnimage = New Global.System.Data.DataColumn("image", GetType(Byte()), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columnimage)
-            Me.Constraints.Add(New Global.System.Data.UniqueConstraint("Constraint1", New Global.System.Data.DataColumn() {Me.columnimageUri}, true))
-            Me.columnimageUri.AllowDBNull = false
-            Me.columnimageUri.ReadOnly = true
-            Me.columnimageUri.Unique = true
-            Me.columnimageUri.MaxLength = 2147483647
-            Me.columnwidth.AllowDBNull = false
-            Me.columnwidth.ReadOnly = true
-            Me.columnheight.AllowDBNull = false
-            Me.columnheight.ReadOnly = true
-            Me.columnimage.AllowDBNull = false
-            Me.columnimage.ReadOnly = true
+            Me.columnImageUri = New Global.System.Data.DataColumn("ImageUri", GetType(String), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnImageUri)
+            Me.columnWidth = New Global.System.Data.DataColumn("Width", GetType(Integer), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnWidth)
+            Me.columnHeight = New Global.System.Data.DataColumn("Height", GetType(Integer), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnHeight)
+            Me.columnImage = New Global.System.Data.DataColumn("Image", GetType(Byte()), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnImage)
+            Me.Constraints.Add(New Global.System.Data.UniqueConstraint("Constraint1", New Global.System.Data.DataColumn() {Me.columnImageUri}, true))
+            Me.columnImageUri.AllowDBNull = false
+            Me.columnImageUri.ReadOnly = true
+            Me.columnImageUri.Unique = true
+            Me.columnImageUri.MaxLength = 2147483647
+            Me.columnWidth.AllowDBNull = false
+            Me.columnWidth.ReadOnly = true
+            Me.columnHeight.AllowDBNull = false
+            Me.columnHeight.ReadOnly = true
+            Me.columnImage.AllowDBNull = false
+            Me.columnImage.ReadOnly = true
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
@@ -1071,170 +1071,170 @@ Partial Public Class StorageDataSet
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property id() As Long
+        Public Property Id() As Long
             Get
-                Return CType(Me(Me.tablePosts.idColumn),Long)
+                Return CType(Me(Me.tablePosts.IdColumn),Long)
             End Get
             Set
-                Me(Me.tablePosts.idColumn) = value
+                Me(Me.tablePosts.IdColumn) = value
             End Set
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property timestamp() As Date
+        Public Property Timestamp() As Date
             Get
-                Return CType(Me(Me.tablePosts.timestampColumn),Date)
+                Return CType(Me(Me.tablePosts.TimestampColumn),Date)
             End Get
             Set
-                Me(Me.tablePosts.timestampColumn) = value
+                Me(Me.tablePosts.TimestampColumn) = value
             End Set
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property name() As String
+        Public Property Name() As String
             Get
-                Return CType(Me(Me.tablePosts.nameColumn),String)
+                Return CType(Me(Me.tablePosts.NameColumn),String)
             End Get
             Set
-                Me(Me.tablePosts.nameColumn) = value
+                Me(Me.tablePosts.NameColumn) = value
             End Set
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property screenName() As String
+        Public Property ScreenName() As String
             Get
-                Return CType(Me(Me.tablePosts.screenNameColumn),String)
+                Return CType(Me(Me.tablePosts.ScreenNameColumn),String)
             End Get
             Set
-                Me(Me.tablePosts.screenNameColumn) = value
+                Me(Me.tablePosts.ScreenNameColumn) = value
             End Set
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property imageUri() As String
+        Public Property ImageUri() As String
             Get
-                Return CType(Me(Me.tablePosts.imageUriColumn),String)
+                Return CType(Me(Me.tablePosts.ImageUriColumn),String)
             End Get
             Set
-                Me(Me.tablePosts.imageUriColumn) = value
+                Me(Me.tablePosts.ImageUriColumn) = value
             End Set
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property text() As String
+        Public Property Text() As String
             Get
-                Return CType(Me(Me.tablePosts.textColumn),String)
+                Return CType(Me(Me.tablePosts.TextColumn),String)
             End Get
             Set
-                Me(Me.tablePosts.textColumn) = value
+                Me(Me.tablePosts.TextColumn) = value
             End Set
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property hyperText() As String
+        Public Property HyperText() As String
             Get
-                Return CType(Me(Me.tablePosts.hyperTextColumn),String)
+                Return CType(Me(Me.tablePosts.HyperTextColumn),String)
             End Get
             Set
-                Me(Me.tablePosts.hyperTextColumn) = value
+                Me(Me.tablePosts.HyperTextColumn) = value
             End Set
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property source() As String
+        Public Property Source() As String
             Get
-                Return CType(Me(Me.tablePosts.sourceColumn),String)
+                Return CType(Me(Me.tablePosts.SourceColumn),String)
             End Get
             Set
-                Me(Me.tablePosts.sourceColumn) = value
+                Me(Me.tablePosts.SourceColumn) = value
             End Set
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property inReplyToUser() As String
+        Public Property InReplyToUser() As String
             Get
                 Try 
-                    Return CType(Me(Me.tablePosts.inReplyToUserColumn),String)
+                    Return CType(Me(Me.tablePosts.InReplyToUserColumn),String)
                 Catch e As Global.System.InvalidCastException
-                    Throw New Global.System.Data.StrongTypingException("テーブル 'Posts' にある列 'inReplyToUser' の値は DBNull です。", e)
+                    Throw New Global.System.Data.StrongTypingException("テーブル 'Posts' にある列 'InReplyToUser' の値は DBNull です。", e)
                 End Try
             End Get
             Set
-                Me(Me.tablePosts.inReplyToUserColumn) = value
+                Me(Me.tablePosts.InReplyToUserColumn) = value
             End Set
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property inReplyToId() As Long
+        Public Property InReplyToId() As Long
             Get
                 Try 
-                    Return CType(Me(Me.tablePosts.inReplyToIdColumn),Long)
+                    Return CType(Me(Me.tablePosts.InReplyToIdColumn),Long)
                 Catch e As Global.System.InvalidCastException
-                    Throw New Global.System.Data.StrongTypingException("テーブル 'Posts' にある列 'inReplyToId' の値は DBNull です。", e)
+                    Throw New Global.System.Data.StrongTypingException("テーブル 'Posts' にある列 'InReplyToId' の値は DBNull です。", e)
                 End Try
             End Get
             Set
-                Me(Me.tablePosts.inReplyToIdColumn) = value
+                Me(Me.tablePosts.InReplyToIdColumn) = value
             End Set
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property isRead() As Boolean
+        Public Property IsRead() As Boolean
             Get
-                Return CType(Me(Me.tablePosts.isReadColumn),Boolean)
+                Return CType(Me(Me.tablePosts.IsReadColumn),Boolean)
             End Get
             Set
-                Me(Me.tablePosts.isReadColumn) = value
+                Me(Me.tablePosts.IsReadColumn) = value
             End Set
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property isFavorited() As Boolean
+        Public Property IsFavorited() As Boolean
             Get
-                Return CType(Me(Me.tablePosts.isFavoritedColumn),Boolean)
+                Return CType(Me(Me.tablePosts.IsFavoritedColumn),Boolean)
             End Get
             Set
-                Me(Me.tablePosts.isFavoritedColumn) = value
+                Me(Me.tablePosts.IsFavoritedColumn) = value
             End Set
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property isReply() As Boolean
+        Public Property IsReply() As Boolean
             Get
-                Return CType(Me(Me.tablePosts.isReplyColumn),Boolean)
+                Return CType(Me(Me.tablePosts.IsReplyColumn),Boolean)
             End Get
             Set
-                Me(Me.tablePosts.isReplyColumn) = value
+                Me(Me.tablePosts.IsReplyColumn) = value
             End Set
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property isProtected() As Boolean
+        Public Property IsProtected() As Boolean
             Get
-                Return CType(Me(Me.tablePosts.isProtectedColumn),Boolean)
+                Return CType(Me(Me.tablePosts.IsProtectedColumn),Boolean)
             End Get
             Set
-                Me(Me.tablePosts.isProtectedColumn) = value
+                Me(Me.tablePosts.IsProtectedColumn) = value
             End Set
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property isOneWayLove() As Boolean
+        Public Property IsOneWayLove() As Boolean
             Get
-                Return CType(Me(Me.tablePosts.isOneWayLoveColumn),Boolean)
+                Return CType(Me(Me.tablePosts.IsOneWayLoveColumn),Boolean)
             End Get
             Set
-                Me(Me.tablePosts.isOneWayLoveColumn) = value
+                Me(Me.tablePosts.IsOneWayLoveColumn) = value
             End Set
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property tags() As String
+        Public Property Tags() As String
             Get
-                Return CType(Me(Me.tablePosts.tagsColumn),String)
+                Return CType(Me(Me.tablePosts.TagsColumn),String)
             End Get
             Set
-                Me(Me.tablePosts.tagsColumn) = value
+                Me(Me.tablePosts.TagsColumn) = value
             End Set
         End Property
         
@@ -1249,23 +1249,23 @@ Partial Public Class StorageDataSet
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Function IsinReplyToUserNull() As Boolean
-            Return Me.IsNull(Me.tablePosts.inReplyToUserColumn)
+        Public Function IsInReplyToUserNull() As Boolean
+            Return Me.IsNull(Me.tablePosts.InReplyToUserColumn)
         End Function
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Sub SetinReplyToUserNull()
-            Me(Me.tablePosts.inReplyToUserColumn) = Global.System.Convert.DBNull
+        Public Sub SetInReplyToUserNull()
+            Me(Me.tablePosts.InReplyToUserColumn) = Global.System.Convert.DBNull
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Function IsinReplyToIdNull() As Boolean
-            Return Me.IsNull(Me.tablePosts.inReplyToIdColumn)
+        Public Function IsInReplyToIdNull() As Boolean
+            Return Me.IsNull(Me.tablePosts.InReplyToIdColumn)
         End Function
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Sub SetinReplyToIdNull()
-            Me(Me.tablePosts.inReplyToIdColumn) = Global.System.Convert.DBNull
+        Public Sub SetInReplyToIdNull()
+            Me(Me.tablePosts.InReplyToIdColumn) = Global.System.Convert.DBNull
         End Sub
     End Class
     
@@ -1285,42 +1285,42 @@ Partial Public Class StorageDataSet
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property imageUri() As String
+        Public Property ImageUri() As String
             Get
-                Return CType(Me(Me.tableIcons.imageUriColumn),String)
+                Return CType(Me(Me.tableIcons.ImageUriColumn),String)
             End Get
             Set
-                Me(Me.tableIcons.imageUriColumn) = value
+                Me(Me.tableIcons.ImageUriColumn) = value
             End Set
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property width() As Integer
+        Public Property Width() As Integer
             Get
-                Return CType(Me(Me.tableIcons.widthColumn),Integer)
+                Return CType(Me(Me.tableIcons.WidthColumn),Integer)
             End Get
             Set
-                Me(Me.tableIcons.widthColumn) = value
+                Me(Me.tableIcons.WidthColumn) = value
             End Set
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property height() As Integer
+        Public Property Height() As Integer
             Get
-                Return CType(Me(Me.tableIcons.heightColumn),Integer)
+                Return CType(Me(Me.tableIcons.HeightColumn),Integer)
             End Get
             Set
-                Me(Me.tableIcons.heightColumn) = value
+                Me(Me.tableIcons.HeightColumn) = value
             End Set
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property image() As Byte()
+        Public Property Image() As Byte()
             Get
-                Return CType(Me(Me.tableIcons.imageColumn),Byte())
+                Return CType(Me(Me.tableIcons.ImageColumn),Byte())
             End Get
             Set
-                Me(Me.tableIcons.imageColumn) = value
+                Me(Me.tableIcons.ImageColumn) = value
             End Set
         End Property
         
@@ -1420,6 +1420,8 @@ Namespace StorageDataSetTableAdapters
         
         Private _connection As Global.System.Data.SQLite.SQLiteConnection
         
+        Private _transaction As Global.System.Data.SQLite.SQLiteTransaction
+        
         Private _commandCollection() As Global.System.Data.SQLite.SQLiteCommand
         
         Private _clearBeforeFill As Boolean
@@ -1431,7 +1433,7 @@ Namespace StorageDataSetTableAdapters
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Private ReadOnly Property Adapter() As Global.System.Data.SQLite.SQLiteDataAdapter
+        Protected Friend ReadOnly Property Adapter() As Global.System.Data.SQLite.SQLiteDataAdapter
             Get
                 If (Me._adapter Is Nothing) Then
                     Me.InitAdapter
@@ -1470,6 +1472,33 @@ Namespace StorageDataSetTableAdapters
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Friend Property Transaction() As Global.System.Data.SQLite.SQLiteTransaction
+            Get
+                Return Me._transaction
+            End Get
+            Set
+                Me._transaction = value
+                Dim i As Integer = 0
+                Do While (i < Me.CommandCollection.Length)
+                    Me.CommandCollection(i).Transaction = Me._transaction
+                    i = (i + 1)
+                Loop
+                If ((Not (Me.Adapter) Is Nothing)  _
+                            AndAlso (Not (Me.Adapter.DeleteCommand) Is Nothing)) Then
+                    Me.Adapter.DeleteCommand.Transaction = Me._transaction
+                End If
+                If ((Not (Me.Adapter) Is Nothing)  _
+                            AndAlso (Not (Me.Adapter.InsertCommand) Is Nothing)) Then
+                    Me.Adapter.InsertCommand.Transaction = Me._transaction
+                End If
+                If ((Not (Me.Adapter) Is Nothing)  _
+                            AndAlso (Not (Me.Adapter.UpdateCommand) Is Nothing)) Then
+                    Me.Adapter.UpdateCommand.Transaction = Me._transaction
+                End If
+            End Set
+        End Property
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Protected ReadOnly Property CommandCollection() As Global.System.Data.SQLite.SQLiteCommand()
             Get
                 If (Me._commandCollection Is Nothing) Then
@@ -1495,476 +1524,476 @@ Namespace StorageDataSetTableAdapters
             Dim tableMapping As Global.System.Data.Common.DataTableMapping = New Global.System.Data.Common.DataTableMapping
             tableMapping.SourceTable = "Table"
             tableMapping.DataSetTable = "Posts"
-            tableMapping.ColumnMappings.Add("id", "id")
-            tableMapping.ColumnMappings.Add("timestamp", "timestamp")
-            tableMapping.ColumnMappings.Add("name", "name")
-            tableMapping.ColumnMappings.Add("screenName", "screenName")
-            tableMapping.ColumnMappings.Add("imageUri", "imageUri")
-            tableMapping.ColumnMappings.Add("text", "text")
-            tableMapping.ColumnMappings.Add("hyperText", "hyperText")
-            tableMapping.ColumnMappings.Add("source", "source")
-            tableMapping.ColumnMappings.Add("inReplyToUser", "inReplyToUser")
-            tableMapping.ColumnMappings.Add("inReplyToId", "inReplyToId")
-            tableMapping.ColumnMappings.Add("isRead", "isRead")
-            tableMapping.ColumnMappings.Add("isFavorited", "isFavorited")
-            tableMapping.ColumnMappings.Add("isReply", "isReply")
-            tableMapping.ColumnMappings.Add("isProtected", "isProtected")
-            tableMapping.ColumnMappings.Add("isOneWayLove", "isOneWayLove")
-            tableMapping.ColumnMappings.Add("tags", "tags")
+            tableMapping.ColumnMappings.Add("Id", "Id")
+            tableMapping.ColumnMappings.Add("Timestamp", "Timestamp")
+            tableMapping.ColumnMappings.Add("Name", "Name")
+            tableMapping.ColumnMappings.Add("ScreenName", "ScreenName")
+            tableMapping.ColumnMappings.Add("ImageUri", "ImageUri")
+            tableMapping.ColumnMappings.Add("Text", "Text")
+            tableMapping.ColumnMappings.Add("HyperText", "HyperText")
+            tableMapping.ColumnMappings.Add("Source", "Source")
+            tableMapping.ColumnMappings.Add("InReplyToUser", "InReplyToUser")
+            tableMapping.ColumnMappings.Add("InReplyToId", "InReplyToId")
+            tableMapping.ColumnMappings.Add("IsRead", "IsRead")
+            tableMapping.ColumnMappings.Add("IsFavorited", "IsFavorited")
+            tableMapping.ColumnMappings.Add("IsReply", "IsReply")
+            tableMapping.ColumnMappings.Add("IsProtected", "IsProtected")
+            tableMapping.ColumnMappings.Add("IsOneWayLove", "IsOneWayLove")
+            tableMapping.ColumnMappings.Add("Tags", "Tags")
             Me._adapter.TableMappings.Add(tableMapping)
             Me._adapter.DeleteCommand = New Global.System.Data.SQLite.SQLiteCommand
             Me._adapter.DeleteCommand.Connection = Me.Connection
-            Me._adapter.DeleteCommand.CommandText = "DELETE FROM [Posts] WHERE (([id] = @Original_id) AND ([timestamp] = @Original_tim"& _ 
-                "estamp) AND ([name] = @Original_name) AND ([screenName] = @Original_screenName) "& _ 
-                "AND ([imageUri] = @Original_imageUri) AND ([text] = @Original_text) AND ([hyperT"& _ 
-                "ext] = @Original_hyperText) AND ([source] = @Original_source) AND ((@IsNull_inRe"& _ 
-                "plyToUser = 1 AND [inReplyToUser] IS NULL) OR ([inReplyToUser] = @Original_inRep"& _ 
-                "lyToUser)) AND ((@IsNull_inReplyToId = 1 AND [inReplyToId] IS NULL) OR ([inReply"& _ 
-                "ToId] = @Original_inReplyToId)) AND ([isRead] = @Original_isRead) AND ([isFavori"& _ 
-                "ted] = @Original_isFavorited) AND ([isReply] = @Original_isReply) AND ([isProtec"& _ 
-                "ted] = @Original_isProtected) AND ([isOneWayLove] = @Original_isOneWayLove) AND "& _ 
-                "([tags] = @Original_tags))"
+            Me._adapter.DeleteCommand.CommandText = "DELETE FROM [Posts] WHERE (([Id] = @Original_Id) AND ([Timestamp] = @Original_Tim"& _ 
+                "estamp) AND ([Name] = @Original_Name) AND ([ScreenName] = @Original_ScreenName) "& _ 
+                "AND ([ImageUri] = @Original_ImageUri) AND ([Text] = @Original_Text) AND ([HyperT"& _ 
+                "ext] = @Original_HyperText) AND ([Source] = @Original_Source) AND ((@IsNull_InRe"& _ 
+                "plyToUser = 1 AND [InReplyToUser] IS NULL) OR ([InReplyToUser] = @Original_InRep"& _ 
+                "lyToUser)) AND ((@IsNull_InReplyToId = 1 AND [InReplyToId] IS NULL) OR ([InReply"& _ 
+                "ToId] = @Original_InReplyToId)) AND ([IsRead] = @Original_IsRead) AND ([IsFavori"& _ 
+                "ted] = @Original_IsFavorited) AND ([IsReply] = @Original_IsReply) AND ([IsProtec"& _ 
+                "ted] = @Original_IsProtected) AND ([IsOneWayLove] = @Original_IsOneWayLove) AND "& _ 
+                "([Tags] = @Original_Tags))"
             Me._adapter.DeleteCommand.CommandType = Global.System.Data.CommandType.Text
             Dim param As Global.System.Data.SQLite.SQLiteParameter = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_id"
+            param.ParameterName = "@Original_Id"
             param.DbType = Global.System.Data.DbType.Int64
             param.DbType = Global.System.Data.DbType.Int64
-            param.SourceColumn = "id"
+            param.SourceColumn = "Id"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_timestamp"
+            param.ParameterName = "@Original_Timestamp"
             param.DbType = Global.System.Data.DbType.DateTime
             param.DbType = Global.System.Data.DbType.DateTime
-            param.SourceColumn = "timestamp"
+            param.SourceColumn = "Timestamp"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_name"
+            param.ParameterName = "@Original_Name"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "name"
+            param.SourceColumn = "Name"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_screenName"
+            param.ParameterName = "@Original_ScreenName"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "screenName"
+            param.SourceColumn = "ScreenName"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_imageUri"
+            param.ParameterName = "@Original_ImageUri"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "imageUri"
+            param.SourceColumn = "ImageUri"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_text"
+            param.ParameterName = "@Original_Text"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "text"
+            param.SourceColumn = "Text"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_hyperText"
+            param.ParameterName = "@Original_HyperText"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "hyperText"
+            param.SourceColumn = "HyperText"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_source"
+            param.ParameterName = "@Original_Source"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "source"
+            param.SourceColumn = "Source"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@IsNull_inReplyToUser"
+            param.ParameterName = "@IsNull_InReplyToUser"
             param.DbType = Global.System.Data.DbType.Int32
             param.DbType = Global.System.Data.DbType.Int32
-            param.SourceColumn = "inReplyToUser"
+            param.SourceColumn = "InReplyToUser"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             param.SourceColumnNullMapping = true
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_inReplyToUser"
+            param.ParameterName = "@Original_InReplyToUser"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "inReplyToUser"
+            param.SourceColumn = "InReplyToUser"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@IsNull_inReplyToId"
+            param.ParameterName = "@IsNull_InReplyToId"
             param.DbType = Global.System.Data.DbType.Int32
             param.DbType = Global.System.Data.DbType.Int32
-            param.SourceColumn = "inReplyToId"
+            param.SourceColumn = "InReplyToId"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             param.SourceColumnNullMapping = true
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_inReplyToId"
+            param.ParameterName = "@Original_InReplyToId"
             param.DbType = Global.System.Data.DbType.Int64
             param.DbType = Global.System.Data.DbType.Int64
-            param.SourceColumn = "inReplyToId"
+            param.SourceColumn = "InReplyToId"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_isRead"
+            param.ParameterName = "@Original_IsRead"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isRead"
+            param.SourceColumn = "IsRead"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_isFavorited"
+            param.ParameterName = "@Original_IsFavorited"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isFavorited"
+            param.SourceColumn = "IsFavorited"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_isReply"
+            param.ParameterName = "@Original_IsReply"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isReply"
+            param.SourceColumn = "IsReply"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_isProtected"
+            param.ParameterName = "@Original_IsProtected"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isProtected"
+            param.SourceColumn = "IsProtected"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_isOneWayLove"
+            param.ParameterName = "@Original_IsOneWayLove"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isOneWayLove"
+            param.SourceColumn = "IsOneWayLove"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_tags"
+            param.ParameterName = "@Original_Tags"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "tags"
+            param.SourceColumn = "Tags"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             Me._adapter.InsertCommand = New Global.System.Data.SQLite.SQLiteCommand
             Me._adapter.InsertCommand.Connection = Me.Connection
-            Me._adapter.InsertCommand.CommandText = "INSERT INTO [Posts] ([id], [timestamp], [name], [screenName], [imageUri], [text],"& _ 
-                " [hyperText], [source], [inReplyToUser], [inReplyToId], [isRead], [isFavorited],"& _ 
-                " [isReply], [isProtected], [isOneWayLove], [tags]) VALUES (@id, @timestamp, @nam"& _ 
-                "e, @screenName, @imageUri, @text, @hyperText, @source, @inReplyToUser, @inReplyT"& _ 
-                "oId, @isRead, @isFavorited, @isReply, @isProtected, @isOneWayLove, @tags)"
+            Me._adapter.InsertCommand.CommandText = "INSERT INTO [Posts] ([Id], [Timestamp], [Name], [ScreenName], [ImageUri], [Text],"& _ 
+                " [HyperText], [Source], [InReplyToUser], [InReplyToId], [IsRead], [IsFavorited],"& _ 
+                " [IsReply], [IsProtected], [IsOneWayLove], [Tags]) VALUES (@Id, @Timestamp, @Nam"& _ 
+                "e, @ScreenName, @ImageUri, @Text, @HyperText, @Source, @InReplyToUser, @InReplyT"& _ 
+                "oId, @IsRead, @IsFavorited, @IsReply, @IsProtected, @IsOneWayLove, @Tags)"
             Me._adapter.InsertCommand.CommandType = Global.System.Data.CommandType.Text
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@id"
+            param.ParameterName = "@Id"
             param.DbType = Global.System.Data.DbType.Int64
             param.DbType = Global.System.Data.DbType.Int64
-            param.SourceColumn = "id"
+            param.SourceColumn = "Id"
             Me._adapter.InsertCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@timestamp"
+            param.ParameterName = "@Timestamp"
             param.DbType = Global.System.Data.DbType.DateTime
             param.DbType = Global.System.Data.DbType.DateTime
-            param.SourceColumn = "timestamp"
+            param.SourceColumn = "Timestamp"
             Me._adapter.InsertCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@name"
+            param.ParameterName = "@Name"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "name"
+            param.SourceColumn = "Name"
             Me._adapter.InsertCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@screenName"
+            param.ParameterName = "@ScreenName"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "screenName"
+            param.SourceColumn = "ScreenName"
             Me._adapter.InsertCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@imageUri"
+            param.ParameterName = "@ImageUri"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "imageUri"
+            param.SourceColumn = "ImageUri"
             Me._adapter.InsertCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@text"
+            param.ParameterName = "@Text"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "text"
+            param.SourceColumn = "Text"
             Me._adapter.InsertCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@hyperText"
+            param.ParameterName = "@HyperText"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "hyperText"
+            param.SourceColumn = "HyperText"
             Me._adapter.InsertCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@source"
+            param.ParameterName = "@Source"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "source"
+            param.SourceColumn = "Source"
             Me._adapter.InsertCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@inReplyToUser"
+            param.ParameterName = "@InReplyToUser"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "inReplyToUser"
+            param.SourceColumn = "InReplyToUser"
             Me._adapter.InsertCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@inReplyToId"
+            param.ParameterName = "@InReplyToId"
             param.DbType = Global.System.Data.DbType.Int64
             param.DbType = Global.System.Data.DbType.Int64
-            param.SourceColumn = "inReplyToId"
+            param.SourceColumn = "InReplyToId"
             Me._adapter.InsertCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@isRead"
+            param.ParameterName = "@IsRead"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isRead"
+            param.SourceColumn = "IsRead"
             Me._adapter.InsertCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@isFavorited"
+            param.ParameterName = "@IsFavorited"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isFavorited"
+            param.SourceColumn = "IsFavorited"
             Me._adapter.InsertCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@isReply"
+            param.ParameterName = "@IsReply"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isReply"
+            param.SourceColumn = "IsReply"
             Me._adapter.InsertCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@isProtected"
+            param.ParameterName = "@IsProtected"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isProtected"
+            param.SourceColumn = "IsProtected"
             Me._adapter.InsertCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@isOneWayLove"
+            param.ParameterName = "@IsOneWayLove"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isOneWayLove"
+            param.SourceColumn = "IsOneWayLove"
             Me._adapter.InsertCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@tags"
+            param.ParameterName = "@Tags"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "tags"
+            param.SourceColumn = "Tags"
             Me._adapter.InsertCommand.Parameters.Add(param)
             Me._adapter.UpdateCommand = New Global.System.Data.SQLite.SQLiteCommand
             Me._adapter.UpdateCommand.Connection = Me.Connection
-            Me._adapter.UpdateCommand.CommandText = "UPDATE [Posts] SET [id] = @id, [timestamp] = @timestamp, [name] = @name, [screenN"& _ 
-                "ame] = @screenName, [imageUri] = @imageUri, [text] = @text, [hyperText] = @hyper"& _ 
-                "Text, [source] = @source, [inReplyToUser] = @inReplyToUser, [inReplyToId] = @inR"& _ 
-                "eplyToId, [isRead] = @isRead, [isFavorited] = @isFavorited, [isReply] = @isReply"& _ 
-                ", [isProtected] = @isProtected, [isOneWayLove] = @isOneWayLove, [tags] = @tags W"& _ 
-                "HERE (([id] = @Original_id) AND ([timestamp] = @Original_timestamp) AND ([name] "& _ 
-                "= @Original_name) AND ([screenName] = @Original_screenName) AND ([imageUri] = @O"& _ 
-                "riginal_imageUri) AND ([text] = @Original_text) AND ([hyperText] = @Original_hyp"& _ 
-                "erText) AND ([source] = @Original_source) AND ((@IsNull_inReplyToUser = 1 AND [i"& _ 
-                "nReplyToUser] IS NULL) OR ([inReplyToUser] = @Original_inReplyToUser)) AND ((@Is"& _ 
-                "Null_inReplyToId = 1 AND [inReplyToId] IS NULL) OR ([inReplyToId] = @Original_in"& _ 
-                "ReplyToId)) AND ([isRead] = @Original_isRead) AND ([isFavorited] = @Original_isF"& _ 
-                "avorited) AND ([isReply] = @Original_isReply) AND ([isProtected] = @Original_isP"& _ 
-                "rotected) AND ([isOneWayLove] = @Original_isOneWayLove) AND ([tags] = @Original_"& _ 
-                "tags))"
+            Me._adapter.UpdateCommand.CommandText = "UPDATE [Posts] SET [Id] = @Id, [Timestamp] = @Timestamp, [Name] = @Name, [ScreenN"& _ 
+                "ame] = @ScreenName, [ImageUri] = @ImageUri, [Text] = @Text, [HyperText] = @Hyper"& _ 
+                "Text, [Source] = @Source, [InReplyToUser] = @InReplyToUser, [InReplyToId] = @InR"& _ 
+                "eplyToId, [IsRead] = @IsRead, [IsFavorited] = @IsFavorited, [IsReply] = @IsReply"& _ 
+                ", [IsProtected] = @IsProtected, [IsOneWayLove] = @IsOneWayLove, [Tags] = @Tags W"& _ 
+                "HERE (([Id] = @Original_Id) AND ([Timestamp] = @Original_Timestamp) AND ([Name] "& _ 
+                "= @Original_Name) AND ([ScreenName] = @Original_ScreenName) AND ([ImageUri] = @O"& _ 
+                "riginal_ImageUri) AND ([Text] = @Original_Text) AND ([HyperText] = @Original_Hyp"& _ 
+                "erText) AND ([Source] = @Original_Source) AND ((@IsNull_InReplyToUser = 1 AND [I"& _ 
+                "nReplyToUser] IS NULL) OR ([InReplyToUser] = @Original_InReplyToUser)) AND ((@Is"& _ 
+                "Null_InReplyToId = 1 AND [InReplyToId] IS NULL) OR ([InReplyToId] = @Original_In"& _ 
+                "ReplyToId)) AND ([IsRead] = @Original_IsRead) AND ([IsFavorited] = @Original_IsF"& _ 
+                "avorited) AND ([IsReply] = @Original_IsReply) AND ([IsProtected] = @Original_IsP"& _ 
+                "rotected) AND ([IsOneWayLove] = @Original_IsOneWayLove) AND ([Tags] = @Original_"& _ 
+                "Tags))"
             Me._adapter.UpdateCommand.CommandType = Global.System.Data.CommandType.Text
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@id"
+            param.ParameterName = "@Id"
             param.DbType = Global.System.Data.DbType.Int64
             param.DbType = Global.System.Data.DbType.Int64
-            param.SourceColumn = "id"
+            param.SourceColumn = "Id"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@timestamp"
+            param.ParameterName = "@Timestamp"
             param.DbType = Global.System.Data.DbType.DateTime
             param.DbType = Global.System.Data.DbType.DateTime
-            param.SourceColumn = "timestamp"
+            param.SourceColumn = "Timestamp"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@name"
+            param.ParameterName = "@Name"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "name"
+            param.SourceColumn = "Name"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@screenName"
+            param.ParameterName = "@ScreenName"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "screenName"
+            param.SourceColumn = "ScreenName"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@imageUri"
+            param.ParameterName = "@ImageUri"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "imageUri"
+            param.SourceColumn = "ImageUri"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@text"
+            param.ParameterName = "@Text"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "text"
+            param.SourceColumn = "Text"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@hyperText"
+            param.ParameterName = "@HyperText"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "hyperText"
+            param.SourceColumn = "HyperText"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@source"
+            param.ParameterName = "@Source"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "source"
+            param.SourceColumn = "Source"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@inReplyToUser"
+            param.ParameterName = "@InReplyToUser"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "inReplyToUser"
+            param.SourceColumn = "InReplyToUser"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@inReplyToId"
+            param.ParameterName = "@InReplyToId"
             param.DbType = Global.System.Data.DbType.Int64
             param.DbType = Global.System.Data.DbType.Int64
-            param.SourceColumn = "inReplyToId"
+            param.SourceColumn = "InReplyToId"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@isRead"
+            param.ParameterName = "@IsRead"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isRead"
+            param.SourceColumn = "IsRead"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@isFavorited"
+            param.ParameterName = "@IsFavorited"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isFavorited"
+            param.SourceColumn = "IsFavorited"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@isReply"
+            param.ParameterName = "@IsReply"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isReply"
+            param.SourceColumn = "IsReply"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@isProtected"
+            param.ParameterName = "@IsProtected"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isProtected"
+            param.SourceColumn = "IsProtected"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@isOneWayLove"
+            param.ParameterName = "@IsOneWayLove"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isOneWayLove"
+            param.SourceColumn = "IsOneWayLove"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@tags"
+            param.ParameterName = "@Tags"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "tags"
+            param.SourceColumn = "Tags"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_id"
+            param.ParameterName = "@Original_Id"
             param.DbType = Global.System.Data.DbType.Int64
             param.DbType = Global.System.Data.DbType.Int64
-            param.SourceColumn = "id"
+            param.SourceColumn = "Id"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_timestamp"
+            param.ParameterName = "@Original_Timestamp"
             param.DbType = Global.System.Data.DbType.DateTime
             param.DbType = Global.System.Data.DbType.DateTime
-            param.SourceColumn = "timestamp"
+            param.SourceColumn = "Timestamp"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_name"
+            param.ParameterName = "@Original_Name"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "name"
+            param.SourceColumn = "Name"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_screenName"
+            param.ParameterName = "@Original_ScreenName"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "screenName"
+            param.SourceColumn = "ScreenName"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_imageUri"
+            param.ParameterName = "@Original_ImageUri"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "imageUri"
+            param.SourceColumn = "ImageUri"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_text"
+            param.ParameterName = "@Original_Text"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "text"
+            param.SourceColumn = "Text"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_hyperText"
+            param.ParameterName = "@Original_HyperText"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "hyperText"
+            param.SourceColumn = "HyperText"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_source"
+            param.ParameterName = "@Original_Source"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "source"
+            param.SourceColumn = "Source"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@IsNull_inReplyToUser"
+            param.ParameterName = "@IsNull_InReplyToUser"
             param.DbType = Global.System.Data.DbType.Int32
             param.DbType = Global.System.Data.DbType.Int32
-            param.SourceColumn = "inReplyToUser"
+            param.SourceColumn = "InReplyToUser"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             param.SourceColumnNullMapping = true
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_inReplyToUser"
+            param.ParameterName = "@Original_InReplyToUser"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "inReplyToUser"
+            param.SourceColumn = "InReplyToUser"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@IsNull_inReplyToId"
+            param.ParameterName = "@IsNull_InReplyToId"
             param.DbType = Global.System.Data.DbType.Int32
             param.DbType = Global.System.Data.DbType.Int32
-            param.SourceColumn = "inReplyToId"
+            param.SourceColumn = "InReplyToId"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             param.SourceColumnNullMapping = true
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_inReplyToId"
+            param.ParameterName = "@Original_InReplyToId"
             param.DbType = Global.System.Data.DbType.Int64
             param.DbType = Global.System.Data.DbType.Int64
-            param.SourceColumn = "inReplyToId"
+            param.SourceColumn = "InReplyToId"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_isRead"
+            param.ParameterName = "@Original_IsRead"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isRead"
+            param.SourceColumn = "IsRead"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_isFavorited"
+            param.ParameterName = "@Original_IsFavorited"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isFavorited"
+            param.SourceColumn = "IsFavorited"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_isReply"
+            param.ParameterName = "@Original_IsReply"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isReply"
+            param.SourceColumn = "IsReply"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_isProtected"
+            param.ParameterName = "@Original_IsProtected"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isProtected"
+            param.SourceColumn = "IsProtected"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_isOneWayLove"
+            param.ParameterName = "@Original_IsOneWayLove"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
-            param.SourceColumn = "isOneWayLove"
+            param.SourceColumn = "IsOneWayLove"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_tags"
+            param.ParameterName = "@Original_Tags"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "tags"
+            param.SourceColumn = "Tags"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
         End Sub
@@ -2034,77 +2063,77 @@ Namespace StorageDataSetTableAdapters
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Delete, true)>  _
         Public Overloads Overridable Function Delete( _
-                    ByVal Original_id As Long,  _
-                    ByVal Original_timestamp As Date,  _
-                    ByVal Original_name As String,  _
-                    ByVal Original_screenName As String,  _
-                    ByVal Original_imageUri As String,  _
-                    ByVal Original_text As String,  _
-                    ByVal Original_hyperText As String,  _
-                    ByVal Original_source As String,  _
-                    ByVal Original_inReplyToUser As String,  _
-                    ByVal Original_inReplyToId As Global.System.Nullable(Of Long),  _
-                    ByVal Original_isRead As Boolean,  _
-                    ByVal Original_isFavorited As Boolean,  _
-                    ByVal Original_isReply As Boolean,  _
-                    ByVal Original_isProtected As Boolean,  _
-                    ByVal Original_isOneWayLove As Boolean,  _
-                    ByVal Original_tags As String) As Integer
-            Me.Adapter.DeleteCommand.Parameters(0).Value = CType(Original_id,Long)
-            Me.Adapter.DeleteCommand.Parameters(1).Value = CType(Original_timestamp,Date)
-            If (Original_name Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("Original_name")
+                    ByVal Original_Id As Long,  _
+                    ByVal Original_Timestamp As Date,  _
+                    ByVal Original_Name As String,  _
+                    ByVal Original_ScreenName As String,  _
+                    ByVal Original_ImageUri As String,  _
+                    ByVal Original_Text As String,  _
+                    ByVal Original_HyperText As String,  _
+                    ByVal Original_Source As String,  _
+                    ByVal Original_InReplyToUser As String,  _
+                    ByVal Original_InReplyToId As Global.System.Nullable(Of Long),  _
+                    ByVal Original_IsRead As Boolean,  _
+                    ByVal Original_IsFavorited As Boolean,  _
+                    ByVal Original_IsReply As Boolean,  _
+                    ByVal Original_IsProtected As Boolean,  _
+                    ByVal Original_IsOneWayLove As Boolean,  _
+                    ByVal Original_Tags As String) As Integer
+            Me.Adapter.DeleteCommand.Parameters(0).Value = CType(Original_Id,Long)
+            Me.Adapter.DeleteCommand.Parameters(1).Value = CType(Original_Timestamp,Date)
+            If (Original_Name Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Original_Name")
             Else
-                Me.Adapter.DeleteCommand.Parameters(2).Value = CType(Original_name,String)
+                Me.Adapter.DeleteCommand.Parameters(2).Value = CType(Original_Name,String)
             End If
-            If (Original_screenName Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("Original_screenName")
+            If (Original_ScreenName Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Original_ScreenName")
             Else
-                Me.Adapter.DeleteCommand.Parameters(3).Value = CType(Original_screenName,String)
+                Me.Adapter.DeleteCommand.Parameters(3).Value = CType(Original_ScreenName,String)
             End If
-            If (Original_imageUri Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("Original_imageUri")
+            If (Original_ImageUri Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Original_ImageUri")
             Else
-                Me.Adapter.DeleteCommand.Parameters(4).Value = CType(Original_imageUri,String)
+                Me.Adapter.DeleteCommand.Parameters(4).Value = CType(Original_ImageUri,String)
             End If
-            If (Original_text Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("Original_text")
+            If (Original_Text Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Original_Text")
             Else
-                Me.Adapter.DeleteCommand.Parameters(5).Value = CType(Original_text,String)
+                Me.Adapter.DeleteCommand.Parameters(5).Value = CType(Original_Text,String)
             End If
-            If (Original_hyperText Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("Original_hyperText")
+            If (Original_HyperText Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Original_HyperText")
             Else
-                Me.Adapter.DeleteCommand.Parameters(6).Value = CType(Original_hyperText,String)
+                Me.Adapter.DeleteCommand.Parameters(6).Value = CType(Original_HyperText,String)
             End If
-            If (Original_source Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("Original_source")
+            If (Original_Source Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Original_Source")
             Else
-                Me.Adapter.DeleteCommand.Parameters(7).Value = CType(Original_source,String)
+                Me.Adapter.DeleteCommand.Parameters(7).Value = CType(Original_Source,String)
             End If
-            If (Original_inReplyToUser Is Nothing) Then
+            If (Original_InReplyToUser Is Nothing) Then
                 Me.Adapter.DeleteCommand.Parameters(8).Value = CType(1,Object)
                 Me.Adapter.DeleteCommand.Parameters(9).Value = Global.System.DBNull.Value
             Else
                 Me.Adapter.DeleteCommand.Parameters(8).Value = CType(0,Object)
-                Me.Adapter.DeleteCommand.Parameters(9).Value = CType(Original_inReplyToUser,String)
+                Me.Adapter.DeleteCommand.Parameters(9).Value = CType(Original_InReplyToUser,String)
             End If
-            If (Original_inReplyToId.HasValue = true) Then
+            If (Original_InReplyToId.HasValue = true) Then
                 Me.Adapter.DeleteCommand.Parameters(10).Value = CType(0,Object)
-                Me.Adapter.DeleteCommand.Parameters(11).Value = CType(Original_inReplyToId.Value,Long)
+                Me.Adapter.DeleteCommand.Parameters(11).Value = CType(Original_InReplyToId.Value,Long)
             Else
                 Me.Adapter.DeleteCommand.Parameters(10).Value = CType(1,Object)
                 Me.Adapter.DeleteCommand.Parameters(11).Value = Global.System.DBNull.Value
             End If
-            Me.Adapter.DeleteCommand.Parameters(12).Value = CType(Original_isRead,Boolean)
-            Me.Adapter.DeleteCommand.Parameters(13).Value = CType(Original_isFavorited,Boolean)
-            Me.Adapter.DeleteCommand.Parameters(14).Value = CType(Original_isReply,Boolean)
-            Me.Adapter.DeleteCommand.Parameters(15).Value = CType(Original_isProtected,Boolean)
-            Me.Adapter.DeleteCommand.Parameters(16).Value = CType(Original_isOneWayLove,Boolean)
-            If (Original_tags Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("Original_tags")
+            Me.Adapter.DeleteCommand.Parameters(12).Value = CType(Original_IsRead,Boolean)
+            Me.Adapter.DeleteCommand.Parameters(13).Value = CType(Original_IsFavorited,Boolean)
+            Me.Adapter.DeleteCommand.Parameters(14).Value = CType(Original_IsReply,Boolean)
+            Me.Adapter.DeleteCommand.Parameters(15).Value = CType(Original_IsProtected,Boolean)
+            Me.Adapter.DeleteCommand.Parameters(16).Value = CType(Original_IsOneWayLove,Boolean)
+            If (Original_Tags Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Original_Tags")
             Else
-                Me.Adapter.DeleteCommand.Parameters(17).Value = CType(Original_tags,String)
+                Me.Adapter.DeleteCommand.Parameters(17).Value = CType(Original_Tags,String)
             End If
             Dim previousConnectionState As Global.System.Data.ConnectionState = Me.Adapter.DeleteCommand.Connection.State
             If ((Me.Adapter.DeleteCommand.Connection.State And Global.System.Data.ConnectionState.Open)  _
@@ -2125,73 +2154,73 @@ Namespace StorageDataSetTableAdapters
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Insert, true)>  _
         Public Overloads Overridable Function Insert( _
-                    ByVal id As Long,  _
-                    ByVal timestamp As Date,  _
-                    ByVal name As String,  _
-                    ByVal screenName As String,  _
-                    ByVal imageUri As String,  _
-                    ByVal text As String,  _
-                    ByVal hyperText As String,  _
-                    ByVal source As String,  _
-                    ByVal inReplyToUser As String,  _
-                    ByVal inReplyToId As Global.System.Nullable(Of Long),  _
-                    ByVal isRead As Boolean,  _
-                    ByVal isFavorited As Boolean,  _
-                    ByVal isReply As Boolean,  _
-                    ByVal isProtected As Boolean,  _
-                    ByVal isOneWayLove As Boolean,  _
-                    ByVal tags As String) As Integer
-            Me.Adapter.InsertCommand.Parameters(0).Value = CType(id,Long)
-            Me.Adapter.InsertCommand.Parameters(1).Value = CType(timestamp,Date)
-            If (name Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("name")
+                    ByVal Id As Long,  _
+                    ByVal Timestamp As Date,  _
+                    ByVal Name As String,  _
+                    ByVal ScreenName As String,  _
+                    ByVal ImageUri As String,  _
+                    ByVal Text As String,  _
+                    ByVal HyperText As String,  _
+                    ByVal Source As String,  _
+                    ByVal InReplyToUser As String,  _
+                    ByVal InReplyToId As Global.System.Nullable(Of Long),  _
+                    ByVal IsRead As Boolean,  _
+                    ByVal IsFavorited As Boolean,  _
+                    ByVal IsReply As Boolean,  _
+                    ByVal IsProtected As Boolean,  _
+                    ByVal IsOneWayLove As Boolean,  _
+                    ByVal Tags As String) As Integer
+            Me.Adapter.InsertCommand.Parameters(0).Value = CType(Id,Long)
+            Me.Adapter.InsertCommand.Parameters(1).Value = CType(Timestamp,Date)
+            If (Name Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Name")
             Else
-                Me.Adapter.InsertCommand.Parameters(2).Value = CType(name,String)
+                Me.Adapter.InsertCommand.Parameters(2).Value = CType(Name,String)
             End If
-            If (screenName Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("screenName")
+            If (ScreenName Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("ScreenName")
             Else
-                Me.Adapter.InsertCommand.Parameters(3).Value = CType(screenName,String)
+                Me.Adapter.InsertCommand.Parameters(3).Value = CType(ScreenName,String)
             End If
-            If (imageUri Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("imageUri")
+            If (ImageUri Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("ImageUri")
             Else
-                Me.Adapter.InsertCommand.Parameters(4).Value = CType(imageUri,String)
+                Me.Adapter.InsertCommand.Parameters(4).Value = CType(ImageUri,String)
             End If
-            If (text Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("text")
+            If (Text Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Text")
             Else
-                Me.Adapter.InsertCommand.Parameters(5).Value = CType(text,String)
+                Me.Adapter.InsertCommand.Parameters(5).Value = CType(Text,String)
             End If
-            If (hyperText Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("hyperText")
+            If (HyperText Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("HyperText")
             Else
-                Me.Adapter.InsertCommand.Parameters(6).Value = CType(hyperText,String)
+                Me.Adapter.InsertCommand.Parameters(6).Value = CType(HyperText,String)
             End If
-            If (source Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("source")
+            If (Source Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Source")
             Else
-                Me.Adapter.InsertCommand.Parameters(7).Value = CType(source,String)
+                Me.Adapter.InsertCommand.Parameters(7).Value = CType(Source,String)
             End If
-            If (inReplyToUser Is Nothing) Then
+            If (InReplyToUser Is Nothing) Then
                 Me.Adapter.InsertCommand.Parameters(8).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.InsertCommand.Parameters(8).Value = CType(inReplyToUser,String)
+                Me.Adapter.InsertCommand.Parameters(8).Value = CType(InReplyToUser,String)
             End If
-            If (inReplyToId.HasValue = true) Then
-                Me.Adapter.InsertCommand.Parameters(9).Value = CType(inReplyToId.Value,Long)
+            If (InReplyToId.HasValue = true) Then
+                Me.Adapter.InsertCommand.Parameters(9).Value = CType(InReplyToId.Value,Long)
             Else
                 Me.Adapter.InsertCommand.Parameters(9).Value = Global.System.DBNull.Value
             End If
-            Me.Adapter.InsertCommand.Parameters(10).Value = CType(isRead,Boolean)
-            Me.Adapter.InsertCommand.Parameters(11).Value = CType(isFavorited,Boolean)
-            Me.Adapter.InsertCommand.Parameters(12).Value = CType(isReply,Boolean)
-            Me.Adapter.InsertCommand.Parameters(13).Value = CType(isProtected,Boolean)
-            Me.Adapter.InsertCommand.Parameters(14).Value = CType(isOneWayLove,Boolean)
-            If (tags Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("tags")
+            Me.Adapter.InsertCommand.Parameters(10).Value = CType(IsRead,Boolean)
+            Me.Adapter.InsertCommand.Parameters(11).Value = CType(IsFavorited,Boolean)
+            Me.Adapter.InsertCommand.Parameters(12).Value = CType(IsReply,Boolean)
+            Me.Adapter.InsertCommand.Parameters(13).Value = CType(IsProtected,Boolean)
+            Me.Adapter.InsertCommand.Parameters(14).Value = CType(IsOneWayLove,Boolean)
+            If (Tags Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Tags")
             Else
-                Me.Adapter.InsertCommand.Parameters(15).Value = CType(tags,String)
+                Me.Adapter.InsertCommand.Parameters(15).Value = CType(Tags,String)
             End If
             Dim previousConnectionState As Global.System.Data.ConnectionState = Me.Adapter.InsertCommand.Connection.State
             If ((Me.Adapter.InsertCommand.Connection.State And Global.System.Data.ConnectionState.Open)  _
@@ -2212,145 +2241,145 @@ Namespace StorageDataSetTableAdapters
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Update, true)>  _
         Public Overloads Overridable Function Update( _
-                    ByVal id As Long,  _
-                    ByVal timestamp As Date,  _
-                    ByVal name As String,  _
-                    ByVal screenName As String,  _
-                    ByVal imageUri As String,  _
-                    ByVal text As String,  _
-                    ByVal hyperText As String,  _
-                    ByVal source As String,  _
-                    ByVal inReplyToUser As String,  _
-                    ByVal inReplyToId As Global.System.Nullable(Of Long),  _
-                    ByVal isRead As Boolean,  _
-                    ByVal isFavorited As Boolean,  _
-                    ByVal isReply As Boolean,  _
-                    ByVal isProtected As Boolean,  _
-                    ByVal isOneWayLove As Boolean,  _
-                    ByVal tags As String,  _
-                    ByVal Original_id As Long,  _
-                    ByVal Original_timestamp As Date,  _
-                    ByVal Original_name As String,  _
-                    ByVal Original_screenName As String,  _
-                    ByVal Original_imageUri As String,  _
-                    ByVal Original_text As String,  _
-                    ByVal Original_hyperText As String,  _
-                    ByVal Original_source As String,  _
-                    ByVal Original_inReplyToUser As String,  _
-                    ByVal Original_inReplyToId As Global.System.Nullable(Of Long),  _
-                    ByVal Original_isRead As Boolean,  _
-                    ByVal Original_isFavorited As Boolean,  _
-                    ByVal Original_isReply As Boolean,  _
-                    ByVal Original_isProtected As Boolean,  _
-                    ByVal Original_isOneWayLove As Boolean,  _
-                    ByVal Original_tags As String) As Integer
-            Me.Adapter.UpdateCommand.Parameters(0).Value = CType(id,Long)
-            Me.Adapter.UpdateCommand.Parameters(1).Value = CType(timestamp,Date)
-            If (name Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("name")
+                    ByVal Id As Long,  _
+                    ByVal Timestamp As Date,  _
+                    ByVal Name As String,  _
+                    ByVal ScreenName As String,  _
+                    ByVal ImageUri As String,  _
+                    ByVal Text As String,  _
+                    ByVal HyperText As String,  _
+                    ByVal Source As String,  _
+                    ByVal InReplyToUser As String,  _
+                    ByVal InReplyToId As Global.System.Nullable(Of Long),  _
+                    ByVal IsRead As Boolean,  _
+                    ByVal IsFavorited As Boolean,  _
+                    ByVal IsReply As Boolean,  _
+                    ByVal IsProtected As Boolean,  _
+                    ByVal IsOneWayLove As Boolean,  _
+                    ByVal Tags As String,  _
+                    ByVal Original_Id As Long,  _
+                    ByVal Original_Timestamp As Date,  _
+                    ByVal Original_Name As String,  _
+                    ByVal Original_ScreenName As String,  _
+                    ByVal Original_ImageUri As String,  _
+                    ByVal Original_Text As String,  _
+                    ByVal Original_HyperText As String,  _
+                    ByVal Original_Source As String,  _
+                    ByVal Original_InReplyToUser As String,  _
+                    ByVal Original_InReplyToId As Global.System.Nullable(Of Long),  _
+                    ByVal Original_IsRead As Boolean,  _
+                    ByVal Original_IsFavorited As Boolean,  _
+                    ByVal Original_IsReply As Boolean,  _
+                    ByVal Original_IsProtected As Boolean,  _
+                    ByVal Original_IsOneWayLove As Boolean,  _
+                    ByVal Original_Tags As String) As Integer
+            Me.Adapter.UpdateCommand.Parameters(0).Value = CType(Id,Long)
+            Me.Adapter.UpdateCommand.Parameters(1).Value = CType(Timestamp,Date)
+            If (Name Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Name")
             Else
-                Me.Adapter.UpdateCommand.Parameters(2).Value = CType(name,String)
+                Me.Adapter.UpdateCommand.Parameters(2).Value = CType(Name,String)
             End If
-            If (screenName Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("screenName")
+            If (ScreenName Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("ScreenName")
             Else
-                Me.Adapter.UpdateCommand.Parameters(3).Value = CType(screenName,String)
+                Me.Adapter.UpdateCommand.Parameters(3).Value = CType(ScreenName,String)
             End If
-            If (imageUri Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("imageUri")
+            If (ImageUri Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("ImageUri")
             Else
-                Me.Adapter.UpdateCommand.Parameters(4).Value = CType(imageUri,String)
+                Me.Adapter.UpdateCommand.Parameters(4).Value = CType(ImageUri,String)
             End If
-            If (text Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("text")
+            If (Text Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Text")
             Else
-                Me.Adapter.UpdateCommand.Parameters(5).Value = CType(text,String)
+                Me.Adapter.UpdateCommand.Parameters(5).Value = CType(Text,String)
             End If
-            If (hyperText Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("hyperText")
+            If (HyperText Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("HyperText")
             Else
-                Me.Adapter.UpdateCommand.Parameters(6).Value = CType(hyperText,String)
+                Me.Adapter.UpdateCommand.Parameters(6).Value = CType(HyperText,String)
             End If
-            If (source Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("source")
+            If (Source Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Source")
             Else
-                Me.Adapter.UpdateCommand.Parameters(7).Value = CType(source,String)
+                Me.Adapter.UpdateCommand.Parameters(7).Value = CType(Source,String)
             End If
-            If (inReplyToUser Is Nothing) Then
+            If (InReplyToUser Is Nothing) Then
                 Me.Adapter.UpdateCommand.Parameters(8).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.UpdateCommand.Parameters(8).Value = CType(inReplyToUser,String)
+                Me.Adapter.UpdateCommand.Parameters(8).Value = CType(InReplyToUser,String)
             End If
-            If (inReplyToId.HasValue = true) Then
-                Me.Adapter.UpdateCommand.Parameters(9).Value = CType(inReplyToId.Value,Long)
+            If (InReplyToId.HasValue = true) Then
+                Me.Adapter.UpdateCommand.Parameters(9).Value = CType(InReplyToId.Value,Long)
             Else
                 Me.Adapter.UpdateCommand.Parameters(9).Value = Global.System.DBNull.Value
             End If
-            Me.Adapter.UpdateCommand.Parameters(10).Value = CType(isRead,Boolean)
-            Me.Adapter.UpdateCommand.Parameters(11).Value = CType(isFavorited,Boolean)
-            Me.Adapter.UpdateCommand.Parameters(12).Value = CType(isReply,Boolean)
-            Me.Adapter.UpdateCommand.Parameters(13).Value = CType(isProtected,Boolean)
-            Me.Adapter.UpdateCommand.Parameters(14).Value = CType(isOneWayLove,Boolean)
-            If (tags Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("tags")
+            Me.Adapter.UpdateCommand.Parameters(10).Value = CType(IsRead,Boolean)
+            Me.Adapter.UpdateCommand.Parameters(11).Value = CType(IsFavorited,Boolean)
+            Me.Adapter.UpdateCommand.Parameters(12).Value = CType(IsReply,Boolean)
+            Me.Adapter.UpdateCommand.Parameters(13).Value = CType(IsProtected,Boolean)
+            Me.Adapter.UpdateCommand.Parameters(14).Value = CType(IsOneWayLove,Boolean)
+            If (Tags Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Tags")
             Else
-                Me.Adapter.UpdateCommand.Parameters(15).Value = CType(tags,String)
+                Me.Adapter.UpdateCommand.Parameters(15).Value = CType(Tags,String)
             End If
-            Me.Adapter.UpdateCommand.Parameters(16).Value = CType(Original_id,Long)
-            Me.Adapter.UpdateCommand.Parameters(17).Value = CType(Original_timestamp,Date)
-            If (Original_name Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("Original_name")
+            Me.Adapter.UpdateCommand.Parameters(16).Value = CType(Original_Id,Long)
+            Me.Adapter.UpdateCommand.Parameters(17).Value = CType(Original_Timestamp,Date)
+            If (Original_Name Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Original_Name")
             Else
-                Me.Adapter.UpdateCommand.Parameters(18).Value = CType(Original_name,String)
+                Me.Adapter.UpdateCommand.Parameters(18).Value = CType(Original_Name,String)
             End If
-            If (Original_screenName Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("Original_screenName")
+            If (Original_ScreenName Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Original_ScreenName")
             Else
-                Me.Adapter.UpdateCommand.Parameters(19).Value = CType(Original_screenName,String)
+                Me.Adapter.UpdateCommand.Parameters(19).Value = CType(Original_ScreenName,String)
             End If
-            If (Original_imageUri Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("Original_imageUri")
+            If (Original_ImageUri Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Original_ImageUri")
             Else
-                Me.Adapter.UpdateCommand.Parameters(20).Value = CType(Original_imageUri,String)
+                Me.Adapter.UpdateCommand.Parameters(20).Value = CType(Original_ImageUri,String)
             End If
-            If (Original_text Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("Original_text")
+            If (Original_Text Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Original_Text")
             Else
-                Me.Adapter.UpdateCommand.Parameters(21).Value = CType(Original_text,String)
+                Me.Adapter.UpdateCommand.Parameters(21).Value = CType(Original_Text,String)
             End If
-            If (Original_hyperText Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("Original_hyperText")
+            If (Original_HyperText Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Original_HyperText")
             Else
-                Me.Adapter.UpdateCommand.Parameters(22).Value = CType(Original_hyperText,String)
+                Me.Adapter.UpdateCommand.Parameters(22).Value = CType(Original_HyperText,String)
             End If
-            If (Original_source Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("Original_source")
+            If (Original_Source Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Original_Source")
             Else
-                Me.Adapter.UpdateCommand.Parameters(23).Value = CType(Original_source,String)
+                Me.Adapter.UpdateCommand.Parameters(23).Value = CType(Original_Source,String)
             End If
-            If (Original_inReplyToUser Is Nothing) Then
+            If (Original_InReplyToUser Is Nothing) Then
                 Me.Adapter.UpdateCommand.Parameters(24).Value = CType(1,Object)
                 Me.Adapter.UpdateCommand.Parameters(25).Value = Global.System.DBNull.Value
             Else
                 Me.Adapter.UpdateCommand.Parameters(24).Value = CType(0,Object)
-                Me.Adapter.UpdateCommand.Parameters(25).Value = CType(Original_inReplyToUser,String)
+                Me.Adapter.UpdateCommand.Parameters(25).Value = CType(Original_InReplyToUser,String)
             End If
-            If (Original_inReplyToId.HasValue = true) Then
+            If (Original_InReplyToId.HasValue = true) Then
                 Me.Adapter.UpdateCommand.Parameters(26).Value = CType(0,Object)
-                Me.Adapter.UpdateCommand.Parameters(27).Value = CType(Original_inReplyToId.Value,Long)
+                Me.Adapter.UpdateCommand.Parameters(27).Value = CType(Original_InReplyToId.Value,Long)
             Else
                 Me.Adapter.UpdateCommand.Parameters(26).Value = CType(1,Object)
                 Me.Adapter.UpdateCommand.Parameters(27).Value = Global.System.DBNull.Value
             End If
-            Me.Adapter.UpdateCommand.Parameters(28).Value = CType(Original_isRead,Boolean)
-            Me.Adapter.UpdateCommand.Parameters(29).Value = CType(Original_isFavorited,Boolean)
-            Me.Adapter.UpdateCommand.Parameters(30).Value = CType(Original_isReply,Boolean)
-            Me.Adapter.UpdateCommand.Parameters(31).Value = CType(Original_isProtected,Boolean)
-            Me.Adapter.UpdateCommand.Parameters(32).Value = CType(Original_isOneWayLove,Boolean)
-            If (Original_tags Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("Original_tags")
+            Me.Adapter.UpdateCommand.Parameters(28).Value = CType(Original_IsRead,Boolean)
+            Me.Adapter.UpdateCommand.Parameters(29).Value = CType(Original_IsFavorited,Boolean)
+            Me.Adapter.UpdateCommand.Parameters(30).Value = CType(Original_IsReply,Boolean)
+            Me.Adapter.UpdateCommand.Parameters(31).Value = CType(Original_IsProtected,Boolean)
+            Me.Adapter.UpdateCommand.Parameters(32).Value = CType(Original_IsOneWayLove,Boolean)
+            If (Original_Tags Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Original_Tags")
             Else
-                Me.Adapter.UpdateCommand.Parameters(33).Value = CType(Original_tags,String)
+                Me.Adapter.UpdateCommand.Parameters(33).Value = CType(Original_Tags,String)
             End If
             Dim previousConnectionState As Global.System.Data.ConnectionState = Me.Adapter.UpdateCommand.Connection.State
             If ((Me.Adapter.UpdateCommand.Connection.State And Global.System.Data.ConnectionState.Open)  _
@@ -2371,38 +2400,38 @@ Namespace StorageDataSetTableAdapters
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Update, true)>  _
         Public Overloads Overridable Function Update( _
-                    ByVal timestamp As Date,  _
-                    ByVal name As String,  _
-                    ByVal screenName As String,  _
-                    ByVal imageUri As String,  _
-                    ByVal text As String,  _
-                    ByVal hyperText As String,  _
-                    ByVal source As String,  _
-                    ByVal inReplyToUser As String,  _
-                    ByVal inReplyToId As Global.System.Nullable(Of Long),  _
-                    ByVal isRead As Boolean,  _
-                    ByVal isFavorited As Boolean,  _
-                    ByVal isReply As Boolean,  _
-                    ByVal isProtected As Boolean,  _
-                    ByVal isOneWayLove As Boolean,  _
-                    ByVal tags As String,  _
-                    ByVal Original_id As Long,  _
-                    ByVal Original_timestamp As Date,  _
-                    ByVal Original_name As String,  _
-                    ByVal Original_screenName As String,  _
-                    ByVal Original_imageUri As String,  _
-                    ByVal Original_text As String,  _
-                    ByVal Original_hyperText As String,  _
-                    ByVal Original_source As String,  _
-                    ByVal Original_inReplyToUser As String,  _
-                    ByVal Original_inReplyToId As Global.System.Nullable(Of Long),  _
-                    ByVal Original_isRead As Boolean,  _
-                    ByVal Original_isFavorited As Boolean,  _
-                    ByVal Original_isReply As Boolean,  _
-                    ByVal Original_isProtected As Boolean,  _
-                    ByVal Original_isOneWayLove As Boolean,  _
-                    ByVal Original_tags As String) As Integer
-            Return Me.Update(Original_id, timestamp, name, screenName, imageUri, text, hyperText, source, inReplyToUser, inReplyToId, isRead, isFavorited, isReply, isProtected, isOneWayLove, tags, Original_id, Original_timestamp, Original_name, Original_screenName, Original_imageUri, Original_text, Original_hyperText, Original_source, Original_inReplyToUser, Original_inReplyToId, Original_isRead, Original_isFavorited, Original_isReply, Original_isProtected, Original_isOneWayLove, Original_tags)
+                    ByVal Timestamp As Date,  _
+                    ByVal Name As String,  _
+                    ByVal ScreenName As String,  _
+                    ByVal ImageUri As String,  _
+                    ByVal Text As String,  _
+                    ByVal HyperText As String,  _
+                    ByVal Source As String,  _
+                    ByVal InReplyToUser As String,  _
+                    ByVal InReplyToId As Global.System.Nullable(Of Long),  _
+                    ByVal IsRead As Boolean,  _
+                    ByVal IsFavorited As Boolean,  _
+                    ByVal IsReply As Boolean,  _
+                    ByVal IsProtected As Boolean,  _
+                    ByVal IsOneWayLove As Boolean,  _
+                    ByVal Tags As String,  _
+                    ByVal Original_Id As Long,  _
+                    ByVal Original_Timestamp As Date,  _
+                    ByVal Original_Name As String,  _
+                    ByVal Original_ScreenName As String,  _
+                    ByVal Original_ImageUri As String,  _
+                    ByVal Original_Text As String,  _
+                    ByVal Original_HyperText As String,  _
+                    ByVal Original_Source As String,  _
+                    ByVal Original_InReplyToUser As String,  _
+                    ByVal Original_InReplyToId As Global.System.Nullable(Of Long),  _
+                    ByVal Original_IsRead As Boolean,  _
+                    ByVal Original_IsFavorited As Boolean,  _
+                    ByVal Original_IsReply As Boolean,  _
+                    ByVal Original_IsProtected As Boolean,  _
+                    ByVal Original_IsOneWayLove As Boolean,  _
+                    ByVal Original_Tags As String) As Integer
+            Return Me.Update(Original_Id, Timestamp, Name, ScreenName, ImageUri, Text, HyperText, Source, InReplyToUser, InReplyToId, IsRead, IsFavorited, IsReply, IsProtected, IsOneWayLove, Tags, Original_Id, Original_Timestamp, Original_Name, Original_ScreenName, Original_ImageUri, Original_Text, Original_HyperText, Original_Source, Original_InReplyToUser, Original_InReplyToId, Original_IsRead, Original_IsFavorited, Original_IsReply, Original_IsProtected, Original_IsOneWayLove, Original_Tags)
         End Function
     End Class
     
@@ -2423,6 +2452,8 @@ Namespace StorageDataSetTableAdapters
         
         Private _connection As Global.System.Data.SQLite.SQLiteConnection
         
+        Private _transaction As Global.System.Data.SQLite.SQLiteTransaction
+        
         Private _commandCollection() As Global.System.Data.SQLite.SQLiteCommand
         
         Private _clearBeforeFill As Boolean
@@ -2434,7 +2465,7 @@ Namespace StorageDataSetTableAdapters
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Private ReadOnly Property Adapter() As Global.System.Data.SQLite.SQLiteDataAdapter
+        Protected Friend ReadOnly Property Adapter() As Global.System.Data.SQLite.SQLiteDataAdapter
             Get
                 If (Me._adapter Is Nothing) Then
                     Me.InitAdapter
@@ -2473,6 +2504,33 @@ Namespace StorageDataSetTableAdapters
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Friend Property Transaction() As Global.System.Data.SQLite.SQLiteTransaction
+            Get
+                Return Me._transaction
+            End Get
+            Set
+                Me._transaction = value
+                Dim i As Integer = 0
+                Do While (i < Me.CommandCollection.Length)
+                    Me.CommandCollection(i).Transaction = Me._transaction
+                    i = (i + 1)
+                Loop
+                If ((Not (Me.Adapter) Is Nothing)  _
+                            AndAlso (Not (Me.Adapter.DeleteCommand) Is Nothing)) Then
+                    Me.Adapter.DeleteCommand.Transaction = Me._transaction
+                End If
+                If ((Not (Me.Adapter) Is Nothing)  _
+                            AndAlso (Not (Me.Adapter.InsertCommand) Is Nothing)) Then
+                    Me.Adapter.InsertCommand.Transaction = Me._transaction
+                End If
+                If ((Not (Me.Adapter) Is Nothing)  _
+                            AndAlso (Not (Me.Adapter.UpdateCommand) Is Nothing)) Then
+                    Me.Adapter.UpdateCommand.Transaction = Me._transaction
+                End If
+            End Set
+        End Property
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Protected ReadOnly Property CommandCollection() As Global.System.Data.SQLite.SQLiteCommand()
             Get
                 If (Me._commandCollection Is Nothing) Then
@@ -2498,125 +2556,125 @@ Namespace StorageDataSetTableAdapters
             Dim tableMapping As Global.System.Data.Common.DataTableMapping = New Global.System.Data.Common.DataTableMapping
             tableMapping.SourceTable = "Table"
             tableMapping.DataSetTable = "Icons"
-            tableMapping.ColumnMappings.Add("imageUri", "imageUri")
-            tableMapping.ColumnMappings.Add("width", "width")
-            tableMapping.ColumnMappings.Add("height", "height")
-            tableMapping.ColumnMappings.Add("image", "image")
+            tableMapping.ColumnMappings.Add("ImageUri", "ImageUri")
+            tableMapping.ColumnMappings.Add("Width", "Width")
+            tableMapping.ColumnMappings.Add("Height", "Height")
+            tableMapping.ColumnMappings.Add("Image", "Image")
             Me._adapter.TableMappings.Add(tableMapping)
             Me._adapter.DeleteCommand = New Global.System.Data.SQLite.SQLiteCommand
             Me._adapter.DeleteCommand.Connection = Me.Connection
-            Me._adapter.DeleteCommand.CommandText = "DELETE FROM [Icons] WHERE (([imageUri] = @Original_imageUri) AND ([width] = @Orig"& _ 
-                "inal_width) AND ([height] = @Original_height) AND ([image] = @Original_image))"
+            Me._adapter.DeleteCommand.CommandText = "DELETE FROM [Icons] WHERE (([ImageUri] = @Original_ImageUri) AND ([Width] = @Orig"& _ 
+                "inal_Width) AND ([Height] = @Original_Height) AND ([Image] = @Original_Image))"
             Me._adapter.DeleteCommand.CommandType = Global.System.Data.CommandType.Text
             Dim param As Global.System.Data.SQLite.SQLiteParameter = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_imageUri"
+            param.ParameterName = "@Original_ImageUri"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "imageUri"
+            param.SourceColumn = "ImageUri"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_width"
+            param.ParameterName = "@Original_Width"
             param.DbType = Global.System.Data.DbType.Int32
             param.DbType = Global.System.Data.DbType.Int32
-            param.SourceColumn = "width"
+            param.SourceColumn = "Width"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_height"
+            param.ParameterName = "@Original_Height"
             param.DbType = Global.System.Data.DbType.Int32
             param.DbType = Global.System.Data.DbType.Int32
-            param.SourceColumn = "height"
+            param.SourceColumn = "Height"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_image"
+            param.ParameterName = "@Original_Image"
             param.DbType = Global.System.Data.DbType.Binary
             param.DbType = Global.System.Data.DbType.Binary
-            param.SourceColumn = "image"
+            param.SourceColumn = "Image"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             Me._adapter.InsertCommand = New Global.System.Data.SQLite.SQLiteCommand
             Me._adapter.InsertCommand.Connection = Me.Connection
-            Me._adapter.InsertCommand.CommandText = "INSERT INTO [Icons] ([imageUri], [width], [height], [image]) VALUES (@imageUri, @"& _ 
-                "width, @height, @image)"
+            Me._adapter.InsertCommand.CommandText = "INSERT INTO [Icons] ([ImageUri], [Width], [Height], [Image]) VALUES (@ImageUri, @"& _ 
+                "Width, @Height, @Image)"
             Me._adapter.InsertCommand.CommandType = Global.System.Data.CommandType.Text
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@imageUri"
+            param.ParameterName = "@ImageUri"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "imageUri"
+            param.SourceColumn = "ImageUri"
             Me._adapter.InsertCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@width"
+            param.ParameterName = "@Width"
             param.DbType = Global.System.Data.DbType.Int32
             param.DbType = Global.System.Data.DbType.Int32
-            param.SourceColumn = "width"
+            param.SourceColumn = "Width"
             Me._adapter.InsertCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@height"
+            param.ParameterName = "@Height"
             param.DbType = Global.System.Data.DbType.Int32
             param.DbType = Global.System.Data.DbType.Int32
-            param.SourceColumn = "height"
+            param.SourceColumn = "Height"
             Me._adapter.InsertCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@image"
+            param.ParameterName = "@Image"
             param.DbType = Global.System.Data.DbType.Binary
             param.DbType = Global.System.Data.DbType.Binary
-            param.SourceColumn = "image"
+            param.SourceColumn = "Image"
             Me._adapter.InsertCommand.Parameters.Add(param)
             Me._adapter.UpdateCommand = New Global.System.Data.SQLite.SQLiteCommand
             Me._adapter.UpdateCommand.Connection = Me.Connection
-            Me._adapter.UpdateCommand.CommandText = "UPDATE [Icons] SET [imageUri] = @imageUri, [width] = @width, [height] = @height, "& _ 
-                "[image] = @image WHERE (([imageUri] = @Original_imageUri) AND ([width] = @Origin"& _ 
-                "al_width) AND ([height] = @Original_height) AND ([image] = @Original_image))"
+            Me._adapter.UpdateCommand.CommandText = "UPDATE [Icons] SET [ImageUri] = @ImageUri, [Width] = @Width, [Height] = @Height, "& _ 
+                "[Image] = @Image WHERE (([ImageUri] = @Original_ImageUri) AND ([Width] = @Origin"& _ 
+                "al_Width) AND ([Height] = @Original_Height) AND ([Image] = @Original_Image))"
             Me._adapter.UpdateCommand.CommandType = Global.System.Data.CommandType.Text
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@imageUri"
+            param.ParameterName = "@ImageUri"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "imageUri"
+            param.SourceColumn = "ImageUri"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@width"
+            param.ParameterName = "@Width"
             param.DbType = Global.System.Data.DbType.Int32
             param.DbType = Global.System.Data.DbType.Int32
-            param.SourceColumn = "width"
+            param.SourceColumn = "Width"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@height"
+            param.ParameterName = "@Height"
             param.DbType = Global.System.Data.DbType.Int32
             param.DbType = Global.System.Data.DbType.Int32
-            param.SourceColumn = "height"
+            param.SourceColumn = "Height"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@image"
+            param.ParameterName = "@Image"
             param.DbType = Global.System.Data.DbType.Binary
             param.DbType = Global.System.Data.DbType.Binary
-            param.SourceColumn = "image"
+            param.SourceColumn = "Image"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_imageUri"
+            param.ParameterName = "@Original_ImageUri"
             param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "imageUri"
+            param.SourceColumn = "ImageUri"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_width"
+            param.ParameterName = "@Original_Width"
             param.DbType = Global.System.Data.DbType.Int32
             param.DbType = Global.System.Data.DbType.Int32
-            param.SourceColumn = "width"
+            param.SourceColumn = "Width"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_height"
+            param.ParameterName = "@Original_Height"
             param.DbType = Global.System.Data.DbType.Int32
             param.DbType = Global.System.Data.DbType.Int32
-            param.SourceColumn = "height"
+            param.SourceColumn = "Height"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_image"
+            param.ParameterName = "@Original_Image"
             param.DbType = Global.System.Data.DbType.Binary
             param.DbType = Global.System.Data.DbType.Binary
-            param.SourceColumn = "image"
+            param.SourceColumn = "Image"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
         End Sub
@@ -2685,18 +2743,18 @@ Namespace StorageDataSetTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Delete, true)>  _
-        Public Overloads Overridable Function Delete(ByVal Original_imageUri As String, ByVal Original_width As Integer, ByVal Original_height As Integer, ByVal Original_image() As Byte) As Integer
-            If (Original_imageUri Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("Original_imageUri")
+        Public Overloads Overridable Function Delete(ByVal Original_ImageUri As String, ByVal Original_Width As Integer, ByVal Original_Height As Integer, ByVal Original_Image() As Byte) As Integer
+            If (Original_ImageUri Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Original_ImageUri")
             Else
-                Me.Adapter.DeleteCommand.Parameters(0).Value = CType(Original_imageUri,String)
+                Me.Adapter.DeleteCommand.Parameters(0).Value = CType(Original_ImageUri,String)
             End If
-            Me.Adapter.DeleteCommand.Parameters(1).Value = CType(Original_width,Integer)
-            Me.Adapter.DeleteCommand.Parameters(2).Value = CType(Original_height,Integer)
-            If (Original_image Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("Original_image")
+            Me.Adapter.DeleteCommand.Parameters(1).Value = CType(Original_Width,Integer)
+            Me.Adapter.DeleteCommand.Parameters(2).Value = CType(Original_Height,Integer)
+            If (Original_Image Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Original_Image")
             Else
-                Me.Adapter.DeleteCommand.Parameters(3).Value = CType(Original_image,Byte())
+                Me.Adapter.DeleteCommand.Parameters(3).Value = CType(Original_Image,Byte())
             End If
             Dim previousConnectionState As Global.System.Data.ConnectionState = Me.Adapter.DeleteCommand.Connection.State
             If ((Me.Adapter.DeleteCommand.Connection.State And Global.System.Data.ConnectionState.Open)  _
@@ -2716,18 +2774,18 @@ Namespace StorageDataSetTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Insert, true)>  _
-        Public Overloads Overridable Function Insert(ByVal imageUri As String, ByVal width As Integer, ByVal height As Integer, ByVal image() As Byte) As Integer
-            If (imageUri Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("imageUri")
+        Public Overloads Overridable Function Insert(ByVal ImageUri As String, ByVal Width As Integer, ByVal Height As Integer, ByVal Image() As Byte) As Integer
+            If (ImageUri Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("ImageUri")
             Else
-                Me.Adapter.InsertCommand.Parameters(0).Value = CType(imageUri,String)
+                Me.Adapter.InsertCommand.Parameters(0).Value = CType(ImageUri,String)
             End If
-            Me.Adapter.InsertCommand.Parameters(1).Value = CType(width,Integer)
-            Me.Adapter.InsertCommand.Parameters(2).Value = CType(height,Integer)
-            If (image Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("image")
+            Me.Adapter.InsertCommand.Parameters(1).Value = CType(Width,Integer)
+            Me.Adapter.InsertCommand.Parameters(2).Value = CType(Height,Integer)
+            If (Image Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Image")
             Else
-                Me.Adapter.InsertCommand.Parameters(3).Value = CType(image,Byte())
+                Me.Adapter.InsertCommand.Parameters(3).Value = CType(Image,Byte())
             End If
             Dim previousConnectionState As Global.System.Data.ConnectionState = Me.Adapter.InsertCommand.Connection.State
             If ((Me.Adapter.InsertCommand.Connection.State And Global.System.Data.ConnectionState.Open)  _
@@ -2747,30 +2805,30 @@ Namespace StorageDataSetTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Update, true)>  _
-        Public Overloads Overridable Function Update(ByVal imageUri As String, ByVal width As Integer, ByVal height As Integer, ByVal image() As Byte, ByVal Original_imageUri As String, ByVal Original_width As Integer, ByVal Original_height As Integer, ByVal Original_image() As Byte) As Integer
-            If (imageUri Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("imageUri")
+        Public Overloads Overridable Function Update(ByVal ImageUri As String, ByVal Width As Integer, ByVal Height As Integer, ByVal Image() As Byte, ByVal Original_ImageUri As String, ByVal Original_Width As Integer, ByVal Original_Height As Integer, ByVal Original_Image() As Byte) As Integer
+            If (ImageUri Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("ImageUri")
             Else
-                Me.Adapter.UpdateCommand.Parameters(0).Value = CType(imageUri,String)
+                Me.Adapter.UpdateCommand.Parameters(0).Value = CType(ImageUri,String)
             End If
-            Me.Adapter.UpdateCommand.Parameters(1).Value = CType(width,Integer)
-            Me.Adapter.UpdateCommand.Parameters(2).Value = CType(height,Integer)
-            If (image Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("image")
+            Me.Adapter.UpdateCommand.Parameters(1).Value = CType(Width,Integer)
+            Me.Adapter.UpdateCommand.Parameters(2).Value = CType(Height,Integer)
+            If (Image Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Image")
             Else
-                Me.Adapter.UpdateCommand.Parameters(3).Value = CType(image,Byte())
+                Me.Adapter.UpdateCommand.Parameters(3).Value = CType(Image,Byte())
             End If
-            If (Original_imageUri Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("Original_imageUri")
+            If (Original_ImageUri Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Original_ImageUri")
             Else
-                Me.Adapter.UpdateCommand.Parameters(4).Value = CType(Original_imageUri,String)
+                Me.Adapter.UpdateCommand.Parameters(4).Value = CType(Original_ImageUri,String)
             End If
-            Me.Adapter.UpdateCommand.Parameters(5).Value = CType(Original_width,Integer)
-            Me.Adapter.UpdateCommand.Parameters(6).Value = CType(Original_height,Integer)
-            If (Original_image Is Nothing) Then
-                Throw New Global.System.ArgumentNullException("Original_image")
+            Me.Adapter.UpdateCommand.Parameters(5).Value = CType(Original_Width,Integer)
+            Me.Adapter.UpdateCommand.Parameters(6).Value = CType(Original_Height,Integer)
+            If (Original_Image Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("Original_Image")
             Else
-                Me.Adapter.UpdateCommand.Parameters(7).Value = CType(Original_image,Byte())
+                Me.Adapter.UpdateCommand.Parameters(7).Value = CType(Original_Image,Byte())
             End If
             Dim previousConnectionState As Global.System.Data.ConnectionState = Me.Adapter.UpdateCommand.Connection.State
             If ((Me.Adapter.UpdateCommand.Connection.State And Global.System.Data.ConnectionState.Open)  _
@@ -2790,8 +2848,472 @@ Namespace StorageDataSetTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Update, true)>  _
-        Public Overloads Overridable Function Update(ByVal width As Integer, ByVal height As Integer, ByVal image() As Byte, ByVal Original_imageUri As String, ByVal Original_width As Integer, ByVal Original_height As Integer, ByVal Original_image() As Byte) As Integer
-            Return Me.Update(Original_imageUri, width, height, image, Original_imageUri, Original_width, Original_height, Original_image)
+        Public Overloads Overridable Function Update(ByVal Width As Integer, ByVal Height As Integer, ByVal Image() As Byte, ByVal Original_ImageUri As String, ByVal Original_Width As Integer, ByVal Original_Height As Integer, ByVal Original_Image() As Byte) As Integer
+            Return Me.Update(Original_ImageUri, Width, Height, Image, Original_ImageUri, Original_Width, Original_Height, Original_Image)
         End Function
+    End Class
+    
+    '''<summary>
+    '''TableAdapterManager is used to coordinate TableAdapters in the dataset to enable Hierarchical Update scenarios
+    '''</summary>
+    <Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "2.0.0.0"),  _
+     Global.System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     Global.System.ComponentModel.ToolboxItem(true),  _
+     Global.System.ComponentModel.DesignerAttribute("Microsoft.VSDesigner.DataSource.Design.TableAdapterManagerDesigner, Microsoft.VSD"& _ 
+        "esigner, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"),  _
+     Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapterManager")>  _
+    Partial Public Class TableAdapterManager
+        Inherits Global.System.ComponentModel.Component
+        
+        Private _updateOrder As UpdateOrderOption
+        
+        Private _postsTableAdapter As PostsTableAdapter
+        
+        Private _iconsTableAdapter As IconsTableAdapter
+        
+        Private _backupDataSetBeforeUpdate As Boolean
+        
+        Private _connection As Global.System.Data.IDbConnection
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Property UpdateOrder() As UpdateOrderOption
+            Get
+                Return Me._updateOrder
+            End Get
+            Set
+                Me._updateOrder = value
+            End Set
+        End Property
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.ComponentModel.EditorAttribute("Microsoft.VSDesigner.DataSource.Design.TableAdapterManagerPropertyEditor, Microso"& _ 
+            "ft.VSDesigner, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"& _ 
+            "", "System.Drawing.Design.UITypeEditor")>  _
+        Public Property PostsTableAdapter() As PostsTableAdapter
+            Get
+                Return Me._postsTableAdapter
+            End Get
+            Set
+                Me._postsTableAdapter = value
+            End Set
+        End Property
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.ComponentModel.EditorAttribute("Microsoft.VSDesigner.DataSource.Design.TableAdapterManagerPropertyEditor, Microso"& _ 
+            "ft.VSDesigner, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"& _ 
+            "", "System.Drawing.Design.UITypeEditor")>  _
+        Public Property IconsTableAdapter() As IconsTableAdapter
+            Get
+                Return Me._iconsTableAdapter
+            End Get
+            Set
+                Me._iconsTableAdapter = value
+            End Set
+        End Property
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Property BackupDataSetBeforeUpdate() As Boolean
+            Get
+                Return Me._backupDataSetBeforeUpdate
+            End Get
+            Set
+                Me._backupDataSetBeforeUpdate = value
+            End Set
+        End Property
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.ComponentModel.Browsable(false)>  _
+        Public Property Connection() As Global.System.Data.IDbConnection
+            Get
+                If (Not (Me._connection) Is Nothing) Then
+                    Return Me._connection
+                End If
+                If ((Not (Me._postsTableAdapter) Is Nothing)  _
+                            AndAlso (Not (Me._postsTableAdapter.Connection) Is Nothing)) Then
+                    Return Me._postsTableAdapter.Connection
+                End If
+                If ((Not (Me._iconsTableAdapter) Is Nothing)  _
+                            AndAlso (Not (Me._iconsTableAdapter.Connection) Is Nothing)) Then
+                    Return Me._iconsTableAdapter.Connection
+                End If
+                Return Nothing
+            End Get
+            Set
+                Me._connection = value
+            End Set
+        End Property
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.ComponentModel.Browsable(false)>  _
+        Public ReadOnly Property TableAdapterInstanceCount() As Integer
+            Get
+                Dim count As Integer = 0
+                If (Not (Me._postsTableAdapter) Is Nothing) Then
+                    count = (count + 1)
+                End If
+                If (Not (Me._iconsTableAdapter) Is Nothing) Then
+                    count = (count + 1)
+                End If
+                Return count
+            End Get
+        End Property
+        
+        '''<summary>
+        '''Update rows in top-down order.
+        '''</summary>
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Private Function UpdateUpdatedRows(ByVal dataSet As StorageDataSet, ByVal allChangedRows As Global.System.Collections.Generic.List(Of Global.System.Data.DataRow), ByVal allAddedRows As Global.System.Collections.Generic.List(Of Global.System.Data.DataRow)) As Integer
+            Dim result As Integer = 0
+            If (Not (Me._iconsTableAdapter) Is Nothing) Then
+                Dim updatedRows() As Global.System.Data.DataRow = dataSet.Icons.Select(Nothing, Nothing, Global.System.Data.DataViewRowState.ModifiedCurrent)
+                updatedRows = Me.GetRealUpdatedRows(updatedRows, allAddedRows)
+                If ((Not (updatedRows) Is Nothing)  _
+                            AndAlso (0 < updatedRows.Length)) Then
+                    result = (result + Me._iconsTableAdapter.Update(updatedRows))
+                    allChangedRows.AddRange(updatedRows)
+                End If
+            End If
+            If (Not (Me._postsTableAdapter) Is Nothing) Then
+                Dim updatedRows() As Global.System.Data.DataRow = dataSet.Posts.Select(Nothing, Nothing, Global.System.Data.DataViewRowState.ModifiedCurrent)
+                updatedRows = Me.GetRealUpdatedRows(updatedRows, allAddedRows)
+                If ((Not (updatedRows) Is Nothing)  _
+                            AndAlso (0 < updatedRows.Length)) Then
+                    result = (result + Me._postsTableAdapter.Update(updatedRows))
+                    allChangedRows.AddRange(updatedRows)
+                End If
+            End If
+            Return result
+        End Function
+        
+        '''<summary>
+        '''Insert rows in top-down order.
+        '''</summary>
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Private Function UpdateInsertedRows(ByVal dataSet As StorageDataSet, ByVal allAddedRows As Global.System.Collections.Generic.List(Of Global.System.Data.DataRow)) As Integer
+            Dim result As Integer = 0
+            If (Not (Me._iconsTableAdapter) Is Nothing) Then
+                Dim addedRows() As Global.System.Data.DataRow = dataSet.Icons.Select(Nothing, Nothing, Global.System.Data.DataViewRowState.Added)
+                If ((Not (addedRows) Is Nothing)  _
+                            AndAlso (0 < addedRows.Length)) Then
+                    result = (result + Me._iconsTableAdapter.Update(addedRows))
+                    allAddedRows.AddRange(addedRows)
+                End If
+            End If
+            If (Not (Me._postsTableAdapter) Is Nothing) Then
+                Dim addedRows() As Global.System.Data.DataRow = dataSet.Posts.Select(Nothing, Nothing, Global.System.Data.DataViewRowState.Added)
+                If ((Not (addedRows) Is Nothing)  _
+                            AndAlso (0 < addedRows.Length)) Then
+                    result = (result + Me._postsTableAdapter.Update(addedRows))
+                    allAddedRows.AddRange(addedRows)
+                End If
+            End If
+            Return result
+        End Function
+        
+        '''<summary>
+        '''Delete rows in bottom-up order.
+        '''</summary>
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Private Function UpdateDeletedRows(ByVal dataSet As StorageDataSet, ByVal allChangedRows As Global.System.Collections.Generic.List(Of Global.System.Data.DataRow)) As Integer
+            Dim result As Integer = 0
+            If (Not (Me._postsTableAdapter) Is Nothing) Then
+                Dim deletedRows() As Global.System.Data.DataRow = dataSet.Posts.Select(Nothing, Nothing, Global.System.Data.DataViewRowState.Deleted)
+                If ((Not (deletedRows) Is Nothing)  _
+                            AndAlso (0 < deletedRows.Length)) Then
+                    result = (result + Me._postsTableAdapter.Update(deletedRows))
+                    allChangedRows.AddRange(deletedRows)
+                End If
+            End If
+            If (Not (Me._iconsTableAdapter) Is Nothing) Then
+                Dim deletedRows() As Global.System.Data.DataRow = dataSet.Icons.Select(Nothing, Nothing, Global.System.Data.DataViewRowState.Deleted)
+                If ((Not (deletedRows) Is Nothing)  _
+                            AndAlso (0 < deletedRows.Length)) Then
+                    result = (result + Me._iconsTableAdapter.Update(deletedRows))
+                    allChangedRows.AddRange(deletedRows)
+                End If
+            End If
+            Return result
+        End Function
+        
+        '''<summary>
+        '''Remove inserted rows that become updated rows after calling TableAdapter.Update(inserted rows) first
+        '''</summary>
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Private Function GetRealUpdatedRows(ByVal updatedRows() As Global.System.Data.DataRow, ByVal allAddedRows As Global.System.Collections.Generic.List(Of Global.System.Data.DataRow)) As Global.System.Data.DataRow()
+            If ((updatedRows Is Nothing)  _
+                        OrElse (updatedRows.Length < 1)) Then
+                Return updatedRows
+            End If
+            If ((allAddedRows Is Nothing)  _
+                        OrElse (allAddedRows.Count < 1)) Then
+                Return updatedRows
+            End If
+            Dim realUpdatedRows As Global.System.Collections.Generic.List(Of Global.System.Data.DataRow) = New Global.System.Collections.Generic.List(Of Global.System.Data.DataRow)
+            Dim i As Integer = 0
+            Do While (i < updatedRows.Length)
+                Dim row As Global.System.Data.DataRow = updatedRows(i)
+                If (allAddedRows.Contains(row) = false) Then
+                    realUpdatedRows.Add(row)
+                End If
+                i = (i + 1)
+            Loop
+            Return realUpdatedRows.ToArray
+        End Function
+        
+        '''<summary>
+        '''Update all changes to the dataset.
+        '''</summary>
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Overridable Function UpdateAll(ByVal dataSet As StorageDataSet) As Integer
+            If (dataSet Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("dataSet")
+            End If
+            If (dataSet.HasChanges = false) Then
+                Return 0
+            End If
+            If ((Not (Me._postsTableAdapter) Is Nothing)  _
+                        AndAlso (Me.MatchTableAdapterConnection(Me._postsTableAdapter.Connection) = false)) Then
+                Throw New Global.System.ArgumentException("TableAdapterManager で管理されるすべての TableAdapter は同一の接続文字列を使用する必要があります。")
+            End If
+            If ((Not (Me._iconsTableAdapter) Is Nothing)  _
+                        AndAlso (Me.MatchTableAdapterConnection(Me._iconsTableAdapter.Connection) = false)) Then
+                Throw New Global.System.ArgumentException("TableAdapterManager で管理されるすべての TableAdapter は同一の接続文字列を使用する必要があります。")
+            End If
+            Dim workConnection As Global.System.Data.IDbConnection = Me.Connection
+            If (workConnection Is Nothing) Then
+                Throw New Global.System.ApplicationException("TableAdapterManager には接続情報がありません。それぞれの TableAdapterManager TableAdapter プロパティを有効な"& _ 
+                        " TableAdapter インスタンスに設定してください。")
+            End If
+            Dim workConnOpened As Boolean = false
+            If ((workConnection.State And Global.System.Data.ConnectionState.Broken)  _
+                        = Global.System.Data.ConnectionState.Broken) Then
+                workConnection.Close
+            End If
+            If (workConnection.State = Global.System.Data.ConnectionState.Closed) Then
+                workConnection.Open
+                workConnOpened = true
+            End If
+            Dim workTransaction As Global.System.Data.IDbTransaction = workConnection.BeginTransaction
+            If (workTransaction Is Nothing) Then
+                Throw New Global.System.ApplicationException("トランザクションを開始できません。現在のデータ接続がトランザクションをサポートしていないか、または現在の状態がトランザクションの開始を許可していません。")
+            End If
+            Dim allChangedRows As Global.System.Collections.Generic.List(Of Global.System.Data.DataRow) = New Global.System.Collections.Generic.List(Of Global.System.Data.DataRow)
+            Dim allAddedRows As Global.System.Collections.Generic.List(Of Global.System.Data.DataRow) = New Global.System.Collections.Generic.List(Of Global.System.Data.DataRow)
+            Dim adaptersWithAcceptChangesDuringUpdate As Global.System.Collections.Generic.List(Of Global.System.Data.Common.DataAdapter) = New Global.System.Collections.Generic.List(Of Global.System.Data.Common.DataAdapter)
+            Dim revertConnections As Global.System.Collections.Generic.Dictionary(Of Object, Global.System.Data.IDbConnection) = New Global.System.Collections.Generic.Dictionary(Of Object, Global.System.Data.IDbConnection)
+            Dim result As Integer = 0
+            Dim backupDataSet As Global.System.Data.DataSet = Nothing
+            If Me.BackupDataSetBeforeUpdate Then
+                backupDataSet = New Global.System.Data.DataSet
+                backupDataSet.Merge(dataSet)
+            End If
+            Try 
+                '---- Prepare for update -----------
+                '
+                If (Not (Me._postsTableAdapter) Is Nothing) Then
+                    revertConnections.Add(Me._postsTableAdapter, Me._postsTableAdapter.Connection)
+                    Me._postsTableAdapter.Connection = CType(workConnection,Global.System.Data.SQLite.SQLiteConnection)
+                    Me._postsTableAdapter.Transaction = CType(workTransaction,Global.System.Data.SQLite.SQLiteTransaction)
+                    If Me._postsTableAdapter.Adapter.AcceptChangesDuringUpdate Then
+                        Me._postsTableAdapter.Adapter.AcceptChangesDuringUpdate = false
+                        adaptersWithAcceptChangesDuringUpdate.Add(Me._postsTableAdapter.Adapter)
+                    End If
+                End If
+                If (Not (Me._iconsTableAdapter) Is Nothing) Then
+                    revertConnections.Add(Me._iconsTableAdapter, Me._iconsTableAdapter.Connection)
+                    Me._iconsTableAdapter.Connection = CType(workConnection,Global.System.Data.SQLite.SQLiteConnection)
+                    Me._iconsTableAdapter.Transaction = CType(workTransaction,Global.System.Data.SQLite.SQLiteTransaction)
+                    If Me._iconsTableAdapter.Adapter.AcceptChangesDuringUpdate Then
+                        Me._iconsTableAdapter.Adapter.AcceptChangesDuringUpdate = false
+                        adaptersWithAcceptChangesDuringUpdate.Add(Me._iconsTableAdapter.Adapter)
+                    End If
+                End If
+                '
+                '---- Perform updates -----------
+                '
+                If (Me.UpdateOrder = UpdateOrderOption.UpdateInsertDelete) Then
+                    result = (result + Me.UpdateUpdatedRows(dataSet, allChangedRows, allAddedRows))
+                    result = (result + Me.UpdateInsertedRows(dataSet, allAddedRows))
+                Else
+                    result = (result + Me.UpdateInsertedRows(dataSet, allAddedRows))
+                    result = (result + Me.UpdateUpdatedRows(dataSet, allChangedRows, allAddedRows))
+                End If
+                result = (result + Me.UpdateDeletedRows(dataSet, allChangedRows))
+                '
+                '---- Commit updates -----------
+                '
+                workTransaction.Commit
+                If (0 < allAddedRows.Count) Then
+                    Dim rows((allAddedRows.Count) - 1) As Global.System.Data.DataRow
+                    allAddedRows.CopyTo(rows)
+                    Dim i As Integer = 0
+                    Do While (i < rows.Length)
+                        Dim row As Global.System.Data.DataRow = rows(i)
+                        row.AcceptChanges
+                        i = (i + 1)
+                    Loop
+                End If
+                If (0 < allChangedRows.Count) Then
+                    Dim rows((allChangedRows.Count) - 1) As Global.System.Data.DataRow
+                    allChangedRows.CopyTo(rows)
+                    Dim i As Integer = 0
+                    Do While (i < rows.Length)
+                        Dim row As Global.System.Data.DataRow = rows(i)
+                        row.AcceptChanges
+                        i = (i + 1)
+                    Loop
+                End If
+            Catch ex As Global.System.Exception
+                workTransaction.Rollback
+                '---- Restore the dataset -----------
+                If Me.BackupDataSetBeforeUpdate Then
+                    Global.System.Diagnostics.Debug.Assert((Not (backupDataSet) Is Nothing))
+                    dataSet.Clear
+                    dataSet.Merge(backupDataSet)
+                Else
+                    If (0 < allAddedRows.Count) Then
+                        Dim rows((allAddedRows.Count) - 1) As Global.System.Data.DataRow
+                        allAddedRows.CopyTo(rows)
+                        Dim i As Integer = 0
+                        Do While (i < rows.Length)
+                            Dim row As Global.System.Data.DataRow = rows(i)
+                            row.AcceptChanges
+                            row.SetAdded
+                            i = (i + 1)
+                        Loop
+                    End If
+                End If
+                Throw ex
+            Finally
+                If workConnOpened Then
+                    workConnection.Close
+                End If
+                If (Not (Me._postsTableAdapter) Is Nothing) Then
+                    Me._postsTableAdapter.Connection = CType(revertConnections(Me._postsTableAdapter),Global.System.Data.SQLite.SQLiteConnection)
+                    Me._postsTableAdapter.Transaction = Nothing
+                End If
+                If (Not (Me._iconsTableAdapter) Is Nothing) Then
+                    Me._iconsTableAdapter.Connection = CType(revertConnections(Me._iconsTableAdapter),Global.System.Data.SQLite.SQLiteConnection)
+                    Me._iconsTableAdapter.Transaction = Nothing
+                End If
+                If (0 < adaptersWithAcceptChangesDuringUpdate.Count) Then
+                    Dim adapters((adaptersWithAcceptChangesDuringUpdate.Count) - 1) As Global.System.Data.Common.DataAdapter
+                    adaptersWithAcceptChangesDuringUpdate.CopyTo(adapters)
+                    Dim i As Integer = 0
+                    Do While (i < adapters.Length)
+                        Dim adapter As Global.System.Data.Common.DataAdapter = adapters(i)
+                        adapter.AcceptChangesDuringUpdate = true
+                        i = (i + 1)
+                    Loop
+                End If
+            End Try
+            Return result
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Protected Overridable Sub SortSelfReferenceRows(ByVal rows() As Global.System.Data.DataRow, ByVal relation As Global.System.Data.DataRelation, ByVal childFirst As Boolean)
+            Global.System.Array.Sort(Of Global.System.Data.DataRow)(rows, New SelfReferenceComparer(relation, childFirst))
+        End Sub
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Protected Overridable Function MatchTableAdapterConnection(ByVal inputConnection As Global.System.Data.IDbConnection) As Boolean
+            If (Not (Me._connection) Is Nothing) Then
+                Return true
+            End If
+            If ((Me.Connection Is Nothing)  _
+                        OrElse (inputConnection Is Nothing)) Then
+                Return true
+            End If
+            If String.Equals(Me.Connection.ConnectionString, inputConnection.ConnectionString, Global.System.StringComparison.Ordinal) Then
+                Return true
+            End If
+            Return false
+        End Function
+        
+        '''<summary>
+        '''Update Order Option
+        '''</summary>
+        <Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "2.0.0.0")>  _
+        Public Enum UpdateOrderOption
+            
+            InsertUpdateDelete = 0
+            
+            UpdateInsertDelete = 1
+        End Enum
+        
+        '''<summary>
+        '''Used to sort self-referenced table's rows
+        '''</summary>
+        <Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "2.0.0.0")>  _
+        Private Class SelfReferenceComparer
+            Inherits Object
+            Implements Global.System.Collections.Generic.IComparer(Of Global.System.Data.DataRow)
+            
+            Private _relation As Global.System.Data.DataRelation
+            
+            Private _childFirst As Integer
+            
+            <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+            Friend Sub New(ByVal relation As Global.System.Data.DataRelation, ByVal childFirst As Boolean)
+                MyBase.New
+                Me._relation = relation
+                If childFirst Then
+                    Me._childFirst = -1
+                Else
+                    Me._childFirst = 1
+                End If
+            End Sub
+            
+            <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+            Private Function IsChildAndParent(ByVal child As Global.System.Data.DataRow, ByVal parent As Global.System.Data.DataRow) As Boolean
+                Global.System.Diagnostics.Debug.Assert((Not (child) Is Nothing))
+                Global.System.Diagnostics.Debug.Assert((Not (parent) Is Nothing))
+                Dim newParent As Global.System.Data.DataRow = child.GetParentRow(Me._relation, Global.System.Data.DataRowVersion.[Default])
+
+                Do While ((Not (newParent) Is Nothing)  _
+                            AndAlso ((Object.ReferenceEquals(newParent, child) = false)  _
+                            AndAlso (Object.ReferenceEquals(newParent, parent) = false)))
+                    newParent = newParent.GetParentRow(Me._relation, Global.System.Data.DataRowVersion.[Default])
+
+                Loop
+                If (newParent Is Nothing) Then
+                    newParent = child.GetParentRow(Me._relation, Global.System.Data.DataRowVersion.Original)
+                    Do While ((Not (newParent) Is Nothing)  _
+                                AndAlso ((Object.ReferenceEquals(newParent, child) = false)  _
+                                AndAlso (Object.ReferenceEquals(newParent, parent) = false)))
+                        newParent = newParent.GetParentRow(Me._relation, Global.System.Data.DataRowVersion.Original)
+
+                    Loop
+                End If
+                If Object.ReferenceEquals(newParent, parent) Then
+                    Return true
+                End If
+                Return false
+            End Function
+            
+            <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+            Public Function Compare(ByVal row1 As Global.System.Data.DataRow, ByVal row2 As Global.System.Data.DataRow) As Integer Implements Global.System.Collections.Generic.IComparer(Of Global.System.Data.DataRow).Compare
+                If Object.ReferenceEquals(row1, row2) Then
+                    Return 0
+                End If
+                If (row1 Is Nothing) Then
+                    Return -1
+                End If
+                If (row2 Is Nothing) Then
+                    Return 1
+                End If
+
+                'Is row1 the child or grandchild of row2
+                If Me.IsChildAndParent(row1, row2) Then
+                    Return Me._childFirst
+                End If
+
+                'Is row2 the child or grandchild of row1
+                If Me.IsChildAndParent(row2, row1) Then
+                    Return (-1 * Me._childFirst)
+                End If
+                Return 0
+            End Function
+        End Class
     End Class
 End Namespace
