@@ -301,7 +301,8 @@ Partial Public Class StorageDataSet
      Global.System.Serializable(),  _
      Global.System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")>  _
     Partial Public Class PostsDataTable
-        Inherits Global.System.Data.TypedTableBase(Of PostsRow)
+        Inherits Global.System.Data.DataTable
+        Implements Global.System.Collections.IEnumerable
         
         Private columnid As Global.System.Data.DataColumn
         
@@ -541,6 +542,11 @@ Partial Public Class StorageDataSet
         End Function
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Overridable Function GetEnumerator() As Global.System.Collections.IEnumerator Implements Global.System.Collections.IEnumerable.GetEnumerator
+            Return Me.Rows.GetEnumerator
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Public Overrides Function Clone() As Global.System.Data.DataTable
             Dim cln As PostsDataTable = CType(MyBase.Clone,PostsDataTable)
             cln.InitVars
@@ -770,7 +776,8 @@ Partial Public Class StorageDataSet
      Global.System.Serializable(),  _
      Global.System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")>  _
     Partial Public Class IconsDataTable
-        Inherits Global.System.Data.TypedTableBase(Of IconsRow)
+        Inherits Global.System.Data.DataTable
+        Implements Global.System.Collections.IEnumerable
         
         Private columnimageUri As Global.System.Data.DataColumn
         
@@ -880,6 +887,11 @@ Partial Public Class StorageDataSet
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Public Function FindByimageUri(ByVal imageUri As String) As IconsRow
             Return CType(Me.Rows.Find(New Object() {imageUri}),IconsRow)
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Overridable Function GetEnumerator() As Global.System.Collections.IEnumerator Implements Global.System.Collections.IEnumerable.GetEnumerator
+            Return Me.Rows.GetEnumerator
         End Function
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _

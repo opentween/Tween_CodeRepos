@@ -1803,8 +1803,8 @@ Partial Public Class Twitter
         Dim resStatus As String = ""
         Dim resMsg As String = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _ShowStatus + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2), String)
         Dim xdoc As Xml.XmlDocument = New Xml.XmlDocument()
-        xdoc.LoadXml(resMsg)
         Try
+            xdoc.LoadXml(resMsg)
             If xdoc.SelectSingleNode("/status/in_reply_to_status_id").InnerXml <> "" Then
                 Return Integer.Parse(xdoc.SelectSingleNode("/status/in_reply_to_status_id").ChildNodes(0).Value)
             Else
