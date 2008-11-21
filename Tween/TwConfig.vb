@@ -888,9 +888,12 @@ Public NotInheritable Class ListSection
     <ConfigurationProperty("splitterdistance", DefaultValue:=320)> _
     Public Property SplitterDistance() As Integer
         Get
-            Return CInt(Me("splitterdistance"))
+            Dim dis As Integer = DirectCast(Me("splitterdistance"), Integer)
+            If dis < 0 Then dis = 320
+            Return dis
         End Get
         Set(ByVal value As Integer)
+            If value < 0 Then value = 320
             Me("splitterdistance") = value
         End Set
     End Property
@@ -898,10 +901,16 @@ Public NotInheritable Class ListSection
     <ConfigurationProperty("formsize", DefaultValue:="436, 476")> _
     Public Property FormSize() As Size
         Get
-            Return CType(Me("formsize"), Size)
+            Dim sz As Size = CType(Me("formsize"), Size)
+            If sz.Height < 0 Then sz.Height = 476
+            If sz.Width < 0 Then sz.Width = 436
+            Return sz
         End Get
         Set(ByVal value As Size)
-            Me("formsize") = value
+            Dim sz As Size = value
+            If sz.Height < 0 Then sz.Height = 476
+            If sz.Width < 0 Then sz.Width = 436
+            Me("formsize") = sz
         End Set
     End Property
 
@@ -1550,7 +1559,7 @@ Public Property CloseToExit() As Boolean
             Dim pwd As String = value.Trim()
             If pwd.Length > 0 Then
                 Try
-                    Me("proxypassword") = EncryptString(value)
+                    Me("proxypassword") = EncryptString(pwd)
                 Catch ex As Exception
                     Me("proxypassword") = ""
                 End Try
