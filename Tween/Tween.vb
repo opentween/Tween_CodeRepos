@@ -100,8 +100,15 @@ Public Class TweenMain
     Private _brsForeColorReaded As SolidBrush
     Private _brsForeColorFav As SolidBrush
     Private _brsForeColorOWL As SolidBrush
+    Private _brsBackColorMine As SolidBrush
+    Private _brsBackColorAt As SolidBrush
+    Private _brsBackColorYou As SolidBrush
+    Private _brsBackColorAtYou As SolidBrush
+    Private _brsBackColorAtTo As SolidBrush
+    Private _brsBackColorNone As SolidBrush
     Private sf As New StringFormat()
     Private _columnIdx As Integer   'ListviewのDisplayIndex退避用（DrawItemで使用）
+    Private _columnChangeFlag As Boolean
 
 #If DEBUG Then
     Private _drawcount As Long = 0
@@ -232,6 +239,8 @@ Public Class TweenMain
         _reply_to_id = 0
         _reply_to_name = Nothing
 
+        _columnChangeFlag = True
+
         '<<<<<<<<<設定関連>>>>>>>>>
         '設定読み出し
         _config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
@@ -277,6 +286,12 @@ Public Class TweenMain
         _brsForeColorReaded = New SolidBrush(_clReaded)
         _brsForeColorFav = New SolidBrush(_clFav)
         _brsForeColorOWL = New SolidBrush(_clOWL)
+        _brsBackColorMine = New SolidBrush(_clSelf)
+        _brsBackColorAt = New SolidBrush(_clAtSelf)
+        _brsBackColorYou = New SolidBrush(_clTarget)
+        _brsBackColorAtYou = New SolidBrush(_clAtTarget)
+        _brsBackColorAtTo = New SolidBrush(_clAtFromTarget)
+        _brsBackColorNone = New SolidBrush(Color.White)
 
         ' StringFormatオブジェクトへの事前設定
         sf.Alignment = StringAlignment.Near
@@ -425,6 +440,16 @@ Public Class TweenMain
             _brsForeColorReaded = New SolidBrush(_clReaded)
             _brsForeColorFav = New SolidBrush(_clFav)
             _brsForeColorOWL = New SolidBrush(_clOWL)
+            _brsBackColorMine.Dispose()
+            _brsBackColorAt.Dispose()
+            _brsBackColorYou.Dispose()
+            _brsBackColorAtYou.Dispose()
+            _brsBackColorAtTo.Dispose()
+            _brsBackColorMine = New SolidBrush(_clSelf)
+            _brsBackColorAt = New SolidBrush(_clAtSelf)
+            _brsBackColorYou = New SolidBrush(_clTarget)
+            _brsBackColorAtYou = New SolidBrush(_clAtTarget)
+            _brsBackColorAtTo = New SolidBrush(_clAtFromTarget)
             '他の設定項目は、随時設定画面で保持している値を読み出して使用
         End If
 
@@ -3348,6 +3373,16 @@ Public Class TweenMain
                 _brsForeColorReaded = New SolidBrush(_clReaded)
                 _brsForeColorFav = New SolidBrush(_clFav)
                 _brsForeColorOWL = New SolidBrush(_clOWL)
+                _brsBackColorMine.Dispose()
+                _brsBackColorAt.Dispose()
+                _brsBackColorYou.Dispose()
+                _brsBackColorAtYou.Dispose()
+                _brsBackColorAtTo.Dispose()
+                _brsBackColorMine = New SolidBrush(_clSelf)
+                _brsBackColorAt = New SolidBrush(_clAtSelf)
+                _brsBackColorYou = New SolidBrush(_clTarget)
+                _brsBackColorAtYou = New SolidBrush(_clAtTarget)
+                _brsBackColorAtTo = New SolidBrush(_clAtFromTarget)
                 For Each ts As TabStructure In _tabs
                     For Each myItem As ListViewItem In ts.listCustom.Items
                         If SettingDialog.UnreadManage AndAlso ts.unreadManage Then
@@ -3454,8 +3489,9 @@ Public Class TweenMain
             AddHandler myTab.listCustom.DrawColumnHeader, AddressOf MyList_DrawColumnHeader
             AddHandler myTab.listCustom.DrawItem, AddressOf MyList_DrawItem
             AddHandler myTab.listCustom.Scrolled, AddressOf Mylist_Scrolled
-            AddHandler myTab.listCustom.MouseClick, AddressOf MyList_MouseDown
+            AddHandler myTab.listCustom.MouseClick, AddressOf MyList_MouseClick
             AddHandler myTab.listCustom.ColumnReordered, AddressOf MyList_ColumnReordered
+            AddHandler myTab.listCustom.ColumnWidthChanging, AddressOf MyList_CoumnWidthChanging
 
             myTab.colHd1.Text = ""
             myTab.colHd1.Width = 26
@@ -3589,8 +3625,9 @@ Public Class TweenMain
         AddHandler myTab.listCustom.DrawColumnHeader, AddressOf MyList_DrawColumnHeader
         AddHandler myTab.listCustom.DrawItem, AddressOf MyList_DrawItem
         AddHandler myTab.listCustom.Scrolled, AddressOf Mylist_Scrolled
-        AddHandler myTab.listCustom.MouseClick, AddressOf MyList_MouseDown
+        AddHandler myTab.listCustom.MouseClick, AddressOf MyList_MouseClick
         AddHandler myTab.listCustom.ColumnReordered, AddressOf MyList_ColumnReordered
+        AddHandler myTab.listCustom.ColumnWidthChanging, AddressOf MyList_CoumnWidthChanging
 
         myTab.colHd1.Text = ""
         myTab.colHd1.Width = 26
@@ -3706,7 +3743,9 @@ Public Class TweenMain
         RemoveHandler _tabs(idx).listCustom.DrawColumnHeader, AddressOf MyList_DrawColumnHeader
         RemoveHandler _tabs(idx).listCustom.DrawItem, AddressOf MyList_DrawItem
         RemoveHandler _tabs(idx).listCustom.Scrolled, AddressOf Mylist_Scrolled
-        RemoveHandler _tabs(idx).listCustom.MouseClick, AddressOf MyList_MouseDown
+        RemoveHandler _tabs(idx).listCustom.MouseClick, AddressOf MyList_MouseClick
+        RemoveHandler _tabs(idx).listCustom.ColumnReordered, AddressOf MyList_ColumnReordered
+        RemoveHandler _tabs(idx).listCustom.ColumnWidthChanging, AddressOf MyList_CoumnWidthChanging
 
         TabDialog.RemoveTab(_tabs(idx).tabName)
 
@@ -3876,21 +3915,22 @@ Public Class TweenMain
 #If DEBUG Then
         Dim iStart As Integer = System.Environment.TickCount
 #End If
+        Static iSize As Integer = _iconSz
 
-        If _iconSz = 48 OrElse _
-           _iconSz = 26 Then
+        If iSize = 48 OrElse _
+           iSize = 26 Then
             If e.State = 0 Then Exit Sub
 
             'アイコンカラム位置取得
             Dim rct As Rectangle = Nothing
-            Dim MyList As DetailsListView = DirectCast(e.Item.ListView, Tween.TweenCustomControl.DetailsListView)
+            'Dim MyList As DetailsListView = DirectCast(e.Item.ListView, Tween.TweenCustomControl.DetailsListView)
 
             If Not _iconCol Then
-                Dim cnt As Integer
-                Dim x As Integer = 0
-                Dim wd As Integer
-                Dim wd2 As Integer
-                Dim idx As Integer = _columnIdx     '手抜き
+                'Dim cnt As Integer
+                Static x As Integer = 0
+                Static wd As Integer = 0
+                Static wd2 As Integer = 0
+                'Dim idx As Integer = _columnIdx     '手抜き
 
                 'For cnt = 0 To 4
                 '   If e.Item.ListView.Columns(cnt).Text = "" Then
@@ -3899,29 +3939,34 @@ Public Class TweenMain
                 '   Exit For
                 '   End If
                 'Next
-                wd2 = MyList.Columns(idx).Width - 2
-                x = e.Item.Bounds.X
-                For cnt = 0 To 4
-                    If MyList.Columns(cnt).DisplayIndex < idx Then
-                        x += MyList.Columns(cnt).Width
+                If _columnChangeFlag = True Then
+                    Dim MyList As DetailsListView = DirectCast(e.Item.ListView, Tween.TweenCustomControl.DetailsListView)
+                    wd2 = MyList.Columns(_columnIdx).Width - 2
+                    x = e.Item.Bounds.X
+                    For cnt As Integer = 0 To 4
+                        If MyList.Columns(cnt).DisplayIndex < _columnIdx Then
+                            x += MyList.Columns(cnt).Width
+                        End If
+                    Next
+                    If wd2 > iSize Then
+                        wd = iSize
+                    Else
+                        wd = wd2
                     End If
-                Next
-                If wd2 > MyList.SmallImageList.ImageSize.Width Then
-                    wd = MyList.SmallImageList.ImageSize.Width
-                Else
-                    wd = wd2
+                    rct = New Rectangle(x, e.Item.SubItems(_columnIdx).Bounds.Y + 1, wd, iSize)
+                    iSize = iSize
                 End If
-                rct = New Rectangle(x, e.Item.SubItems(idx).Bounds.Y + 1, wd, MyList.SmallImageList.ImageSize.Height)
 
                 If e.Item.Selected Then
                     e.Graphics.FillRectangle(_brsHighLight, e.Bounds)
-                    If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
-                        e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
-                    End If
+                    'If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
+                    If e.Item.ImageKey <> "" Then e.Graphics.DrawImageUnscaledAndClipped(TIconSmallList.Images(e.Item.ImageKey), rct)
+                    'If e.Item.ImageKey <> "" Then e.Graphics.DrawImageUnscaled(TIconSmallList.Images(e.Item.ImageKey), rct)
+                    'End If
                     For i As Integer = 0 To 4
                         If i = 0 Then
-                            If wd2 - MyList.SmallImageList.ImageSize.Width > 0 Then
-                                Dim sRct As New Rectangle(x + 1 + MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Y, wd2 - MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Height - 3)
+                            If wd2 - iSize > 0 Then
+                                Dim sRct As New Rectangle(x + 1 + iSize, e.Item.SubItems(i).Bounds.Y, wd2 - iSize, e.Item.SubItems(i).Bounds.Height - 3)
                                 e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, _brsHighLightText, sRct, sf)
                             End If
                         Else
@@ -3930,11 +3975,28 @@ Public Class TweenMain
                         End If
                     Next
                 Else
-                    e.DrawBackground()
+                    'e.DrawBackground()
+                    Dim brs2 As SolidBrush = Nothing
+                    Select Case e.Item.BackColor
+                        Case _clSelf
+                            brs2 = _brsBackColorMine
+                        Case _clAtSelf
+                            brs2 = _brsBackColorAt
+                        Case _clTarget
+                            brs2 = _brsBackColorYou
+                        Case _clAtTarget
+                            brs2 = _brsBackColorAtYou
+                        Case _clAtFromTarget
+                            brs2 = _brsBackColorAtTo
+                        Case Else
+                            brs2 = _brsBackColorNone
+                    End Select
+                    e.Graphics.FillRectangle(brs2, e.Bounds)
 
-                    If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
-                        e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
-                    End If
+                    'If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
+                    If e.Item.ImageKey <> "" Then e.Graphics.DrawImageUnscaledAndClipped(TIconSmallList.Images(e.Item.ImageKey), rct)
+                    'If e.Item.ImageKey <> "" Then e.Graphics.DrawImageUnscaled(TIconSmallList.Images(e.Item.ImageKey), rct)
+                    'End If
 
                     Dim brs As SolidBrush = Nothing
                     Select Case e.Item.ForeColor
@@ -3949,8 +4011,8 @@ Public Class TweenMain
                     End Select
                     For i As Integer = 0 To 4
                         If i = 0 Then
-                            If wd2 - MyList.SmallImageList.ImageSize.Width > 0 Then
-                                Dim sRct As New Rectangle(x + 1 + MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Y, wd2 - MyList.SmallImageList.ImageSize.Width, e.Item.SubItems(i).Bounds.Height - 3)
+                            If wd2 - iSize > 0 Then
+                                Dim sRct As New Rectangle(x + 1 + iSize, e.Item.SubItems(i).Bounds.Y, wd2 - iSize, e.Item.SubItems(i).Bounds.Height - 3)
                                 e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
                             End If
                         Else
@@ -3964,28 +4026,42 @@ Public Class TweenMain
                 Dim wd2 As Integer
                 Dim x As Integer
                 wd2 = e.Item.Bounds.Width - 2
-                If wd2 > _iconSz Then wd = _iconSz
+                If wd2 > iSize Then wd = iSize
                 x = e.Item.Bounds.X
-                rct = New Rectangle(e.Item.Bounds.X, e.Item.Bounds.Y + 1, wd, _iconSz)
+                rct = New Rectangle(e.Item.Bounds.X, e.Item.Bounds.Y + 1, wd, iSize)
 
                 If e.Item.Selected = True Then
                     e.Graphics.FillRectangle(_brsHighLight, e.Bounds)
-                    If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
-                        e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
-                    End If
-                    If wd2 - _iconSz - 5 > 0 Then
-                        Dim sRct As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y, wd2 - _iconSz - 5, e.Item.Font.Height)
-                        Dim sRct2 As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y + e.Item.Font.Height, wd2 - _iconSz - 5, _iconSz - e.Item.Font.Height)
+                    'If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
+                    If e.Item.ImageKey <> "" Then e.Graphics.DrawImageUnscaledAndClipped(TIconSmallList.Images(e.Item.ImageKey), rct)
+                    'End If
+                    If wd2 - iSize - 5 > 0 Then
+                        Dim sRct As New Rectangle(x + 5 + iSize, e.Item.Bounds.Y, wd2 - iSize - 5, e.Item.Font.Height)
+                        Dim sRct2 As New Rectangle(x + 5 + iSize, e.Item.Bounds.Y + e.Item.Font.Height, wd2 - iSize - 5, iSize - e.Item.Font.Height)
                         Dim fnt As New Font(e.Item.Font, FontStyle.Bold)
                         e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text, fnt, _brsHighLightText, sRct, sf)
                         e.Graphics.DrawString(e.Item.SubItems(2).Text, e.Item.Font, _brsHighLightText, sRct2, sf)
                     End If
                 Else
-                    e.DrawBackground()
+                    'e.DrawBackground()
+                    Dim brs2 As SolidBrush = Nothing
+                    Select Case e.Item.BackColor
+                        Case _clSelf
+                            brs2 = _brsBackColorMine
+                        Case _clAtSelf
+                            brs2 = _brsBackColorAt
+                        Case _clTarget
+                            brs2 = _brsBackColorYou
+                        Case _clAtTarget
+                            brs2 = _brsBackColorAtYou
+                        Case _clAtFromTarget
+                            brs2 = _brsBackColorAtTo
+                    End Select
+                    e.Graphics.FillRectangle(brs2, e.Bounds)
 
-                    If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
-                        e.Graphics.DrawImageUnscaledAndClipped(MyList.SmallImageList.Images(e.Item.ImageKey), rct)
-                    End If
+                    'If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
+                    If e.Item.ImageKey <> "" Then e.Graphics.DrawImageUnscaledAndClipped(TIconSmallList.Images(e.Item.ImageKey), rct)
+                    'End If
                     Dim brs As SolidBrush = Nothing
                     Select Case e.Item.ForeColor
                         Case _clUnread
@@ -3997,9 +4073,9 @@ Public Class TweenMain
                         Case _clOWL
                             brs = _brsForeColorOWL
                     End Select
-                    If wd2 - _iconSz - 5 > 0 Then
-                        Dim sRct As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y, wd2 - _iconSz - 5, e.Item.Font.Height)
-                        Dim sRct2 As New Rectangle(x + 5 + _iconSz, e.Item.Bounds.Y + e.Item.Font.Height, wd2 - _iconSz - 5, _iconSz - e.Item.Font.Height)
+                    If wd2 - iSize - 5 > 0 Then
+                        Dim sRct As New Rectangle(x + 5 + iSize, e.Item.Bounds.Y, wd2 - iSize - 5, e.Item.Font.Height)
+                        Dim sRct2 As New Rectangle(x + 5 + iSize, e.Item.Bounds.Y + e.Item.Font.Height, wd2 - iSize - 5, iSize - e.Item.Font.Height)
                         Dim fnt As New Font(e.Item.Font, FontStyle.Bold)
                         e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text, fnt, brs, sRct, sf)
                         e.Graphics.DrawString(e.Item.SubItems(2).Text, e.Item.Font, brs, sRct2, sf)
@@ -5230,7 +5306,7 @@ RETRY:
 
     End Sub
 
-    Private Sub MyList_MouseDown(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs)
+    Private Sub MyList_MouseClick(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs)
         _anchorFlag = False
     End Sub
 
@@ -5454,7 +5530,6 @@ RETRY:
                 'Next
 
 
-                _section.SelectedUser.Clear()
                 'Dim sID As String
                 'For Each sID In _notId
                 '    _section.SelectedUser.Add(New SelectedUser("Recent->" + sID))
@@ -5462,7 +5537,9 @@ RETRY:
 
                 Dim cnt As Integer = 0
                 If ListTab IsNot Nothing AndAlso _
+                   ListTab.TabPages IsNot Nothing AndAlso _
                    ListTab.TabPages.Count > 0 Then
+                    _section.SelectedUser.Clear()
                     For Each tp As TabPage In ListTab.TabPages
                         Dim tabName As String = tp.Text
                         'Dim myList As DetailsListView = ts.listCustom
@@ -7190,10 +7267,11 @@ RETRY:
     End Sub
 
     Private Sub MyList_ColumnReordered(ByVal sender As System.Object, ByVal e As ColumnReorderedEventArgs)
+        Dim MyList As DetailsListView = DirectCast(sender, DetailsListView)
+
         If e.Header.Text = "" Then
             _columnIdx = e.NewDisplayIndex
         Else
-            Dim MyList As DetailsListView = DirectCast(sender, DetailsListView)
             Dim cIdx As Integer = 0
             For Each clm As ColumnHeader In MyList.Columns
                 If clm.Text = "" Then
@@ -7203,11 +7281,16 @@ RETRY:
                     ElseIf cIdx <= e.NewDisplayIndex AndAlso cIdx > e.OldDisplayIndex Then
                         _columnIdx = cIdx - 1
                     End If
+                    Exit For
                 End If
-                Exit For
             Next
         End If
 
+        _columnChangeFlag = True
+    End Sub
+
+    Private Sub MyList_CoumnWidthChanging(ByVal sender As System.Object, ByVal e As ColumnWidthChangingEventArgs)
+        _columnChangeFlag = True
     End Sub
 End Class
 

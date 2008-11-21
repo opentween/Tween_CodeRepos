@@ -46,12 +46,16 @@ Namespace My
         Private Sub MyApplication_Startup(ByVal sender As Object, ByVal e As Microsoft.VisualBasic.ApplicationServices.StartupEventArgs) Handles Me.Startup
             Dim pt As String = Application.Info.DirectoryPath.Replace("\", "/") + "/" + Application.Info.ProductName
             mt = New System.Threading.Mutex(False, pt)
-            If mt.WaitOne(0, False) = False Then
-                MessageBox.Show("Tweenは既に起動されています。2重起動する場合は、別フォルダのTween.exeを実行してください。", "Tween二重起動チェック", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                e.Cancel = True
-            Else
-                GC.KeepAlive(mt)
-            End If
+            Try
+                If mt.WaitOne(0, False) = False Then
+                    MessageBox.Show("Tweenは既に起動されています。2重起動する場合は、別フォルダのTween.exeを実行してください。", "Tween二重起動チェック", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    e.Cancel = True
+                    Exit Sub
+                End If
+            Catch ex As Exception
+            End Try
+
+            GC.KeepAlive(mt)
         End Sub
 
         Private Sub MyApplication_UnhandledException(ByVal sender As Object, ByVal e As Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs) Handles Me.UnhandledException

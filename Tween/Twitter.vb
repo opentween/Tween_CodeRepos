@@ -625,7 +625,7 @@ Partial Public Class Twitter
                     '''    'End If
                     '''End If
                     If imgKeys.Contains(lItem.ImageUrl) = False Then
-                        GetIconImage(lItem.ImageUrl, imgKeys, imgs)
+                        If GetIconImage(lItem.ImageUrl, imgKeys, imgs) = False Then lItem.ImageUrl = ""
                     End If
 
                     If _endingFlag Then Return ""
@@ -1052,7 +1052,7 @@ Partial Public Class Twitter
                     '''    'End If
                     '''End If
                     If imgKeys.Contains(lItem.ImageUrl) = False Then
-                        GetIconImage(lItem.ImageUrl, imgKeys, imgs)
+                        If GetIconImage(lItem.ImageUrl, imgKeys, imgs) = False Then lItem.ImageUrl = ""
                     End If
 
                     If _endingFlag Then Return ""
@@ -1184,9 +1184,9 @@ Partial Public Class Twitter
         Return ""
     End Function
 
-    Private Sub GetIconImage(ByVal pathUrl As String, ByVal imgKeys As Collections.Specialized.StringCollection, ByVal imgs As ImageList)
-        If _endingFlag Then Exit Sub
-        If _getIcon = False Then Exit Sub
+    Private Function GetIconImage(ByVal pathUrl As String, ByVal imgKeys As Collections.Specialized.StringCollection, ByVal imgs As ImageList) As Boolean
+        If _endingFlag Then Exit Function
+        If _getIcon = False Then Exit Function
 
         'Dim pathUrlSmall As String = pathUrl.Replace("_normal.", "_mini.")
         Dim resStatus As String = ""
@@ -1204,10 +1204,11 @@ Partial Public Class Twitter
             'img = Nothing
             '''End SyncLock
             'Exit Do
+            Return True
         Else
             'If cnt > 10 Then Exit Sub
             'Threading.Thread.Sleep(200)
-            Exit Sub
+            Return False
         End If
 
 
@@ -1236,7 +1237,7 @@ Partial Public Class Twitter
         ''End If
         ''End If
         ''''mySock = Nothing
-    End Sub
+    End Function
 
     Private Function GetAuthKey(ByVal resMsg As String) As Integer
         Dim pos1 As Integer
