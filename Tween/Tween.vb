@@ -7029,7 +7029,7 @@ RETRY:
     End Sub
 
     Private Sub SplitContainer1_SplitterMoved(ByVal sender As Object, ByVal e As System.Windows.Forms.SplitterEventArgs) Handles SplitContainer1.SplitterMoved
-        _mySpDis = SplitContainer1.SplitterDistance
+        If Me.WindowState = FormWindowState.Normal Then _mySpDis = SplitContainer1.SplitterDistance
     End Sub
 
     Private Sub RepliedStatusOpenMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RepliedStatusOpenMenuItem.Click
