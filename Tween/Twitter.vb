@@ -833,10 +833,14 @@ Partial Public Class Twitter
                 End Try
 
                 'Get Nick
-                'pos1 = strPost.IndexOf(_parseNick, pos2)
-                'pos2 = strPost.IndexOf("""", pos1 + _parseNick.Length)
-                'lItem.Nick = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseNick.Length, pos2 - pos1 - _parseNick.Length))
-                lItem.Nick = lItem.Name
+                Try
+                    pos1 = strPost.IndexOf(_parseNick, pos2)
+                    pos2 = strPost.IndexOf(_parseNickTo, pos1 + _parseNick.Length)
+                    lItem.Nick = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseNick.Length, pos2 - pos1 - _parseNick.Length))
+                Catch ex As Exception
+                    _signed = False
+                    Return "GetDirectMessage -> Err: Can't get Nick."
+                End Try
 
                 If links.Contains(lItem.Id) Then
                     flg = True
@@ -853,11 +857,25 @@ Partial Public Class Twitter
                         Return "GetDirectMessage -> Err: Can't get ImagePath"
                     End Try
 
+                    'Get Protect
+                    Try
+                        pos1 = strPost.IndexOf(_isProtect, pos2)
+                        If pos1 > -1 Then lItem.Protect = True
+                    Catch ex As Exception
+                        _signed = False
+                        Return "GetDirectMessage -> Err: Can't get Protect"
+                    End Try
+
                     'Get Message
                     Try
                         pos1 = strPost.IndexOf(_parseDM1, pos2)
-                        pos2 = strPost.IndexOf(_parseDM2, pos1)
-                        orgData = strPost.Substring(pos1 + _parseDM1.Length, pos2 - pos1 - _parseDM1.Length).Trim()
+                        If pos1 > -1 Then
+                            pos2 = strPost.IndexOf(_parseDM2, pos1)
+                            orgData = strPost.Substring(pos1 + _parseDM1.Length, pos2 - pos1 - _parseDM1.Length).Trim()
+                        Else
+                            pos1 = strPost.IndexOf(_parseDM11, pos2)
+                            orgData = strPost.Substring(pos1 + _parseDM11.Length, pos2 - pos1 - _parseDM11.Length).Trim()
+                        End If
                         orgData = orgData.Replace("&lt;3", "♡")
                     Catch ex As Exception
                         _signed = False
@@ -1661,6 +1679,9 @@ Partial Public Class Twitter
                                 If ln.StartsWith("      ""tagfrom"": """) Then
                                     _parseDM1 = ln.Substring(18, ln.Length - 1 - 18).Replace("\", "")
                                 End If
+                                If ln.StartsWith("      ""tagfrom2"": """) Then
+                                    _parseDM11 = ln.Substring(19, ln.Length - 1 - 19).Replace("\", "")
+                                End If
                                 If ln.StartsWith("      ""tagto"": """) Then
                                     _parseDM2 = ln.Substring(16, ln.Length - 1 - 16).Replace("\", "")
                                 End If
@@ -1899,6 +1920,7 @@ Partial Public Class Twitter
         sw.WriteLine("    Public _parseMsg1 As String = " + Chr(34) + _parseMsg1.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Public _parseMsg2 As String = " + Chr(34) + _parseMsg2.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Public _parseDM1 As String = " + Chr(34) + _parseDM1.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseDM11 As String = " + Chr(34) + _parseDM11.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Public _parseDM2 As String = " + Chr(34) + _parseDM2.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Public _parseDate As String = " + Chr(34) + _parseDate.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Public _parseDateTo As String = " + Chr(34) + _parseDateTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))

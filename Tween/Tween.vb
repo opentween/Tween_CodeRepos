@@ -2471,6 +2471,7 @@ Public Class TweenMain
         Dim _fav As Boolean
         Dim _onewaylove As Boolean
         Dim nm As String = ""
+        Dim Protect As String
 
         Dim _item As ListViewItem
 
@@ -2515,7 +2516,12 @@ Public Class TweenMain
             _fav = False
             _onewaylove = Not IsReceive
             lItem = tlList(cnt)
-            Dim sItem() As String = {"", lItem.Nick, lItem.Data, lItem.PDate.ToString("yy-MM-dd HH:mm:ss"), lItem.Name, lItem.Id, lItem.ImageUrl, lItem.OrgData, _readed.ToString, _fav.ToString, _onewaylove.ToString, "False"}
+            If lItem.Protect = True Then
+                Protect = "Ю"
+            Else
+                Protect = ""
+            End If
+            Dim sItem() As String = {Protect, lItem.Nick, lItem.Data, lItem.PDate.ToString("yy-MM-dd HH:mm:ss"), lItem.Name, lItem.Id, lItem.ImageUrl, lItem.OrgData, _readed.ToString, _fav.ToString, _onewaylove.ToString, "False"}
             Dim lvItem As New ListViewItem(sItem)
             lvItem.Font = _fntReaded
             lvItem.ForeColor = _clReaded
@@ -4702,11 +4708,7 @@ RETRY:
         'PostedText.Text = _item.SubItems(2).Text
         NameLabel.Text = _item.SubItems(1).Text + "/" + _item.SubItems(4).Text
         UserPicture.Image = TIconList.Images(_item.SubItems(6).Text)
-        If ListTab.SelectedTab.Text = "Direct" Then
-            NameLabel.Text = _item.SubItems(1).Text
-        Else
-            NameLabel.Text = _item.SubItems(1).Text + "/" + _item.SubItems(4).Text
-        End If
+        NameLabel.Text = _item.SubItems(1).Text + "/" + _item.SubItems(4).Text
 
         NameLabel.ForeColor = System.Drawing.SystemColors.ControlText
         DateTimeLabel.Text = _item.SubItems(3).Text.ToString()
