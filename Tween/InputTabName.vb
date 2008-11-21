@@ -44,5 +44,4 @@ Public Class InputTabName
             TextTabName.Text = value.Trim()
         End Set
     End Property
-
 End Class

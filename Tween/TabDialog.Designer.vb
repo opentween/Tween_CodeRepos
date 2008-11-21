@@ -23,6 +23,7 @@ Partial Class FilterDialog
     'コード エディタを使って変更しないでください。
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FilterDialog))
         Me.ButtonClose = New System.Windows.Forms.Button
         Me.ComboTabs = New System.Windows.Forms.ComboBox
         Me.Label5 = New System.Windows.Forms.Label
@@ -54,43 +55,50 @@ Partial Class FilterDialog
         '
         'ButtonClose
         '
+        Me.ButtonClose.AccessibleDescription = Nothing
+        Me.ButtonClose.AccessibleName = Nothing
+        resources.ApplyResources(Me.ButtonClose, "ButtonClose")
+        Me.ButtonClose.BackgroundImage = Nothing
         Me.ButtonClose.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.ButtonClose.Location = New System.Drawing.Point(431, 445)
+        Me.ButtonClose.Font = Nothing
         Me.ButtonClose.Name = "ButtonClose"
-        Me.ButtonClose.Size = New System.Drawing.Size(75, 23)
-        Me.ButtonClose.TabIndex = 7
-        Me.ButtonClose.Text = "閉じる(&C)"
         Me.ButtonClose.UseVisualStyleBackColor = True
         '
         'ComboTabs
         '
+        Me.ComboTabs.AccessibleDescription = Nothing
+        Me.ComboTabs.AccessibleName = Nothing
+        resources.ApplyResources(Me.ComboTabs, "ComboTabs")
+        Me.ComboTabs.BackgroundImage = Nothing
         Me.ComboTabs.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboTabs.Font = Nothing
         Me.ComboTabs.FormattingEnabled = True
-        Me.ComboTabs.Location = New System.Drawing.Point(41, 6)
         Me.ComboTabs.Name = "ComboTabs"
-        Me.ComboTabs.Size = New System.Drawing.Size(465, 20)
-        Me.ComboTabs.TabIndex = 1
         '
         'Label5
         '
-        Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(12, 9)
+        Me.Label5.AccessibleDescription = Nothing
+        Me.Label5.AccessibleName = Nothing
+        resources.ApplyResources(Me.Label5, "Label5")
+        Me.Label5.Font = Nothing
         Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(22, 12)
-        Me.Label5.TabIndex = 0
-        Me.Label5.Text = "タブ"
         '
         'ListFilters
         '
+        Me.ListFilters.AccessibleDescription = Nothing
+        Me.ListFilters.AccessibleName = Nothing
+        resources.ApplyResources(Me.ListFilters, "ListFilters")
+        Me.ListFilters.BackgroundImage = Nothing
+        Me.ListFilters.Font = Nothing
         Me.ListFilters.FormattingEnabled = True
-        Me.ListFilters.ItemHeight = 12
-        Me.ListFilters.Location = New System.Drawing.Point(14, 30)
         Me.ListFilters.Name = "ListFilters"
-        Me.ListFilters.Size = New System.Drawing.Size(492, 232)
-        Me.ListFilters.TabIndex = 2
         '
         'EditFilterGroup
         '
+        Me.EditFilterGroup.AccessibleDescription = Nothing
+        Me.EditFilterGroup.AccessibleName = Nothing
+        resources.ApplyResources(Me.EditFilterGroup, "EditFilterGroup")
+        Me.EditFilterGroup.BackgroundImage = Nothing
         Me.EditFilterGroup.Controls.Add(Me.GroupBox1)
         Me.EditFilterGroup.Controls.Add(Me.CheckURL)
         Me.EditFilterGroup.Controls.Add(Me.CheckRegex)
@@ -105,208 +113,215 @@ Partial Class FilterDialog
         Me.EditFilterGroup.Controls.Add(Me.RadioPLUS)
         Me.EditFilterGroup.Controls.Add(Me.Label8)
         Me.EditFilterGroup.Controls.Add(Me.ButtonOK)
-        Me.EditFilterGroup.Location = New System.Drawing.Point(6, 295)
+        Me.EditFilterGroup.Font = Nothing
         Me.EditFilterGroup.Name = "EditFilterGroup"
-        Me.EditFilterGroup.Size = New System.Drawing.Size(500, 144)
-        Me.EditFilterGroup.TabIndex = 6
         Me.EditFilterGroup.TabStop = False
-        Me.EditFilterGroup.Text = "ルール編集"
         '
         'GroupBox1
         '
+        Me.GroupBox1.AccessibleDescription = Nothing
+        Me.GroupBox1.AccessibleName = Nothing
+        resources.ApplyResources(Me.GroupBox1, "GroupBox1")
+        Me.GroupBox1.BackgroundImage = Nothing
         Me.GroupBox1.Controls.Add(Me.OptNone)
         Me.GroupBox1.Controls.Add(Me.OptMark)
         Me.GroupBox1.Controls.Add(Me.OptMove)
-        Me.GroupBox1.Location = New System.Drawing.Point(343, 14)
+        Me.GroupBox1.Font = Nothing
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(151, 87)
-        Me.GroupBox1.TabIndex = 15
         Me.GroupBox1.TabStop = False
-        Me.GroupBox1.Text = "マッチ時の追加動作(&E)"
         '
         'OptNone
         '
-        Me.OptNone.AutoSize = True
-        Me.OptNone.Location = New System.Drawing.Point(15, 62)
+        Me.OptNone.AccessibleDescription = Nothing
+        Me.OptNone.AccessibleName = Nothing
+        resources.ApplyResources(Me.OptNone, "OptNone")
+        Me.OptNone.BackgroundImage = Nothing
+        Me.OptNone.Font = Nothing
         Me.OptNone.Name = "OptNone"
-        Me.OptNone.Size = New System.Drawing.Size(73, 16)
-        Me.OptNone.TabIndex = 17
         Me.OptNone.TabStop = True
-        Me.OptNone.Text = "何もしない"
         Me.OptNone.UseVisualStyleBackColor = True
         '
         'OptMark
         '
-        Me.OptMark.AutoSize = True
-        Me.OptMark.Location = New System.Drawing.Point(15, 40)
+        Me.OptMark.AccessibleDescription = Nothing
+        Me.OptMark.AccessibleName = Nothing
+        resources.ApplyResources(Me.OptMark, "OptMark")
+        Me.OptMark.BackgroundImage = Nothing
+        Me.OptMark.Font = Nothing
         Me.OptMark.Name = "OptMark"
-        Me.OptMark.Size = New System.Drawing.Size(119, 16)
-        Me.OptMark.TabIndex = 16
         Me.OptMark.TabStop = True
-        Me.OptMark.Text = "Recent発言にマーク"
         Me.OptMark.UseVisualStyleBackColor = True
         '
         'OptMove
         '
-        Me.OptMove.AutoSize = True
-        Me.OptMove.Location = New System.Drawing.Point(15, 18)
+        Me.OptMove.AccessibleDescription = Nothing
+        Me.OptMove.AccessibleName = Nothing
+        resources.ApplyResources(Me.OptMove, "OptMove")
+        Me.OptMove.BackgroundImage = Nothing
+        Me.OptMove.Font = Nothing
         Me.OptMove.Name = "OptMove"
-        Me.OptMove.Size = New System.Drawing.Size(120, 16)
-        Me.OptMove.TabIndex = 15
         Me.OptMove.TabStop = True
-        Me.OptMove.Text = "Recentから移動する"
         Me.OptMove.UseVisualStyleBackColor = True
         '
         'CheckURL
         '
-        Me.CheckURL.AutoSize = True
-        Me.CheckURL.Location = New System.Drawing.Point(169, 94)
+        Me.CheckURL.AccessibleDescription = Nothing
+        Me.CheckURL.AccessibleName = Nothing
+        resources.ApplyResources(Me.CheckURL, "CheckURL")
+        Me.CheckURL.BackgroundImage = Nothing
+        Me.CheckURL.Font = Nothing
         Me.CheckURL.Name = "CheckURL"
-        Me.CheckURL.Size = New System.Drawing.Size(150, 16)
-        Me.CheckURL.TabIndex = 13
-        Me.CheckURL.Text = "リンク先URLも検索する(&U)"
         Me.CheckURL.UseVisualStyleBackColor = True
         '
         'CheckRegex
         '
-        Me.CheckRegex.AutoSize = True
-        Me.CheckRegex.Location = New System.Drawing.Point(23, 94)
+        Me.CheckRegex.AccessibleDescription = Nothing
+        Me.CheckRegex.AccessibleName = Nothing
+        resources.ApplyResources(Me.CheckRegex, "CheckRegex")
+        Me.CheckRegex.BackgroundImage = Nothing
+        Me.CheckRegex.Font = Nothing
         Me.CheckRegex.Name = "CheckRegex"
-        Me.CheckRegex.Size = New System.Drawing.Size(140, 16)
-        Me.CheckRegex.TabIndex = 12
-        Me.CheckRegex.Text = "正規表現を使用する(&R)"
         Me.CheckRegex.UseVisualStyleBackColor = True
         '
         'RadioAND
         '
-        Me.RadioAND.AutoSize = True
+        Me.RadioAND.AccessibleDescription = Nothing
+        Me.RadioAND.AccessibleName = Nothing
+        resources.ApplyResources(Me.RadioAND, "RadioAND")
+        Me.RadioAND.BackgroundImage = Nothing
         Me.RadioAND.Checked = True
-        Me.RadioAND.Location = New System.Drawing.Point(8, 30)
+        Me.RadioAND.Font = Nothing
         Me.RadioAND.Name = "RadioAND"
-        Me.RadioAND.Size = New System.Drawing.Size(71, 16)
-        Me.RadioAND.TabIndex = 0
         Me.RadioAND.TabStop = True
-        Me.RadioAND.Text = "複合条件"
         Me.RadioAND.UseVisualStyleBackColor = True
         '
         'ButtonCancel
         '
-        Me.ButtonCancel.Location = New System.Drawing.Point(419, 115)
+        Me.ButtonCancel.AccessibleDescription = Nothing
+        Me.ButtonCancel.AccessibleName = Nothing
+        resources.ApplyResources(Me.ButtonCancel, "ButtonCancel")
+        Me.ButtonCancel.BackgroundImage = Nothing
+        Me.ButtonCancel.Font = Nothing
         Me.ButtonCancel.Name = "ButtonCancel"
-        Me.ButtonCancel.Size = New System.Drawing.Size(75, 23)
-        Me.ButtonCancel.TabIndex = 11
-        Me.ButtonCancel.Text = "キャンセル"
         Me.ButtonCancel.UseVisualStyleBackColor = True
         '
         'UID
         '
-        Me.UID.Location = New System.Drawing.Point(89, 28)
+        Me.UID.AccessibleDescription = Nothing
+        Me.UID.AccessibleName = Nothing
+        resources.ApplyResources(Me.UID, "UID")
+        Me.UID.BackgroundImage = Nothing
+        Me.UID.Font = Nothing
         Me.UID.Name = "UID"
-        Me.UID.Size = New System.Drawing.Size(72, 19)
-        Me.UID.TabIndex = 2
         '
         'MSG2
         '
-        Me.MSG2.Location = New System.Drawing.Point(89, 66)
+        Me.MSG2.AccessibleDescription = Nothing
+        Me.MSG2.AccessibleName = Nothing
+        resources.ApplyResources(Me.MSG2, "MSG2")
+        Me.MSG2.BackgroundImage = Nothing
+        Me.MSG2.Font = Nothing
         Me.MSG2.Name = "MSG2"
-        Me.MSG2.Size = New System.Drawing.Size(234, 19)
-        Me.MSG2.TabIndex = 8
         '
         'MSG1
         '
-        Me.MSG1.Location = New System.Drawing.Point(202, 28)
+        Me.MSG1.AccessibleDescription = Nothing
+        Me.MSG1.AccessibleName = Nothing
+        resources.ApplyResources(Me.MSG1, "MSG1")
+        Me.MSG1.BackgroundImage = Nothing
+        Me.MSG1.Font = Nothing
         Me.MSG1.Name = "MSG1"
-        Me.MSG1.Size = New System.Drawing.Size(121, 19)
-        Me.MSG1.TabIndex = 5
         '
         'Label6
         '
-        Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(87, 16)
+        Me.Label6.AccessibleDescription = Nothing
+        Me.Label6.AccessibleName = Nothing
+        resources.ApplyResources(Me.Label6, "Label6")
+        Me.Label6.Font = Nothing
         Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(56, 12)
-        Me.Label6.TabIndex = 1
-        Me.Label6.Text = "ユーザーID"
         '
         'Label7
         '
-        Me.Label7.AutoSize = True
-        Me.Label7.Location = New System.Drawing.Point(167, 31)
+        Me.Label7.AccessibleDescription = Nothing
+        Me.Label7.AccessibleName = Nothing
+        resources.ApplyResources(Me.Label7, "Label7")
+        Me.Label7.Font = Nothing
         Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(29, 12)
-        Me.Label7.TabIndex = 3
-        Me.Label7.Text = "AND"
         '
         'Label9
         '
-        Me.Label9.AutoSize = True
-        Me.Label9.Location = New System.Drawing.Point(87, 53)
+        Me.Label9.AccessibleDescription = Nothing
+        Me.Label9.AccessibleName = Nothing
+        resources.ApplyResources(Me.Label9, "Label9")
+        Me.Label9.Font = Nothing
         Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(114, 12)
-        Me.Label9.TabIndex = 7
-        Me.Label9.Text = "ユーザーIDか発言内容"
         '
         'RadioPLUS
         '
-        Me.RadioPLUS.AutoSize = True
-        Me.RadioPLUS.Location = New System.Drawing.Point(8, 67)
+        Me.RadioPLUS.AccessibleDescription = Nothing
+        Me.RadioPLUS.AccessibleName = Nothing
+        resources.ApplyResources(Me.RadioPLUS, "RadioPLUS")
+        Me.RadioPLUS.BackgroundImage = Nothing
+        Me.RadioPLUS.Font = Nothing
         Me.RadioPLUS.Name = "RadioPLUS"
-        Me.RadioPLUS.Size = New System.Drawing.Size(71, 16)
-        Me.RadioPLUS.TabIndex = 6
-        Me.RadioPLUS.Text = "単一条件"
         Me.RadioPLUS.UseVisualStyleBackColor = True
         '
         'Label8
         '
-        Me.Label8.AutoSize = True
-        Me.Label8.Location = New System.Drawing.Point(200, 16)
+        Me.Label8.AccessibleDescription = Nothing
+        Me.Label8.AccessibleName = Nothing
+        resources.ApplyResources(Me.Label8, "Label8")
+        Me.Label8.Font = Nothing
         Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(53, 12)
-        Me.Label8.TabIndex = 4
-        Me.Label8.Text = "発言内容"
         '
         'ButtonOK
         '
-        Me.ButtonOK.Location = New System.Drawing.Point(339, 115)
+        Me.ButtonOK.AccessibleDescription = Nothing
+        Me.ButtonOK.AccessibleName = Nothing
+        resources.ApplyResources(Me.ButtonOK, "ButtonOK")
+        Me.ButtonOK.BackgroundImage = Nothing
+        Me.ButtonOK.Font = Nothing
         Me.ButtonOK.Name = "ButtonOK"
-        Me.ButtonOK.Size = New System.Drawing.Size(75, 23)
-        Me.ButtonOK.TabIndex = 10
-        Me.ButtonOK.Text = "OK"
         Me.ButtonOK.UseVisualStyleBackColor = True
         '
         'ButtonNew
         '
-        Me.ButtonNew.Location = New System.Drawing.Point(14, 266)
+        Me.ButtonNew.AccessibleDescription = Nothing
+        Me.ButtonNew.AccessibleName = Nothing
+        resources.ApplyResources(Me.ButtonNew, "ButtonNew")
+        Me.ButtonNew.BackgroundImage = Nothing
+        Me.ButtonNew.Font = Nothing
         Me.ButtonNew.Name = "ButtonNew"
-        Me.ButtonNew.Size = New System.Drawing.Size(75, 23)
-        Me.ButtonNew.TabIndex = 3
-        Me.ButtonNew.Text = "新規（&N)"
         Me.ButtonNew.UseVisualStyleBackColor = True
         '
         'ButtonDelete
         '
-        Me.ButtonDelete.Location = New System.Drawing.Point(430, 266)
+        Me.ButtonDelete.AccessibleDescription = Nothing
+        Me.ButtonDelete.AccessibleName = Nothing
+        resources.ApplyResources(Me.ButtonDelete, "ButtonDelete")
+        Me.ButtonDelete.BackgroundImage = Nothing
+        Me.ButtonDelete.Font = Nothing
         Me.ButtonDelete.Name = "ButtonDelete"
-        Me.ButtonDelete.Size = New System.Drawing.Size(75, 23)
-        Me.ButtonDelete.TabIndex = 5
-        Me.ButtonDelete.Text = "削除(&D)"
         Me.ButtonDelete.UseVisualStyleBackColor = True
         '
         'ButtonEdit
         '
-        Me.ButtonEdit.Location = New System.Drawing.Point(222, 266)
+        Me.ButtonEdit.AccessibleDescription = Nothing
+        Me.ButtonEdit.AccessibleName = Nothing
+        resources.ApplyResources(Me.ButtonEdit, "ButtonEdit")
+        Me.ButtonEdit.BackgroundImage = Nothing
+        Me.ButtonEdit.Font = Nothing
         Me.ButtonEdit.Name = "ButtonEdit"
-        Me.ButtonEdit.Size = New System.Drawing.Size(75, 23)
-        Me.ButtonEdit.TabIndex = 4
-        Me.ButtonEdit.Text = "編集(&E)"
         Me.ButtonEdit.UseVisualStyleBackColor = True
         '
         'FilterDialog
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
+        Me.AccessibleDescription = Nothing
+        Me.AccessibleName = Nothing
+        resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.BackgroundImage = Nothing
         Me.CancelButton = Me.ButtonClose
-        Me.ClientSize = New System.Drawing.Size(518, 472)
         Me.ControlBox = False
         Me.Controls.Add(Me.ComboTabs)
         Me.Controls.Add(Me.Label5)
@@ -316,14 +331,14 @@ Partial Class FilterDialog
         Me.Controls.Add(Me.ButtonDelete)
         Me.Controls.Add(Me.ButtonEdit)
         Me.Controls.Add(Me.ButtonClose)
+        Me.Font = Nothing
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
+        Me.Icon = Nothing
         Me.KeyPreview = True
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "FilterDialog"
         Me.ShowInTaskbar = False
-        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "振り分けルール"
         Me.TopMost = True
         Me.EditFilterGroup.ResumeLayout(False)
         Me.EditFilterGroup.PerformLayout()

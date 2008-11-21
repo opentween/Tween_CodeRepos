@@ -21,3 +21,10 @@
 ' the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
 ' Boston, MA 02110-1301, USA.
 
+Imports Tween.StorageDataSetTableAdapters
+
+Public Class Storage
+    Public Sub Test()
+        Dim man As New TableAdapterManager()
+    End Sub
+End Class

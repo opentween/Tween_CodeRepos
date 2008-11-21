@@ -24,7 +24,6 @@
 Imports System.Web
 Imports System.Xml
 Imports System.Text
-Imports System.Collections
 Imports System.Text.RegularExpressions
 
 Partial Public Class Twitter
@@ -857,7 +856,7 @@ Partial Public Class Twitter
                         Return "GetDirectMessage -> Err: Can't get ImagePath"
                     End Try
 
-                    'Get Protect
+                    'Get Protect 
                     Try
                         pos1 = strPost.IndexOf(_isProtect, pos2)
                         If pos1 > -1 Then lItem.Protect = True
