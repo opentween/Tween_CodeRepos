@@ -137,7 +137,7 @@
     <value>170, 12</value>
   </data>
   <data name="Label3.Text" xml:space="preserve">
-    <value>Timeiine Fetching Interval (sec.)</value>
+    <value>Timeline Fetching Interval (sec.)</value>
   </data>
   <data name="Label4.Size" type="System.Drawing.Size, System.Drawing">
     <value>153, 12</value>
@@ -478,6 +478,9 @@
   <data name="Label47.Text" xml:space="preserve">
     <value>Apply after restarting</value>
   </data>
+  <data name="TabPage1.Text" xml:space="preserve">
+    <value>Basic</value>
+  </data>
   <data name="Label54.Size" type="System.Drawing.Size, System.Drawing">
     <value>131, 12</value>
   </data>
@@ -526,8 +529,8 @@
   <data name="Label52.Text" xml:space="preserve">
     <value>Tweeting Limitation per Hour</value>
   </data>
-  <data name="TabPage1.Text" xml:space="preserve">
-    <value>Basic</value>
+  <data name="TabPage2.Text" xml:space="preserve">
+    <value>Behavior</value>
   </data>
   <data name="CheckAlwaysTop.Size" type="System.Drawing.Size, System.Drawing">
     <value>58, 16</value>
@@ -575,14 +578,17 @@
   <data name="Button3.Text" xml:space="preserve">
     <value>Open...</value>
   </data>
-  <data name="TabPage2.Text" xml:space="preserve">
-    <value>Behavior</value>
-  </data>
   <data name="TabPage3.Text" xml:space="preserve">
     <value>View</value>
   </data>
   <data name="TabPage4.Text" xml:space="preserve">
     <value>Fonts &amp; Colors</value>
+  </data>
+  <data name="TabPage5.Text" xml:space="preserve">
+    <value>Connection</value>
+  </data>
+  <data name="GroupBox2.Text" xml:space="preserve">
+    <value>Proxy Server</value>
   </data>
   <data name="Label55.Size" type="System.Drawing.Size, System.Drawing">
     <value>320, 12</value>
@@ -632,10 +638,7 @@
   <data name="RadioProxyNone.Text" xml:space="preserve">
     <value>Don't Use</value>
   </data>
-  <data name="GroupBox2.Text" xml:space="preserve">
-    <value>Proxy Server</value>
-  </data>
-  <data name="TabPage5.Text" xml:space="preserve">
-    <value>Connection</value>
+  <data name="$this.Text" xml:space="preserve">
+    <value>Settings</value>
   </data>
 </root>

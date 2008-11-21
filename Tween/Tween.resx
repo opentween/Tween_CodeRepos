@@ -1350,6 +1350,12 @@
   <data name="&gt;&gt;DeleteTabMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;MenuItemTab.Name" xml:space="preserve">
+    <value>MenuItemTab</value>
+  </data>
+  <data name="&gt;&gt;MenuItemTab.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;TabImage.Name" xml:space="preserve">
     <value>TabImage</value>
   </data>
@@ -1648,12 +1654,6 @@
     <value>RefreshStripMenuItem</value>
   </data>
   <data name="&gt;&gt;RefreshStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;MenuItemTab.Name" xml:space="preserve">
-    <value>MenuItemTab</value>
-  </data>
-  <data name="&gt;&gt;MenuItemTab.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;MenuItemCommand.Name" xml:space="preserve">

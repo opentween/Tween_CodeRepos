@@ -155,8 +155,14 @@
   <data name="&gt;&gt;ButtonDelete.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
+  <data name="Label9.Size" type="System.Drawing.Size, System.Drawing">
+    <value>114, 12</value>
+  </data>
   <data name="ButtonNew.Location" type="System.Drawing.Point, System.Drawing">
     <value>14, 266</value>
+  </data>
+  <data name="&gt;&gt;OptMove.ZOrder" xml:space="preserve">
+    <value>2</value>
   </data>
   <data name="ButtonClose.Location" type="System.Drawing.Point, System.Drawing">
     <value>431, 445</value>
@@ -179,20 +185,20 @@
   <data name="OptNone.Location" type="System.Drawing.Point, System.Drawing">
     <value>15, 62</value>
   </data>
-  <data name="&gt;&gt;ListFilters.Name" xml:space="preserve">
-    <value>ListFilters</value>
-  </data>
   <data name="OptMark.Location" type="System.Drawing.Point, System.Drawing">
     <value>15, 40</value>
   </data>
-  <data name="RadioPLUS.Location" type="System.Drawing.Point, System.Drawing">
-    <value>8, 67</value>
+  <data name="CheckURL.TabIndex" type="System.Int32, mscorlib">
+    <value>13</value>
   </data>
   <data name="ComboTabs.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
   </data>
   <data name="&gt;&gt;MSG1.Type" xml:space="preserve">
     <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MSG2.ZOrder" xml:space="preserve">
+    <value>6</value>
   </data>
   <data name="&gt;&gt;Label9.Parent" xml:space="preserve">
     <value>EditFilterGroup</value>
@@ -208,6 +214,9 @@
   </data>
   <data name="Label5.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
+  </data>
+  <data name="&gt;&gt;ButtonCancel.ZOrder" xml:space="preserve">
+    <value>4</value>
   </data>
   <data name="EditFilterGroup.Size" type="System.Drawing.Size, System.Drawing">
     <value>500, 144</value>
@@ -248,9 +257,6 @@
   <data name="&gt;&gt;OptNone.Type" xml:space="preserve">
     <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="GroupBox1.Text" xml:space="preserve">
-    <value>マッチ時の追加動作(&amp;E)</value>
-  </data>
   <data name="OptNone.Text" xml:space="preserve">
     <value>何もしない</value>
   </data>
@@ -259,9 +265,6 @@
   </data>
   <data name="&gt;&gt;Label8.ZOrder" xml:space="preserve">
     <value>12</value>
-  </data>
-  <data name="OptNone.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>FilterDialog</value>
@@ -316,9 +319,6 @@
   </data>
   <data name="GroupBox1.Location" type="System.Drawing.Point, System.Drawing">
     <value>343, 14</value>
-  </data>
-  <data name="ButtonCancel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>419, 115</value>
   </data>
   <data name="&gt;&gt;ComboTabs.ZOrder" xml:space="preserve">
     <value>0</value>
@@ -412,6 +412,9 @@
   </data>
   <data name="&gt;&gt;ListFilters.ZOrder" xml:space="preserve">
     <value>2</value>
+  </data>
+  <data name="Label8.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
   </data>
   <data name="&gt;&gt;RadioAND.Parent" xml:space="preserve">
     <value>EditFilterGroup</value>
@@ -507,9 +510,6 @@
   <data name="&gt;&gt;CheckURL.Name" xml:space="preserve">
     <value>CheckURL</value>
   </data>
-  <data name="UID.Size" type="System.Drawing.Size, System.Drawing">
-    <value>72, 19</value>
-  </data>
   <data name="&gt;&gt;Label6.Name" xml:space="preserve">
     <value>Label6</value>
   </data>
@@ -564,9 +564,6 @@
   <data name="&gt;&gt;UID.ZOrder" xml:space="preserve">
     <value>5</value>
   </data>
-  <data name="Label9.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
   <data name="CheckRegex.TabIndex" type="System.Int32, mscorlib">
     <value>12</value>
   </data>
@@ -575,6 +572,9 @@
   </data>
   <data name="OptMark.Text" xml:space="preserve">
     <value>Recent発言にマーク</value>
+  </data>
+  <data name="Label5.Text" xml:space="preserve">
+    <value>タブ</value>
   </data>
   <data name="&gt;&gt;GroupBox1.ZOrder" xml:space="preserve">
     <value>0</value>
@@ -639,8 +639,8 @@
   <data name="&gt;&gt;Label6.Type" xml:space="preserve">
     <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Label5.Text" xml:space="preserve">
-    <value>タブ</value>
+  <data name="&gt;&gt;ListFilters.Name" xml:space="preserve">
+    <value>ListFilters</value>
   </data>
   <data name="&gt;&gt;ButtonDelete.Type" xml:space="preserve">
     <value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -654,8 +654,11 @@
   <data name="ButtonNew.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
   </data>
-  <data name="&gt;&gt;OptMove.ZOrder" xml:space="preserve">
-    <value>2</value>
+  <data name="Label9.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="OptMove.Text" xml:space="preserve">
+    <value>Recentから移動する</value>
   </data>
   <data name="&gt;&gt;Label6.Parent" xml:space="preserve">
     <value>EditFilterGroup</value>
@@ -678,17 +681,14 @@
   <data name="&gt;&gt;ButtonCancel.Type" xml:space="preserve">
     <value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;MSG2.ZOrder" xml:space="preserve">
-    <value>6</value>
+  <data name="RadioPLUS.Location" type="System.Drawing.Point, System.Drawing">
+    <value>8, 67</value>
   </data>
   <data name="MSG1.Size" type="System.Drawing.Size, System.Drawing">
     <value>121, 19</value>
   </data>
   <data name="&gt;&gt;CheckRegex.Parent" xml:space="preserve">
     <value>EditFilterGroup</value>
-  </data>
-  <data name="ListFilters.Size" type="System.Drawing.Size, System.Drawing">
-    <value>492, 232</value>
   </data>
   <data name="&gt;&gt;RadioPLUS.Type" xml:space="preserve">
     <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -702,11 +702,11 @@
   <data name="OptMark.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
-  <data name="OptMove.Text" xml:space="preserve">
-    <value>Recentから移動する</value>
+  <data name="ListFilters.Size" type="System.Drawing.Size, System.Drawing">
+    <value>492, 232</value>
   </data>
-  <data name="Label9.Size" type="System.Drawing.Size, System.Drawing">
-    <value>114, 12</value>
+  <data name="GroupBox1.Text" xml:space="preserve">
+    <value>マッチ時の追加動作(&amp;E)</value>
   </data>
   <data name="&gt;&gt;GroupBox1.Name" xml:space="preserve">
     <value>GroupBox1</value>
@@ -735,14 +735,14 @@
   <data name="&gt;&gt;Label9.ZOrder" xml:space="preserve">
     <value>10</value>
   </data>
-  <data name="CheckURL.TabIndex" type="System.Int32, mscorlib">
-    <value>13</value>
+  <data name="ButtonCancel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>419, 115</value>
   </data>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
     <value>6, 12</value>
   </data>
-  <data name="&gt;&gt;ButtonCancel.ZOrder" xml:space="preserve">
-    <value>4</value>
+  <data name="OptNone.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
   </data>
   <data name="CheckRegex.Text" xml:space="preserve">
     <value>正規表現を使用する(&amp;R)</value>
@@ -756,16 +756,13 @@
   <data name="&gt;&gt;ComboTabs.Type" xml:space="preserve">
     <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Label8.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
+  <data name="UID.Size" type="System.Drawing.Size, System.Drawing">
+    <value>72, 19</value>
   </data>
   <data name="&gt;&gt;Label8.Parent" xml:space="preserve">
     <value>EditFilterGroup</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
-  </metadata>
-  <metadata name="$this.Language" type="System.Globalization.CultureInfo, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>English</value>
   </metadata>
 </root>
