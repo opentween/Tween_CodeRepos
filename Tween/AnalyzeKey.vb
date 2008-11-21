@@ -15,6 +15,7 @@
     Public _parseMsg2 As String = "</span>"
     Public _parseDM1 As String = "<span class=""entry-content"">"
     Public _parseDM2 As String = "</span>"
+    Public _parseDM11 As String = "<span class=""protected"">"
     Public _parseDate As String = "<span class=""published"" title="""
     Public _parseDateTo As String = """"
     Public _getAuthKey As String = "<input name=""authenticity_token"" value="""
