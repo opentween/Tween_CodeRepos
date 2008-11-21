@@ -28,9 +28,9 @@ Partial Public Class StorageDataSet
     
     Private tablePosts As PostsDataTable
     
-    Private tableIcons As IconsDataTable
+    Private tableReplyMap As ReplyMapDataTable
     
-    Private relationIcons_Posts As Global.System.Data.DataRelation
+    Private tableIcons As IconsDataTable
     
     Private _schemaSerializationMode As Global.System.Data.SchemaSerializationMode = Global.System.Data.SchemaSerializationMode.IncludeSchema
     
@@ -62,6 +62,9 @@ Partial Public Class StorageDataSet
             If (Not (ds.Tables("Posts")) Is Nothing) Then
                 MyBase.Tables.Add(New PostsDataTable(ds.Tables("Posts")))
             End If
+            If (Not (ds.Tables("ReplyMap")) Is Nothing) Then
+                MyBase.Tables.Add(New ReplyMapDataTable(ds.Tables("ReplyMap")))
+            End If
             If (Not (ds.Tables("Icons")) Is Nothing) Then
                 MyBase.Tables.Add(New IconsDataTable(ds.Tables("Icons")))
             End If
@@ -88,6 +91,15 @@ Partial Public Class StorageDataSet
     Public ReadOnly Property Posts() As PostsDataTable
         Get
             Return Me.tablePosts
+        End Get
+    End Property
+    
+    <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.ComponentModel.Browsable(false),  _
+     Global.System.ComponentModel.DesignerSerializationVisibility(Global.System.ComponentModel.DesignerSerializationVisibility.Content)>  _
+    Public ReadOnly Property ReplyMap() As ReplyMapDataTable
+        Get
+            Return Me.tableReplyMap
         End Get
     End Property
     
@@ -162,6 +174,9 @@ Partial Public Class StorageDataSet
             If (Not (ds.Tables("Posts")) Is Nothing) Then
                 MyBase.Tables.Add(New PostsDataTable(ds.Tables("Posts")))
             End If
+            If (Not (ds.Tables("ReplyMap")) Is Nothing) Then
+                MyBase.Tables.Add(New ReplyMapDataTable(ds.Tables("ReplyMap")))
+            End If
             If (Not (ds.Tables("Icons")) Is Nothing) Then
                 MyBase.Tables.Add(New IconsDataTable(ds.Tables("Icons")))
             End If
@@ -200,13 +215,18 @@ Partial Public Class StorageDataSet
                 Me.tablePosts.InitVars
             End If
         End If
+        Me.tableReplyMap = CType(MyBase.Tables("ReplyMap"),ReplyMapDataTable)
+        If (initTable = true) Then
+            If (Not (Me.tableReplyMap) Is Nothing) Then
+                Me.tableReplyMap.InitVars
+            End If
+        End If
         Me.tableIcons = CType(MyBase.Tables("Icons"),IconsDataTable)
         If (initTable = true) Then
             If (Not (Me.tableIcons) Is Nothing) Then
                 Me.tableIcons.InitVars
             End If
         End If
-        Me.relationIcons_Posts = Me.Relations("Icons_Posts")
     End Sub
     
     <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
@@ -218,14 +238,19 @@ Partial Public Class StorageDataSet
         Me.SchemaSerializationMode = Global.System.Data.SchemaSerializationMode.IncludeSchema
         Me.tablePosts = New PostsDataTable
         MyBase.Tables.Add(Me.tablePosts)
+        Me.tableReplyMap = New ReplyMapDataTable
+        MyBase.Tables.Add(Me.tableReplyMap)
         Me.tableIcons = New IconsDataTable
         MyBase.Tables.Add(Me.tableIcons)
-        Me.relationIcons_Posts = New Global.System.Data.DataRelation("Icons_Posts", New Global.System.Data.DataColumn() {Me.tableIcons.ImageUriColumn}, New Global.System.Data.DataColumn() {Me.tablePosts.ImageUriColumn}, false)
-        Me.Relations.Add(Me.relationIcons_Posts)
     End Sub
     
     <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
     Private Function ShouldSerializePosts() As Boolean
+        Return false
+    End Function
+    
+    <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+    Private Function ShouldSerializeReplyMap() As Boolean
         Return false
     End Function
     
@@ -292,6 +317,8 @@ Partial Public Class StorageDataSet
     
     Public Delegate Sub PostsRowChangeEventHandler(ByVal sender As Object, ByVal e As PostsRowChangeEvent)
     
+    Public Delegate Sub ReplyMapRowChangeEventHandler(ByVal sender As Object, ByVal e As ReplyMapRowChangeEvent)
+    
     Public Delegate Sub IconsRowChangeEventHandler(ByVal sender As Object, ByVal e As IconsRowChangeEvent)
     
     '''<summary>
@@ -319,10 +346,6 @@ Partial Public Class StorageDataSet
         Private columnHyperText As Global.System.Data.DataColumn
         
         Private columnSource As Global.System.Data.DataColumn
-        
-        Private columnInReplyToUser As Global.System.Data.DataColumn
-        
-        Private columnInReplyToId As Global.System.Data.DataColumn
         
         Private columnIsRead As Global.System.Data.DataColumn
         
@@ -425,20 +448,6 @@ Partial Public Class StorageDataSet
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property InReplyToUserColumn() As Global.System.Data.DataColumn
-            Get
-                Return Me.columnInReplyToUser
-            End Get
-        End Property
-        
-        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public ReadOnly Property InReplyToIdColumn() As Global.System.Data.DataColumn
-            Get
-                Return Me.columnInReplyToId
-            End Get
-        End Property
-        
-        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Public ReadOnly Property IsReadColumn() As Global.System.Data.DataColumn
             Get
                 Return Me.columnIsRead
@@ -509,28 +518,9 @@ Partial Public Class StorageDataSet
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Overloads Function AddPostsRow( _
-                    ByVal Id As Long,  _
-                    ByVal Timestamp As Date,  _
-                    ByVal Name As String,  _
-                    ByVal ScreenName As String,  _
-                    ByVal parentIconsRowByIcons_Posts As IconsRow,  _
-                    ByVal Text As String,  _
-                    ByVal HyperText As String,  _
-                    ByVal Source As String,  _
-                    ByVal InReplyToUser As String,  _
-                    ByVal InReplyToId As Long,  _
-                    ByVal IsRead As Boolean,  _
-                    ByVal IsFavorited As Boolean,  _
-                    ByVal IsReply As Boolean,  _
-                    ByVal IsProtected As Boolean,  _
-                    ByVal IsOneWayLove As Boolean,  _
-                    ByVal Tags As String) As PostsRow
+        Public Overloads Function AddPostsRow(ByVal Id As Long, ByVal Timestamp As Date, ByVal Name As String, ByVal ScreenName As String, ByVal ImageUri As String, ByVal Text As String, ByVal HyperText As String, ByVal Source As String, ByVal IsRead As Boolean, ByVal IsFavorited As Boolean, ByVal IsReply As Boolean, ByVal IsProtected As Boolean, ByVal IsOneWayLove As Boolean, ByVal Tags As String) As PostsRow
             Dim rowPostsRow As PostsRow = CType(Me.NewRow,PostsRow)
-            Dim columnValuesArray() As Object = New Object() {Id, Timestamp, Name, ScreenName, Nothing, Text, HyperText, Source, InReplyToUser, InReplyToId, IsRead, IsFavorited, IsReply, IsProtected, IsOneWayLove, Tags}
-            If (Not (parentIconsRowByIcons_Posts) Is Nothing) Then
-                columnValuesArray(4) = parentIconsRowByIcons_Posts(0)
-            End If
+            Dim columnValuesArray() As Object = New Object() {Id, Timestamp, Name, ScreenName, ImageUri, Text, HyperText, Source, IsRead, IsFavorited, IsReply, IsProtected, IsOneWayLove, Tags}
             rowPostsRow.ItemArray = columnValuesArray
             Me.Rows.Add(rowPostsRow)
             Return rowPostsRow
@@ -568,8 +558,6 @@ Partial Public Class StorageDataSet
             Me.columnText = MyBase.Columns("Text")
             Me.columnHyperText = MyBase.Columns("HyperText")
             Me.columnSource = MyBase.Columns("Source")
-            Me.columnInReplyToUser = MyBase.Columns("InReplyToUser")
-            Me.columnInReplyToId = MyBase.Columns("InReplyToId")
             Me.columnIsRead = MyBase.Columns("IsRead")
             Me.columnIsFavorited = MyBase.Columns("IsFavorited")
             Me.columnIsReply = MyBase.Columns("IsReply")
@@ -596,10 +584,6 @@ Partial Public Class StorageDataSet
             MyBase.Columns.Add(Me.columnHyperText)
             Me.columnSource = New Global.System.Data.DataColumn("Source", GetType(String), Nothing, Global.System.Data.MappingType.Element)
             MyBase.Columns.Add(Me.columnSource)
-            Me.columnInReplyToUser = New Global.System.Data.DataColumn("InReplyToUser", GetType(String), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columnInReplyToUser)
-            Me.columnInReplyToId = New Global.System.Data.DataColumn("InReplyToId", GetType(Long), Nothing, Global.System.Data.MappingType.Element)
-            MyBase.Columns.Add(Me.columnInReplyToId)
             Me.columnIsRead = New Global.System.Data.DataColumn("IsRead", GetType(Boolean), Nothing, Global.System.Data.MappingType.Element)
             MyBase.Columns.Add(Me.columnIsRead)
             Me.columnIsFavorited = New Global.System.Data.DataColumn("IsFavorited", GetType(Boolean), Nothing, Global.System.Data.MappingType.Element)
@@ -614,38 +598,24 @@ Partial Public Class StorageDataSet
             MyBase.Columns.Add(Me.columnTags)
             Me.Constraints.Add(New Global.System.Data.UniqueConstraint("Constraint1", New Global.System.Data.DataColumn() {Me.columnId}, true))
             Me.columnId.AllowDBNull = false
-            Me.columnId.ReadOnly = true
             Me.columnId.Unique = true
             Me.columnTimestamp.AllowDBNull = false
-            Me.columnTimestamp.ReadOnly = true
-            Me.columnTimestamp.DateTimeMode = Global.System.Data.DataSetDateTime.Utc
             Me.columnName.AllowDBNull = false
-            Me.columnName.ReadOnly = true
             Me.columnName.MaxLength = 2147483647
             Me.columnScreenName.AllowDBNull = false
-            Me.columnScreenName.ReadOnly = true
             Me.columnScreenName.MaxLength = 2147483647
             Me.columnImageUri.AllowDBNull = false
-            Me.columnImageUri.ReadOnly = true
             Me.columnImageUri.MaxLength = 2147483647
             Me.columnText.AllowDBNull = false
-            Me.columnText.ReadOnly = true
             Me.columnText.MaxLength = 2147483647
             Me.columnHyperText.AllowDBNull = false
-            Me.columnHyperText.ReadOnly = true
             Me.columnHyperText.MaxLength = 2147483647
             Me.columnSource.AllowDBNull = false
-            Me.columnSource.ReadOnly = true
             Me.columnSource.MaxLength = 2147483647
-            Me.columnInReplyToUser.ReadOnly = true
-            Me.columnInReplyToUser.MaxLength = 2147483647
-            Me.columnInReplyToId.ReadOnly = true
             Me.columnIsRead.AllowDBNull = false
             Me.columnIsFavorited.AllowDBNull = false
             Me.columnIsReply.AllowDBNull = false
-            Me.columnIsReply.ReadOnly = true
             Me.columnIsProtected.AllowDBNull = false
-            Me.columnIsProtected.ReadOnly = true
             Me.columnIsOneWayLove.AllowDBNull = false
             Me.columnTags.AllowDBNull = false
             Me.columnTags.MaxLength = 2147483647
@@ -726,6 +696,268 @@ Partial Public Class StorageDataSet
             Dim attribute2 As Global.System.Xml.Schema.XmlSchemaAttribute = New Global.System.Xml.Schema.XmlSchemaAttribute
             attribute2.Name = "tableTypeName"
             attribute2.FixedValue = "PostsDataTable"
+            type.Attributes.Add(attribute2)
+            type.Particle = sequence
+            Dim dsSchema As Global.System.Xml.Schema.XmlSchema = ds.GetSchemaSerializable
+            If xs.Contains(dsSchema.TargetNamespace) Then
+                Dim s1 As Global.System.IO.MemoryStream = New Global.System.IO.MemoryStream
+                Dim s2 As Global.System.IO.MemoryStream = New Global.System.IO.MemoryStream
+                Try 
+                    Dim schema As Global.System.Xml.Schema.XmlSchema = Nothing
+                    dsSchema.Write(s1)
+                    Dim schemas As Global.System.Collections.IEnumerator = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator
+                    Do While schemas.MoveNext
+                        schema = CType(schemas.Current,Global.System.Xml.Schema.XmlSchema)
+                        s2.SetLength(0)
+                        schema.Write(s2)
+                        If (s1.Length = s2.Length) Then
+                            s1.Position = 0
+                            s2.Position = 0
+                            
+                            Do While ((s1.Position <> s1.Length)  _
+                                        AndAlso (s1.ReadByte = s2.ReadByte))
+                                
+                                
+                            Loop
+                            If (s1.Position = s1.Length) Then
+                                Return type
+                            End If
+                        End If
+                        
+                    Loop
+                Finally
+                    If (Not (s1) Is Nothing) Then
+                        s1.Close
+                    End If
+                    If (Not (s2) Is Nothing) Then
+                        s2.Close
+                    End If
+                End Try
+            End If
+            xs.Add(dsSchema)
+            Return type
+        End Function
+    End Class
+    
+    '''<summary>
+    '''Represents the strongly named DataTable class.
+    '''</summary>
+    <Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "2.0.0.0"),  _
+     Global.System.Serializable(),  _
+     Global.System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")>  _
+    Partial Public Class ReplyMapDataTable
+        Inherits Global.System.Data.DataTable
+        Implements Global.System.Collections.IEnumerable
+        
+        Private columnPostId As Global.System.Data.DataColumn
+        
+        Private columnInReplyToUser As Global.System.Data.DataColumn
+        
+        Private columnInReplyToId As Global.System.Data.DataColumn
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Sub New()
+            MyBase.New
+            Me.TableName = "ReplyMap"
+            Me.BeginInit
+            Me.InitClass
+            Me.EndInit
+        End Sub
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Friend Sub New(ByVal table As Global.System.Data.DataTable)
+            MyBase.New
+            Me.TableName = table.TableName
+            If (table.CaseSensitive <> table.DataSet.CaseSensitive) Then
+                Me.CaseSensitive = table.CaseSensitive
+            End If
+            If (table.Locale.ToString <> table.DataSet.Locale.ToString) Then
+                Me.Locale = table.Locale
+            End If
+            If (table.Namespace <> table.DataSet.Namespace) Then
+                Me.Namespace = table.Namespace
+            End If
+            Me.Prefix = table.Prefix
+            Me.MinimumCapacity = table.MinimumCapacity
+        End Sub
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Protected Sub New(ByVal info As Global.System.Runtime.Serialization.SerializationInfo, ByVal context As Global.System.Runtime.Serialization.StreamingContext)
+            MyBase.New(info, context)
+            Me.InitVars
+        End Sub
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public ReadOnly Property PostIdColumn() As Global.System.Data.DataColumn
+            Get
+                Return Me.columnPostId
+            End Get
+        End Property
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public ReadOnly Property InReplyToUserColumn() As Global.System.Data.DataColumn
+            Get
+                Return Me.columnInReplyToUser
+            End Get
+        End Property
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public ReadOnly Property InReplyToIdColumn() As Global.System.Data.DataColumn
+            Get
+                Return Me.columnInReplyToId
+            End Get
+        End Property
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.ComponentModel.Browsable(false)>  _
+        Public ReadOnly Property Count() As Integer
+            Get
+                Return Me.Rows.Count
+            End Get
+        End Property
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Default ReadOnly Property Item(ByVal index As Integer) As ReplyMapRow
+            Get
+                Return CType(Me.Rows(index),ReplyMapRow)
+            End Get
+        End Property
+        
+        Public Event ReplyMapRowChanging As ReplyMapRowChangeEventHandler
+        
+        Public Event ReplyMapRowChanged As ReplyMapRowChangeEventHandler
+        
+        Public Event ReplyMapRowDeleting As ReplyMapRowChangeEventHandler
+        
+        Public Event ReplyMapRowDeleted As ReplyMapRowChangeEventHandler
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Overloads Sub AddReplyMapRow(ByVal row As ReplyMapRow)
+            Me.Rows.Add(row)
+        End Sub
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Overloads Function AddReplyMapRow(ByVal PostId As Long, ByVal InReplyToUser As String, ByVal InReplyToId As Long) As ReplyMapRow
+            Dim rowReplyMapRow As ReplyMapRow = CType(Me.NewRow,ReplyMapRow)
+            Dim columnValuesArray() As Object = New Object() {PostId, InReplyToUser, InReplyToId}
+            rowReplyMapRow.ItemArray = columnValuesArray
+            Me.Rows.Add(rowReplyMapRow)
+            Return rowReplyMapRow
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Overridable Function GetEnumerator() As Global.System.Collections.IEnumerator Implements Global.System.Collections.IEnumerable.GetEnumerator
+            Return Me.Rows.GetEnumerator
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Overrides Function Clone() As Global.System.Data.DataTable
+            Dim cln As ReplyMapDataTable = CType(MyBase.Clone,ReplyMapDataTable)
+            cln.InitVars
+            Return cln
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Protected Overrides Function CreateInstance() As Global.System.Data.DataTable
+            Return New ReplyMapDataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Friend Sub InitVars()
+            Me.columnPostId = MyBase.Columns("PostId")
+            Me.columnInReplyToUser = MyBase.Columns("InReplyToUser")
+            Me.columnInReplyToId = MyBase.Columns("InReplyToId")
+        End Sub
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Private Sub InitClass()
+            Me.columnPostId = New Global.System.Data.DataColumn("PostId", GetType(Long), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnPostId)
+            Me.columnInReplyToUser = New Global.System.Data.DataColumn("InReplyToUser", GetType(String), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnInReplyToUser)
+            Me.columnInReplyToId = New Global.System.Data.DataColumn("InReplyToId", GetType(Long), Nothing, Global.System.Data.MappingType.Element)
+            MyBase.Columns.Add(Me.columnInReplyToId)
+            Me.columnPostId.AllowDBNull = false
+            Me.columnInReplyToUser.AllowDBNull = false
+            Me.columnInReplyToUser.MaxLength = 2147483647
+            Me.columnInReplyToId.AllowDBNull = false
+        End Sub
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Function NewReplyMapRow() As ReplyMapRow
+            Return CType(Me.NewRow,ReplyMapRow)
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Protected Overrides Function NewRowFromBuilder(ByVal builder As Global.System.Data.DataRowBuilder) As Global.System.Data.DataRow
+            Return New ReplyMapRow(builder)
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Protected Overrides Function GetRowType() As Global.System.Type
+            Return GetType(ReplyMapRow)
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Protected Overrides Sub OnRowChanged(ByVal e As Global.System.Data.DataRowChangeEventArgs)
+            MyBase.OnRowChanged(e)
+            If (Not (Me.ReplyMapRowChangedEvent) Is Nothing) Then
+                RaiseEvent ReplyMapRowChanged(Me, New ReplyMapRowChangeEvent(CType(e.Row,ReplyMapRow), e.Action))
+            End If
+        End Sub
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Protected Overrides Sub OnRowChanging(ByVal e As Global.System.Data.DataRowChangeEventArgs)
+            MyBase.OnRowChanging(e)
+            If (Not (Me.ReplyMapRowChangingEvent) Is Nothing) Then
+                RaiseEvent ReplyMapRowChanging(Me, New ReplyMapRowChangeEvent(CType(e.Row,ReplyMapRow), e.Action))
+            End If
+        End Sub
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Protected Overrides Sub OnRowDeleted(ByVal e As Global.System.Data.DataRowChangeEventArgs)
+            MyBase.OnRowDeleted(e)
+            If (Not (Me.ReplyMapRowDeletedEvent) Is Nothing) Then
+                RaiseEvent ReplyMapRowDeleted(Me, New ReplyMapRowChangeEvent(CType(e.Row,ReplyMapRow), e.Action))
+            End If
+        End Sub
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Protected Overrides Sub OnRowDeleting(ByVal e As Global.System.Data.DataRowChangeEventArgs)
+            MyBase.OnRowDeleting(e)
+            If (Not (Me.ReplyMapRowDeletingEvent) Is Nothing) Then
+                RaiseEvent ReplyMapRowDeleting(Me, New ReplyMapRowChangeEvent(CType(e.Row,ReplyMapRow), e.Action))
+            End If
+        End Sub
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Sub RemoveReplyMapRow(ByVal row As ReplyMapRow)
+            Me.Rows.Remove(row)
+        End Sub
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Shared Function GetTypedTableSchema(ByVal xs As Global.System.Xml.Schema.XmlSchemaSet) As Global.System.Xml.Schema.XmlSchemaComplexType
+            Dim type As Global.System.Xml.Schema.XmlSchemaComplexType = New Global.System.Xml.Schema.XmlSchemaComplexType
+            Dim sequence As Global.System.Xml.Schema.XmlSchemaSequence = New Global.System.Xml.Schema.XmlSchemaSequence
+            Dim ds As StorageDataSet = New StorageDataSet
+            Dim any1 As Global.System.Xml.Schema.XmlSchemaAny = New Global.System.Xml.Schema.XmlSchemaAny
+            any1.Namespace = "http://www.w3.org/2001/XMLSchema"
+            any1.MinOccurs = New Decimal(0)
+            any1.MaxOccurs = Decimal.MaxValue
+            any1.ProcessContents = Global.System.Xml.Schema.XmlSchemaContentProcessing.Lax
+            sequence.Items.Add(any1)
+            Dim any2 As Global.System.Xml.Schema.XmlSchemaAny = New Global.System.Xml.Schema.XmlSchemaAny
+            any2.Namespace = "urn:schemas-microsoft-com:xml-diffgram-v1"
+            any2.MinOccurs = New Decimal(1)
+            any2.ProcessContents = Global.System.Xml.Schema.XmlSchemaContentProcessing.Lax
+            sequence.Items.Add(any2)
+            Dim attribute1 As Global.System.Xml.Schema.XmlSchemaAttribute = New Global.System.Xml.Schema.XmlSchemaAttribute
+            attribute1.Name = "namespace"
+            attribute1.FixedValue = ds.Namespace
+            type.Attributes.Add(attribute1)
+            Dim attribute2 As Global.System.Xml.Schema.XmlSchemaAttribute = New Global.System.Xml.Schema.XmlSchemaAttribute
+            attribute2.Name = "tableTypeName"
+            attribute2.FixedValue = "ReplyMapDataTable"
             type.Attributes.Add(attribute2)
             type.Particle = sequence
             Dim dsSchema As Global.System.Xml.Schema.XmlSchema = ds.GetSchemaSerializable
@@ -926,15 +1158,11 @@ Partial Public Class StorageDataSet
             MyBase.Columns.Add(Me.columnImage)
             Me.Constraints.Add(New Global.System.Data.UniqueConstraint("Constraint1", New Global.System.Data.DataColumn() {Me.columnImageUri}, true))
             Me.columnImageUri.AllowDBNull = false
-            Me.columnImageUri.ReadOnly = true
             Me.columnImageUri.Unique = true
             Me.columnImageUri.MaxLength = 2147483647
             Me.columnWidth.AllowDBNull = false
-            Me.columnWidth.ReadOnly = true
             Me.columnHeight.AllowDBNull = false
-            Me.columnHeight.ReadOnly = true
             Me.columnImage.AllowDBNull = false
-            Me.columnImage.ReadOnly = true
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
@@ -1151,34 +1379,6 @@ Partial Public Class StorageDataSet
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property InReplyToUser() As String
-            Get
-                Try 
-                    Return CType(Me(Me.tablePosts.InReplyToUserColumn),String)
-                Catch e As Global.System.InvalidCastException
-                    Throw New Global.System.Data.StrongTypingException("テーブル 'Posts' にある列 'InReplyToUser' の値は DBNull です。", e)
-                End Try
-            End Get
-            Set
-                Me(Me.tablePosts.InReplyToUserColumn) = value
-            End Set
-        End Property
-        
-        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property InReplyToId() As Long
-            Get
-                Try 
-                    Return CType(Me(Me.tablePosts.InReplyToIdColumn),Long)
-                Catch e As Global.System.InvalidCastException
-                    Throw New Global.System.Data.StrongTypingException("テーブル 'Posts' にある列 'InReplyToId' の値は DBNull です。", e)
-                End Try
-            End Get
-            Set
-                Me(Me.tablePosts.InReplyToIdColumn) = value
-            End Set
-        End Property
-        
-        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Public Property IsRead() As Boolean
             Get
                 Return CType(Me(Me.tablePosts.IsReadColumn),Boolean)
@@ -1237,36 +1437,52 @@ Partial Public Class StorageDataSet
                 Me(Me.tablePosts.TagsColumn) = value
             End Set
         End Property
+    End Class
+    
+    '''<summary>
+    '''Represents strongly named DataRow class.
+    '''</summary>
+    <Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "2.0.0.0")>  _
+    Partial Public Class ReplyMapRow
+        Inherits Global.System.Data.DataRow
+        
+        Private tableReplyMap As ReplyMapDataTable
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Property IconsRow() As IconsRow
+        Friend Sub New(ByVal rb As Global.System.Data.DataRowBuilder)
+            MyBase.New(rb)
+            Me.tableReplyMap = CType(Me.Table,ReplyMapDataTable)
+        End Sub
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Property PostId() As Long
             Get
-                Return CType(Me.GetParentRow(Me.Table.ParentRelations("Icons_Posts")),IconsRow)
+                Return CType(Me(Me.tableReplyMap.PostIdColumn),Long)
             End Get
             Set
-                Me.SetParentRow(value, Me.Table.ParentRelations("Icons_Posts"))
+                Me(Me.tableReplyMap.PostIdColumn) = value
             End Set
         End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Function IsInReplyToUserNull() As Boolean
-            Return Me.IsNull(Me.tablePosts.InReplyToUserColumn)
-        End Function
+        Public Property InReplyToUser() As String
+            Get
+                Return CType(Me(Me.tableReplyMap.InReplyToUserColumn),String)
+            End Get
+            Set
+                Me(Me.tableReplyMap.InReplyToUserColumn) = value
+            End Set
+        End Property
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Sub SetInReplyToUserNull()
-            Me(Me.tablePosts.InReplyToUserColumn) = Global.System.Convert.DBNull
-        End Sub
-        
-        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Function IsInReplyToIdNull() As Boolean
-            Return Me.IsNull(Me.tablePosts.InReplyToIdColumn)
-        End Function
-        
-        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Sub SetInReplyToIdNull()
-            Me(Me.tablePosts.InReplyToIdColumn) = Global.System.Convert.DBNull
-        End Sub
+        Public Property InReplyToId() As Long
+            Get
+                Return CType(Me(Me.tableReplyMap.InReplyToIdColumn),Long)
+            End Get
+            Set
+                Me(Me.tableReplyMap.InReplyToIdColumn) = value
+            End Set
+        End Property
     End Class
     
     '''<summary>
@@ -1323,15 +1539,6 @@ Partial Public Class StorageDataSet
                 Me(Me.tableIcons.ImageColumn) = value
             End Set
         End Property
-        
-        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Function GetPostsRows() As PostsRow()
-            If (Me.Table.ChildRelations("Icons_Posts") Is Nothing) Then
-                Return New PostsRow(-1) {}
-            Else
-                Return CType(MyBase.GetChildRows(Me.Table.ChildRelations("Icons_Posts")),PostsRow())
-            End If
-        End Function
     End Class
     
     '''<summary>
@@ -1354,6 +1561,39 @@ Partial Public Class StorageDataSet
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Public ReadOnly Property Row() As PostsRow
+            Get
+                Return Me.eventRow
+            End Get
+        End Property
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public ReadOnly Property Action() As Global.System.Data.DataRowAction
+            Get
+                Return Me.eventAction
+            End Get
+        End Property
+    End Class
+    
+    '''<summary>
+    '''Row event argument class
+    '''</summary>
+    <Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "2.0.0.0")>  _
+    Public Class ReplyMapRowChangeEvent
+        Inherits Global.System.EventArgs
+        
+        Private eventRow As ReplyMapRow
+        
+        Private eventAction As Global.System.Data.DataRowAction
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Sub New(ByVal row As ReplyMapRow, ByVal action As Global.System.Data.DataRowAction)
+            MyBase.New
+            Me.eventRow = row
+            Me.eventAction = action
+        End Sub
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public ReadOnly Property Row() As ReplyMapRow
             Get
                 Return Me.eventRow
             End Get
@@ -1532,8 +1772,6 @@ Namespace StorageDataSetTableAdapters
             tableMapping.ColumnMappings.Add("Text", "Text")
             tableMapping.ColumnMappings.Add("HyperText", "HyperText")
             tableMapping.ColumnMappings.Add("Source", "Source")
-            tableMapping.ColumnMappings.Add("InReplyToUser", "InReplyToUser")
-            tableMapping.ColumnMappings.Add("InReplyToId", "InReplyToId")
             tableMapping.ColumnMappings.Add("IsRead", "IsRead")
             tableMapping.ColumnMappings.Add("IsFavorited", "IsFavorited")
             tableMapping.ColumnMappings.Add("IsReply", "IsReply")
@@ -1546,13 +1784,10 @@ Namespace StorageDataSetTableAdapters
             Me._adapter.DeleteCommand.CommandText = "DELETE FROM [Posts] WHERE (([Id] = @Original_Id) AND ([Timestamp] = @Original_Tim"& _ 
                 "estamp) AND ([Name] = @Original_Name) AND ([ScreenName] = @Original_ScreenName) "& _ 
                 "AND ([ImageUri] = @Original_ImageUri) AND ([Text] = @Original_Text) AND ([HyperT"& _ 
-                "ext] = @Original_HyperText) AND ([Source] = @Original_Source) AND ((@IsNull_InRe"& _ 
-                "plyToUser = 1 AND [InReplyToUser] IS NULL) OR ([InReplyToUser] = @Original_InRep"& _ 
-                "lyToUser)) AND ((@IsNull_InReplyToId = 1 AND [InReplyToId] IS NULL) OR ([InReply"& _ 
-                "ToId] = @Original_InReplyToId)) AND ([IsRead] = @Original_IsRead) AND ([IsFavori"& _ 
-                "ted] = @Original_IsFavorited) AND ([IsReply] = @Original_IsReply) AND ([IsProtec"& _ 
-                "ted] = @Original_IsProtected) AND ([IsOneWayLove] = @Original_IsOneWayLove) AND "& _ 
-                "([Tags] = @Original_Tags))"
+                "ext] = @Original_HyperText) AND ([Source] = @Original_Source) AND ([IsRead] = @O"& _ 
+                "riginal_IsRead) AND ([IsFavorited] = @Original_IsFavorited) AND ([IsReply] = @Or"& _ 
+                "iginal_IsReply) AND ([IsProtected] = @Original_IsProtected) AND ([IsOneWayLove] "& _ 
+                "= @Original_IsOneWayLove) AND ([Tags] = @Original_Tags))"
             Me._adapter.DeleteCommand.CommandType = Global.System.Data.CommandType.Text
             Dim param As Global.System.Data.SQLite.SQLiteParameter = New Global.System.Data.SQLite.SQLiteParameter
             param.ParameterName = "@Original_Id"
@@ -1605,35 +1840,6 @@ Namespace StorageDataSetTableAdapters
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.DeleteCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@IsNull_InReplyToUser"
-            param.DbType = Global.System.Data.DbType.Int32
-            param.DbType = Global.System.Data.DbType.Int32
-            param.SourceColumn = "InReplyToUser"
-            param.SourceVersion = Global.System.Data.DataRowVersion.Original
-            param.SourceColumnNullMapping = true
-            Me._adapter.DeleteCommand.Parameters.Add(param)
-            param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_InReplyToUser"
-            param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "InReplyToUser"
-            param.SourceVersion = Global.System.Data.DataRowVersion.Original
-            Me._adapter.DeleteCommand.Parameters.Add(param)
-            param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@IsNull_InReplyToId"
-            param.DbType = Global.System.Data.DbType.Int32
-            param.DbType = Global.System.Data.DbType.Int32
-            param.SourceColumn = "InReplyToId"
-            param.SourceVersion = Global.System.Data.DataRowVersion.Original
-            param.SourceColumnNullMapping = true
-            Me._adapter.DeleteCommand.Parameters.Add(param)
-            param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_InReplyToId"
-            param.DbType = Global.System.Data.DbType.Int64
-            param.DbType = Global.System.Data.DbType.Int64
-            param.SourceColumn = "InReplyToId"
-            param.SourceVersion = Global.System.Data.DataRowVersion.Original
-            Me._adapter.DeleteCommand.Parameters.Add(param)
-            param = New Global.System.Data.SQLite.SQLiteParameter
             param.ParameterName = "@Original_IsRead"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
@@ -1677,10 +1883,10 @@ Namespace StorageDataSetTableAdapters
             Me._adapter.InsertCommand = New Global.System.Data.SQLite.SQLiteCommand
             Me._adapter.InsertCommand.Connection = Me.Connection
             Me._adapter.InsertCommand.CommandText = "INSERT INTO [Posts] ([Id], [Timestamp], [Name], [ScreenName], [ImageUri], [Text],"& _ 
-                " [HyperText], [Source], [InReplyToUser], [InReplyToId], [IsRead], [IsFavorited],"& _ 
-                " [IsReply], [IsProtected], [IsOneWayLove], [Tags]) VALUES (@Id, @Timestamp, @Nam"& _ 
-                "e, @ScreenName, @ImageUri, @Text, @HyperText, @Source, @InReplyToUser, @InReplyT"& _ 
-                "oId, @IsRead, @IsFavorited, @IsReply, @IsProtected, @IsOneWayLove, @Tags)"
+                " [HyperText], [Source], [IsRead], [IsFavorited], [IsReply], [IsProtected], [IsOn"& _ 
+                "eWayLove], [Tags]) VALUES (@Id, @Timestamp, @Name, @ScreenName, @ImageUri, @Text"& _ 
+                ", @HyperText, @Source, @IsRead, @IsFavorited, @IsReply, @IsProtected, @IsOneWayL"& _ 
+                "ove, @Tags)"
             Me._adapter.InsertCommand.CommandType = Global.System.Data.CommandType.Text
             param = New Global.System.Data.SQLite.SQLiteParameter
             param.ParameterName = "@Id"
@@ -1725,17 +1931,6 @@ Namespace StorageDataSetTableAdapters
             param.SourceColumn = "Source"
             Me._adapter.InsertCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@InReplyToUser"
-            param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "InReplyToUser"
-            Me._adapter.InsertCommand.Parameters.Add(param)
-            param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@InReplyToId"
-            param.DbType = Global.System.Data.DbType.Int64
-            param.DbType = Global.System.Data.DbType.Int64
-            param.SourceColumn = "InReplyToId"
-            Me._adapter.InsertCommand.Parameters.Add(param)
-            param = New Global.System.Data.SQLite.SQLiteParameter
             param.ParameterName = "@IsRead"
             param.DbType = Global.System.Data.DbType.[Boolean]
             param.DbType = Global.System.Data.DbType.[Boolean]
@@ -1774,19 +1969,15 @@ Namespace StorageDataSetTableAdapters
             Me._adapter.UpdateCommand.Connection = Me.Connection
             Me._adapter.UpdateCommand.CommandText = "UPDATE [Posts] SET [Id] = @Id, [Timestamp] = @Timestamp, [Name] = @Name, [ScreenN"& _ 
                 "ame] = @ScreenName, [ImageUri] = @ImageUri, [Text] = @Text, [HyperText] = @Hyper"& _ 
-                "Text, [Source] = @Source, [InReplyToUser] = @InReplyToUser, [InReplyToId] = @InR"& _ 
-                "eplyToId, [IsRead] = @IsRead, [IsFavorited] = @IsFavorited, [IsReply] = @IsReply"& _ 
-                ", [IsProtected] = @IsProtected, [IsOneWayLove] = @IsOneWayLove, [Tags] = @Tags W"& _ 
-                "HERE (([Id] = @Original_Id) AND ([Timestamp] = @Original_Timestamp) AND ([Name] "& _ 
-                "= @Original_Name) AND ([ScreenName] = @Original_ScreenName) AND ([ImageUri] = @O"& _ 
-                "riginal_ImageUri) AND ([Text] = @Original_Text) AND ([HyperText] = @Original_Hyp"& _ 
-                "erText) AND ([Source] = @Original_Source) AND ((@IsNull_InReplyToUser = 1 AND [I"& _ 
-                "nReplyToUser] IS NULL) OR ([InReplyToUser] = @Original_InReplyToUser)) AND ((@Is"& _ 
-                "Null_InReplyToId = 1 AND [InReplyToId] IS NULL) OR ([InReplyToId] = @Original_In"& _ 
-                "ReplyToId)) AND ([IsRead] = @Original_IsRead) AND ([IsFavorited] = @Original_IsF"& _ 
-                "avorited) AND ([IsReply] = @Original_IsReply) AND ([IsProtected] = @Original_IsP"& _ 
-                "rotected) AND ([IsOneWayLove] = @Original_IsOneWayLove) AND ([Tags] = @Original_"& _ 
-                "Tags))"
+                "Text, [Source] = @Source, [IsRead] = @IsRead, [IsFavorited] = @IsFavorited, [IsR"& _ 
+                "eply] = @IsReply, [IsProtected] = @IsProtected, [IsOneWayLove] = @IsOneWayLove, "& _ 
+                "[Tags] = @Tags WHERE (([Id] = @Original_Id) AND ([Timestamp] = @Original_Timesta"& _ 
+                "mp) AND ([Name] = @Original_Name) AND ([ScreenName] = @Original_ScreenName) AND "& _ 
+                "([ImageUri] = @Original_ImageUri) AND ([Text] = @Original_Text) AND ([HyperText]"& _ 
+                " = @Original_HyperText) AND ([Source] = @Original_Source) AND ([IsRead] = @Origi"& _ 
+                "nal_IsRead) AND ([IsFavorited] = @Original_IsFavorited) AND ([IsReply] = @Origin"& _ 
+                "al_IsReply) AND ([IsProtected] = @Original_IsProtected) AND ([IsOneWayLove] = @O"& _ 
+                "riginal_IsOneWayLove) AND ([Tags] = @Original_Tags))"
             Me._adapter.UpdateCommand.CommandType = Global.System.Data.CommandType.Text
             param = New Global.System.Data.SQLite.SQLiteParameter
             param.ParameterName = "@Id"
@@ -1829,17 +2020,6 @@ Namespace StorageDataSetTableAdapters
             param.ParameterName = "@Source"
             param.DbType = Global.System.Data.DbType.[String]
             param.SourceColumn = "Source"
-            Me._adapter.UpdateCommand.Parameters.Add(param)
-            param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@InReplyToUser"
-            param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "InReplyToUser"
-            Me._adapter.UpdateCommand.Parameters.Add(param)
-            param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@InReplyToId"
-            param.DbType = Global.System.Data.DbType.Int64
-            param.DbType = Global.System.Data.DbType.Int64
-            param.SourceColumn = "InReplyToId"
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
             param.ParameterName = "@IsRead"
@@ -1924,35 +2104,6 @@ Namespace StorageDataSetTableAdapters
             param.ParameterName = "@Original_Source"
             param.DbType = Global.System.Data.DbType.[String]
             param.SourceColumn = "Source"
-            param.SourceVersion = Global.System.Data.DataRowVersion.Original
-            Me._adapter.UpdateCommand.Parameters.Add(param)
-            param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@IsNull_InReplyToUser"
-            param.DbType = Global.System.Data.DbType.Int32
-            param.DbType = Global.System.Data.DbType.Int32
-            param.SourceColumn = "InReplyToUser"
-            param.SourceVersion = Global.System.Data.DataRowVersion.Original
-            param.SourceColumnNullMapping = true
-            Me._adapter.UpdateCommand.Parameters.Add(param)
-            param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_InReplyToUser"
-            param.DbType = Global.System.Data.DbType.[String]
-            param.SourceColumn = "InReplyToUser"
-            param.SourceVersion = Global.System.Data.DataRowVersion.Original
-            Me._adapter.UpdateCommand.Parameters.Add(param)
-            param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@IsNull_InReplyToId"
-            param.DbType = Global.System.Data.DbType.Int32
-            param.DbType = Global.System.Data.DbType.Int32
-            param.SourceColumn = "InReplyToId"
-            param.SourceVersion = Global.System.Data.DataRowVersion.Original
-            param.SourceColumnNullMapping = true
-            Me._adapter.UpdateCommand.Parameters.Add(param)
-            param = New Global.System.Data.SQLite.SQLiteParameter
-            param.ParameterName = "@Original_InReplyToId"
-            param.DbType = Global.System.Data.DbType.Int64
-            param.DbType = Global.System.Data.DbType.Int64
-            param.SourceColumn = "InReplyToId"
             param.SourceVersion = Global.System.Data.DataRowVersion.Original
             Me._adapter.UpdateCommand.Parameters.Add(param)
             param = New Global.System.Data.SQLite.SQLiteParameter
@@ -2009,7 +2160,7 @@ Namespace StorageDataSetTableAdapters
             Me._commandCollection = New Global.System.Data.SQLite.SQLiteCommand(0) {}
             Me._commandCollection(0) = New Global.System.Data.SQLite.SQLiteCommand
             Me._commandCollection(0).Connection = Me.Connection
-            Me._commandCollection(0).CommandText = "SELECT          Posts.*"&Global.Microsoft.VisualBasic.ChrW(13)&Global.Microsoft.VisualBasic.ChrW(10)&"FROM            Posts"
+            Me._commandCollection(0).CommandText = "SELECT Posts.* FROM Posts"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
         End Sub
         
@@ -2062,23 +2213,7 @@ Namespace StorageDataSetTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Delete, true)>  _
-        Public Overloads Overridable Function Delete( _
-                    ByVal Original_Id As Long,  _
-                    ByVal Original_Timestamp As Date,  _
-                    ByVal Original_Name As String,  _
-                    ByVal Original_ScreenName As String,  _
-                    ByVal Original_ImageUri As String,  _
-                    ByVal Original_Text As String,  _
-                    ByVal Original_HyperText As String,  _
-                    ByVal Original_Source As String,  _
-                    ByVal Original_InReplyToUser As String,  _
-                    ByVal Original_InReplyToId As Global.System.Nullable(Of Long),  _
-                    ByVal Original_IsRead As Boolean,  _
-                    ByVal Original_IsFavorited As Boolean,  _
-                    ByVal Original_IsReply As Boolean,  _
-                    ByVal Original_IsProtected As Boolean,  _
-                    ByVal Original_IsOneWayLove As Boolean,  _
-                    ByVal Original_Tags As String) As Integer
+        Public Overloads Overridable Function Delete(ByVal Original_Id As Long, ByVal Original_Timestamp As Date, ByVal Original_Name As String, ByVal Original_ScreenName As String, ByVal Original_ImageUri As String, ByVal Original_Text As String, ByVal Original_HyperText As String, ByVal Original_Source As String, ByVal Original_IsRead As Boolean, ByVal Original_IsFavorited As Boolean, ByVal Original_IsReply As Boolean, ByVal Original_IsProtected As Boolean, ByVal Original_IsOneWayLove As Boolean, ByVal Original_Tags As String) As Integer
             Me.Adapter.DeleteCommand.Parameters(0).Value = CType(Original_Id,Long)
             Me.Adapter.DeleteCommand.Parameters(1).Value = CType(Original_Timestamp,Date)
             If (Original_Name Is Nothing) Then
@@ -2111,29 +2246,15 @@ Namespace StorageDataSetTableAdapters
             Else
                 Me.Adapter.DeleteCommand.Parameters(7).Value = CType(Original_Source,String)
             End If
-            If (Original_InReplyToUser Is Nothing) Then
-                Me.Adapter.DeleteCommand.Parameters(8).Value = CType(1,Object)
-                Me.Adapter.DeleteCommand.Parameters(9).Value = Global.System.DBNull.Value
-            Else
-                Me.Adapter.DeleteCommand.Parameters(8).Value = CType(0,Object)
-                Me.Adapter.DeleteCommand.Parameters(9).Value = CType(Original_InReplyToUser,String)
-            End If
-            If (Original_InReplyToId.HasValue = true) Then
-                Me.Adapter.DeleteCommand.Parameters(10).Value = CType(0,Object)
-                Me.Adapter.DeleteCommand.Parameters(11).Value = CType(Original_InReplyToId.Value,Long)
-            Else
-                Me.Adapter.DeleteCommand.Parameters(10).Value = CType(1,Object)
-                Me.Adapter.DeleteCommand.Parameters(11).Value = Global.System.DBNull.Value
-            End If
-            Me.Adapter.DeleteCommand.Parameters(12).Value = CType(Original_IsRead,Boolean)
-            Me.Adapter.DeleteCommand.Parameters(13).Value = CType(Original_IsFavorited,Boolean)
-            Me.Adapter.DeleteCommand.Parameters(14).Value = CType(Original_IsReply,Boolean)
-            Me.Adapter.DeleteCommand.Parameters(15).Value = CType(Original_IsProtected,Boolean)
-            Me.Adapter.DeleteCommand.Parameters(16).Value = CType(Original_IsOneWayLove,Boolean)
+            Me.Adapter.DeleteCommand.Parameters(8).Value = CType(Original_IsRead,Boolean)
+            Me.Adapter.DeleteCommand.Parameters(9).Value = CType(Original_IsFavorited,Boolean)
+            Me.Adapter.DeleteCommand.Parameters(10).Value = CType(Original_IsReply,Boolean)
+            Me.Adapter.DeleteCommand.Parameters(11).Value = CType(Original_IsProtected,Boolean)
+            Me.Adapter.DeleteCommand.Parameters(12).Value = CType(Original_IsOneWayLove,Boolean)
             If (Original_Tags Is Nothing) Then
                 Throw New Global.System.ArgumentNullException("Original_Tags")
             Else
-                Me.Adapter.DeleteCommand.Parameters(17).Value = CType(Original_Tags,String)
+                Me.Adapter.DeleteCommand.Parameters(13).Value = CType(Original_Tags,String)
             End If
             Dim previousConnectionState As Global.System.Data.ConnectionState = Me.Adapter.DeleteCommand.Connection.State
             If ((Me.Adapter.DeleteCommand.Connection.State And Global.System.Data.ConnectionState.Open)  _
@@ -2153,23 +2274,7 @@ Namespace StorageDataSetTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Insert, true)>  _
-        Public Overloads Overridable Function Insert( _
-                    ByVal Id As Long,  _
-                    ByVal Timestamp As Date,  _
-                    ByVal Name As String,  _
-                    ByVal ScreenName As String,  _
-                    ByVal ImageUri As String,  _
-                    ByVal Text As String,  _
-                    ByVal HyperText As String,  _
-                    ByVal Source As String,  _
-                    ByVal InReplyToUser As String,  _
-                    ByVal InReplyToId As Global.System.Nullable(Of Long),  _
-                    ByVal IsRead As Boolean,  _
-                    ByVal IsFavorited As Boolean,  _
-                    ByVal IsReply As Boolean,  _
-                    ByVal IsProtected As Boolean,  _
-                    ByVal IsOneWayLove As Boolean,  _
-                    ByVal Tags As String) As Integer
+        Public Overloads Overridable Function Insert(ByVal Id As Long, ByVal Timestamp As Date, ByVal Name As String, ByVal ScreenName As String, ByVal ImageUri As String, ByVal Text As String, ByVal HyperText As String, ByVal Source As String, ByVal IsRead As Boolean, ByVal IsFavorited As Boolean, ByVal IsReply As Boolean, ByVal IsProtected As Boolean, ByVal IsOneWayLove As Boolean, ByVal Tags As String) As Integer
             Me.Adapter.InsertCommand.Parameters(0).Value = CType(Id,Long)
             Me.Adapter.InsertCommand.Parameters(1).Value = CType(Timestamp,Date)
             If (Name Is Nothing) Then
@@ -2202,25 +2307,15 @@ Namespace StorageDataSetTableAdapters
             Else
                 Me.Adapter.InsertCommand.Parameters(7).Value = CType(Source,String)
             End If
-            If (InReplyToUser Is Nothing) Then
-                Me.Adapter.InsertCommand.Parameters(8).Value = Global.System.DBNull.Value
-            Else
-                Me.Adapter.InsertCommand.Parameters(8).Value = CType(InReplyToUser,String)
-            End If
-            If (InReplyToId.HasValue = true) Then
-                Me.Adapter.InsertCommand.Parameters(9).Value = CType(InReplyToId.Value,Long)
-            Else
-                Me.Adapter.InsertCommand.Parameters(9).Value = Global.System.DBNull.Value
-            End If
-            Me.Adapter.InsertCommand.Parameters(10).Value = CType(IsRead,Boolean)
-            Me.Adapter.InsertCommand.Parameters(11).Value = CType(IsFavorited,Boolean)
-            Me.Adapter.InsertCommand.Parameters(12).Value = CType(IsReply,Boolean)
-            Me.Adapter.InsertCommand.Parameters(13).Value = CType(IsProtected,Boolean)
-            Me.Adapter.InsertCommand.Parameters(14).Value = CType(IsOneWayLove,Boolean)
+            Me.Adapter.InsertCommand.Parameters(8).Value = CType(IsRead,Boolean)
+            Me.Adapter.InsertCommand.Parameters(9).Value = CType(IsFavorited,Boolean)
+            Me.Adapter.InsertCommand.Parameters(10).Value = CType(IsReply,Boolean)
+            Me.Adapter.InsertCommand.Parameters(11).Value = CType(IsProtected,Boolean)
+            Me.Adapter.InsertCommand.Parameters(12).Value = CType(IsOneWayLove,Boolean)
             If (Tags Is Nothing) Then
                 Throw New Global.System.ArgumentNullException("Tags")
             Else
-                Me.Adapter.InsertCommand.Parameters(15).Value = CType(Tags,String)
+                Me.Adapter.InsertCommand.Parameters(13).Value = CType(Tags,String)
             End If
             Dim previousConnectionState As Global.System.Data.ConnectionState = Me.Adapter.InsertCommand.Connection.State
             If ((Me.Adapter.InsertCommand.Connection.State And Global.System.Data.ConnectionState.Open)  _
@@ -2249,8 +2344,6 @@ Namespace StorageDataSetTableAdapters
                     ByVal Text As String,  _
                     ByVal HyperText As String,  _
                     ByVal Source As String,  _
-                    ByVal InReplyToUser As String,  _
-                    ByVal InReplyToId As Global.System.Nullable(Of Long),  _
                     ByVal IsRead As Boolean,  _
                     ByVal IsFavorited As Boolean,  _
                     ByVal IsReply As Boolean,  _
@@ -2265,8 +2358,6 @@ Namespace StorageDataSetTableAdapters
                     ByVal Original_Text As String,  _
                     ByVal Original_HyperText As String,  _
                     ByVal Original_Source As String,  _
-                    ByVal Original_InReplyToUser As String,  _
-                    ByVal Original_InReplyToId As Global.System.Nullable(Of Long),  _
                     ByVal Original_IsRead As Boolean,  _
                     ByVal Original_IsFavorited As Boolean,  _
                     ByVal Original_IsReply As Boolean,  _
@@ -2305,81 +2396,57 @@ Namespace StorageDataSetTableAdapters
             Else
                 Me.Adapter.UpdateCommand.Parameters(7).Value = CType(Source,String)
             End If
-            If (InReplyToUser Is Nothing) Then
-                Me.Adapter.UpdateCommand.Parameters(8).Value = Global.System.DBNull.Value
-            Else
-                Me.Adapter.UpdateCommand.Parameters(8).Value = CType(InReplyToUser,String)
-            End If
-            If (InReplyToId.HasValue = true) Then
-                Me.Adapter.UpdateCommand.Parameters(9).Value = CType(InReplyToId.Value,Long)
-            Else
-                Me.Adapter.UpdateCommand.Parameters(9).Value = Global.System.DBNull.Value
-            End If
-            Me.Adapter.UpdateCommand.Parameters(10).Value = CType(IsRead,Boolean)
-            Me.Adapter.UpdateCommand.Parameters(11).Value = CType(IsFavorited,Boolean)
-            Me.Adapter.UpdateCommand.Parameters(12).Value = CType(IsReply,Boolean)
-            Me.Adapter.UpdateCommand.Parameters(13).Value = CType(IsProtected,Boolean)
-            Me.Adapter.UpdateCommand.Parameters(14).Value = CType(IsOneWayLove,Boolean)
+            Me.Adapter.UpdateCommand.Parameters(8).Value = CType(IsRead,Boolean)
+            Me.Adapter.UpdateCommand.Parameters(9).Value = CType(IsFavorited,Boolean)
+            Me.Adapter.UpdateCommand.Parameters(10).Value = CType(IsReply,Boolean)
+            Me.Adapter.UpdateCommand.Parameters(11).Value = CType(IsProtected,Boolean)
+            Me.Adapter.UpdateCommand.Parameters(12).Value = CType(IsOneWayLove,Boolean)
             If (Tags Is Nothing) Then
                 Throw New Global.System.ArgumentNullException("Tags")
             Else
-                Me.Adapter.UpdateCommand.Parameters(15).Value = CType(Tags,String)
+                Me.Adapter.UpdateCommand.Parameters(13).Value = CType(Tags,String)
             End If
-            Me.Adapter.UpdateCommand.Parameters(16).Value = CType(Original_Id,Long)
-            Me.Adapter.UpdateCommand.Parameters(17).Value = CType(Original_Timestamp,Date)
+            Me.Adapter.UpdateCommand.Parameters(14).Value = CType(Original_Id,Long)
+            Me.Adapter.UpdateCommand.Parameters(15).Value = CType(Original_Timestamp,Date)
             If (Original_Name Is Nothing) Then
                 Throw New Global.System.ArgumentNullException("Original_Name")
             Else
-                Me.Adapter.UpdateCommand.Parameters(18).Value = CType(Original_Name,String)
+                Me.Adapter.UpdateCommand.Parameters(16).Value = CType(Original_Name,String)
             End If
             If (Original_ScreenName Is Nothing) Then
                 Throw New Global.System.ArgumentNullException("Original_ScreenName")
             Else
-                Me.Adapter.UpdateCommand.Parameters(19).Value = CType(Original_ScreenName,String)
+                Me.Adapter.UpdateCommand.Parameters(17).Value = CType(Original_ScreenName,String)
             End If
             If (Original_ImageUri Is Nothing) Then
                 Throw New Global.System.ArgumentNullException("Original_ImageUri")
             Else
-                Me.Adapter.UpdateCommand.Parameters(20).Value = CType(Original_ImageUri,String)
+                Me.Adapter.UpdateCommand.Parameters(18).Value = CType(Original_ImageUri,String)
             End If
             If (Original_Text Is Nothing) Then
                 Throw New Global.System.ArgumentNullException("Original_Text")
             Else
-                Me.Adapter.UpdateCommand.Parameters(21).Value = CType(Original_Text,String)
+                Me.Adapter.UpdateCommand.Parameters(19).Value = CType(Original_Text,String)
             End If
             If (Original_HyperText Is Nothing) Then
                 Throw New Global.System.ArgumentNullException("Original_HyperText")
             Else
-                Me.Adapter.UpdateCommand.Parameters(22).Value = CType(Original_HyperText,String)
+                Me.Adapter.UpdateCommand.Parameters(20).Value = CType(Original_HyperText,String)
             End If
             If (Original_Source Is Nothing) Then
                 Throw New Global.System.ArgumentNullException("Original_Source")
             Else
-                Me.Adapter.UpdateCommand.Parameters(23).Value = CType(Original_Source,String)
+                Me.Adapter.UpdateCommand.Parameters(21).Value = CType(Original_Source,String)
             End If
-            If (Original_InReplyToUser Is Nothing) Then
-                Me.Adapter.UpdateCommand.Parameters(24).Value = CType(1,Object)
-                Me.Adapter.UpdateCommand.Parameters(25).Value = Global.System.DBNull.Value
-            Else
-                Me.Adapter.UpdateCommand.Parameters(24).Value = CType(0,Object)
-                Me.Adapter.UpdateCommand.Parameters(25).Value = CType(Original_InReplyToUser,String)
-            End If
-            If (Original_InReplyToId.HasValue = true) Then
-                Me.Adapter.UpdateCommand.Parameters(26).Value = CType(0,Object)
-                Me.Adapter.UpdateCommand.Parameters(27).Value = CType(Original_InReplyToId.Value,Long)
-            Else
-                Me.Adapter.UpdateCommand.Parameters(26).Value = CType(1,Object)
-                Me.Adapter.UpdateCommand.Parameters(27).Value = Global.System.DBNull.Value
-            End If
-            Me.Adapter.UpdateCommand.Parameters(28).Value = CType(Original_IsRead,Boolean)
-            Me.Adapter.UpdateCommand.Parameters(29).Value = CType(Original_IsFavorited,Boolean)
-            Me.Adapter.UpdateCommand.Parameters(30).Value = CType(Original_IsReply,Boolean)
-            Me.Adapter.UpdateCommand.Parameters(31).Value = CType(Original_IsProtected,Boolean)
-            Me.Adapter.UpdateCommand.Parameters(32).Value = CType(Original_IsOneWayLove,Boolean)
+            Me.Adapter.UpdateCommand.Parameters(22).Value = CType(Original_IsRead,Boolean)
+            Me.Adapter.UpdateCommand.Parameters(23).Value = CType(Original_IsFavorited,Boolean)
+            Me.Adapter.UpdateCommand.Parameters(24).Value = CType(Original_IsReply,Boolean)
+            Me.Adapter.UpdateCommand.Parameters(25).Value = CType(Original_IsProtected,Boolean)
+            Me.Adapter.UpdateCommand.Parameters(26).Value = CType(Original_IsOneWayLove,Boolean)
             If (Original_Tags Is Nothing) Then
                 Throw New Global.System.ArgumentNullException("Original_Tags")
             Else
-                Me.Adapter.UpdateCommand.Parameters(33).Value = CType(Original_Tags,String)
+                Me.Adapter.UpdateCommand.Parameters(27).Value = CType(Original_Tags,String)
             End If
             Dim previousConnectionState As Global.System.Data.ConnectionState = Me.Adapter.UpdateCommand.Connection.State
             If ((Me.Adapter.UpdateCommand.Connection.State And Global.System.Data.ConnectionState.Open)  _
@@ -2407,8 +2474,6 @@ Namespace StorageDataSetTableAdapters
                     ByVal Text As String,  _
                     ByVal HyperText As String,  _
                     ByVal Source As String,  _
-                    ByVal InReplyToUser As String,  _
-                    ByVal InReplyToId As Global.System.Nullable(Of Long),  _
                     ByVal IsRead As Boolean,  _
                     ByVal IsFavorited As Boolean,  _
                     ByVal IsReply As Boolean,  _
@@ -2423,15 +2488,250 @@ Namespace StorageDataSetTableAdapters
                     ByVal Original_Text As String,  _
                     ByVal Original_HyperText As String,  _
                     ByVal Original_Source As String,  _
-                    ByVal Original_InReplyToUser As String,  _
-                    ByVal Original_InReplyToId As Global.System.Nullable(Of Long),  _
                     ByVal Original_IsRead As Boolean,  _
                     ByVal Original_IsFavorited As Boolean,  _
                     ByVal Original_IsReply As Boolean,  _
                     ByVal Original_IsProtected As Boolean,  _
                     ByVal Original_IsOneWayLove As Boolean,  _
                     ByVal Original_Tags As String) As Integer
-            Return Me.Update(Original_Id, Timestamp, Name, ScreenName, ImageUri, Text, HyperText, Source, InReplyToUser, InReplyToId, IsRead, IsFavorited, IsReply, IsProtected, IsOneWayLove, Tags, Original_Id, Original_Timestamp, Original_Name, Original_ScreenName, Original_ImageUri, Original_Text, Original_HyperText, Original_Source, Original_InReplyToUser, Original_InReplyToId, Original_IsRead, Original_IsFavorited, Original_IsReply, Original_IsProtected, Original_IsOneWayLove, Original_Tags)
+            Return Me.Update(Original_Id, Timestamp, Name, ScreenName, ImageUri, Text, HyperText, Source, IsRead, IsFavorited, IsReply, IsProtected, IsOneWayLove, Tags, Original_Id, Original_Timestamp, Original_Name, Original_ScreenName, Original_ImageUri, Original_Text, Original_HyperText, Original_Source, Original_IsRead, Original_IsFavorited, Original_IsReply, Original_IsProtected, Original_IsOneWayLove, Original_Tags)
+        End Function
+    End Class
+    
+    '''<summary>
+    '''Represents the connection and commands used to retrieve and save data.
+    '''</summary>
+    <Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "2.0.0.0"),  _
+     Global.System.ComponentModel.DesignerCategoryAttribute("code"),  _
+     Global.System.ComponentModel.ToolboxItem(true),  _
+     Global.System.ComponentModel.DataObjectAttribute(true),  _
+     Global.System.ComponentModel.DesignerAttribute("Microsoft.VSDesigner.DataSource.Design.TableAdapterDesigner, Microsoft.VSDesigner"& _ 
+        ", Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"),  _
+     Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")>  _
+    Partial Public Class ReplyMapTableAdapter
+        Inherits Global.System.ComponentModel.Component
+        
+        Private WithEvents _adapter As Global.System.Data.SQLite.SQLiteDataAdapter
+        
+        Private _connection As Global.System.Data.SQLite.SQLiteConnection
+        
+        Private _transaction As Global.System.Data.SQLite.SQLiteTransaction
+        
+        Private _commandCollection() As Global.System.Data.SQLite.SQLiteCommand
+        
+        Private _clearBeforeFill As Boolean
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Sub New()
+            MyBase.New
+            Me.ClearBeforeFill = true
+        End Sub
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Protected Friend ReadOnly Property Adapter() As Global.System.Data.SQLite.SQLiteDataAdapter
+            Get
+                If (Me._adapter Is Nothing) Then
+                    Me.InitAdapter
+                End If
+                Return Me._adapter
+            End Get
+        End Property
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Friend Property Connection() As Global.System.Data.SQLite.SQLiteConnection
+            Get
+                If (Me._connection Is Nothing) Then
+                    Me.InitConnection
+                End If
+                Return Me._connection
+            End Get
+            Set
+                Me._connection = value
+                If (Not (Me.Adapter.InsertCommand) Is Nothing) Then
+                    Me.Adapter.InsertCommand.Connection = value
+                End If
+                If (Not (Me.Adapter.DeleteCommand) Is Nothing) Then
+                    Me.Adapter.DeleteCommand.Connection = value
+                End If
+                If (Not (Me.Adapter.UpdateCommand) Is Nothing) Then
+                    Me.Adapter.UpdateCommand.Connection = value
+                End If
+                Dim i As Integer = 0
+                Do While (i < Me.CommandCollection.Length)
+                    If (Not (Me.CommandCollection(i)) Is Nothing) Then
+                        CType(Me.CommandCollection(i),Global.System.Data.SQLite.SQLiteCommand).Connection = value
+                    End If
+                    i = (i + 1)
+                Loop
+            End Set
+        End Property
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Friend Property Transaction() As Global.System.Data.SQLite.SQLiteTransaction
+            Get
+                Return Me._transaction
+            End Get
+            Set
+                Me._transaction = value
+                Dim i As Integer = 0
+                Do While (i < Me.CommandCollection.Length)
+                    Me.CommandCollection(i).Transaction = Me._transaction
+                    i = (i + 1)
+                Loop
+                If ((Not (Me.Adapter) Is Nothing)  _
+                            AndAlso (Not (Me.Adapter.DeleteCommand) Is Nothing)) Then
+                    Me.Adapter.DeleteCommand.Transaction = Me._transaction
+                End If
+                If ((Not (Me.Adapter) Is Nothing)  _
+                            AndAlso (Not (Me.Adapter.InsertCommand) Is Nothing)) Then
+                    Me.Adapter.InsertCommand.Transaction = Me._transaction
+                End If
+                If ((Not (Me.Adapter) Is Nothing)  _
+                            AndAlso (Not (Me.Adapter.UpdateCommand) Is Nothing)) Then
+                    Me.Adapter.UpdateCommand.Transaction = Me._transaction
+                End If
+            End Set
+        End Property
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Protected ReadOnly Property CommandCollection() As Global.System.Data.SQLite.SQLiteCommand()
+            Get
+                If (Me._commandCollection Is Nothing) Then
+                    Me.InitCommandCollection
+                End If
+                Return Me._commandCollection
+            End Get
+        End Property
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Property ClearBeforeFill() As Boolean
+            Get
+                Return Me._clearBeforeFill
+            End Get
+            Set
+                Me._clearBeforeFill = value
+            End Set
+        End Property
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Private Sub InitAdapter()
+            Me._adapter = New Global.System.Data.SQLite.SQLiteDataAdapter
+            Dim tableMapping As Global.System.Data.Common.DataTableMapping = New Global.System.Data.Common.DataTableMapping
+            tableMapping.SourceTable = "Table"
+            tableMapping.DataSetTable = "ReplyMap"
+            tableMapping.ColumnMappings.Add("PostId", "PostId")
+            tableMapping.ColumnMappings.Add("InReplyToUser", "InReplyToUser")
+            tableMapping.ColumnMappings.Add("InReplyToId", "InReplyToId")
+            Me._adapter.TableMappings.Add(tableMapping)
+            Me._adapter.InsertCommand = New Global.System.Data.SQLite.SQLiteCommand
+            Me._adapter.InsertCommand.Connection = Me.Connection
+            Me._adapter.InsertCommand.CommandText = "INSERT INTO [ReplyMap] ([PostId], [InReplyToUser], [InReplyToId]) VALUES (@PostId"& _ 
+                ", @InReplyToUser, @InReplyToId)"
+            Me._adapter.InsertCommand.CommandType = Global.System.Data.CommandType.Text
+            Dim param As Global.System.Data.SQLite.SQLiteParameter = New Global.System.Data.SQLite.SQLiteParameter
+            param.ParameterName = "@PostId"
+            param.DbType = Global.System.Data.DbType.Int64
+            param.DbType = Global.System.Data.DbType.Int64
+            param.SourceColumn = "PostId"
+            Me._adapter.InsertCommand.Parameters.Add(param)
+            param = New Global.System.Data.SQLite.SQLiteParameter
+            param.ParameterName = "@InReplyToUser"
+            param.DbType = Global.System.Data.DbType.[String]
+            param.SourceColumn = "InReplyToUser"
+            Me._adapter.InsertCommand.Parameters.Add(param)
+            param = New Global.System.Data.SQLite.SQLiteParameter
+            param.ParameterName = "@InReplyToId"
+            param.DbType = Global.System.Data.DbType.Int64
+            param.DbType = Global.System.Data.DbType.Int64
+            param.SourceColumn = "InReplyToId"
+            Me._adapter.InsertCommand.Parameters.Add(param)
+        End Sub
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Private Sub InitConnection()
+            Me._connection = New Global.System.Data.SQLite.SQLiteConnection
+            Me._connection.ConnectionString = "data source=Tween.db"
+        End Sub
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Private Sub InitCommandCollection()
+            Me._commandCollection = New Global.System.Data.SQLite.SQLiteCommand(0) {}
+            Me._commandCollection(0) = New Global.System.Data.SQLite.SQLiteCommand
+            Me._commandCollection(0).Connection = Me.Connection
+            Me._commandCollection(0).CommandText = "SELECT ReplyMap.* FROM ReplyMap"
+            Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+        End Sub
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Fill, true)>  _
+        Public Overloads Overridable Function Fill(ByVal dataTable As StorageDataSet.ReplyMapDataTable) As Integer
+            Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            If (Me.ClearBeforeFill = true) Then
+                dataTable.Clear
+            End If
+            Dim returnValue As Integer = Me.Adapter.Fill(dataTable)
+            Return returnValue
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
+        Public Overloads Overridable Function GetData() As StorageDataSet.ReplyMapDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As StorageDataSet.ReplyMapDataTable = New StorageDataSet.ReplyMapDataTable
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")>  _
+        Public Overloads Overridable Function Update(ByVal dataTable As StorageDataSet.ReplyMapDataTable) As Integer
+            Return Me.Adapter.Update(dataTable)
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")>  _
+        Public Overloads Overridable Function Update(ByVal dataSet As StorageDataSet) As Integer
+            Return Me.Adapter.Update(dataSet, "ReplyMap")
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")>  _
+        Public Overloads Overridable Function Update(ByVal dataRow As Global.System.Data.DataRow) As Integer
+            Return Me.Adapter.Update(New Global.System.Data.DataRow() {dataRow})
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")>  _
+        Public Overloads Overridable Function Update(ByVal dataRows() As Global.System.Data.DataRow) As Integer
+            Return Me.Adapter.Update(dataRows)
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Insert, true)>  _
+        Public Overloads Overridable Function Insert(ByVal PostId As Long, ByVal InReplyToUser As String, ByVal InReplyToId As Long) As Integer
+            Me.Adapter.InsertCommand.Parameters(0).Value = CType(PostId,Long)
+            If (InReplyToUser Is Nothing) Then
+                Throw New Global.System.ArgumentNullException("InReplyToUser")
+            Else
+                Me.Adapter.InsertCommand.Parameters(1).Value = CType(InReplyToUser,String)
+            End If
+            Me.Adapter.InsertCommand.Parameters(2).Value = CType(InReplyToId,Long)
+            Dim previousConnectionState As Global.System.Data.ConnectionState = Me.Adapter.InsertCommand.Connection.State
+            If ((Me.Adapter.InsertCommand.Connection.State And Global.System.Data.ConnectionState.Open)  _
+                        <> Global.System.Data.ConnectionState.Open) Then
+                Me.Adapter.InsertCommand.Connection.Open
+            End If
+            Try 
+                Dim returnValue As Integer = Me.Adapter.InsertCommand.ExecuteNonQuery
+                Return returnValue
+            Finally
+                If (previousConnectionState = Global.System.Data.ConnectionState.Closed) Then
+                    Me.Adapter.InsertCommand.Connection.Close
+                End If
+            End Try
         End Function
     End Class
     
@@ -2690,7 +2990,7 @@ Namespace StorageDataSetTableAdapters
             Me._commandCollection = New Global.System.Data.SQLite.SQLiteCommand(0) {}
             Me._commandCollection(0) = New Global.System.Data.SQLite.SQLiteCommand
             Me._commandCollection(0).Connection = Me.Connection
-            Me._commandCollection(0).CommandText = "SELECT          Icons.*"&Global.Microsoft.VisualBasic.ChrW(13)&Global.Microsoft.VisualBasic.ChrW(10)&"FROM            Icons"
+            Me._commandCollection(0).CommandText = "SELECT Icons.* FROM Icons"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
         End Sub
         
@@ -2869,6 +3169,8 @@ Namespace StorageDataSetTableAdapters
         
         Private _postsTableAdapter As PostsTableAdapter
         
+        Private _replyMapTableAdapter As ReplyMapTableAdapter
+        
         Private _iconsTableAdapter As IconsTableAdapter
         
         Private _backupDataSetBeforeUpdate As Boolean
@@ -2895,6 +3197,19 @@ Namespace StorageDataSetTableAdapters
             End Get
             Set
                 Me._postsTableAdapter = value
+            End Set
+        End Property
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.ComponentModel.EditorAttribute("Microsoft.VSDesigner.DataSource.Design.TableAdapterManagerPropertyEditor, Microso"& _ 
+            "ft.VSDesigner, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"& _ 
+            "", "System.Drawing.Design.UITypeEditor")>  _
+        Public Property ReplyMapTableAdapter() As ReplyMapTableAdapter
+            Get
+                Return Me._replyMapTableAdapter
+            End Get
+            Set
+                Me._replyMapTableAdapter = value
             End Set
         End Property
         
@@ -2932,6 +3247,10 @@ Namespace StorageDataSetTableAdapters
                             AndAlso (Not (Me._postsTableAdapter.Connection) Is Nothing)) Then
                     Return Me._postsTableAdapter.Connection
                 End If
+                If ((Not (Me._replyMapTableAdapter) Is Nothing)  _
+                            AndAlso (Not (Me._replyMapTableAdapter.Connection) Is Nothing)) Then
+                    Return Me._replyMapTableAdapter.Connection
+                End If
                 If ((Not (Me._iconsTableAdapter) Is Nothing)  _
                             AndAlso (Not (Me._iconsTableAdapter.Connection) Is Nothing)) Then
                     Return Me._iconsTableAdapter.Connection
@@ -2949,6 +3268,9 @@ Namespace StorageDataSetTableAdapters
             Get
                 Dim count As Integer = 0
                 If (Not (Me._postsTableAdapter) Is Nothing) Then
+                    count = (count + 1)
+                End If
+                If (Not (Me._replyMapTableAdapter) Is Nothing) Then
                     count = (count + 1)
                 End If
                 If (Not (Me._iconsTableAdapter) Is Nothing) Then
@@ -2970,6 +3292,15 @@ Namespace StorageDataSetTableAdapters
                 If ((Not (updatedRows) Is Nothing)  _
                             AndAlso (0 < updatedRows.Length)) Then
                     result = (result + Me._iconsTableAdapter.Update(updatedRows))
+                    allChangedRows.AddRange(updatedRows)
+                End If
+            End If
+            If (Not (Me._replyMapTableAdapter) Is Nothing) Then
+                Dim updatedRows() As Global.System.Data.DataRow = dataSet.ReplyMap.Select(Nothing, Nothing, Global.System.Data.DataViewRowState.ModifiedCurrent)
+                updatedRows = Me.GetRealUpdatedRows(updatedRows, allAddedRows)
+                If ((Not (updatedRows) Is Nothing)  _
+                            AndAlso (0 < updatedRows.Length)) Then
+                    result = (result + Me._replyMapTableAdapter.Update(updatedRows))
                     allChangedRows.AddRange(updatedRows)
                 End If
             End If
@@ -2999,6 +3330,14 @@ Namespace StorageDataSetTableAdapters
                     allAddedRows.AddRange(addedRows)
                 End If
             End If
+            If (Not (Me._replyMapTableAdapter) Is Nothing) Then
+                Dim addedRows() As Global.System.Data.DataRow = dataSet.ReplyMap.Select(Nothing, Nothing, Global.System.Data.DataViewRowState.Added)
+                If ((Not (addedRows) Is Nothing)  _
+                            AndAlso (0 < addedRows.Length)) Then
+                    result = (result + Me._replyMapTableAdapter.Update(addedRows))
+                    allAddedRows.AddRange(addedRows)
+                End If
+            End If
             If (Not (Me._postsTableAdapter) Is Nothing) Then
                 Dim addedRows() As Global.System.Data.DataRow = dataSet.Posts.Select(Nothing, Nothing, Global.System.Data.DataViewRowState.Added)
                 If ((Not (addedRows) Is Nothing)  _
@@ -3021,6 +3360,14 @@ Namespace StorageDataSetTableAdapters
                 If ((Not (deletedRows) Is Nothing)  _
                             AndAlso (0 < deletedRows.Length)) Then
                     result = (result + Me._postsTableAdapter.Update(deletedRows))
+                    allChangedRows.AddRange(deletedRows)
+                End If
+            End If
+            If (Not (Me._replyMapTableAdapter) Is Nothing) Then
+                Dim deletedRows() As Global.System.Data.DataRow = dataSet.ReplyMap.Select(Nothing, Nothing, Global.System.Data.DataViewRowState.Deleted)
+                If ((Not (deletedRows) Is Nothing)  _
+                            AndAlso (0 < deletedRows.Length)) Then
+                    result = (result + Me._replyMapTableAdapter.Update(deletedRows))
                     allChangedRows.AddRange(deletedRows)
                 End If
             End If
@@ -3075,6 +3422,10 @@ Namespace StorageDataSetTableAdapters
                         AndAlso (Me.MatchTableAdapterConnection(Me._postsTableAdapter.Connection) = false)) Then
                 Throw New Global.System.ArgumentException("TableAdapterManager で管理されるすべての TableAdapter は同一の接続文字列を使用する必要があります。")
             End If
+            If ((Not (Me._replyMapTableAdapter) Is Nothing)  _
+                        AndAlso (Me.MatchTableAdapterConnection(Me._replyMapTableAdapter.Connection) = false)) Then
+                Throw New Global.System.ArgumentException("TableAdapterManager で管理されるすべての TableAdapter は同一の接続文字列を使用する必要があります。")
+            End If
             If ((Not (Me._iconsTableAdapter) Is Nothing)  _
                         AndAlso (Me.MatchTableAdapterConnection(Me._iconsTableAdapter.Connection) = false)) Then
                 Throw New Global.System.ArgumentException("TableAdapterManager で管理されるすべての TableAdapter は同一の接続文字列を使用する必要があります。")
@@ -3117,6 +3468,15 @@ Namespace StorageDataSetTableAdapters
                     If Me._postsTableAdapter.Adapter.AcceptChangesDuringUpdate Then
                         Me._postsTableAdapter.Adapter.AcceptChangesDuringUpdate = false
                         adaptersWithAcceptChangesDuringUpdate.Add(Me._postsTableAdapter.Adapter)
+                    End If
+                End If
+                If (Not (Me._replyMapTableAdapter) Is Nothing) Then
+                    revertConnections.Add(Me._replyMapTableAdapter, Me._replyMapTableAdapter.Connection)
+                    Me._replyMapTableAdapter.Connection = CType(workConnection,Global.System.Data.SQLite.SQLiteConnection)
+                    Me._replyMapTableAdapter.Transaction = CType(workTransaction,Global.System.Data.SQLite.SQLiteTransaction)
+                    If Me._replyMapTableAdapter.Adapter.AcceptChangesDuringUpdate Then
+                        Me._replyMapTableAdapter.Adapter.AcceptChangesDuringUpdate = false
+                        adaptersWithAcceptChangesDuringUpdate.Add(Me._replyMapTableAdapter.Adapter)
                     End If
                 End If
                 If (Not (Me._iconsTableAdapter) Is Nothing) Then
@@ -3191,6 +3551,10 @@ Namespace StorageDataSetTableAdapters
                 If (Not (Me._postsTableAdapter) Is Nothing) Then
                     Me._postsTableAdapter.Connection = CType(revertConnections(Me._postsTableAdapter),Global.System.Data.SQLite.SQLiteConnection)
                     Me._postsTableAdapter.Transaction = Nothing
+                End If
+                If (Not (Me._replyMapTableAdapter) Is Nothing) Then
+                    Me._replyMapTableAdapter.Connection = CType(revertConnections(Me._replyMapTableAdapter),Global.System.Data.SQLite.SQLiteConnection)
+                    Me._replyMapTableAdapter.Transaction = Nothing
                 End If
                 If (Not (Me._iconsTableAdapter) Is Nothing) Then
                     Me._iconsTableAdapter.Connection = CType(revertConnections(Me._iconsTableAdapter),Global.System.Data.SQLite.SQLiteConnection)

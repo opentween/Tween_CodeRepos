@@ -48,10 +48,7 @@ Partial Class TweenAboutBox
         '
         'TableLayoutPanel
         '
-        Me.TableLayoutPanel.AccessibleDescription = Nothing
-        Me.TableLayoutPanel.AccessibleName = Nothing
         resources.ApplyResources(Me.TableLayoutPanel, "TableLayoutPanel")
-        Me.TableLayoutPanel.BackgroundImage = Nothing
         Me.TableLayoutPanel.Controls.Add(Me.LogoPictureBox, 0, 0)
         Me.TableLayoutPanel.Controls.Add(Me.LabelProductName, 1, 0)
         Me.TableLayoutPanel.Controls.Add(Me.LabelVersion, 1, 1)
@@ -60,101 +57,66 @@ Partial Class TweenAboutBox
         Me.TableLayoutPanel.Controls.Add(Me.TextBoxDescription, 1, 4)
         Me.TableLayoutPanel.Controls.Add(Me.OKButton, 1, 6)
         Me.TableLayoutPanel.Controls.Add(Me.ChangeLog, 0, 5)
-        Me.TableLayoutPanel.Font = Nothing
         Me.TableLayoutPanel.Name = "TableLayoutPanel"
         '
         'LogoPictureBox
         '
-        Me.LogoPictureBox.AccessibleDescription = Nothing
-        Me.LogoPictureBox.AccessibleName = Nothing
         resources.ApplyResources(Me.LogoPictureBox, "LogoPictureBox")
-        Me.LogoPictureBox.BackgroundImage = Nothing
-        Me.LogoPictureBox.Font = Nothing
-        Me.LogoPictureBox.ImageLocation = Nothing
         Me.LogoPictureBox.Name = "LogoPictureBox"
         Me.TableLayoutPanel.SetRowSpan(Me.LogoPictureBox, 5)
         Me.LogoPictureBox.TabStop = False
         '
         'LabelProductName
         '
-        Me.LabelProductName.AccessibleDescription = Nothing
-        Me.LabelProductName.AccessibleName = Nothing
         resources.ApplyResources(Me.LabelProductName, "LabelProductName")
-        Me.LabelProductName.Font = Nothing
         Me.LabelProductName.MaximumSize = New System.Drawing.Size(0, 16)
         Me.LabelProductName.Name = "LabelProductName"
         '
         'LabelVersion
         '
-        Me.LabelVersion.AccessibleDescription = Nothing
-        Me.LabelVersion.AccessibleName = Nothing
         resources.ApplyResources(Me.LabelVersion, "LabelVersion")
-        Me.LabelVersion.Font = Nothing
         Me.LabelVersion.MaximumSize = New System.Drawing.Size(0, 16)
         Me.LabelVersion.Name = "LabelVersion"
         '
         'LabelCopyright
         '
-        Me.LabelCopyright.AccessibleDescription = Nothing
-        Me.LabelCopyright.AccessibleName = Nothing
         resources.ApplyResources(Me.LabelCopyright, "LabelCopyright")
-        Me.LabelCopyright.Font = Nothing
         Me.LabelCopyright.MaximumSize = New System.Drawing.Size(0, 16)
         Me.LabelCopyright.Name = "LabelCopyright"
         '
         'LabelCompanyName
         '
-        Me.LabelCompanyName.AccessibleDescription = Nothing
-        Me.LabelCompanyName.AccessibleName = Nothing
         resources.ApplyResources(Me.LabelCompanyName, "LabelCompanyName")
-        Me.LabelCompanyName.Font = Nothing
         Me.LabelCompanyName.MaximumSize = New System.Drawing.Size(0, 16)
         Me.LabelCompanyName.Name = "LabelCompanyName"
         '
         'TextBoxDescription
         '
-        Me.TextBoxDescription.AccessibleDescription = Nothing
-        Me.TextBoxDescription.AccessibleName = Nothing
         resources.ApplyResources(Me.TextBoxDescription, "TextBoxDescription")
-        Me.TextBoxDescription.BackgroundImage = Nothing
-        Me.TextBoxDescription.Font = Nothing
         Me.TextBoxDescription.Name = "TextBoxDescription"
         Me.TextBoxDescription.ReadOnly = True
         Me.TextBoxDescription.TabStop = False
         '
         'OKButton
         '
-        Me.OKButton.AccessibleDescription = Nothing
-        Me.OKButton.AccessibleName = Nothing
         resources.ApplyResources(Me.OKButton, "OKButton")
-        Me.OKButton.BackgroundImage = Nothing
         Me.OKButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.OKButton.Font = Nothing
         Me.OKButton.Name = "OKButton"
         '
         'ChangeLog
         '
-        Me.ChangeLog.AccessibleDescription = Nothing
-        Me.ChangeLog.AccessibleName = Nothing
-        resources.ApplyResources(Me.ChangeLog, "ChangeLog")
-        Me.ChangeLog.BackgroundImage = Nothing
         Me.TableLayoutPanel.SetColumnSpan(Me.ChangeLog, 2)
-        Me.ChangeLog.Font = Nothing
+        resources.ApplyResources(Me.ChangeLog, "ChangeLog")
         Me.ChangeLog.Name = "ChangeLog"
         Me.ChangeLog.ReadOnly = True
         '
         'TweenAboutBox
         '
-        Me.AccessibleDescription = Nothing
-        Me.AccessibleName = Nothing
         resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.BackgroundImage = Nothing
         Me.CancelButton = Me.OKButton
         Me.Controls.Add(Me.TableLayoutPanel)
-        Me.Font = Nothing
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
-        Me.Icon = Nothing
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "TweenAboutBox"
