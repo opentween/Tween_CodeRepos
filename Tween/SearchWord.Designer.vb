@@ -23,6 +23,7 @@ Partial Class SearchWord
     'コード エディタを使って変更しないでください。
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(SearchWord))
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel
         Me.OK_Button = New System.Windows.Forms.Button
         Me.Cancel_Button = New System.Windows.Forms.Button
@@ -35,93 +36,92 @@ Partial Class SearchWord
         '
         'TableLayoutPanel1
         '
-        Me.TableLayoutPanel1.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.TableLayoutPanel1.ColumnCount = 2
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.TableLayoutPanel1.AccessibleDescription = Nothing
+        Me.TableLayoutPanel1.AccessibleName = Nothing
+        resources.ApplyResources(Me.TableLayoutPanel1, "TableLayoutPanel1")
+        Me.TableLayoutPanel1.BackgroundImage = Nothing
         Me.TableLayoutPanel1.Controls.Add(Me.OK_Button, 0, 0)
         Me.TableLayoutPanel1.Controls.Add(Me.Cancel_Button, 1, 0)
-        Me.TableLayoutPanel1.Location = New System.Drawing.Point(277, 38)
+        Me.TableLayoutPanel1.Font = Nothing
         Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
-        Me.TableLayoutPanel1.RowCount = 1
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel1.Size = New System.Drawing.Size(146, 27)
-        Me.TableLayoutPanel1.TabIndex = 0
         '
         'OK_Button
         '
-        Me.OK_Button.Anchor = System.Windows.Forms.AnchorStyles.None
-        Me.OK_Button.Location = New System.Drawing.Point(3, 3)
+        Me.OK_Button.AccessibleDescription = Nothing
+        Me.OK_Button.AccessibleName = Nothing
+        resources.ApplyResources(Me.OK_Button, "OK_Button")
+        Me.OK_Button.BackgroundImage = Nothing
+        Me.OK_Button.Font = Nothing
         Me.OK_Button.Name = "OK_Button"
-        Me.OK_Button.Size = New System.Drawing.Size(67, 21)
-        Me.OK_Button.TabIndex = 0
-        Me.OK_Button.Text = "検索(&F)"
         '
         'Cancel_Button
         '
-        Me.Cancel_Button.Anchor = System.Windows.Forms.AnchorStyles.None
+        Me.Cancel_Button.AccessibleDescription = Nothing
+        Me.Cancel_Button.AccessibleName = Nothing
+        resources.ApplyResources(Me.Cancel_Button, "Cancel_Button")
+        Me.Cancel_Button.BackgroundImage = Nothing
         Me.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.Cancel_Button.Location = New System.Drawing.Point(76, 3)
+        Me.Cancel_Button.Font = Nothing
         Me.Cancel_Button.Name = "Cancel_Button"
-        Me.Cancel_Button.Size = New System.Drawing.Size(67, 21)
-        Me.Cancel_Button.TabIndex = 1
-        Me.Cancel_Button.Text = "閉じる"
         '
         'SWordText
         '
-        Me.SWordText.Location = New System.Drawing.Point(118, 6)
+        Me.SWordText.AccessibleDescription = Nothing
+        Me.SWordText.AccessibleName = Nothing
+        resources.ApplyResources(Me.SWordText, "SWordText")
+        Me.SWordText.BackgroundImage = Nothing
+        Me.SWordText.Font = Nothing
         Me.SWordText.Name = "SWordText"
-        Me.SWordText.Size = New System.Drawing.Size(302, 19)
-        Me.SWordText.TabIndex = 1
         '
         'Label1
         '
-        Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(12, 9)
+        Me.Label1.AccessibleDescription = Nothing
+        Me.Label1.AccessibleName = Nothing
+        resources.ApplyResources(Me.Label1, "Label1")
+        Me.Label1.Font = Nothing
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(100, 12)
-        Me.Label1.TabIndex = 2
-        Me.Label1.Text = "検索する文字列(&N)"
         '
         'CheckSearchCaseSensitive
         '
-        Me.CheckSearchCaseSensitive.AutoSize = True
-        Me.CheckSearchCaseSensitive.Location = New System.Drawing.Point(118, 31)
+        Me.CheckSearchCaseSensitive.AccessibleDescription = Nothing
+        Me.CheckSearchCaseSensitive.AccessibleName = Nothing
+        resources.ApplyResources(Me.CheckSearchCaseSensitive, "CheckSearchCaseSensitive")
+        Me.CheckSearchCaseSensitive.BackgroundImage = Nothing
+        Me.CheckSearchCaseSensitive.Font = Nothing
         Me.CheckSearchCaseSensitive.Name = "CheckSearchCaseSensitive"
-        Me.CheckSearchCaseSensitive.Size = New System.Drawing.Size(117, 16)
-        Me.CheckSearchCaseSensitive.TabIndex = 32
-        Me.CheckSearchCaseSensitive.Text = "英大小文字を区別"
         Me.CheckSearchCaseSensitive.UseVisualStyleBackColor = True
         '
         'CheckSearchRegex
         '
-        Me.CheckSearchRegex.AutoSize = True
-        Me.CheckSearchRegex.Location = New System.Drawing.Point(118, 53)
+        Me.CheckSearchRegex.AccessibleDescription = Nothing
+        Me.CheckSearchRegex.AccessibleName = Nothing
+        resources.ApplyResources(Me.CheckSearchRegex, "CheckSearchRegex")
+        Me.CheckSearchRegex.BackgroundImage = Nothing
+        Me.CheckSearchRegex.Font = Nothing
         Me.CheckSearchRegex.Name = "CheckSearchRegex"
-        Me.CheckSearchRegex.Size = New System.Drawing.Size(72, 16)
-        Me.CheckSearchRegex.TabIndex = 33
-        Me.CheckSearchRegex.Text = "正規表現"
         Me.CheckSearchRegex.UseVisualStyleBackColor = True
         '
         'SearchWord
         '
         Me.AcceptButton = Me.OK_Button
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
+        Me.AccessibleDescription = Nothing
+        Me.AccessibleName = Nothing
+        resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.BackgroundImage = Nothing
         Me.CancelButton = Me.Cancel_Button
-        Me.ClientSize = New System.Drawing.Size(435, 76)
         Me.Controls.Add(Me.CheckSearchRegex)
         Me.Controls.Add(Me.CheckSearchCaseSensitive)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.SWordText)
         Me.Controls.Add(Me.TableLayoutPanel1)
+        Me.Font = Nothing
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
+        Me.Icon = Nothing
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "SearchWord"
         Me.ShowInTaskbar = False
-        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "検索"
         Me.TopMost = True
         Me.TableLayoutPanel1.ResumeLayout(False)
         Me.ResumeLayout(False)

@@ -140,6 +140,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>StorageDataSet.xsd</DependentUpon>
     </Compile>
+    <Compile Include="StorageDataSet.vb">
+      <DependentUpon>StorageDataSet.xsd</DependentUpon>
+    </Compile>
     <Compile Include="TabDialog.Designer.vb">
       <DependentUpon>TabDialog.vb</DependentUpon>
     </Compile>
@@ -168,6 +171,9 @@
     <Compile Include="Twitter.vb" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="InputTabName.en.resx">
+      <DependentUpon>InputTabName.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="InputTabName.resx">
       <SubType>Designer</SubType>
       <DependentUpon>InputTabName.vb</DependentUpon>
@@ -178,29 +184,50 @@
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="OpenURL.en.resx">
+      <DependentUpon>OpenURL.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="OpenURL.resx">
       <SubType>Designer</SubType>
       <DependentUpon>OpenURL.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SearchWord.en.resx">
+      <DependentUpon>SearchWord.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SearchWord.resx">
       <SubType>Designer</SubType>
       <DependentUpon>SearchWord.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Setting.en.resx">
+      <DependentUpon>Setting.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Setting.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Setting.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TabDialog.en.resx">
+      <DependentUpon>TabDialog.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TabDialog.resx">
       <DependentUpon>TabDialog.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="TabsDialog.en.resx">
+      <DependentUpon>TabsDialog.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="TabsDialog.resx">
       <DependentUpon>TabsDialog.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Tween.en.resx">
+      <DependentUpon>Tween.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Tween.resx">
       <DependentUpon>Tween.vb</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TweenAboutBox.en.resx">
+      <DependentUpon>TweenAboutBox.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TweenAboutBox.resx">
       <SubType>Designer</SubType>

@@ -48,9 +48,10 @@ Partial Class TweenAboutBox
         '
         'TableLayoutPanel
         '
-        Me.TableLayoutPanel.ColumnCount = 2
-        Me.TableLayoutPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.0!))
-        Me.TableLayoutPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 67.0!))
+        Me.TableLayoutPanel.AccessibleDescription = Nothing
+        Me.TableLayoutPanel.AccessibleName = Nothing
+        resources.ApplyResources(Me.TableLayoutPanel, "TableLayoutPanel")
+        Me.TableLayoutPanel.BackgroundImage = Nothing
         Me.TableLayoutPanel.Controls.Add(Me.LogoPictureBox, 0, 0)
         Me.TableLayoutPanel.Controls.Add(Me.LabelProductName, 1, 0)
         Me.TableLayoutPanel.Controls.Add(Me.LabelVersion, 1, 1)
@@ -59,132 +60,105 @@ Partial Class TweenAboutBox
         Me.TableLayoutPanel.Controls.Add(Me.TextBoxDescription, 1, 4)
         Me.TableLayoutPanel.Controls.Add(Me.OKButton, 1, 6)
         Me.TableLayoutPanel.Controls.Add(Me.ChangeLog, 0, 5)
-        Me.TableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TableLayoutPanel.Location = New System.Drawing.Point(9, 8)
+        Me.TableLayoutPanel.Font = Nothing
         Me.TableLayoutPanel.Name = "TableLayoutPanel"
-        Me.TableLayoutPanel.RowCount = 7
-        Me.TableLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.0!))
-        Me.TableLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.0!))
-        Me.TableLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.0!))
-        Me.TableLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.0!))
-        Me.TableLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20.0!))
-        Me.TableLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 30.0!))
-        Me.TableLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.0!))
-        Me.TableLayoutPanel.Size = New System.Drawing.Size(396, 299)
-        Me.TableLayoutPanel.TabIndex = 0
         '
         'LogoPictureBox
         '
-        Me.LogoPictureBox.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.LogoPictureBox.Image = CType(resources.GetObject("LogoPictureBox.Image"), System.Drawing.Image)
-        Me.LogoPictureBox.Location = New System.Drawing.Point(3, 3)
+        Me.LogoPictureBox.AccessibleDescription = Nothing
+        Me.LogoPictureBox.AccessibleName = Nothing
+        resources.ApplyResources(Me.LogoPictureBox, "LogoPictureBox")
+        Me.LogoPictureBox.BackgroundImage = Nothing
+        Me.LogoPictureBox.Font = Nothing
+        Me.LogoPictureBox.ImageLocation = Nothing
         Me.LogoPictureBox.Name = "LogoPictureBox"
         Me.TableLayoutPanel.SetRowSpan(Me.LogoPictureBox, 5)
-        Me.LogoPictureBox.Size = New System.Drawing.Size(124, 169)
-        Me.LogoPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
-        Me.LogoPictureBox.TabIndex = 0
         Me.LogoPictureBox.TabStop = False
         '
         'LabelProductName
         '
-        Me.LabelProductName.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.LabelProductName.Location = New System.Drawing.Point(136, 0)
-        Me.LabelProductName.Margin = New System.Windows.Forms.Padding(6, 0, 3, 0)
+        Me.LabelProductName.AccessibleDescription = Nothing
+        Me.LabelProductName.AccessibleName = Nothing
+        resources.ApplyResources(Me.LabelProductName, "LabelProductName")
+        Me.LabelProductName.Font = Nothing
         Me.LabelProductName.MaximumSize = New System.Drawing.Size(0, 16)
         Me.LabelProductName.Name = "LabelProductName"
-        Me.LabelProductName.Size = New System.Drawing.Size(257, 16)
-        Me.LabelProductName.TabIndex = 0
-        Me.LabelProductName.Text = "製品名"
-        Me.LabelProductName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'LabelVersion
         '
-        Me.LabelVersion.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.LabelVersion.Location = New System.Drawing.Point(136, 29)
-        Me.LabelVersion.Margin = New System.Windows.Forms.Padding(6, 0, 3, 0)
+        Me.LabelVersion.AccessibleDescription = Nothing
+        Me.LabelVersion.AccessibleName = Nothing
+        resources.ApplyResources(Me.LabelVersion, "LabelVersion")
+        Me.LabelVersion.Font = Nothing
         Me.LabelVersion.MaximumSize = New System.Drawing.Size(0, 16)
         Me.LabelVersion.Name = "LabelVersion"
-        Me.LabelVersion.Size = New System.Drawing.Size(257, 16)
-        Me.LabelVersion.TabIndex = 0
-        Me.LabelVersion.Text = "バージョン"
-        Me.LabelVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'LabelCopyright
         '
-        Me.LabelCopyright.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.LabelCopyright.Location = New System.Drawing.Point(136, 58)
-        Me.LabelCopyright.Margin = New System.Windows.Forms.Padding(6, 0, 3, 0)
+        Me.LabelCopyright.AccessibleDescription = Nothing
+        Me.LabelCopyright.AccessibleName = Nothing
+        resources.ApplyResources(Me.LabelCopyright, "LabelCopyright")
+        Me.LabelCopyright.Font = Nothing
         Me.LabelCopyright.MaximumSize = New System.Drawing.Size(0, 16)
         Me.LabelCopyright.Name = "LabelCopyright"
-        Me.LabelCopyright.Size = New System.Drawing.Size(257, 16)
-        Me.LabelCopyright.TabIndex = 0
-        Me.LabelCopyright.Text = "著作権"
-        Me.LabelCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'LabelCompanyName
         '
-        Me.LabelCompanyName.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.LabelCompanyName.Location = New System.Drawing.Point(136, 87)
-        Me.LabelCompanyName.Margin = New System.Windows.Forms.Padding(6, 0, 3, 0)
+        Me.LabelCompanyName.AccessibleDescription = Nothing
+        Me.LabelCompanyName.AccessibleName = Nothing
+        resources.ApplyResources(Me.LabelCompanyName, "LabelCompanyName")
+        Me.LabelCompanyName.Font = Nothing
         Me.LabelCompanyName.MaximumSize = New System.Drawing.Size(0, 16)
         Me.LabelCompanyName.Name = "LabelCompanyName"
-        Me.LabelCompanyName.Size = New System.Drawing.Size(257, 16)
-        Me.LabelCompanyName.TabIndex = 0
-        Me.LabelCompanyName.Text = "会社名"
-        Me.LabelCompanyName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'TextBoxDescription
         '
-        Me.TextBoxDescription.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TextBoxDescription.Location = New System.Drawing.Point(136, 119)
-        Me.TextBoxDescription.Margin = New System.Windows.Forms.Padding(6, 3, 3, 3)
-        Me.TextBoxDescription.Multiline = True
+        Me.TextBoxDescription.AccessibleDescription = Nothing
+        Me.TextBoxDescription.AccessibleName = Nothing
+        resources.ApplyResources(Me.TextBoxDescription, "TextBoxDescription")
+        Me.TextBoxDescription.BackgroundImage = Nothing
+        Me.TextBoxDescription.Font = Nothing
         Me.TextBoxDescription.Name = "TextBoxDescription"
         Me.TextBoxDescription.ReadOnly = True
-        Me.TextBoxDescription.ScrollBars = System.Windows.Forms.ScrollBars.Both
-        Me.TextBoxDescription.Size = New System.Drawing.Size(257, 53)
-        Me.TextBoxDescription.TabIndex = 0
         Me.TextBoxDescription.TabStop = False
-        Me.TextBoxDescription.Text = "説明:" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(ランタイムに、ラベルのテキストはアプリケーションのアセンブリ情報に置き換えられます。" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "プロジェクト デザイナの [アプリケーション] ペインで、" & _
-            "アプリケーションのアセンブリ情報をカスタマイズします。)"
         '
         'OKButton
         '
-        Me.OKButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.OKButton.AccessibleDescription = Nothing
+        Me.OKButton.AccessibleName = Nothing
+        resources.ApplyResources(Me.OKButton, "OKButton")
+        Me.OKButton.BackgroundImage = Nothing
         Me.OKButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.OKButton.Location = New System.Drawing.Point(318, 275)
+        Me.OKButton.Font = Nothing
         Me.OKButton.Name = "OKButton"
-        Me.OKButton.Size = New System.Drawing.Size(75, 21)
-        Me.OKButton.TabIndex = 0
-        Me.OKButton.Text = "OK(&O)"
         '
         'ChangeLog
         '
+        Me.ChangeLog.AccessibleDescription = Nothing
+        Me.ChangeLog.AccessibleName = Nothing
+        resources.ApplyResources(Me.ChangeLog, "ChangeLog")
+        Me.ChangeLog.BackgroundImage = Nothing
         Me.TableLayoutPanel.SetColumnSpan(Me.ChangeLog, 2)
-        Me.ChangeLog.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.ChangeLog.Location = New System.Drawing.Point(3, 178)
-        Me.ChangeLog.Multiline = True
+        Me.ChangeLog.Font = Nothing
         Me.ChangeLog.Name = "ChangeLog"
         Me.ChangeLog.ReadOnly = True
-        Me.ChangeLog.ScrollBars = System.Windows.Forms.ScrollBars.Both
-        Me.ChangeLog.Size = New System.Drawing.Size(390, 83)
-        Me.ChangeLog.TabIndex = 1
         '
         'TweenAboutBox
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
+        Me.AccessibleDescription = Nothing
+        Me.AccessibleName = Nothing
+        resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.BackgroundImage = Nothing
         Me.CancelButton = Me.OKButton
-        Me.ClientSize = New System.Drawing.Size(414, 315)
         Me.Controls.Add(Me.TableLayoutPanel)
+        Me.Font = Nothing
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
+        Me.Icon = Nothing
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "TweenAboutBox"
-        Me.Padding = New System.Windows.Forms.Padding(9, 8, 9, 8)
         Me.ShowInTaskbar = False
-        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "TweenAboutBox"
         Me.TopMost = True
         Me.TableLayoutPanel.ResumeLayout(False)
         Me.TableLayoutPanel.PerformLayout()
