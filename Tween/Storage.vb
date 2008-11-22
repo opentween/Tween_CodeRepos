@@ -21,17 +21,54 @@
 ' the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
 ' Boston, MA 02110-1301, USA.
 
-Imports Tween.StorageDataSetTableAdapters
 Imports System.Data.SQLite
+Imports Tween.StorageDataSetTableAdapters
 
 Public Class Storage
-    Private ReadOnly _connectionString As String = "data source=Tween.db"
+    Implements IDisposable
 
-    Public Sub CreateDataBase()
+    Private ReadOnly _connectionString As String
+
+    Private _postsTableAdapter As PostsTableAdapter
+
+    Private _replyMapTableAdapter As ReplyMapTableAdapter
+
+    Private _iconsTableAdapter As IconsTableAdapter
+
+    Public ReadOnly Property ConnectionString() As String
+        Get
+            Return Me._connectionString
+        End Get
+    End Property
+
+    Public ReadOnly Property Posts() As PostsTableAdapter
+        Get
+            Return Me._postsTableAdapter
+        End Get
+    End Property
+
+    Public ReadOnly Property ReplyMap() As ReplyMapTableAdapter
+        Get
+            Return Me._replyMapTableAdapter
+        End Get
+    End Property
+
+    Public ReadOnly Property Icons() As IconsTableAdapter
+        Get
+            Return Me._iconsTableAdapter
+        End Get
+    End Property
+
+    Public Sub New(ByVal connectionString As String)
+        Me._connectionString = connectionString
+        Me._iconsTableAdapter = New IconsTableAdapter(Me._connectionString)
+        Me._replyMapTableAdapter = New ReplyMapTableAdapter(Me._connectionString)
+        Me._postsTableAdapter = New PostsTableAdapter(Me._connectionString)
+    End Sub
+
+    Public Sub CreateTables()
         Using connection As SQLiteConnection = New SQLiteConnection(Me._connectionString)
             Using Command As SQLiteCommand = connection.CreateCommand()
-                connection.Open()
-
                 ' 投稿テーブルの作成
                 Command.CommandText = _
                     "CREATE TABLE IF NOT EXISTS Posts (" + _
@@ -72,5 +109,56 @@ Public Class Storage
                 Command.ExecuteNonQuery()
             End Using
         End Using
+    End Sub
+
+    Public Sub DropTables()
+        Using connection As SQLiteConnection = New SQLiteConnection(Me._connectionString)
+            Using Command As SQLiteCommand = connection.CreateCommand()
+                ' 投稿テーブルの削除
+                Command.CommandText = "DROP TABLE IF EXISTS Posts"
+                Command.ExecuteNonQuery()
+
+                ' 返信先マップテーブルの削除
+                Command.CommandText = "DROP TABLE IF EXISTS ReplyMap"
+                Command.ExecuteNonQuery()
+
+                ' アイコンテーブルの削除
+                Command.CommandText = "DROP TABLE IF EXISTS Icons"
+                Command.ExecuteNonQuery()
+            End Using
+        End Using
+    End Sub
+
+    Public Sub Vacuum()
+        Using connection As SQLiteConnection = New SQLiteConnection(Me._connectionString)
+            Using Command As SQLiteCommand = connection.CreateCommand()
+                Command.CommandText = "VACUUM"
+                Command.ExecuteNonQuery()
+            End Using
+        End Using
+    End Sub
+
+    Public Sub Attach(ByVal name As String, ByVal path As String)
+        Using connection As SQLiteConnection = New SQLiteConnection(Me._connectionString)
+            Using Command As SQLiteCommand = connection.CreateCommand()
+                Command.CommandText = String.Format("ATTACH DATABASE {0} AS {1}", path, name)
+                Command.ExecuteNonQuery()
+            End Using
+        End Using
+    End Sub
+
+    Public Sub Detach(ByVal name As String)
+        Using connection As SQLiteConnection = New SQLiteConnection(Me._connectionString)
+            Using Command As SQLiteCommand = connection.CreateCommand()
+                Command.CommandText = String.Format("DETACH DATABASE {0}", name)
+                Command.ExecuteNonQuery()
+            End Using
+        End Using
+    End Sub
+
+    Public Overridable Sub Dispose() Implements IDisposable.Dispose
+        Me._postsTableAdapter.Dispose()
+        Me._replyMapTableAdapter.Dispose()
+        Me._iconsTableAdapter.Dispose()
     End Sub
 End Class
