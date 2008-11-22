@@ -22,6 +22,7 @@
 ' Boston, MA 02110-1301, USA.
 
 Imports System.Data.SQLite
+Imports System.Text.RegularExpressions
 Imports Tween.StorageDataSetTableAdapters
 
 Public Class Storage
@@ -161,4 +162,13 @@ Public Class Storage
         Me._replyMapTableAdapter.Dispose()
         Me._iconsTableAdapter.Dispose()
     End Sub
+End Class
+
+<SQLiteFunction(Arguments:=2, FuncType:=FunctionType.Scalar, Name:="REGEXP")> _
+Public Class SQLiteRegexpFunction
+    Inherits SQLiteFunction
+
+    Public Overrides Function Invoke(ByVal args() As Object) As Object
+        Return Regex.IsMatch(CType(args(1), String), CType(args(0), String))
+    End Function
 End Class
