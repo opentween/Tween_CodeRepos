@@ -1666,12 +1666,13 @@ Namespace StorageDataSetTableAdapters
         
         Private _clearBeforeFill As Boolean
         
-        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Sub New()
-            MyBase.New
-            Me.ClearBeforeFill = true
-        End Sub
-        
+        ' See New(String) in StorageDataSet.vb
+        '<Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        'Public Sub New()
+        '    MyBase.New
+        '    Me.ClearBeforeFill = true
+        'End Sub
+
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Protected Friend ReadOnly Property Adapter() As Global.System.Data.SQLite.SQLiteDataAdapter
             Get
@@ -2152,7 +2153,8 @@ Namespace StorageDataSetTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Private Sub InitConnection()
             Me._connection = New Global.System.Data.SQLite.SQLiteConnection
-            Me._connection.ConnectionString = "data source=Tween.db"
+            ' 直接編集したコード
+            Me._connection.ConnectionString = Me._connectionString
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
@@ -2520,12 +2522,13 @@ Namespace StorageDataSetTableAdapters
         Private _commandCollection() As Global.System.Data.SQLite.SQLiteCommand
         
         Private _clearBeforeFill As Boolean
-        
-        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Sub New()
-            MyBase.New
-            Me.ClearBeforeFill = true
-        End Sub
+
+        ' See New(String) in StorageDataSet.vb
+        '<Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        'Public Sub New()
+        '    MyBase.New
+        '    Me.ClearBeforeFill = true
+        'End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Protected Friend ReadOnly Property Adapter() As Global.System.Data.SQLite.SQLiteDataAdapter
@@ -2650,7 +2653,8 @@ Namespace StorageDataSetTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Private Sub InitConnection()
             Me._connection = New Global.System.Data.SQLite.SQLiteConnection
-            Me._connection.ConnectionString = "data source=Tween.db"
+            ' 直接編集したコード
+            Me._connection.ConnectionString = Me._connectionString
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
@@ -2758,12 +2762,13 @@ Namespace StorageDataSetTableAdapters
         
         Private _clearBeforeFill As Boolean
         
-        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
-        Public Sub New()
-            MyBase.New
-            Me.ClearBeforeFill = true
-        End Sub
-        
+        ' See New(String) in StorageDataSet.vb
+        '<Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        'Public Sub New()
+        '    MyBase.New
+        '    Me.ClearBeforeFill = true
+        'End Sub
+
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Protected Friend ReadOnly Property Adapter() As Global.System.Data.SQLite.SQLiteDataAdapter
             Get
@@ -2982,7 +2987,8 @@ Namespace StorageDataSetTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
         Private Sub InitConnection()
             Me._connection = New Global.System.Data.SQLite.SQLiteConnection
-            Me._connection.ConnectionString = "data source=Tween.db"
+            ' 直接編集したコード
+            Me._connection.ConnectionString = Me._connectionString
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _

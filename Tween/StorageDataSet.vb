@@ -26,6 +26,14 @@ Imports System.Data.SQLite
 
 Namespace StorageDataSetTableAdapters
     Partial Class PostsTableAdapter
+        Private ReadOnly _connectionString As String
+
+        Public Sub New(ByVal connectionString As String)
+            MyBase.New()
+            Me.ClearBeforeFill = True
+            Me._connectionString = connectionString
+        End Sub
+
         Public Overridable Overloads Function FillBy(ByVal dataTable As StorageDataSet.PostsDataTable, ByVal query As String) As Integer
             Dim command As SQLiteCommand = New SQLiteCommand(query, Me.Connection)
             command.CommandType = CommandType.Text
@@ -45,6 +53,14 @@ Namespace StorageDataSetTableAdapters
     End Class
 
     Partial Class ReplyMapTableAdapter
+        Private ReadOnly _connectionString As String
+
+        Public Sub New(ByVal connectionString As String)
+            MyBase.New()
+            Me.ClearBeforeFill = True
+            Me._connectionString = connectionString
+        End Sub
+
         Public Overridable Overloads Function FillBy(ByVal dataTable As StorageDataSet.ReplyMapDataTable, ByVal query As String) As Integer
             Dim command As SQLiteCommand = New SQLiteCommand(query, Me.Connection)
             command.CommandType = CommandType.Text
@@ -64,6 +80,14 @@ Namespace StorageDataSetTableAdapters
     End Class
 
     Partial Class IconsTableAdapter
+        Private ReadOnly _connectionString As String
+
+        Public Sub New(ByVal connectionString As String)
+            MyBase.New()
+            Me.ClearBeforeFill = True
+            Me._connectionString = connectionString
+        End Sub
+
         Public Overridable Overloads Function FillBy(ByVal dataTable As StorageDataSet.IconsDataTable, ByVal query As String) As Integer
             Dim command As SQLiteCommand = New SQLiteCommand(query, Me.Connection)
             command.CommandType = CommandType.Text
