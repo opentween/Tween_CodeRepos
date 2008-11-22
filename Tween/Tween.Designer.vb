@@ -54,6 +54,16 @@ Partial Class TweenMain
         Me.SaveIconPictureToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.NameLabel = New System.Windows.Forms.Label
         Me.PostBrowser = New System.Windows.Forms.WebBrowser
+        Me.ContextMenuStrip4 = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.ToolStripMenuItem2 = New System.Windows.Forms.ToolStripMenuItem
+        Me.WikipediaToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.GoogleToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.TwitterSrchToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.TwitterSearchToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.CurrentTabToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.ToolStripSeparator13 = New System.Windows.Forms.ToolStripSeparator
+        Me.ToolStripMenuItem3 = New System.Windows.Forms.ToolStripMenuItem
+        Me.ToolStripMenuItem4 = New System.Windows.Forms.ToolStripMenuItem
         Me.DateTimeLabel = New System.Windows.Forms.Label
         Me.StatusText = New System.Windows.Forms.TextBox
         Me.lblLen = New System.Windows.Forms.Label
@@ -152,6 +162,7 @@ Partial Class TweenMain
         Me.TableLayoutPanel1.SuspendLayout()
         CType(Me.UserPicture, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.ContextMenuStrip3.SuspendLayout()
+        Me.ContextMenuStrip4.SuspendLayout()
         Me.MenuStrip1.SuspendLayout()
         Me.ContextMenuStrip1.SuspendLayout()
         Me.ContextMenuStrip2.SuspendLayout()
@@ -368,9 +379,63 @@ Partial Class TweenMain
         '
         Me.PostBrowser.AllowWebBrowserDrop = False
         Me.TableLayoutPanel1.SetColumnSpan(Me.PostBrowser, 2)
+        Me.PostBrowser.ContextMenuStrip = Me.ContextMenuStrip4
         resources.ApplyResources(Me.PostBrowser, "PostBrowser")
+        Me.PostBrowser.IsWebBrowserContextMenuEnabled = False
         Me.PostBrowser.Name = "PostBrowser"
         Me.PostBrowser.TabStop = False
+        '
+        'ContextMenuStrip4
+        '
+        Me.ContextMenuStrip4.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripMenuItem2, Me.ToolStripSeparator13, Me.ToolStripMenuItem3, Me.ToolStripMenuItem4})
+        Me.ContextMenuStrip4.Name = "ContextMenuStrip4"
+        resources.ApplyResources(Me.ContextMenuStrip4, "ContextMenuStrip4")
+        '
+        'ToolStripMenuItem2
+        '
+        Me.ToolStripMenuItem2.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.WikipediaToolStripMenuItem, Me.GoogleToolStripMenuItem, Me.TwitterSrchToolStripMenuItem, Me.TwitterSearchToolStripMenuItem, Me.CurrentTabToolStripMenuItem})
+        Me.ToolStripMenuItem2.Name = "ToolStripMenuItem2"
+        resources.ApplyResources(Me.ToolStripMenuItem2, "ToolStripMenuItem2")
+        '
+        'WikipediaToolStripMenuItem
+        '
+        Me.WikipediaToolStripMenuItem.Name = "WikipediaToolStripMenuItem"
+        resources.ApplyResources(Me.WikipediaToolStripMenuItem, "WikipediaToolStripMenuItem")
+        '
+        'GoogleToolStripMenuItem
+        '
+        Me.GoogleToolStripMenuItem.Name = "GoogleToolStripMenuItem"
+        resources.ApplyResources(Me.GoogleToolStripMenuItem, "GoogleToolStripMenuItem")
+        '
+        'TwitterSrchToolStripMenuItem
+        '
+        Me.TwitterSrchToolStripMenuItem.Name = "TwitterSrchToolStripMenuItem"
+        resources.ApplyResources(Me.TwitterSrchToolStripMenuItem, "TwitterSrchToolStripMenuItem")
+        '
+        'TwitterSearchToolStripMenuItem
+        '
+        Me.TwitterSearchToolStripMenuItem.Name = "TwitterSearchToolStripMenuItem"
+        resources.ApplyResources(Me.TwitterSearchToolStripMenuItem, "TwitterSearchToolStripMenuItem")
+        '
+        'CurrentTabToolStripMenuItem
+        '
+        resources.ApplyResources(Me.CurrentTabToolStripMenuItem, "CurrentTabToolStripMenuItem")
+        Me.CurrentTabToolStripMenuItem.Name = "CurrentTabToolStripMenuItem"
+        '
+        'ToolStripSeparator13
+        '
+        Me.ToolStripSeparator13.Name = "ToolStripSeparator13"
+        resources.ApplyResources(Me.ToolStripSeparator13, "ToolStripSeparator13")
+        '
+        'ToolStripMenuItem3
+        '
+        Me.ToolStripMenuItem3.Name = "ToolStripMenuItem3"
+        resources.ApplyResources(Me.ToolStripMenuItem3, "ToolStripMenuItem3")
+        '
+        'ToolStripMenuItem4
+        '
+        Me.ToolStripMenuItem4.Name = "ToolStripMenuItem4"
+        resources.ApplyResources(Me.ToolStripMenuItem4, "ToolStripMenuItem4")
         '
         'DateTimeLabel
         '
@@ -820,6 +885,7 @@ Partial Class TweenMain
         Me.TableLayoutPanel1.PerformLayout()
         CType(Me.UserPicture, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ContextMenuStrip3.ResumeLayout(False)
+        Me.ContextMenuStrip4.ResumeLayout(False)
         Me.MenuStrip1.ResumeLayout(False)
         Me.MenuStrip1.PerformLayout()
         Me.ContextMenuStrip1.ResumeLayout(False)
@@ -939,5 +1005,15 @@ Partial Class TweenMain
     Friend WithEvents IsgdToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents UrlConvertAutoToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents UrlUndoToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ContextMenuStrip4 As System.Windows.Forms.ContextMenuStrip
+    Friend WithEvents ToolStripMenuItem2 As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator13 As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents ToolStripMenuItem3 As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripMenuItem4 As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents WikipediaToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents GoogleToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents TwitterSrchToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents TwitterSearchToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents CurrentTabToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class
