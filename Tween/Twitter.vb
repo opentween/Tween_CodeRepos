@@ -196,6 +196,7 @@ Partial Public Class Twitter
         _ShortUrlService.Add("http://twurl.nl/")
         _ShortUrlService.Add("http://cli.gs/")
         _ShortUrlService.Add("http://rubyurl.com/")
+        _ShortUrlService.Add("http://budurl.com/")
     End Sub
 
     Private Function SignIn() As String
