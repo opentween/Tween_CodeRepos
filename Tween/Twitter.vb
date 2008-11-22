@@ -179,24 +179,26 @@ Partial Public Class Twitter
         _proxyUser = ProxyUser
         _proxyPassword = ProxyPassword
 
-        _ShortUrlService.Add("http://tinyurl.com/")
-        _ShortUrlService.Add("http://is.gd/")
-        _ShortUrlService.Add("http://snipurl.com/")
-        _ShortUrlService.Add("http://snurl.com/")
-        _ShortUrlService.Add("http://nsfw.in/")
-        _ShortUrlService.Add("http://qurlyq.com/")
-        _ShortUrlService.Add("http://dwarfurl.com/")
-        _ShortUrlService.Add("http://icanhaz.com/")
-        _ShortUrlService.Add("http://tiny.cc/")
-        _ShortUrlService.Add("http://urlenco.de/")
-        _ShortUrlService.Add("http://bit.ly/")
-        _ShortUrlService.Add("http://piurl.com/")
-        _ShortUrlService.Add("http://linkbee.com/")
-        _ShortUrlService.Add("http://traceurl.com/")
-        _ShortUrlService.Add("http://twurl.nl/")
-        _ShortUrlService.Add("http://cli.gs/")
-        _ShortUrlService.Add("http://rubyurl.com/")
-        _ShortUrlService.Add("http://budurl.com/")
+        _ShortUrlService.AddRange(New String() { _
+            "http://tinyurl.com/", _
+            "http://is.gd/", _
+            "http://snipurl.com/", _
+            "http://snurl.com/", _
+            "http://nsfw.in/", _
+            "http://qurlyq.com/", _
+            "http://dwarfurl.com/", _
+            "http://icanhaz.com/", _
+            "http://tiny.cc/", _
+            "http://urlenco.de/", _
+            "http://bit.ly/", _
+            "http://piurl.com/", _
+            "http://linkbee.com/", _
+            "http://traceurl.com/", _
+            "http://twurl.nl/", _
+            "http://cli.gs/", _
+            "http://rubyurl.com/", _
+            "http://budurl.com/" _
+        })
     End Sub
 
     Private Function SignIn() As String
