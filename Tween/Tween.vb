@@ -27,7 +27,7 @@ Imports System.Text
 Imports System.Text.RegularExpressions
 Imports Tween.TweenCustomControl
 Imports System.IO
-'Imports System.Web
+Imports System.Web
 
 Public Class TweenMain
     Private clsTw As Twitter            'Twitter用通信データ処理カスタムクラス
@@ -7291,6 +7291,47 @@ RETRY:
 
     Private Sub MyList_CoumnWidthChanging(ByVal sender As System.Object, ByVal e As ColumnWidthChangingEventArgs)
         _columnChangeFlag = True
+    End Sub
+
+    Private Sub ToolStripMenuItem3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripMenuItem3.Click
+        PostBrowser.Document.ExecCommand("Copy", False, Nothing)
+    End Sub
+
+    Private Sub ToolStripMenuItem4_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripMenuItem4.Click
+        PostBrowser.Document.ExecCommand("SelectAll", False, Nothing)
+    End Sub
+    Private Sub saveClipbrd(ByRef buffer As DataObject)
+        buffer = CType(Clipboard.GetDataObject(), DataObject)
+    End Sub
+    Private Sub restoreClipbrd(ByRef buffer As DataObject)
+        Clipboard.SetDataObject(buffer, False, 5, 200)
+    End Sub
+    Private Sub doSearchToolStrip(ByVal url As String)
+        Dim buf As New DataObject
+        Dim selText As String
+        Dim tmp As String
+        saveClipbrd(buf)
+        PostBrowser.Document.ExecCommand("Copy", False, Nothing)
+        selText = HttpUtility.UrlEncode(Clipboard.GetText())
+        tmp = String.Format(url, selText)
+        ExecWorker.RunWorkerAsync(tmp)
+        restoreClipbrd(buf)
+    End Sub
+
+    Private Sub WikipediaToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles WikipediaToolStripMenuItem.Click
+        doSearchToolStrip("http://ja.wikipedia.org/wiki/{0}")
+    End Sub
+
+    Private Sub GoogleToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles GoogleToolStripMenuItem.Click
+        doSearchToolStrip("http://www.google.co.jp/search?q={0}")
+    End Sub
+
+    Private Sub TwitterSrchToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TwitterSrchToolStripMenuItem.Click
+        doSearchToolStrip("http://pcod.no-ip.org/yats/search?lang=ja&query={0}")
+    End Sub
+
+    Private Sub TwitterSearchToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TwitterSearchToolStripMenuItem.Click
+        doSearchToolStrip("http://search.twitter.com/search?q=&ands={0}&phrase=&ors=&nots=&tag=&lang=ja&from=&to=&ref=&near=&within=15&units=mi&since=&until=&rpp=15")
     End Sub
 End Class
 
