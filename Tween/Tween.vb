@@ -1606,7 +1606,7 @@ Public Class TweenMain
                     ret = clsTw.GetTimeline(tlList, args.page, _initial, args.endPage, Twitter.GetTypes.GET_REPLY, TIconList.Images.Keys, imgs, getDM)
                 Case WORKERTYPE.DirectMessegeRcv
                     ret = clsTw.GetDirectMessage(tlList, args.page, args.endPage, Twitter.GetTypes.GET_DMRCV, TIconList.Images.Keys, imgs)
-                    If ret = "" AndAlso _initial AndAlso SettingDialog.StartupFollowers Then
+                    If _initial AndAlso SettingDialog.StartupFollowers Then
                         ret = clsTw.GetFollowers()
                     End If
                 Case WORKERTYPE.DirectMessegeSnt
