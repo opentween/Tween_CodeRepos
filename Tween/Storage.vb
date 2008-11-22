@@ -22,9 +22,55 @@
 ' Boston, MA 02110-1301, USA.
 
 Imports Tween.StorageDataSetTableAdapters
+Imports System.Data.SQLite
 
 Public Class Storage
-    Public Sub Test()
-        Dim man As New TableAdapterManager()
+    Private ReadOnly _connectionString As String = "data source=Tween.db"
+
+    Public Sub CreateDataBase()
+        Using connection As SQLiteConnection = New SQLiteConnection(Me._connectionString)
+            Using Command As SQLiteCommand = connection.CreateCommand()
+                connection.Open()
+
+                ' 投稿テーブルの作成
+                Command.CommandText = _
+                    "CREATE TABLE IF NOT EXISTS Posts (" + _
+                        "Id INTEGER NOT NULL PRIMARY KEY," + _
+                        "Timestamp DATETIME NOT NULL," + _
+                        "Name TEXT NOT NULL," + _
+                        "ScreenName TEXT NOT NULL," + _
+                        "ImageUri TEXT NOT NULL," + _
+                        "Text TEXT NOT NULL," + _
+                        "HyperText TEXT NOT NULL," + _
+                        "Source TEXT NOT NULL," + _
+                        "IsRead BIT NOT NULL," + _
+                        "IsFavorited BIT NOT NULL," + _
+                        "IsReply BIT NOT NULL," + _
+                        "IsProtected BIT NOT NULL," + _
+                        "IsOneWayLove BIT NOT NULL," + _
+                        "Tags TEXT NOT NULL" + _
+                    ")"
+                Command.ExecuteNonQuery()
+
+                ' 返信先マップテーブルの作成
+                Command.CommandText = _
+                    "CREATE TABLE IF NOT EXISTS ReplyMap (" + _
+                        "PostId INTEGER NOT NULL," + _
+                        "InReplyToUser TEXT NOT NULL," + _
+                        "InReplyToId INTEGER NOT NULL" + _
+                    ")"
+                Command.ExecuteNonQuery()
+
+                ' アイコンテーブルの作成
+                Command.CommandText = _
+                    "CREATE TABLE IF NOT EXISTS Icons (" + _
+                        "ImageUri TEXT NOT NULL PRIMARY KEY," + _
+                        "Width INT NOT NULL," + _
+                        "Height INT NOT NULL," + _
+                        "Image BLOB NOT NULL" + _
+                    ")"
+                Command.ExecuteNonQuery()
+            End Using
+        End Using
     End Sub
 End Class
