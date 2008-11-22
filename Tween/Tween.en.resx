@@ -532,4 +532,28 @@
   <data name="AboutMenuItem.Text" xml:space="preserve">
     <value>&amp;About Tween...</value>
   </data>
+  <data name="CurrentTabToolStripMenuItem.Text" xml:space="preserve">
+    <value>Current Tab</value>
+  </data>
+  <data name="GoogleToolStripMenuItem.Text" xml:space="preserve">
+    <value>Google</value>
+  </data>
+  <data name="ToolStripMenuItem2.Text" xml:space="preserve">
+    <value>Search for Selected String From</value>
+  </data>
+  <data name="ToolStripMenuItem3.Text" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="ToolStripMenuItem4.Text" xml:space="preserve">
+    <value>Select All</value>
+  </data>
+  <data name="TwitterSearchToolStripMenuItem.Text" xml:space="preserve">
+    <value>Twitter Search (search.twitter.com)</value>
+  </data>
+  <data name="TwitterSrchToolStripMenuItem.Text" xml:space="preserve">
+    <value>Twitter Search</value>
+  </data>
+  <data name="WikipediaToolStripMenuItem.Text" xml:space="preserve">
+    <value>Wikipedia</value>
+  </data>
 </root>
