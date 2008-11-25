@@ -3405,6 +3405,8 @@ Public Class TweenMain
                             brs2 = _brsBackColorAtYou
                         Case _clAtFromTarget
                             brs2 = _brsBackColorAtTo
+                        Case Else
+                            brs2 = _brsBackColorNone
                     End Select
                     e.Graphics.FillRectangle(brs2, e.Bounds)
 
