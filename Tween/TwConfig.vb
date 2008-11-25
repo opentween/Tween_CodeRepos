@@ -51,136 +51,6 @@ Public Class ListElement
         End Set
     End Property
 
-    '<ConfigurationProperty("width1", DefaultValue:=30)> _
-    'Public Property Width1() As Integer
-    '    Get
-    '        Return CInt(Me("width1"))
-    '    End Get
-    '    Set(ByVal value As Integer)
-    '        Me("width1") = value
-    '    End Set
-    'End Property
-
-    '<ConfigurationProperty("width2", DefaultValue:=80)> _
-    'Public Property Width2() As Integer
-    '    Get
-    '        Return CInt(Me("width2"))
-    '    End Get
-    '    Set(ByVal value As Integer)
-    '        Me("width2") = value
-    '    End Set
-    'End Property
-
-    '<ConfigurationProperty("width3", DefaultValue:=290)> _
-    'Public Property Width3() As Integer
-    '    Get
-    '        Return CInt(Me("width3"))
-    '    End Get
-    '    Set(ByVal value As Integer)
-    '        Me("width3") = value
-    '    End Set
-    'End Property
-
-    '<ConfigurationProperty("width4", DefaultValue:=120)> _
-    'Public Property Width4() As Integer
-    '    Get
-    '        Return CInt(Me("width4"))
-    '    End Get
-    '    Set(ByVal value As Integer)
-    '        Me("width4") = value
-    '    End Set
-    'End Property
-
-    '<ConfigurationProperty("width5", DefaultValue:=50)> _
-    'Public Property Width5() As Integer
-    '    Get
-    '        Return CInt(Me("width5"))
-    '    End Get
-    '    Set(ByVal value As Integer)
-    '        Me("width5") = value
-    '    End Set
-    'End Property
-
-    '<ConfigurationProperty("sortcolumn", DefaultValue:=3)> _
-    'Public Property SortColumn() As Integer
-    '    Get
-    '        Return CInt(Me("sortcolumn"))
-    '    End Get
-    '    Set(ByVal value As Integer)
-    '        Me("sortcolumn") = value
-    '    End Set
-    'End Property
-
-    '<ConfigurationProperty("sortorder", DefaultValue:=1)> _
-    'Public Property SortOrder() As Integer
-    '    Get
-    '        Return CInt(Me("sortorder"))
-    '    End Get
-    '    Set(ByVal value As Integer)
-    '        Me("sortorder") = value
-    '    End Set
-    'End Property
-
-    '<ConfigurationProperty("iconsize", DefaultValue:=IconSizes.Icon24)> _
-    'Public Property IconSize() As IconSizes
-    '    Get
-    '        Return Me("iconsize")
-    '    End Get
-    '    Set(ByVal value As IconSizes)
-    '        Me("iconsize") = value
-    '    End Set
-    'End Property
-
-    '<ConfigurationProperty("displayindex1", DefaultValue:=0)> _
-    'Public Property DisplayIndex1() As Integer
-    '    Get
-    '        Return CInt(Me("displayindex1"))
-    '    End Get
-    '    Set(ByVal value As Integer)
-    '        Me("displayindex1") = value
-    '    End Set
-    'End Property
-
-    '<ConfigurationProperty("displayindex2", DefaultValue:=1)> _
-    'Public Property DisplayIndex2() As Integer
-    '    Get
-    '        Return CInt(Me("displayindex2"))
-    '    End Get
-    '    Set(ByVal value As Integer)
-    '        Me("displayindex2") = value
-    '    End Set
-    'End Property
-
-    '<ConfigurationProperty("displayindex3", DefaultValue:=2)> _
-    'Public Property DisplayIndex3() As Integer
-    '    Get
-    '        Return CInt(Me("displayindex3"))
-    '    End Get
-    '    Set(ByVal value As Integer)
-    '        Me("displayindex3") = value
-    '    End Set
-    'End Property
-
-    '<ConfigurationProperty("displayindex4", DefaultValue:=3)> _
-    'Public Property DisplayIndex4() As Integer
-    '    Get
-    '        Return CInt(Me("displayindex4"))
-    '    End Get
-    '    Set(ByVal value As Integer)
-    '        Me("displayindex4") = value
-    '    End Set
-    'End Property
-
-    '<ConfigurationProperty("displayindex5", DefaultValue:=4)> _
-    'Public Property DisplayIndex5() As Integer
-    '    Get
-    '        Return CInt(Me("displayindex5"))
-    '    End Get
-    '    Set(ByVal value As Integer)
-    '        Me("displayindex5") = value
-    '    End Set
-    'End Property
-
     <ConfigurationProperty("unreadmanage", DefaultValue:=True)> _
     Public Property UnreadManage() As Boolean
         Get
@@ -213,119 +83,6 @@ Public Class ListElement
 
 End Class
 
-'Public Class LogPost
-'    Inherits ConfigurationElement
-
-'    Public Enum Unread
-'        Unread = 0
-'        Readed = 1
-'    End Enum
-
-'    Public Enum Fav
-'        NoFav = 0
-'        Fav = 1
-'    End Enum
-
-'    Public Sub New()
-
-'    End Sub
-
-'    Public Sub New(ByVal name As String)
-'        Me("name") = name
-'    End Sub
-
-'    <ConfigurationProperty("name", DefaultValue:="")> _
-'    Public Property Name() As String
-'        Get
-'            Return CStr(Me("name"))
-'        End Get
-'        Set(ByVal value As String)
-'            Me("name") = value
-'        End Set
-'    End Property
-
-'    <ConfigurationProperty("name2", DefaultValue:="")> _
-'    Public Property Name2() As String
-'        Get
-'            Return CStr(Me("name2"))
-'        End Get
-'        Set(ByVal value As String)
-'            Me("name2") = value
-'        End Set
-'    End Property
-
-'    <ConfigurationProperty("id", DefaultValue:="")> _
-'    Public Property Id() As String
-'        Get
-'            Return CStr(Me("id"))
-'        End Get
-'        Set(ByVal value As String)
-'            Me("id") = value
-'        End Set
-'    End Property
-
-'    <ConfigurationProperty("nick", DefaultValue:="")> _
-'    Public Property Nick() As String
-'        Get
-'            Return CStr(Me("nick"))
-'        End Get
-'        Set(ByVal value As String)
-'            Me("nick") = value
-'        End Set
-'    End Property
-
-'    <ConfigurationProperty("post", DefaultValue:="")> _
-'    Public Property Post() As String
-'        Get
-'            Return CStr(Me("post"))
-'        End Get
-'        Set(ByVal value As String)
-'            Me("post") = value
-'        End Set
-'    End Property
-
-'    <ConfigurationProperty("pdate", DefaultValue:="")> _
-'    Public Property PostDate() As String
-'        Get
-'            Return CStr(Me("pdate"))
-'        End Get
-'        Set(ByVal value As String)
-'            Me("pdate") = value
-'        End Set
-'    End Property
-
-'    <ConfigurationProperty("imgurl", DefaultValue:="")> _
-'    Public Property ImageUrl() As String
-'        Get
-'            Return CStr(Me("imgurl"))
-'        End Get
-'        Set(ByVal value As String)
-'            Me("imgurl") = value
-'        End Set
-'    End Property
-
-'    <ConfigurationProperty("unread", DefaultValue:=Unread.Unread)> _
-'    Public Property IsUnread() As Unread
-'        Get
-'            Return CType(Me("unread"), Unread)
-'        End Get
-'        Set(ByVal value As Unread)
-'            Me("unread") = value
-'        End Set
-'    End Property
-
-'    <ConfigurationProperty("fav", DefaultValue:=Fav.NoFav)> _
-'    Public Property IsFav() As Fav
-'        Get
-'            Return CType(Me("fav"), Fav)
-'        End Get
-'        Set(ByVal value As Fav)
-'            Me("fav") = value
-'        End Set
-'    End Property
-
-'End Class
-
 Public Class SelectedUser
     Inherits ConfigurationElement
 
@@ -337,7 +94,6 @@ Public Class SelectedUser
         Me("name") = name
     End Sub
 
-    '<ConfigurationProperty("name", DefaultValue:="", IsKey:=True, IsRequired:=True)> _
     <ConfigurationProperty("name", DefaultValue:="")> _
     Public Property Name() As String
         Get
@@ -540,116 +296,6 @@ Public Class ListElementCollection
     End Sub
 End Class
 
-'Public Class LogPostCollection
-'    Inherits ConfigurationElementCollection
-
-'    Public Sub New()
-'        Dim lPost As LogPost = CType(CreateNewElement(), LogPost)
-'        Add(lPost)
-'    End Sub
-
-'    Public Sub New(ByVal Name As String)
-'        Dim lPost As LogPost = CType(CreateNewElement(Name), LogPost)
-'        Add(lPost)
-'    End Sub
-
-'    Protected Overloads Overrides Function CreateNewElement() As System.Configuration.ConfigurationElement
-'        Return New LogPost
-'    End Function
-
-'    Protected Overloads Overrides Function CreateNewElement(ByVal Name As String) As System.Configuration.ConfigurationElement
-'        Return New LogPost(Name)
-'    End Function
-
-'    Protected Overrides Function GetElementKey(ByVal element As System.Configuration.ConfigurationElement) As Object
-'        Return CType(element, LogPost).Name
-'    End Function
-
-'    Public Overrides ReadOnly Property CollectionType() As ConfigurationElementCollectionType
-'        Get
-'            Return ConfigurationElementCollectionType.AddRemoveClearMap
-'        End Get
-'    End Property
-
-'    Public Shadows Property AddElementName() As String
-'        Get
-'            Return MyBase.AddElementName
-'        End Get
-'        Set(ByVal value As String)
-'            MyBase.AddElementName = value
-'        End Set
-'    End Property
-
-'    Public Shadows Property ClearElementName() As String
-'        Get
-'            Return MyBase.ClearElementName
-'        End Get
-'        Set(ByVal value As String)
-'            MyBase.ClearElementName = value
-'        End Set
-'    End Property
-
-'    Public Shadows ReadOnly Property RemoveElementName() As String
-'        Get
-'            Return MyBase.RemoveElementName
-'        End Get
-'    End Property
-
-'    Public Shadows ReadOnly Property Count() As Integer
-'        Get
-'            Return MyBase.Count
-'        End Get
-'    End Property
-
-'    Default Public Shadows Property Item(ByVal index As Integer) As LogPost
-'        Get
-'            Return CType(BaseGet(index), LogPost)
-'        End Get
-'        Set(ByVal value As LogPost)
-'            If Not (BaseGet(index)) Is Nothing Then
-'                BaseRemoveAt(index)
-'            End If
-'            BaseAdd(index, value)
-'        End Set
-'    End Property
-
-'    Default Public Shadows ReadOnly Property Item(ByVal Name As String) As LogPost
-'        Get
-'            Return CType(BaseGet(Name), LogPost)
-'        End Get
-'    End Property
-
-'    Public Function IndexOf(ByVal lPost As LogPost) As Integer
-'        Return BaseIndexOf(lPost)
-'    End Function
-
-'    Public Sub Add(ByVal lPost As LogPost)
-'        BaseAdd(lPost)
-'    End Sub
-
-'    Protected Overrides Sub BaseAdd(ByVal element As System.Configuration.ConfigurationElement)
-'        MyBase.BaseAdd(element)
-'    End Sub
-
-'    Public Overloads Sub Remove(ByVal lPost As LogPost)
-'        If BaseIndexOf(lPost) >= 0 Then
-'            BaseRemove(lPost.Name)
-'        End If
-'    End Sub
-
-'    Public Sub RemoveAt(ByVal index As Integer)
-'        BaseRemoveAt(index)
-'    End Sub
-
-'    Public Overloads Sub Remove(ByVal name As String)
-'        BaseRemove(name)
-'    End Sub
-
-'    Public Sub Clear()
-'        BaseClear()
-'    End Sub
-'End Class
-
 Public Class SelectedUserCollection
     Inherits ConfigurationElementCollection
 
@@ -758,36 +404,6 @@ End Class
 Public NotInheritable Class ListSection
     Inherits ConfigurationSection
 
-    'Public Enum LogUnitEnum
-    '    Minute
-    '    Hour
-    '    Day
-    'End Enum
-
-    'Public Enum IconSizes
-    '    IconNone = 0
-    '    Icon16 = 1
-    '    Icon24 = 2
-    '    Icon48 = 3
-    '    Icon48_2 = 4
-    'End Enum
-
-    'Public Enum NameBalloonEnum
-    '    None
-    '    UserID
-    '    NickName
-    'End Enum
-
-    'Public Enum DispTitleEnum
-    '    None
-    '    Ver
-    '    Post
-    '    UnreadRepCount
-    '    UnreadAllCount
-    '    UnreadAllRepCount
-    '    UnreadCountAllCount
-    'End Enum
-
     <ConfigurationProperty("listelement", IsDefaultCollection:=False)> _
     Public Property ListElement() As ListElementCollection
         Get
@@ -797,16 +413,6 @@ Public NotInheritable Class ListSection
             Me("listelement") = value
         End Set
     End Property
-
-    '<ConfigurationProperty("lpost", IsDefaultCollection:=False)> _
-    'Public Property LogPosts() As LogPostCollection
-    '    Get
-    '        Return CType(Me("lpost"), LogPostCollection)
-    '    End Get
-    '    Set(ByVal value As LogPostCollection)
-    '        Me("lpost") = value
-    '    End Set
-    'End Property
 
     <ConfigurationProperty("username", DefaultValue:="")> _
     Public Property UserName() As String
@@ -844,36 +450,6 @@ Public NotInheritable Class ListSection
             End If
         End Set
     End Property
-
-    '<ConfigurationProperty("lastid", DefaultValue:="")> _
-    'Public Property LastID() As String
-    '    Get
-    '        Return CStr(Me("lastid"))
-    '    End Get
-    '    Set(ByVal value As String)
-    '        Me("lastid") = value
-    '    End Set
-    'End Property
-
-    '<ConfigurationProperty("lastname", DefaultValue:="")> _
-    'Public Property LastName() As String
-    '    Get
-    '        Return CStr(Me("lastname"))
-    '    End Get
-    '    Set(ByVal value As String)
-    '        Me("lastname") = value
-    '    End Set
-    'End Property
-
-    '<ConfigurationProperty("favname", DefaultValue:="")> _
-    'Public Property FavName() As String
-    '    Get
-    '        Return CStr(Me("favname"))
-    '    End Get
-    '    Set(ByVal value As String)
-    '        Me("favname") = value
-    '    End Set
-    'End Property
 
     <ConfigurationProperty("formlocation", DefaultValue:="0, 0")> _
     Public Property FormLocation() As Point
@@ -957,27 +533,6 @@ Public NotInheritable Class ListSection
             Me("dmperiod") = value
         End Set
     End Property
-
-    '<ConfigurationProperty("logdays", DefaultValue:=3), _
-    ' IntegerValidator(MaxValue:=999, MinValue:=0)> _
-    'Public Property LogDays() As Integer
-    '    Get
-    '        Return CInt(Me("logdays"))
-    '    End Get
-    '    Set(ByVal value As Integer)
-    '        Me("logdays") = value
-    '    End Set
-    'End Property
-
-    '<ConfigurationProperty("logunit", DefaultValue:=LogUnitEnum.Hour)> _
-    'Public Property LogUnit() As LogUnitEnum
-    '    Get
-    '        Return Me("logunit")
-    '    End Get
-    '    Set(ByVal value As LogUnitEnum)
-    '        Me("logunit") = value
-    '    End Set
-    'End Property
 
     <ConfigurationProperty("readpages", DefaultValue:=10), _
      IntegerValidator(MaxValue:=999, MinValue:=0)> _
@@ -1071,26 +626,6 @@ Public NotInheritable Class ListSection
             Me("newallpop") = value
         End Set
     End Property
-
-    '<ConfigurationProperty("newreplypop", DefaultValue:=False)> _
-    'Public Property NewReplyPop() As Boolean
-    '    Get
-    '        Return CBool(Me("newreplypop"))
-    '    End Get
-    '    Set(ByVal value As Boolean)
-    '        Me("newreplypop") = value
-    '    End Set
-    'End Property
-
-    '<ConfigurationProperty("newdmpop", DefaultValue:=False)> _
-    'Public Property NewDMPop() As Boolean
-    '    Get
-    '        Return CBool(Me("newdmpop"))
-    '    End Get
-    '    Set(ByVal value As Boolean)
-    '        Me("newdmpop") = value
-    '    End Set
-    'End Property
 
     <ConfigurationProperty("statustext", DefaultValue:="")> _
     Public Property StatusText() As String
