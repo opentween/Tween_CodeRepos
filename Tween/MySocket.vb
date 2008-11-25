@@ -45,6 +45,7 @@ Public Class MySocket
         ReqGETForwardTo
         ReqGETFile
         ReqGETFileUp
+        ReqGETFileRes
         ReqGetNoCache
         ReqPOSTAPI
         ReqGetAPI
@@ -238,6 +239,22 @@ Public Class MySocket
                         webRes.Close()
                     Case REQ_TYPE.ReqGETFileUp
                         Dim fs As New System.IO.FileStream(My.Application.Info.DirectoryPath + "\TweenUp.exe", FileMode.Create, FileAccess.Write)
+                        Dim b As Integer
+                        Using fs
+                            While True
+                                b = strm.ReadByte()
+                                If b = -1 Then Exit While
+                                fs.WriteByte(Convert.ToByte(b))
+                            End While
+                        End Using
+                        strm.Close()
+                        strm.Dispose()
+                        webRes.Close()
+                    Case REQ_TYPE.ReqGETFileRes
+                        If Directory.Exists(My.Application.Info.DirectoryPath + "\en") = False Then
+                            Directory.CreateDirectory(My.Application.Info.DirectoryPath + "\en")
+                        End If
+                        Dim fs As New System.IO.FileStream(My.Application.Info.DirectoryPath + "\en\Tween.resources.dll", FileMode.Create, FileAccess.Write)
                         Dim b As Integer
                         Using fs
                             While True

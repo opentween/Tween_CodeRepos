@@ -140,7 +140,6 @@ Partial Class TweenMain
         Me.NotifyIcon1 = New System.Windows.Forms.NotifyIcon(Me.components)
         Me.GetTimelineWorker = New System.ComponentModel.BackgroundWorker
         Me.TimerDM = New System.Windows.Forms.Timer(Me.components)
-        Me.GetLogWorker = New System.ComponentModel.BackgroundWorker
         Me.ExecWorker = New System.ComponentModel.BackgroundWorker
         Me.TimerColorize = New System.Windows.Forms.Timer(Me.components)
         Me.SaveFileDialog1 = New System.Windows.Forms.SaveFileDialog
@@ -419,8 +418,8 @@ Partial Class TweenMain
         '
         'CurrentTabToolStripMenuItem
         '
-        resources.ApplyResources(Me.CurrentTabToolStripMenuItem, "CurrentTabToolStripMenuItem")
         Me.CurrentTabToolStripMenuItem.Name = "CurrentTabToolStripMenuItem"
+        resources.ApplyResources(Me.CurrentTabToolStripMenuItem, "CurrentTabToolStripMenuItem")
         '
         'ToolStripSeparator13
         '
@@ -837,9 +836,6 @@ Partial Class TweenMain
         '
         Me.TimerDM.Interval = 600000
         '
-        'GetLogWorker
-        '
-        '
         'ExecWorker
         '
         '
@@ -913,7 +909,6 @@ Partial Class TweenMain
     Friend WithEvents ReadedStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents UnreadStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator5 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents GetLogWorker As System.ComponentModel.BackgroundWorker
     Friend WithEvents ToolStripSeparator8 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents RefreshStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents SettingStripMenuItem As System.Windows.Forms.ToolStripMenuItem
