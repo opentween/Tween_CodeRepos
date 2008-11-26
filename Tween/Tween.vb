@@ -28,6 +28,7 @@ Imports System.Text.RegularExpressions
 Imports Tween.TweenCustomControl
 Imports System.IO
 Imports System.Web
+Imports System.Reflection
 
 Public Class TweenMain
     Private clsTw As Twitter            'Twitter用通信データ処理カスタムクラス
@@ -6239,24 +6240,16 @@ RETRY:
         PostBrowser.Document.ExecCommand("SelectAll", False, Nothing)
     End Sub
 
-    Private Sub saveClipbrd(ByRef buffer As DataObject)
-        buffer = CType(Clipboard.GetDataObject(), DataObject)
-    End Sub
-
-    Private Sub restoreClipbrd(ByRef buffer As DataObject)
-        Clipboard.SetDataObject(buffer, False, 5, 200)
-    End Sub
-
     Private Sub doSearchToolStrip(ByVal url As String)
-        Dim buf As New DataObject
-        Dim selText As String
+        Dim typ As Type = PostBrowser.ActiveXInstance.GetType()
+        Dim _SelObj As Object = typ.InvokeMember("selection", BindingFlags.GetProperty, Nothing, PostBrowser.Document.DomDocument, Nothing)
+        Dim _objRange As Object = _SelObj.GetType().InvokeMember("createRange", BindingFlags.InvokeMethod, Nothing, _SelObj, Nothing)
+        Dim _selText As String = DirectCast(_objRange.GetType().InvokeMember("text", BindingFlags.GetProperty, Nothing, _objRange, Nothing), String)
         Dim tmp As String
-        saveClipbrd(buf)
-        PostBrowser.Document.ExecCommand("Copy", False, Nothing)
-        selText = HttpUtility.UrlEncode(Clipboard.GetText())
-        tmp = String.Format(url, selText)
+
+        tmp = String.Format(url, _selText)
+        'MessageBox.Show("Selection String is " & _selText)
         ExecWorker.RunWorkerAsync(tmp)
-        restoreClipbrd(buf)
     End Sub
 
     Private Sub WikipediaToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles WikipediaToolStripMenuItem.Click
@@ -6265,6 +6258,7 @@ RETRY:
 
     Private Sub GoogleToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles GoogleToolStripMenuItem.Click
         doSearchToolStrip("http://www.google.co.jp/search?q={0}")
+        'Dim _tmp As String = PostBrowser.StatusText
     End Sub
 
     Private Sub TwitterSrchToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TwitterSrchToolStripMenuItem.Click
