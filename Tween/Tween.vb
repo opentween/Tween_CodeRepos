@@ -3217,9 +3217,11 @@ Public Class TweenMain
         'tinyURLに対応する？
         If PostBrowser.StatusText.StartsWith("http") Then
             StatusLabelUrl.Text = PostBrowser.StatusText
+            ToolStripMenuItem4.Enabled = True
+        Else
+            ToolStripMenuItem4.Enabled = False
         End If
         If PostBrowser.StatusText = "" Then
-            'StatusLabelUrl.Text = ""
             SetStatusLabel()
         End If
     End Sub
@@ -6274,6 +6276,12 @@ RETRY:
     Private Sub SearchItem4ToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SearchItem4ToolStripMenuItem.Click
         Dim resources As ComponentResourceManager = New ComponentResourceManager(GetType(TweenMain))
         doSearchToolStrip(resources.GetString("SearchItem4Url"))
+    End Sub
+
+    Private Sub ToolStripMenuItem4_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripMenuItem4.Click
+        If PostBrowser.StatusText.StartsWith("http") Then   '念のため
+            Clipboard.SetDataObject(PostBrowser.StatusText, False, 5, 100)
+        End If
     End Sub
 End Class
 
