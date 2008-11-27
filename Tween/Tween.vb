@@ -2450,7 +2450,7 @@ Public Class TweenMain
                 If listViewItemSorter.Column = 3 Then
                     If listViewItemSorter.Order = SortOrder.Ascending Then
                         '昇順
-                        If ts.oldestUnreadItem Is Nothing Then
+                        If ts.oldestUnreadItem Is Nothing OrElse ts.oldestUnreadItem.Index < 0 Then
                             frmi = 0
                         Else
                             frmi = ts.oldestUnreadItem.Index
@@ -2459,7 +2459,7 @@ Public Class TweenMain
                     Else
                         '降順
                         stp = -1
-                        If ts.oldestUnreadItem Is Nothing Then
+                        If ts.oldestUnreadItem Is Nothing OrElse ts.oldestUnreadItem.Index < 0 Then
                             frmi = ts.listCustom.Items.Count - 1
                         Else
                             frmi = ts.oldestUnreadItem.Index
@@ -2490,7 +2490,7 @@ Public Class TweenMain
                         If listViewItemSorter.Column = 3 Then
                             If listViewItemSorter.Order = SortOrder.Ascending Then
                                 '昇順
-                                If ts2.oldestUnreadItem Is Nothing Then
+                                If ts2.oldestUnreadItem Is Nothing OrElse ts2.oldestUnreadItem.Index < 0 Then
                                     frmi = 0
                                 Else
                                     frmi = ts2.oldestUnreadItem.Index
@@ -2498,7 +2498,7 @@ Public Class TweenMain
                                 toi = ts2.listCustom.Items.Count - 1
                             Else
                                 '降順
-                                If ts2.oldestUnreadItem Is Nothing Then
+                                If ts2.oldestUnreadItem Is Nothing OrElse ts2.oldestUnreadItem.Index < 0 Then
                                     frmi = ts2.listCustom.Items.Count - 1
                                 Else
                                     frmi = ts2.oldestUnreadItem.Index
@@ -5995,15 +5995,21 @@ RETRY:
 
         If MyList.SelectedItems.Count > 0 Then
             Dim name As String = MyList.SelectedItems(0).SubItems(6).Text
-            name = IO.Path.GetFileNameWithoutExtension(name.Substring(name.LastIndexOf("/"c)))
-            name = name.Substring(0, name.Length - 7) ' "_normal".Length
-            Me.IconNameToolStripMenuItem.Enabled = True
-            If Me.TIconList.Images.Item(name) Is Nothing Then
-                Me.SaveIconPictureToolStripMenuItem.Enabled = True
+            If name <> "" Then
+                name = IO.Path.GetFileNameWithoutExtension(name.Substring(name.LastIndexOf("/"c)))
+                name = name.Substring(0, name.Length - 7) ' "_normal".Length
+                Me.IconNameToolStripMenuItem.Enabled = True
+                If Me.TIconList.Images.Item(name) Is Nothing Then
+                    Me.SaveIconPictureToolStripMenuItem.Enabled = True
+                Else
+                    Me.SaveIconPictureToolStripMenuItem.Enabled = False
+                End If
+                Me.IconNameToolStripMenuItem.Text = name
             Else
+                Me.IconNameToolStripMenuItem.Enabled = False
                 Me.SaveIconPictureToolStripMenuItem.Enabled = False
+                Me.IconNameToolStripMenuItem.Text = "(アイコンが取得できていません)"
             End If
-            Me.IconNameToolStripMenuItem.Text = name
         Else
             Me.IconNameToolStripMenuItem.Enabled = False
             Me.SaveIconPictureToolStripMenuItem.Enabled = False
