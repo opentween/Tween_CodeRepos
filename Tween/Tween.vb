@@ -168,6 +168,7 @@ Public Class TweenMain
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         '着せ替えアイコン対応
         'タスクトレイ通常時アイコン
+        Me.Visible = False
         Try
             NIconAt = New Icon(".\Icons\At.ico")
         Catch ex As Exception
@@ -492,6 +493,7 @@ Public Class TweenMain
         '発言詳細部アイコンをリストアイコンにサイズ変更
         ChangeImageSize()
 
+
         StatusLabel.Text = "更新中..."      '画面右下の状態表示を変更
         StatusLabelUrl.Text = ""            '画面左下のリンク先URL表示部を初期化
         'PostedText.Text = ""
@@ -559,7 +561,7 @@ Public Class TweenMain
         Next
 
         AddCustomTabs()
-
+        Me.Visible = True
         'バージョンチェック（引数：起動時チェックの場合はTrue･･･チェック結果のメッセージを表示しない）
         If SettingDialog.StartupVersion Then
             CheckNewVersion(True)
