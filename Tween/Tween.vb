@@ -1,7 +1,7 @@
 ﻿' Tween - Client of Twitter
-' Copyright © 2007-2008 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
-'           © 2008      Moz (@syo68k) <http://iddy.jp/profile/moz/>
-'           © 2008      takeshik (@takeshik) <http://www.takeshik.org/>
+' Copyright c 2007-2008 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
+'           c 2008      Moz (@syo68k) <http://iddy.jp/profile/moz/>
+'           c 2008      takeshik (@takeshik) <http://www.takeshik.org/>
 ' All rights reserved.
 ' 
 ' This file is part of Tween.
@@ -1166,43 +1166,17 @@ Public Class TweenMain
             args.status = StatusText.Text.Trim() + " " + SettingDialog.Status.Trim()
         End If
 
-        Dim regex As New Regex("([^A-Za-z0-9@_:;\-]|^)(get|g|fav|follow|f|on|off|stop|quit|leave|l|whois|w|nudge|n|stats|invite|track|untrack|tracks|tracking|d)([^A-Za-z0-9_:\-]|$)", RegexOptions.IgnoreCase)
+        'Dim regex As New Regex("([^A-Za-z0-9@_:;\-]|^)(get|g|fav|follow|f|on|off|stop|quit|leave|l|whois|w|nudge|n|stats|invite|track|untrack|tracks|tracking|d)([^A-Za-z0-9_:\-]|$)", RegexOptions.IgnoreCase)
+        Dim regex As New Regex("^\s*(get|g|fav|follow|f|on|off|stop|quit|leave|l|whois|w|nudge|n|stats|invite|track|untrack|tracks|tracking|d|\*)(\s|$)", RegexOptions.IgnoreCase)
         Dim regex2 As New Regex("https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+")
-        Dim regex3 As New Regex("^\S*\*[^A-Za-z0-9]")
-        Dim regex4 As New Regex("\*\S*\s\S+\s")
-        Dim mc As Match = regex.Match(args.status)
+        'Dim regex3 As New Regex("^\S*\*[^A-Za-z0-9]")
+        'Dim regex3 As New Regex("^\s*\*[^A-Za-z0-9]")
+        'Dim regex4 As New Regex("\*\S*\s\S+\s")
+        'Dim mc As Match = regex.Match(args.status)
         Dim mc2 As Match = regex2.Match(args.status)
-        If mc.Success Then
-            If mc2.Success Then
-                If mc.Index >= mc2.Index AndAlso mc.Index < mc2.Index + mc2.Length Then
-                    'args.status.Insert(mc2.Index + mc2.Length, " ")
-                    args.status = regex2.Replace(args.status, "$& ")
-                Else
-                    args.status = regex.Replace(args.status, "$1 $2 $3", 1)
-                    args.status += " ."
-                    mc2 = regex2.Match(args.status)
-                    If mc2.Success Then
-                        args.status = regex2.Replace(args.status, "$& ")
-                    End If
-                End If
-            Else
-                args.status = regex.Replace(args.status, "$1 $2 $3", 1)
-                args.status += " ."
-            End If
-        Else
-            If mc2.Success Then
-                args.status = regex2.Replace(args.status, "$& ")
-            End If
-        End If
-        If regex3.IsMatch(args.status) Then
-            If Not regex4.IsMatch(args.status) Then
-                If args.status.EndsWith(" .") Then
-                    args.status += " ."
-                Else
-                    args.status += " . ."
-                End If
-            End If
-        End If
+
+        If regex.IsMatch(args.status) AndAlso args.status.EndsWith(" .") = False Then args.status += " ."
+        If mc2.Success Then args.status = regex2.Replace(args.status, "$& ")
 
         StatusLabel.Text = "Posting..."
         StatusText.Enabled = False
