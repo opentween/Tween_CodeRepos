@@ -191,6 +191,9 @@
       <SubType>Designer</SubType>
       <DependentUpon>OpenURL.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources.en.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="SearchWord.en.resx">
       <DependentUpon>SearchWord.vb</DependentUpon>
     </EmbeddedResource>
