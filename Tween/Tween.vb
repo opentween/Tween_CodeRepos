@@ -29,6 +29,7 @@ Imports Tween.TweenCustomControl
 Imports System.IO
 Imports System.Web
 Imports System.Reflection
+Imports System.ComponentModel
 
 Public Class TweenMain
     Private clsTw As Twitter            'Twitter用通信データ処理カスタムクラス
@@ -6236,10 +6237,6 @@ RETRY:
         PostBrowser.Document.ExecCommand("Copy", False, Nothing)
     End Sub
 
-    Private Sub ToolStripMenuItem4_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripMenuItem4.Click
-        PostBrowser.Document.ExecCommand("SelectAll", False, Nothing)
-    End Sub
-
     Private Sub doSearchToolStrip(ByVal url As String)
         Dim typ As Type = PostBrowser.ActiveXInstance.GetType()
         Dim _SelObj As Object = typ.InvokeMember("selection", BindingFlags.GetProperty, Nothing, PostBrowser.Document.DomDocument, Nothing)
@@ -6252,23 +6249,30 @@ RETRY:
         ExecWorker.RunWorkerAsync(tmp)
     End Sub
 
-    Private Sub WikipediaToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles WikipediaToolStripMenuItem.Click
-        doSearchToolStrip("http://ja.wikipedia.org/wiki/{0}")
+    Private Sub ToolStripMenuItem5_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripMenuItem5.Click
+        PostBrowser.Document.ExecCommand("SelectAll", False, Nothing)
     End Sub
 
-    Private Sub GoogleToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles GoogleToolStripMenuItem.Click
-        doSearchToolStrip("http://www.google.co.jp/search?q={0}")
+    Private Sub SearchItem1ToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SearchItem1ToolStripMenuItem.Click
+        Dim resources As ComponentResourceManager = New ComponentResourceManager(GetType(TweenMain))
+        doSearchToolStrip(resources.GetString("SearchItem1Url"))
+    End Sub
+
+    Private Sub SearchItem2ToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SearchItem2ToolStripMenuItem.Click
+        Dim resources As ComponentResourceManager = New ComponentResourceManager(GetType(TweenMain))
+        doSearchToolStrip(resources.GetString("SearchItem2Url"))
         'Dim _tmp As String = PostBrowser.StatusText
     End Sub
 
-    Private Sub TwitterSrchToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TwitterSrchToolStripMenuItem.Click
-        doSearchToolStrip("http://pcod.no-ip.org/yats/search?lang=ja&query={0}")
+    Private Sub SearchItem3ToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SearchItem3ToolStripMenuItem.Click
+        Dim resources As ComponentResourceManager = New ComponentResourceManager(GetType(TweenMain))
+        doSearchToolStrip(resources.GetString("SearchItem3Url"))
     End Sub
 
-    Private Sub TwitterSearchToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TwitterSearchToolStripMenuItem.Click
-        doSearchToolStrip("http://search.twitter.com/search?q=&ands={0}&phrase=&ors=&nots=&tag=&lang=ja&from=&to=&ref=&near=&within=15&units=mi&since=&until=&rpp=15")
+    Private Sub SearchItem4ToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SearchItem4ToolStripMenuItem.Click
+        Dim resources As ComponentResourceManager = New ComponentResourceManager(GetType(TweenMain))
+        doSearchToolStrip(resources.GetString("SearchItem4Url"))
     End Sub
-
 End Class
 
 Public Class TabStructure

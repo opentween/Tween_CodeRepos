@@ -535,7 +535,7 @@
   <data name="CurrentTabToolStripMenuItem.Text" xml:space="preserve">
     <value>Current Tab</value>
   </data>
-  <data name="GoogleToolStripMenuItem.Text" xml:space="preserve">
+  <data name="SearchItem2ToolStripMenuItem.Text" xml:space="preserve">
     <value>Google</value>
   </data>
   <data name="ToolStripMenuItem2.Text" xml:space="preserve">
@@ -547,13 +547,25 @@
   <data name="ToolStripMenuItem4.Text" xml:space="preserve">
     <value>Select All</value>
   </data>
-  <data name="TwitterSearchToolStripMenuItem.Text" xml:space="preserve">
+  <data name="SearchItem4ToolStripMenuItem.Text" xml:space="preserve">
     <value>Twitter Search (search.twitter.com)</value>
   </data>
-  <data name="TwitterSrchToolStripMenuItem.Text" xml:space="preserve">
+  <data name="SearchItem3ToolStripMenuItem.Text" xml:space="preserve">
     <value>Twitter Search</value>
   </data>
-  <data name="WikipediaToolStripMenuItem.Text" xml:space="preserve">
+  <data name="SearchItem1ToolStripMenuItem.Text" xml:space="preserve">
     <value>Wikipedia</value>
+  </data>
+  <data name="SearchItem1Url" xml:space="preserve">
+    <value>http://en.wikipedia.org/wiki/{0}</value>
+  </data>
+  <data name="SearchItem2Url" xml:space="preserve">
+    <value>http://www.google.com/search?q={0}</value>
+  </data>
+  <data name="SearchItem3Url" xml:space="preserve">
+    <value>http://pcod.no-ip.org/yats/search?query={0}</value>
+  </data>
+  <data name="SearchItem4Url" xml:space="preserve">
+    <value>http://search.twitter.com/search?q=&amp;ands={0}&amp;phrase=&amp;ors=&amp;nots=&amp;tag=&amp;lang=en&amp;from=&amp;to=&amp;ref=&amp;near=&amp;within=15&amp;units=mi&amp;since=&amp;until=&amp;rpp=15</value>
   </data>
 </root>
