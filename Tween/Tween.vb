@@ -3423,22 +3423,11 @@ Public Class TweenMain
         System.Diagnostics.Debug.WriteLine("呼び出し回数" & _drawcount.ToString() & "total処理時間：" & _drawtime.ToString() & "ミリ秒")
 #End If
     End Sub
-
-    Private Sub MenuItemSubSearch_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemSubSearch.Click
+    Private Sub DoTabSearch(ByVal _word As String, Optional ByVal IsNormalSearch As Boolean = False)
         Dim myList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim _word As String
         Dim cidx As Integer = 0
         Dim fnd As Boolean = False
         Dim toIdx As Integer
-        SearchDialog.Owner = Me
-        If SearchDialog.ShowDialog() = Windows.Forms.DialogResult.Cancel Then
-            Me.TopMost = SettingDialog.AlwaysTop
-            Exit Sub
-        End If
-        Me.TopMost = SettingDialog.AlwaysTop
-        _word = SearchDialog.SWord
-
-        If _word = "" Then Exit Sub
 
         If myList.SelectedItems.Count > 0 Then
             cidx = myList.SelectedItems(0).Index
@@ -3446,7 +3435,7 @@ Public Class TweenMain
 
         toIdx = myList.Items.Count - 1
 RETRY:
-        If SearchDialog.CheckSearchCaseSensitive.Checked Then
+        If Not IsNormalSearch AndAlso SearchDialog.CheckSearchCaseSensitive.Checked Then
             If SearchDialog.CheckSearchRegex.Checked Then
                 ' 正規表現検索（CaseSensitive）
                 Dim _search As Regex
@@ -3485,7 +3474,7 @@ RETRY:
                 Next
             End If
         Else
-            If SearchDialog.CheckSearchRegex.Checked Then
+            If Not IsNormalSearch AndAlso SearchDialog.CheckSearchRegex.Checked Then
                 ' 正規表現検索（IgnoreCase）
                 Try
                     For idx As Integer = cidx To toIdx
@@ -3533,7 +3522,21 @@ RETRY:
         End If
 
         MessageBox.Show("検索条件に一致するデータは見つかりません。", "検索", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End Sub
 
+    Private Sub MenuItemSubSearch_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemSubSearch.Click
+        Dim _word As String
+        SearchDialog.Owner = Me
+        If SearchDialog.ShowDialog() = Windows.Forms.DialogResult.Cancel Then
+            Me.TopMost = SettingDialog.AlwaysTop
+            Exit Sub
+        End If
+        Me.TopMost = SettingDialog.AlwaysTop
+        _word = SearchDialog.SWord
+
+        If _word <> "" Then
+            DoTabSearch(_word)
+        End If
     End Sub
 
     Private Sub MenuItemSearchNext_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemSearchNext.Click
@@ -6270,6 +6273,17 @@ RETRY:
         e.Cancel = False
     End Sub
 
+    Private Sub CurrentTabToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CurrentTabToolStripMenuItem.Click
+        Dim typ As Type = PostBrowser.ActiveXInstance.GetType()
+        Dim _SelObj As Object = typ.InvokeMember("selection", BindingFlags.GetProperty, Nothing, PostBrowser.Document.DomDocument, Nothing)
+        Dim _objRange As Object = _SelObj.GetType().InvokeMember("createRange", BindingFlags.InvokeMethod, Nothing, _SelObj, Nothing)
+        Dim _selText As String = DirectCast(_objRange.GetType().InvokeMember("text", BindingFlags.GetProperty, Nothing, _objRange, Nothing), String)
+
+        If _selText IsNot Nothing Then
+            SearchDialog.SWord = _selText
+            DoTabSearch(_selText, IsNormalSearch:=True)
+        End If
+    End Sub
 End Class
 
 Public Class TabStructure
