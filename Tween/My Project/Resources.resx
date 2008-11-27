@@ -154,6 +154,18 @@
   <data name="Repry" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\5o.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="SearchItem1Url" xml:space="preserve">
+    <value>http://en.wikipedia.org/wiki/{0}</value>
+  </data>
+  <data name="SearchItem2Url" xml:space="preserve">
+    <value>http://www.google.com/search?q={0}</value>
+  </data>
+  <data name="SearchItem3Url" xml:space="preserve">
+    <value>http://pcod.no-ip.org/yats/search?query={0}</value>
+  </data>
+  <data name="SearchItem4Url" xml:space="preserve">
+    <value>http://search.twitter.com/search?q=&amp;amp;ands={0}&amp;amp;phrase=&amp;amp;ors=&amp;amp;nots=&amp;amp;tag=&amp;amp;lang=en&amp;amp;from=&amp;amp;to=&amp;amp;ref=&amp;amp;near=&amp;amp;within=15&amp;amp;units=mi&amp;amp;since=&amp;amp;until=&amp;amp;rpp=15</value>
+  </data>
   <data name="TabIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\3b.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

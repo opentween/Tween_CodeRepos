@@ -6248,9 +6248,10 @@ RETRY:
         Dim _selText As String = DirectCast(_objRange.GetType().InvokeMember("text", BindingFlags.GetProperty, Nothing, _objRange, Nothing), String)
         Dim tmp As String
 
-        tmp = String.Format(url, _selText)
-        'MessageBox.Show("Selection String is " & _selText)
-        ExecWorker.RunWorkerAsync(tmp)
+        If _selText IsNot Nothing Then
+            tmp = String.Format(url, HttpUtility.UrlEncode(_selText))
+            ExecWorker.RunWorkerAsync(tmp)
+        End If
     End Sub
 
     Private Sub ToolStripMenuItem5_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripMenuItem5.Click
@@ -6258,24 +6259,19 @@ RETRY:
     End Sub
 
     Private Sub SearchItem1ToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SearchItem1ToolStripMenuItem.Click
-        Dim resources As ComponentResourceManager = New ComponentResourceManager(GetType(TweenMain))
-        doSearchToolStrip(resources.GetString("SearchItem1Url"))
+        doSearchToolStrip(My.Resources.SearchItem1Url)
     End Sub
 
     Private Sub SearchItem2ToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SearchItem2ToolStripMenuItem.Click
-        Dim resources As ComponentResourceManager = New ComponentResourceManager(GetType(TweenMain))
-        doSearchToolStrip(resources.GetString("SearchItem2Url"))
-        'Dim _tmp As String = PostBrowser.StatusText
+        doSearchToolStrip(My.Resources.SearchItem2Url)
     End Sub
 
     Private Sub SearchItem3ToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SearchItem3ToolStripMenuItem.Click
-        Dim resources As ComponentResourceManager = New ComponentResourceManager(GetType(TweenMain))
-        doSearchToolStrip(resources.GetString("SearchItem3Url"))
+        doSearchToolStrip(My.Resources.SearchItem3Url)
     End Sub
 
     Private Sub SearchItem4ToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SearchItem4ToolStripMenuItem.Click
-        Dim resources As ComponentResourceManager = New ComponentResourceManager(GetType(TweenMain))
-        doSearchToolStrip(resources.GetString("SearchItem4Url"))
+        doSearchToolStrip(My.Resources.SearchItem4Url)
     End Sub
 
     Private Sub ToolStripMenuItem4_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripMenuItem4.Click
@@ -6283,6 +6279,17 @@ RETRY:
             Clipboard.SetDataObject(PostBrowser.StatusText, False, 5, 100)
         End If
     End Sub
+
+    Private Sub ContextMenuStrip4_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuStrip4.Opening
+        ' URLコピーの項目の表示/非表示
+        If PostBrowser.StatusText.StartsWith("http") Then
+            ToolStripMenuItem4.Enabled = True
+        Else
+            ToolStripMenuItem4.Enabled = False
+        End If
+        e.Cancel = False
+    End Sub
+
 End Class
 
 Public Class TabStructure
