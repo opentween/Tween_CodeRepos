@@ -40,7 +40,7 @@ Public Class Statuses
 
     Public Function EndUpdate() As String
         Dim NotifyString As String = _tabs.Distribute(_addedIds)    'タブに追加
-        _tabs.Sort()    'ソート
+        '_tabs.Sort()    'ソート
         Return NotifyString     '通知用メッセージを戻す
     End Function
 
@@ -447,7 +447,7 @@ End Class
 Public Class TabInformations
     '個別タブの情報をDictionaryで保持
     Private _sorter As ListViewItemComparerClass
-    Private _tabs As New Dictionary(Of String, TabClass)()
+    Private _tabs As New Dictionary(Of String, TabClass)
     Private _statuses As Statuses
 
     Public Sub New()

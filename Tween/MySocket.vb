@@ -254,7 +254,7 @@ Public Class MySocket
                         If Directory.Exists(My.Application.Info.DirectoryPath + "\en") = False Then
                             Directory.CreateDirectory(My.Application.Info.DirectoryPath + "\en")
                         End If
-                        Dim fs As New System.IO.FileStream(My.Application.Info.DirectoryPath + "\en\Tween.resources.dll", FileMode.Create, FileAccess.Write)
+                        Dim fs As New System.IO.FileStream(My.Application.Info.DirectoryPath + "\en\Tween.resourcesNew.dll", FileMode.Create, FileAccess.Write)
                         Dim b As Integer
                         Using fs
                             While True
