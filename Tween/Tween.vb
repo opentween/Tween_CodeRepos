@@ -305,14 +305,6 @@ Public Class TweenMain
         SettingDialog.Readed = _section.Readed
         '新着取得時のリストスクロールをするか。Trueならスクロールしない
         ListLockMenuItem.Checked = _section.ListLock
-        '発言欄複数行
-        MultiLineMenuItem.Checked = _section.StatusMultiline
-        StatusText.Multiline = _section.StatusMultiline
-        If StatusText.Multiline Then
-            SplitContainer2.SplitterDistance = SplitContainer2.Height - _section.StatusTextHeight - SplitContainer2.SplitterWidth
-        Else
-            SplitContainer2.SplitterDistance = SplitContainer2.Height - SplitContainer2.Panel2MinSize - SplitContainer2.SplitterWidth
-        End If
         SettingDialog.IconSz = _section.IconSize
         '文末ステータス
         SettingDialog.Status = _section.StatusText
@@ -421,6 +413,14 @@ Public Class TweenMain
         _myLoc = Me.Location                        '位置保持（最小化・最大化されたまま終了した場合の対応用）
         Me.SplitContainer1.SplitterDistance = _section.SplitterDistance     'Splitterの位置設定
         _mySpDis = Me.SplitContainer1.SplitterDistance
+        '発言欄複数行
+        MultiLineMenuItem.Checked = _section.StatusMultiline
+        StatusText.Multiline = _section.StatusMultiline
+        If StatusText.Multiline Then
+            SplitContainer2.SplitterDistance = SplitContainer2.Height - _section.StatusTextHeight - SplitContainer2.SplitterWidth
+        Else
+            SplitContainer2.SplitterDistance = SplitContainer2.Height - SplitContainer2.Panel2MinSize - SplitContainer2.SplitterWidth
+        End If
         Me.TopMost = SettingDialog.AlwaysTop
 
         '全新着通知のチェック状態により、Reply＆DMの新着通知有効無効切り替え（タブ別設定にするため削除予定）
