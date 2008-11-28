@@ -641,4 +641,79 @@
   <data name="$this.Text" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="CheckBox3.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="cmbNameBalloon.Items" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="cmbNameBalloon.Items1" xml:space="preserve">
+    <value>User ID</value>
+  </data>
+  <data name="cmbNameBalloon.Items2" xml:space="preserve">
+    <value>Nickname</value>
+  </data>
+  <data name="ComboBox1.Items" xml:space="preserve">
+    <value>yy-MM-dd HH:mm:ss</value>
+  </data>
+  <data name="ComboBox1.Items1" xml:space="preserve">
+    <value>HH:mm:ss yy-MM-dd</value>
+  </data>
+  <data name="ComboBox1.Items2" xml:space="preserve">
+    <value>MM-dd HH:mm:ss</value>
+  </data>
+  <data name="ComboBox1.Items3" xml:space="preserve">
+    <value>HH:mm:ss MM-dd</value>
+  </data>
+  <data name="ComboBox1.Items4" xml:space="preserve">
+    <value>dd HH:mm:ss</value>
+  </data>
+  <data name="ComboBox1.Items5" xml:space="preserve">
+    <value>HH:mm:ss dd</value>
+  </data>
+  <data name="ComboBox1.Items6" xml:space="preserve">
+    <value>HH:mm:ss</value>
+  </data>
+  <data name="ComboDispTitle.Items" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="ComboDispTitle.Items1" xml:space="preserve">
+    <value>Program Version</value>
+  </data>
+  <data name="ComboDispTitle.Items2" xml:space="preserve">
+    <value>Latest your post</value>
+  </data>
+  <data name="ComboDispTitle.Items3" xml:space="preserve">
+    <value>unread @reply items</value>
+  </data>
+  <data name="ComboDispTitle.Items4" xml:space="preserve">
+    <value>unread items</value>
+  </data>
+  <data name="ComboDispTitle.Items5" xml:space="preserve">
+    <value>unread items(unread @reply items)</value>
+  </data>
+  <data name="ComboDispTitle.Items6" xml:space="preserve">
+    <value>unread items/all items</value>
+  </data>
+  <data name="GroupBox1.Text" xml:space="preserve">
+    <value>Font &amp; Color</value>
+  </data>
+  <data name="IconSize.Items" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="IconSize.Items1" xml:space="preserve">
+    <value>16*16</value>
+  </data>
+  <data name="IconSize.Items2" xml:space="preserve">
+    <value>24*24</value>
+  </data>
+  <data name="IconSize.Items3" xml:space="preserve">
+    <value>48*48</value>
+  </data>
+  <data name="IconSize.Items4" xml:space="preserve">
+    <value>48*48(single column)</value>
+  </data>
+  <data name="OneWayLv.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
 </root>
