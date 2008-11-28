@@ -1,7 +1,7 @@
 ﻿' Tween - Client of Twitter
-' Copyright © 2007-2008 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
-'           © 2008      Moz (@syo68k) <http://iddy.jp/profile/moz/>
-'           © 2008      takeshik (@takeshik) <http://www.takeshik.org/>
+' Copyright c 2007-2008 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
+'           c 2008      Moz (@syo68k) <http://iddy.jp/profile/moz/>
+'           c 2008      takeshik (@takeshik) <http://www.takeshik.org/>
 ' All rights reserved.
 ' 
 ' This file is part of Tween.
@@ -464,12 +464,9 @@ Public NotInheritable Class ListSection
     <ConfigurationProperty("splitterdistance", DefaultValue:=320)> _
     Public Property SplitterDistance() As Integer
         Get
-            Dim dis As Integer = DirectCast(Me("splitterdistance"), Integer)
-            If dis < 0 Then dis = 320
-            Return dis
+            Return DirectCast(Me("splitterdistance"), Integer)
         End Get
         Set(ByVal value As Integer)
-            If value < 0 Then value = 320
             Me("splitterdistance") = value
         End Set
     End Property
@@ -477,16 +474,10 @@ Public NotInheritable Class ListSection
     <ConfigurationProperty("formsize", DefaultValue:="436, 476")> _
     Public Property FormSize() As Size
         Get
-            Dim sz As Size = CType(Me("formsize"), Size)
-            If sz.Height < 0 Then sz.Height = 476
-            If sz.Width < 0 Then sz.Width = 436
-            Return sz
+            Return CType(Me("formsize"), Size)
         End Get
         Set(ByVal value As Size)
-            Dim sz As Size = value
-            If sz.Height < 0 Then sz.Height = 476
-            If sz.Width < 0 Then sz.Width = 436
-            Me("formsize") = sz
+            Me("formsize") = value
         End Set
     End Property
 
