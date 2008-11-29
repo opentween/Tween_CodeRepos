@@ -1174,6 +1174,15 @@ Public Property CloseToExit() As Boolean
             Me("statustextheight") = value
         End Set
     End Property
+    <ConfigurationProperty("culturecode", DefaultValue:="")> _
+    Public Property cultureCode() As String
+        Get
+            Return Me("culturecode").ToString
+        End Get
+        Set(ByVal value As String)
+            Me("culturecode") = value
+        End Set
+    End Property
 
     Private Function EncryptString(ByVal str As String) As String
         '文字列をバイト型配列にする

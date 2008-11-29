@@ -44,6 +44,27 @@ Namespace My
         End Sub
 
         Private Sub MyApplication_Startup(ByVal sender As Object, ByVal e As Microsoft.VisualBasic.ApplicationServices.StartupEventArgs) Handles Me.Startup
+            Dim filename As String = Application.Info.DirectoryPath + "\" + Application.Info.ProductName + ".exe.config"
+            Using config As New IO.StreamReader(filename)
+                Dim xmlDoc As New Xml.XmlTextReader(config)
+                While xmlDoc.Read()
+                    If xmlDoc.Name.Equals("TwitterSetting") Then
+                        If xmlDoc.NodeType = Xml.XmlNodeType.Element Then
+                            While xmlDoc.MoveToNextAttribute()
+                                If xmlDoc.Name.Equals("culturecode") Then
+                                    Try
+                                        ChangeUICulture(xmlDoc.Value)
+                                    Catch ex As Exception
+                                        '無効なカルチャーコードの場合は無視
+                                    End Try
+                                    Exit While
+                                End If
+                            End While
+                        End If
+                    End If
+                End While
+            End Using
+
             Dim pt As String = Application.Info.DirectoryPath.Replace("\", "/") + "/" + Application.Info.ProductName
             mt = New System.Threading.Mutex(False, pt)
             Try
