@@ -89,24 +89,41 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  実行形式ファイル(*.exe)|*.exe|すべてのファイル(*.*)|*.* に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property Button3_ClickText1() As String
+            Get
+                Return ResourceManager.GetString("Button3_ClickText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  ブラウザを指定してください に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property Button3_ClickText2() As String
+            Get
+                Return ResourceManager.GetString("Button3_ClickText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  更新履歴
         '''
-        '''***Ver0.1.5.1(Unrelease)
+        '''***Ver0.1.6.1(Unreleased)
+        '''-コマンド回避ロジックを調整
+        '''***Ver0.1.6.0(2008/11/28)
         '''-詳細発言表示部分からの右クリック検索をローカライズ対応可能にした。その他メニュー項目の見直しを行った。
         '''-初期化完了してからフォームを表示するようにした（つもり）
         '''-詳細発言表示部分からの右クリックメニューでURLをコピーできるようにした
         '''-詳細発言表示部分からの検索の際に文字列を正規化していなかったのを修正
         '''-文字列を選択していなかったときに検索をしようとした場合の動作を修正
+        '''-詳細発言表示部分からの右クリックメニューで、選択文字列を現在のタブで検索できるようにした。
+        '''-Twitterコマンド誤認問題が本家で修正されたのにあわせ、回避ロジック修正
+        '''-HTML解析に失敗したとき、切り出したHTMLをファイル出力（コマンドライン引数&apos;/d&apos;の時のみ）
+        '''-DMが取れないケースに対応
         '''***Ver0.1.5.0(2008/11/25)
         '''-アイコンサイズ48*48の1列表示が正常に表示されないバグ修正
-        '''***Ver0.1.4.0(2008/11/25)
-        '''-DMが取れないケースに対応
-        '''-DMで、プロテクト状態取得、スクリーンネーム取得に対応
-        '''-UI を国際化 (他言語にも容易に対応させることが出来ます)
-        '''-UI を英語にローカライズ (仮)
-        '''-budurl.comで圧縮されたURLの展開表示に対応
-        '''-DMが取得できなかった場合にFollowersリスト取得が実行されなかったのを修正
-        '''-詳細発言表示部分で右クリックした場合に [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        '''***Ver0.1.4.0(2008/ [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property ChangeLog() As String
             Get
@@ -114,10 +131,73 @@ Namespace My.Resources
             End Get
         End Property
         
+        '''<summary>
+        '''  更新間隔には数値（0または15～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property DMPeriod_ValidatingText1() As String
+            Get
+                Return ResourceManager.GetString("DMPeriod_ValidatingText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  更新間隔には数値（0または15～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property DMPeriod_ValidatingText2() As String
+            Get
+                Return ResourceManager.GetString("DMPeriod_ValidatingText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  この設定ファイルは Tween により自動生成されました。手動で変更しないでください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property LoadConfigurationText1() As String
+            Get
+                Return ResourceManager.GetString("LoadConfigurationText1", resourceCulture)
+            End Get
+        End Property
+        
         Friend ReadOnly Property MIcon() As System.Drawing.Icon
             Get
                 Dim obj As Object = ResourceManager.GetObject("MIcon", resourceCulture)
                 Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  ページ数には数値（1～20）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property NextPages_ValidatingText1() As String
+            Get
+                Return ResourceManager.GetString("NextPages_ValidatingText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  ページ数には数値（1～20）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property NextPages_ValidatingText2() As String
+            Get
+                Return ResourceManager.GetString("NextPages_ValidatingText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  閾値には数値（1～20）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property NextThreshold_ValidatingText1() As String
+            Get
+                Return ResourceManager.GetString("NextThreshold_ValidatingText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  閾値には数値（1～20）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property NextThreshold_ValidatingText2() As String
+            Get
+                Return ResourceManager.GetString("NextThreshold_ValidatingText2", resourceCulture)
             End Get
         End Property
         
@@ -164,6 +244,33 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  ユーザー名とパスワードを指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property Save_ClickText1() As String
+            Get
+                Return ResourceManager.GetString("Save_ClickText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  ユーザー名に『@』を含めないでください。（メールアドレス不可） に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property Save_ClickText2() As String
+            Get
+                Return ResourceManager.GetString("Save_ClickText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  設定値に誤りがあります。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property Save_ClickText3() As String
+            Get
+                Return ResourceManager.GetString("Save_ClickText3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  http://en.wikipedia.org/wiki/{0} に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property SearchItem1Url() As String
@@ -199,10 +306,208 @@ Namespace My.Resources
             End Get
         End Property
         
+        '''<summary>
+        '''  読み込みページ数には数値（1～999）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property StartupReadDM_ValidatingText1() As String
+            Get
+                Return ResourceManager.GetString("StartupReadDM_ValidatingText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  読み込みページ数には数値（1～999）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property StartupReadDM_ValidatingText2() As String
+            Get
+                Return ResourceManager.GetString("StartupReadDM_ValidatingText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  読み込みページ数には数値（1～999）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property StartupReadPages_ValidatingText1() As String
+            Get
+                Return ResourceManager.GetString("StartupReadPages_ValidatingText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  読み込みページ数には数値（1～999）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property StartupReadPages_ValidatingText2() As String
+            Get
+                Return ResourceManager.GetString("StartupReadPages_ValidatingText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  読み込みページ数には数値（0～999）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property StartupReadReply_ValidatingText1() As String
+            Get
+                Return ResourceManager.GetString("StartupReadReply_ValidatingText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  読み込みページ数には数値（0～999）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property StartupReadReply_ValidatingText2() As String
+            Get
+                Return ResourceManager.GetString("StartupReadReply_ValidatingText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Tweenは既に起動されています。2重起動する場合は、別フォルダのTween.exeを実行してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property StartupText1() As String
+            Get
+                Return ResourceManager.GetString("StartupText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Tween二重起動チェック に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property StartupText2() As String
+            Get
+                Return ResourceManager.GetString("StartupText2", resourceCulture)
+            End Get
+        End Property
+        
         Friend ReadOnly Property TabIcon() As System.Drawing.Icon
             Get
                 Dim obj As Object = ResourceManager.GetObject("TabIcon", resourceCulture)
                 Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  ポート番号には整数値を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property TextProxyPort_ValidatingText1() As String
+            Get
+                Return ResourceManager.GetString("TextProxyPort_ValidatingText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  ポート番号には0～65535を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property TextProxyPort_ValidatingText2() As String
+            Get
+                Return ResourceManager.GetString("TextProxyPort_ValidatingText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  更新間隔には数値（0または15～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property TimelinePeriod_ValidatingText1() As String
+            Get
+                Return ResourceManager.GetString("TimelinePeriod_ValidatingText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  更新間隔には数値（0または15～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property TimelinePeriod_ValidatingText2() As String
+            Get
+                Return ResourceManager.GetString("TimelinePeriod_ValidatingText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  **** エラー ログ: {0} **** に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property UnhandledExceptionText1() As String
+            Get
+                Return ResourceManager.GetString("UnhandledExceptionText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  エラー発生 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property UnhandledExceptionText10() As String
+            Get
+                Return ResourceManager.GetString("UnhandledExceptionText10", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  このファイルの内容を kiri.feather@gmail.com まで送っていただけると助かります。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property UnhandledExceptionText2() As String
+            Get
+                Return ResourceManager.GetString("UnhandledExceptionText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property UnhandledExceptionText3() As String
+            Get
+                Return ResourceManager.GetString("UnhandledExceptionText3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  動作環境: に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property UnhandledExceptionText4() As String
+            Get
+                Return ResourceManager.GetString("UnhandledExceptionText4", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  オペレーティング システム: {0} に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property UnhandledExceptionText5() As String
+            Get
+                Return ResourceManager.GetString("UnhandledExceptionText5", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  共通言語ランタイム       : {0} に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property UnhandledExceptionText6() As String
+            Get
+                Return ResourceManager.GetString("UnhandledExceptionText6", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Tween.exeのバージョン    : {0} に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property UnhandledExceptionText7() As String
+            Get
+                Return ResourceManager.GetString("UnhandledExceptionText7", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  例外 {0}: {1} に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property UnhandledExceptionText8() As String
+            Get
+                Return ResourceManager.GetString("UnhandledExceptionText8", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  エラーが発生しました。ごめんなさい。ログをexeファイルのある場所に {0} として作ったので、kiri.feather@gmail.comまで送っていただけると助かります。{1}ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。{1}「OK」ボタンをクリックするとログを開きます。ログを開かない場合は「キャンセル」ボタンをクリックしてください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property UnhandledExceptionText9() As String
+            Get
+                Return ResourceManager.GetString("UnhandledExceptionText9", resourceCulture)
             End Get
         End Property
     End Module

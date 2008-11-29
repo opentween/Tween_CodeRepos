@@ -187,7 +187,7 @@ Public Class Setting
             xdocument.Load(fileName)
         Else
             xdocument.AppendChild(xdocument.CreateXmlDeclaration("1.0", "utf-8", Nothing))
-            xdocument.AppendChild(xdocument.CreateComment("この設定ファイルは Tween により自動生成されました。手動で変更しないでください。"))
+            xdocument.AppendChild(xdocument.CreateComment(My.Resources.LoadConfigurationText1))
             xdocument.AppendChild(xdocument.CreateElement("tween-configuration"))
             xdocument.Save(fileName)
         End If
@@ -215,12 +215,12 @@ Public Class Setting
         If Username.Text.Trim = "" Or _
            Password.Text.Trim = "" Then
             Me.DialogResult = Windows.Forms.DialogResult.Cancel
-            MessageBox.Show("ユーザー名とパスワードを指定してください。")
+            MessageBox.Show(My.Resources.Save_ClickText1)
             Exit Sub
         End If
         If Username.Text.Contains("@") Then
             Me.DialogResult = Windows.Forms.DialogResult.Cancel
-            MessageBox.Show("ユーザー名に『@』を含めないでください。（メールアドレス不可）")
+            MessageBox.Show(My.Resources.Save_ClickText2)
             Exit Sub
         End If
         Try
@@ -334,7 +334,7 @@ Public Class Setting
             'TweenMain.SetNotifyIconText()
 
         Catch ex As Exception
-            MessageBox.Show("設定値に誤りがあります。")
+            MessageBox.Show(My.Resources.Save_ClickText3)
             Me.DialogResult = Windows.Forms.DialogResult.Cancel
             Exit Sub
         End Try
@@ -476,13 +476,13 @@ Public Class Setting
         Try
             prd = CType(TimelinePeriod.Text, Integer)
         Catch ex As Exception
-            MessageBox.Show("更新間隔には数値（0または15～600）を指定してください。")
+            MessageBox.Show(My.Resources.TimelinePeriod_ValidatingText1)
             e.Cancel = True
             Exit Sub
         End Try
 
         If prd <> 0 And (prd < 15 Or prd > 600) Then
-            MessageBox.Show("更新間隔には数値（0または15～600）を指定してください。")
+            MessageBox.Show(My.Resources.TimelinePeriod_ValidatingText2)
             e.Cancel = True
         End If
     End Sub
@@ -492,13 +492,13 @@ Public Class Setting
         Try
             thr = CType(NextThreshold.Text, Integer)
         Catch ex As Exception
-            MessageBox.Show("閾値には数値（1～20）を指定してください。")
+            MessageBox.Show(My.Resources.NextThreshold_ValidatingText1)
             e.Cancel = True
             Exit Sub
         End Try
 
         If thr < 1 Or thr > 20 Then
-            MessageBox.Show("閾値には数値（1～20）を指定してください。")
+            MessageBox.Show(My.Resources.NextThreshold_ValidatingText2)
             e.Cancel = True
         End If
     End Sub
@@ -508,13 +508,13 @@ Public Class Setting
         Try
             thr = CType(NextPages.Text, Integer)
         Catch ex As Exception
-            MessageBox.Show("ページ数には数値（1～20）を指定してください。")
+            MessageBox.Show(My.Resources.NextPages_ValidatingText1)
             e.Cancel = True
             Exit Sub
         End Try
 
         If thr < 1 Or thr > 20 Then
-            MessageBox.Show("ページ数には数値（1～20）を指定してください。")
+            MessageBox.Show(My.Resources.NextPages_ValidatingText2)
             e.Cancel = True
         End If
     End Sub
@@ -524,13 +524,13 @@ Public Class Setting
         Try
             prd = CType(DMPeriod.Text, Integer)
         Catch ex As Exception
-            MessageBox.Show("更新間隔には数値（0または15～600）を指定してください。")
+            MessageBox.Show(My.Resources.DMPeriod_ValidatingText1)
             e.Cancel = True
             Exit Sub
         End Try
 
         If prd <> 0 And (prd < 15 Or prd > 600) Then
-            MessageBox.Show("更新間隔には数値（0または15～600）を指定してください。")
+            MessageBox.Show(My.Resources.DMPeriod_ValidatingText2)
             e.Cancel = True
         End If
     End Sub
@@ -556,13 +556,13 @@ Public Class Setting
         Try
             pages = CType(StartupReadPages.Text, Integer)
         Catch ex As Exception
-            MessageBox.Show("読み込みページ数には数値（1～999）を指定してください。")
+            MessageBox.Show(My.Resources.StartupReadPages_ValidatingText1)
             e.Cancel = True
             Exit Sub
         End Try
 
         If pages < 1 Or pages > 999 Then
-            MessageBox.Show("読み込みページ数には数値（1～999）を指定してください。")
+            MessageBox.Show(My.Resources.StartupReadPages_ValidatingText2)
             e.Cancel = True
         End If
     End Sub
@@ -572,13 +572,13 @@ Public Class Setting
         Try
             pages = CType(StartupReadReply.Text, Integer)
         Catch ex As Exception
-            MessageBox.Show("読み込みページ数には数値（0～999）を指定してください。")
+            MessageBox.Show(My.Resources.StartupReadReply_ValidatingText1)
             e.Cancel = True
             Exit Sub
         End Try
 
         If pages < 0 Or pages > 999 Then
-            MessageBox.Show("読み込みページ数には数値（0～999）を指定してください。")
+            MessageBox.Show(My.Resources.StartupReadReply_ValidatingText2)
             e.Cancel = True
         End If
     End Sub
@@ -588,13 +588,13 @@ Public Class Setting
         Try
             pages = CType(StartupReadDM.Text, Integer)
         Catch ex As Exception
-            MessageBox.Show("読み込みページ数には数値（1～999）を指定してください。")
+            MessageBox.Show(My.Resources.StartupReadDM_ValidatingText1)
             e.Cancel = True
             Exit Sub
         End Try
 
         If pages < 1 Or pages > 999 Then
-            MessageBox.Show("読み込みページ数には数値（1～999）を指定してください。")
+            MessageBox.Show(My.Resources.StartupReadDM_ValidatingText2)
             e.Cancel = True
         End If
     End Sub
@@ -1213,9 +1213,9 @@ Public Class Setting
     Private Sub Button3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button3.Click
         Dim filedlg As New OpenFileDialog()
 
-        filedlg.Filter = "実行形式ファイル(*.exe)|*.exe|すべてのファイル(*.*)|*.*"
+        filedlg.Filter = My.Resources.Button3_ClickText1
         filedlg.FilterIndex = 1
-        filedlg.Title = "ブラウザを指定してください"
+        filedlg.Title = My.Resources.Button3_ClickText2
         filedlg.RestoreDirectory = True
 
         If filedlg.ShowDialog() = Windows.Forms.DialogResult.OK Then
@@ -1240,30 +1240,14 @@ Public Class Setting
         Dim port As Integer
         If TextProxyPort.Text.Trim() = "" Then TextProxyPort.Text = "0"
         If Integer.TryParse(TextProxyPort.Text.Trim(), port) = False Then
-            MessageBox.Show("ポート番号には整数値を指定してください。")
+            MessageBox.Show(My.Resources.TextProxyPort_ValidatingText1)
             e.Cancel = True
             Exit Sub
         End If
         If port < 0 Or port > 65535 Then
-            MessageBox.Show("ポート番号には0～65535を指定してください。")
+            MessageBox.Show(My.Resources.TextProxyPort_ValidatingText2)
             e.Cancel = True
             Exit Sub
-        End If
-    End Sub
-
-    Private Sub MaxPostNum_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MaxPost.Validating
-        Dim pstnm As Integer
-        Try
-            pstnm = CType(MaxPost.Text, Integer)
-        Catch ex As Exception
-            MessageBox.Show("1時間当たり最大POST回数には数値（1～999）を指定してください。")
-            e.Cancel = True
-            Exit Sub
-        End Try
-
-        If pstnm < 1 Or pstnm > 999 Then
-            MessageBox.Show("1時間当たり最大POST回数には数値（1～999）を指定してください。")
-            e.Cancel = True
         End If
     End Sub
 End Class
