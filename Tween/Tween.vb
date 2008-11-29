@@ -561,7 +561,7 @@ Public Class TweenMain
         Next
 
         AddCustomTabs()
-        Me.Visible = True
+
         'バージョンチェック（引数：起動時チェックの場合はTrue･･･チェック結果のメッセージを表示しない）
         If SettingDialog.StartupVersion Then
             CheckNewVersion(True)
@@ -592,6 +592,7 @@ Public Class TweenMain
         SetNotifyIconText()
 
         AddHandler My.Computer.Network.NetworkAvailabilityChanged, AddressOf Network_NetworkAvailabilityChanged
+        Me.Visible = True
     End Sub
 
     Private Sub Network_NetworkAvailabilityChanged(ByVal sender As Object, ByVal e As Devices.NetworkAvailableEventArgs)
