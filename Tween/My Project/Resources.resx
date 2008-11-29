@@ -130,11 +130,38 @@
   <data name="AtSmoke" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\5y.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Button3_ClickText1" xml:space="preserve">
+    <value>実行形式ファイル(*.exe)|*.exe|すべてのファイル(*.*)|*.*</value>
+  </data>
+  <data name="Button3_ClickText2" xml:space="preserve">
+    <value>ブラウザを指定してください</value>
+  </data>
   <data name="ChangeLog" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ChangeLog.txt;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;shift_jis</value>
   </data>
+  <data name="DMPeriod_ValidatingText1" xml:space="preserve">
+    <value>更新間隔には数値（0または15～600）を指定してください。</value>
+  </data>
+  <data name="DMPeriod_ValidatingText2" xml:space="preserve">
+    <value>更新間隔には数値（0または15～600）を指定してください。</value>
+  </data>
+  <data name="LoadConfigurationText1" xml:space="preserve">
+    <value>この設定ファイルは Tween により自動生成されました。手動で変更しないでください。</value>
+  </data>
   <data name="MIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\4b.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NextPages_ValidatingText1" xml:space="preserve">
+    <value>ページ数には数値（1～20）を指定してください。</value>
+  </data>
+  <data name="NextPages_ValidatingText2" xml:space="preserve">
+    <value>ページ数には数値（1～20）を指定してください。</value>
+  </data>
+  <data name="NextThreshold_ValidatingText1" xml:space="preserve">
+    <value>閾値には数値（1～20）を指定してください。</value>
+  </data>
+  <data name="NextThreshold_ValidatingText2" xml:space="preserve">
+    <value>閾値には数値（1～20）を指定してください。</value>
   </data>
   <data name="Refresh" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\re.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -154,6 +181,15 @@
   <data name="Repry" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\5o.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Save_ClickText1" xml:space="preserve">
+    <value>ユーザー名とパスワードを指定してください。</value>
+  </data>
+  <data name="Save_ClickText2" xml:space="preserve">
+    <value>ユーザー名に『@』を含めないでください。（メールアドレス不可）</value>
+  </data>
+  <data name="Save_ClickText3" xml:space="preserve">
+    <value>設定値に誤りがあります。</value>
+  </data>
   <data name="SearchItem1Url" xml:space="preserve">
     <value>http://en.wikipedia.org/wiki/{0}</value>
   </data>
@@ -166,7 +202,73 @@
   <data name="SearchItem4Url" xml:space="preserve">
     <value>http://search.twitter.com/search?q=&amp;amp;ands={0}&amp;amp;phrase=&amp;amp;ors=&amp;amp;nots=&amp;amp;tag=&amp;amp;lang=en&amp;amp;from=&amp;amp;to=&amp;amp;ref=&amp;amp;near=&amp;amp;within=15&amp;amp;units=mi&amp;amp;since=&amp;amp;until=&amp;amp;rpp=15</value>
   </data>
+  <data name="StartupReadDM_ValidatingText1" xml:space="preserve">
+    <value>読み込みページ数には数値（1～999）を指定してください。</value>
+  </data>
+  <data name="StartupReadDM_ValidatingText2" xml:space="preserve">
+    <value>読み込みページ数には数値（1～999）を指定してください。</value>
+  </data>
+  <data name="StartupReadPages_ValidatingText1" xml:space="preserve">
+    <value>読み込みページ数には数値（1～999）を指定してください。</value>
+  </data>
+  <data name="StartupReadPages_ValidatingText2" xml:space="preserve">
+    <value>読み込みページ数には数値（1～999）を指定してください。</value>
+  </data>
+  <data name="StartupReadReply_ValidatingText1" xml:space="preserve">
+    <value>読み込みページ数には数値（0～999）を指定してください。</value>
+  </data>
+  <data name="StartupReadReply_ValidatingText2" xml:space="preserve">
+    <value>読み込みページ数には数値（0～999）を指定してください。</value>
+  </data>
+  <data name="StartupText1" xml:space="preserve">
+    <value>Tweenは既に起動されています。2重起動する場合は、別フォルダのTween.exeを実行してください。</value>
+  </data>
+  <data name="StartupText2" xml:space="preserve">
+    <value>Tween二重起動チェック</value>
+  </data>
   <data name="TabIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\3b.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TextProxyPort_ValidatingText1" xml:space="preserve">
+    <value>ポート番号には整数値を指定してください。</value>
+  </data>
+  <data name="TextProxyPort_ValidatingText2" xml:space="preserve">
+    <value>ポート番号には0～65535を指定してください。</value>
+  </data>
+  <data name="TimelinePeriod_ValidatingText1" xml:space="preserve">
+    <value>更新間隔には数値（0または15～600）を指定してください。</value>
+  </data>
+  <data name="TimelinePeriod_ValidatingText2" xml:space="preserve">
+    <value>更新間隔には数値（0または15～600）を指定してください。</value>
+  </data>
+  <data name="UnhandledExceptionText1" xml:space="preserve">
+    <value>**** エラー ログ: {0} ****</value>
+  </data>
+  <data name="UnhandledExceptionText10" xml:space="preserve">
+    <value>エラー発生</value>
+  </data>
+  <data name="UnhandledExceptionText2" xml:space="preserve">
+    <value>このファイルの内容を kiri.feather@gmail.com まで送っていただけると助かります。</value>
+  </data>
+  <data name="UnhandledExceptionText3" xml:space="preserve">
+    <value>ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。</value>
+  </data>
+  <data name="UnhandledExceptionText4" xml:space="preserve">
+    <value>動作環境:</value>
+  </data>
+  <data name="UnhandledExceptionText5" xml:space="preserve">
+    <value>オペレーティング システム: {0}</value>
+  </data>
+  <data name="UnhandledExceptionText6" xml:space="preserve">
+    <value>共通言語ランタイム       : {0}</value>
+  </data>
+  <data name="UnhandledExceptionText7" xml:space="preserve">
+    <value>Tween.exeのバージョン    : {0}</value>
+  </data>
+  <data name="UnhandledExceptionText8" xml:space="preserve">
+    <value>例外 {0}: {1}</value>
+  </data>
+  <data name="UnhandledExceptionText9" xml:space="preserve">
+    <value>エラーが発生しました。ごめんなさい。ログをexeファイルのある場所に {0} として作ったので、kiri.feather@gmail.comまで送っていただけると助かります。{1}ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。{1}「OK」ボタンをクリックするとログを開きます。ログを開かない場合は「キャンセル」ボタンをクリックしてください。</value>
   </data>
 </root>

@@ -59,7 +59,7 @@ Namespace My
             mt = New System.Threading.Mutex(False, pt)
             Try
                 If mt.WaitOne(0, False) = False Then
-                    MessageBox.Show("Tweenは既に起動されています。2重起動する場合は、別フォルダのTween.exeを実行してください。", "Tween二重起動チェック", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    MessageBox.Show(My.Resources.StartupText1, My.Resources.StartupText2, MessageBoxButtons.OK, MessageBoxIcon.Information)
                     e.Cancel = True
                     Exit Sub
                 End If
@@ -74,22 +74,21 @@ Namespace My
             Dim fileName As String = String.Format("Tween-{0:0000}{1:00}{2:00}-{3:00}{4:00}{5:00}.log", now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second)
 
             Using writer As IO.StreamWriter = New IO.StreamWriter(fileName)
-                writer.WriteLine("**** エラー ログ: {0} ****", DateTime.Now.ToString())
-                writer.WriteLine("このファイルの内容を kiri.feather@gmail.com まで送っていただけると助かります。")
-                writer.WriteLine("ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。")
+                writer.WriteLine(My.Resources.UnhandledExceptionText1, DateTime.Now.ToString())
+                writer.WriteLine(My.Resources.UnhandledExceptionText2)
+                writer.WriteLine(My.Resources.UnhandledExceptionText3)
                 writer.WriteLine()
-                writer.WriteLine("動作環境:")
-                writer.WriteLine("   オペレーティング システム: {0}", Environment.OSVersion.VersionString)
-                writer.WriteLine("   共通言語ランタイム       : {0}", Environment.Version.ToString())
-                writer.WriteLine("   Tween.exeのバージョン    : {0}", Application.Info.Version.ToString())
-                writer.WriteLine("例外 {0}: {1}", e.Exception.GetType().FullName, e.Exception.Message)
+                writer.WriteLine(My.Resources.UnhandledExceptionText4)
+                writer.WriteLine(My.Resources.UnhandledExceptionText5, Environment.OSVersion.VersionString)
+                writer.WriteLine(My.Resources.UnhandledExceptionText6, Environment.Version.ToString())
+                writer.WriteLine(My.Resources.UnhandledExceptionText7, Application.Info.Version.ToString())
+                writer.WriteLine(My.Resources.UnhandledExceptionText8, e.Exception.GetType().FullName, e.Exception.Message)
                 writer.WriteLine(e.Exception.StackTrace)
                 writer.WriteLine()
             End Using
 
-            If MessageBox.Show(String.Format( _
-                "エラーが発生しました。ごめんなさい。ログをexeファイルのある場所に {0} として作ったので、kiri.feather@gmail.comまで送っていただけると助かります。{1}ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。{1}「OK」ボタンをクリックするとログを開きます。ログを開かない場合は「キャンセル」ボタンをクリックしてください。", _
-                fileName, Environment.NewLine), "エラー発生", MessageBoxButtons.OKCancel, MessageBoxIcon.Error) = DialogResult.OK _
+            If MessageBox.Show(String.Format(My.Resources.UnhandledExceptionText9, fileName, Environment.NewLine), _
+                               My.Resources.UnhandledExceptionText10, MessageBoxButtons.OKCancel, MessageBoxIcon.Error) = DialogResult.OK _
             Then
                 Diagnostics.Process.Start(fileName)
             End If
