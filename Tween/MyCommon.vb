@@ -65,4 +65,6 @@ Public Module MyCommon
 
     Public follower As New Collections.Specialized.StringCollection
     Public cCon As New System.Net.CookieContainer()
+
+    Public Const Block As Object = Nothing
 End Module

@@ -2902,7 +2902,7 @@ Public Class TweenMain
             End If
         Next
 
-        If tabName = "(新規タブ)" OrElse _
+        If tabName = My.Resources.AddNewTabText1 OrElse _
            tabName = "Recent" OrElse _
            tabName = "Reply" OrElse _
            tabName = "Direct" Then Return False
@@ -2980,13 +2980,13 @@ Public Class TweenMain
         myTab.colHd1.Text = ""
         myTab.colHd1.Width = 26
         If Not _iconCol Then
-            myTab.colHd2.Text = "名前"
+            myTab.colHd2.Text = My.Resources.AddNewTabText2
             myTab.colHd2.Width = 80
-            myTab.colHd3.Text = "投稿"
+            myTab.colHd3.Text = My.Resources.AddNewTabText3
             myTab.colHd3.Width = 300
-            myTab.colHd4.Text = "日時"
+            myTab.colHd4.Text = My.Resources.AddNewTabText4
             myTab.colHd4.Width = 50
-            myTab.colHd5.Text = "ユーザ名"
+            myTab.colHd5.Text = My.Resources.AddNewTabText5
             myTab.colHd5.Width = 50
         End If
 
@@ -3026,8 +3026,8 @@ Public Class TweenMain
            TabName = "Reply" OrElse _
            TabName = "Direct" Then Exit Sub
 
-        If MessageBox.Show("このタブを削除してもよろしいですか？" + vbCrLf + _
-                        "（このタブの発言はRecentへ戻されます。）", "タブの削除確認", _
+        Dim tmp As String = String.Format(My.Resources.RemoveSpecifiedTabText1, vbCrLf)
+        If MessageBox.Show(tmp, My.Resources.RemoveSpecifiedTabText2, _
                          MessageBoxButtons.OKCancel, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then
             Exit Sub
         End If
@@ -3457,7 +3457,7 @@ RETRY:
                         End If
                     Next
                 Catch ex As ArgumentException
-                    MsgBox("正規表現パターンが間違っています。", MsgBoxStyle.Critical)
+                    MsgBox(My.Resources.DoTabSearchText1, MsgBoxStyle.Critical)
                     Exit Sub
                 End Try
             Else
@@ -3493,7 +3493,7 @@ RETRY:
                         End If
                     Next
                 Catch ex As ArgumentException
-                    MsgBox("正規表現パターンが間違っています。", MsgBoxStyle.Critical)
+                    MsgBox(My.Resources.DoTabSearchText1, MsgBoxStyle.Critical)
                     Exit Sub
                 End Try
             Else
@@ -3522,7 +3522,7 @@ RETRY:
             End If
         End If
 
-        MessageBox.Show("検索条件に一致するデータは見つかりません。", "検索", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        MessageBox.Show(My.Resources.DoTabSearchText2, My.Resources.DoTabSearchText3, MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 
     Private Sub MenuItemSubSearch_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemSubSearch.Click
@@ -3586,7 +3586,7 @@ RETRY:
                         End If
                     Next
                 Catch ex As ArgumentException
-                    MsgBox("正規表現パターンが間違っています。", MsgBoxStyle.Critical)
+                    MsgBox(My.Resources.MenuItemSearchNext_ClickText1, MsgBoxStyle.Critical)
                     Exit Sub
                 End Try
             Else
@@ -3622,7 +3622,7 @@ RETRY:
                         End If
                     Next
                 Catch ex As ArgumentException
-                    MsgBox("正規表現パターンが間違っています。", MsgBoxStyle.Critical)
+                    MsgBox(My.Resources.MenuItemSearchNext_ClickText1, MsgBoxStyle.Critical)
                     Exit Sub
                 End Try
             Else
@@ -3652,7 +3652,7 @@ RETRY:
             End If
         End If
 
-        MessageBox.Show("検索条件に一致するデータは見つかりません。", "検索", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        MessageBox.Show(My.Resources.MenuItemSearchNext_ClickText2, My.Resources.MenuItemSearchNext_ClickText3, MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 
     Private Sub MenuItemSearchPrev_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemSearchPrev.Click
@@ -3703,7 +3703,7 @@ RETRY:
                         Next
                     End If
                 Catch Err As ArgumentException
-                    MsgBox("正規表現パターンが間違っています。", MsgBoxStyle.Critical)
+                    MsgBox(My.Resources.MenuItemSearchPrev_ClickText1, MsgBoxStyle.Critical)
                     Exit Sub
                 End Try
             Else
@@ -3743,7 +3743,7 @@ RETRY:
                         Next
                     End If
                 Catch Err As ArgumentException
-                    MsgBox("正規表現パターンが間違っています。", MsgBoxStyle.Critical)
+                    MsgBox(My.Resources.MenuItemSearchPrev_ClickText1, MsgBoxStyle.Critical)
                     Exit Sub
                 End Try
             Else
@@ -3776,7 +3776,7 @@ RETRY:
             End If
         End If
 
-        MessageBox.Show("検索条件に一致するデータは見つかりません。", "検索", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        MessageBox.Show(My.Resources.MenuItemSearchPrev_ClickText2, My.Resources.MenuItemSearchPrev_ClickText3, MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 
     Private Sub AboutMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AboutMenuItem.Click
@@ -3967,7 +3967,8 @@ RETRY:
         If retMsg.Length > 0 Then
             strVer = retMsg.Substring(0, 4)
             If strVer.CompareTo(My.Application.Info.Version.ToString.Replace(".", "")) > 0 Then
-                If MessageBox.Show("新しいバージョン " + strVer + " が公開されています。更新しますか？", "Tween更新確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
+                Dim tmp As String = String.Format(My.Resources.CheckNewVersionText3, strVer)
+                If MessageBox.Show(tmp, My.Resources.CheckNewVersionText1, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
                     retMsg = clsTwSync.GetTweenBinary(strVer)
                     If retMsg.Length = 0 Then
                         retMsg = clsTwSync.GetTweenUpBinary()
@@ -3976,15 +3977,16 @@ RETRY:
                             Application.Exit()
                             Exit Sub
                         Else
-                            If Not startup Then MessageBox.Show("アップデーターのダウンロードに失敗しました。しばらく待ってから再度お試しください。", "Tween更新結果", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                            If Not startup Then MessageBox.Show(My.Resources.CheckNewVersionText4, My.Resources.CheckNewVersionText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                         End If
                     Else
-                        If Not startup Then MessageBox.Show("最新版が公開されていますが、ダウンロードに失敗しました。しばらく待ってから再度お試しください。", "Tween更新結果", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                        If Not startup Then MessageBox.Show(My.Resources.CheckNewVersionText5, My.Resources.CheckNewVersionText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                     End If
                 End If
             Else
                 If forceUpdate Then
-                    If MessageBox.Show("新しいバージョンは見つかりません。 " + strVer + " が公開されています。強制的に更新しますか？", "Tween更新確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
+                    Dim tmp As String = String.Format(My.Resources.CheckNewVersionText6, strVer)
+                    If MessageBox.Show(tmp, My.Resources.CheckNewVersionText1, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
                         retMsg = clsTwSync.GetTweenBinary(strVer)
                         If retMsg.Length = 0 Then
                             retMsg = clsTwSync.GetTweenUpBinary()
@@ -3993,19 +3995,19 @@ RETRY:
                                 Application.Exit()
                                 Exit Sub
                             Else
-                                If Not startup Then MessageBox.Show("アップデーターのダウンロードに失敗しました。しばらく待ってから再度お試しください。", "Tween更新結果", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                                If Not startup Then MessageBox.Show(My.Resources.CheckNewVersionText4, My.Resources.CheckNewVersionText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                             End If
                         Else
-                            If Not startup Then MessageBox.Show("最新版が公開されていますが、ダウンロードに失敗しました。しばらく待ってから再度お試しください。", "Tween更新結果", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                            If Not startup Then MessageBox.Show(My.Resources.CheckNewVersionText5, My.Resources.CheckNewVersionText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                         End If
                     End If
                 ElseIf Not startup Then
-                    MessageBox.Show("最新版をお使いです。更新の必要はありませんでした。使用中Ver：" + My.Application.Info.Version.ToString.Replace(".", "") + " 最新Ver：" + strVer, "Tween更新結果", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    MessageBox.Show(My.Resources.CheckNewVersionText7 + My.Application.Info.Version.ToString.Replace(".", "") + My.Resources.CheckNewVersionText8 + strVer, My.Resources.CheckNewVersionText2, MessageBoxButtons.OK, MessageBoxIcon.Information)
                 End If
             End If
         Else
-            StatusLabel.Text = "バージョンチェック失敗"
-            If Not startup Then MessageBox.Show("更新版のバージョン取得に失敗しました。しばらく待ってから再度お試しください。", "Tween更新結果", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            StatusLabel.Text = My.Resources.CheckNewVersionText9
+            If Not startup Then MessageBox.Show(My.Resources.CheckNewVersionText10, My.Resources.CheckNewVersionText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
         End If
     End Sub
 
@@ -4692,20 +4694,17 @@ RETRY:
     End Sub
 
     Private Sub SaveLogMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SaveLogMenuItem.Click
-        Dim rslt As DialogResult = MessageBox.Show("選択中タブの全発言を保存しますか？" + vbCrLf + _
-                "　「はい」　　　：全発言を保存する" + vbCrLf + _
-                "　「いいえ」　　：選択している発言のみ保存する" + vbCrLf + _
-                "　「キャンセル」：保存処理をキャンセル" + vbCrLf + _
-                "（タブ区切りのテキストファイル形式で保存します）", _
-                "保存対象選択", _
+        Dim tmp As String = String.Format(My.Resources.SaveLogMenuItem_ClickText1, vbCrLf)
+        Dim rslt As DialogResult = MessageBox.Show(tmp, _
+                My.Resources.SaveLogMenuItem_ClickText2, _
                 MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)
         If rslt = Windows.Forms.DialogResult.Cancel Then Exit Sub
 
         SaveFileDialog1.FileName = "TweenPosts" + Format(Now, "yyMMdd-HHmmss") + ".tsv"
         SaveFileDialog1.InitialDirectory = My.Application.Info.DirectoryPath
-        SaveFileDialog1.Filter = "TSVファイル(*.tsv)|*.tsv|すべてのファイル(*.*)|*.*"
+        SaveFileDialog1.Filter = My.Resources.SaveLogMenuItem_ClickText3
         SaveFileDialog1.FilterIndex = 0
-        SaveFileDialog1.Title = "保存先のファイルを選択してください"
+        SaveFileDialog1.Title = My.Resources.SaveLogMenuItem_ClickText4
         SaveFileDialog1.RestoreDirectory = True
 
         If SaveFileDialog1.ShowDialog = Windows.Forms.DialogResult.OK Then
@@ -5117,8 +5116,8 @@ RETRY:
         Me.TopMost = SettingDialog.AlwaysTop
         If tabName <> "" Then
             If Not AddNewTab(tabName) Then
-                MessageBox.Show("タブ　""" + tabName + """　は既に存在するため、追加できません。別の名前を指定してください。", _
-                                "タブ追加", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                Dim tmp As String = String.Format(My.Resources.AddTabMenuItem_ClickText1, tabName)
+                MessageBox.Show(tmp, My.Resources.AddTabMenuItem_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             End If
         End If
     End Sub
@@ -5138,7 +5137,7 @@ RETRY:
                 tabName = TabDialog.SelectedTabName
 
                 ListTab.SelectedTab.Focus()
-                If tabName = "(新規タブ)" Then
+                If tabName = My.Resources.TabMenuItem_ClickText1 Then
 
                     Dim inputName As New InputTabName()
                     inputName.TabName = "MyTab" + _tabs.Count.ToString
@@ -5370,7 +5369,7 @@ RETRY:
             tabName = TabDialog.SelectedTabName
 
             ListTab.SelectedTab.Focus()
-            If tabName = "(新規タブ)" Then
+            If tabName = My.Resources.IDRuleMenuItem_ClickText1 Then
                 Dim inputName As New InputTabName()
                 inputName.TabName = "MyTab" + _tabs.Count.ToString
                 inputName.ShowDialog()
@@ -5379,8 +5378,8 @@ RETRY:
                 Me.TopMost = SettingDialog.AlwaysTop
                 If tabName <> "" Then
                     If Not AddNewTab(tabName) Then
-                        MessageBox.Show("タブ　""" + tabName + """　は既に存在するため、追加できません。別の名前を指定してください。", _
-                                        "タブ追加", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                        Dim tmp As String = String.Format(My.Resources.IDRuleMenuItem_ClickText2, tabName)
+                        MessageBox.Show(tmp, My.Resources.IDRuleMenuItem_ClickText3, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                     Else
                         Exit Do
                     End If
@@ -5390,16 +5389,18 @@ RETRY:
             End If
         Loop While True
         Dim mv As Boolean = False
-        If MessageBox.Show("Recentに残しますか？" + vbCrLf + "  「はい」　：残す" + vbCrLf + "  「いいえ」：残さない", _
-           "移動確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
-            mv = False
-        Else
-            mv = True
-        End If
+        With Block
+            Dim _tmp As String = String.Format(My.Resources.IDRuleMenuItem_ClickText4, vbCrLf)
+            If MessageBox.Show(_tmp, My.Resources.IDRuleMenuItem_ClickText5, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
+                mv = False
+            Else
+                mv = True
+            End If
+        End With
         Dim mk As Boolean = False
         If Not mv Then
-            If MessageBox.Show("マークをつけますか？" + vbCrLf + "  「はい」　：つける" + vbCrLf + "  「いいえ」：つけない", _
-               "マーク確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
+            Dim _tmp As String = String.Format(My.Resources.IDRuleMenuItem_ClickText6, vbCrLf)
+            If MessageBox.Show(_tmp, My.Resources.IDRuleMenuItem_ClickText7, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
                 mk = True
             Else
                 mk = False
@@ -5818,9 +5819,8 @@ RETRY:
 
     Private Sub ClearTabMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ClearTabMenuItem.Click
         If _rclickTabName = "" Then Exit Sub
-
-        If MessageBox.Show("このタブの発言をクリアしてもよろしいですか？" + vbCrLf + _
-                        "（サーバーから発言は削除しません。）", "タブクリア確認", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then
+        Dim tmp As String = String.Format(My.Resources.ClearTabMenuItem_ClickText1, vbCrLf)
+        If MessageBox.Show(tmp, My.Resources.ClearTabMenuItem_ClickText2, MessageBoxButtons.OKCancel, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then
             Exit Sub
         End If
 
@@ -5838,7 +5838,7 @@ RETRY:
 
     Private Sub SetMainWindowTitle()
         'メインウインドウタイトルの書き換え
-        Dim ttl As String = ""
+        Dim ttl As New StringBuilder
         Dim urat As Integer = _tabs(1).unreadCount + _tabs(2).unreadCount
         Dim ur As Integer = 0
         Dim al As Integer = 0
@@ -5850,26 +5850,28 @@ RETRY:
                 al += ts.allCount
             Next
         End If
-        If SettingDialog.DispUsername Then ttl = _username + " - "
-        ttl += "Tween  "
+
+        ttl.EnsureCapacity(256)
+        If SettingDialog.DispUsername Then ttl.Append(_username + " - ")
+        ttl.Append("Tween  ")
         Select Case SettingDialog.DispLatestPost
             Case DispTitleEnum.Ver
-                ttl += "Ver:" + My.Application.Info.Version.ToString()
+                ttl.Append("Ver:" + My.Application.Info.Version.ToString())
             Case DispTitleEnum.Post
                 If _history IsNot Nothing AndAlso _history.Count > 1 Then
-                    ttl += _history(_history.Count - 2)
+                    ttl.Append(_history(_history.Count - 2))
                 End If
             Case DispTitleEnum.UnreadRepCount
-                ttl += urat.ToString() + "件 (未読＠)"
+                ttl.AppendFormat(My.Resources.SetMainWindowTitleText1, urat)
             Case DispTitleEnum.UnreadAllCount
-                ttl += ur.ToString() + "件 (未読)"
+                ttl.AppendFormat(My.Resources.SetMainWindowTitleText2, ur)
             Case DispTitleEnum.UnreadAllRepCount
-                ttl += ur.ToString() + " (" + urat.ToString() + ")件 (未読)"
+                ttl.AppendFormat(My.Resources.SetMainWindowTitleText3, ur, urat)
             Case DispTitleEnum.UnreadCountAllCount
-                ttl += ur.ToString() + "/" + al.ToString() + "件 (未読/総件数)"
+                ttl.AppendFormat(My.Resources.SetMainWindowTitleText4, ur, al)
         End Select
 
-        Me.Text = ttl
+        Me.Text = ttl.ToString()
     End Sub
 
     Private Sub SetStatusLabel()
