@@ -117,6 +117,18 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddCustomTabsText1" xml:space="preserve">
+    <value>名前</value>
+  </data>
+  <data name="AddCustomTabsText2" xml:space="preserve">
+    <value>投稿</value>
+  </data>
+  <data name="AddCustomTabsText3" xml:space="preserve">
+    <value>日時</value>
+  </data>
+  <data name="AddCustomTabsText4" xml:space="preserve">
+    <value>ユーザ名</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="At" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\5b.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -154,17 +166,86 @@
   <data name="ChangeLog" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ChangeLog.txt;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;shift_jis</value>
   </data>
+  <data name="ContextMenuStrip3_OpeningText1" xml:space="preserve">
+    <value>(アイコンが取得できていません)</value>
+  </data>
+  <data name="ContextMenuStrip3_OpeningText2" xml:space="preserve">
+    <value>(発言を選択してください)</value>
+  </data>
+  <data name="DeleteStripMenuItem_ClickText1" xml:space="preserve">
+    <value>選択されている自発言(またはDM)を削除してもよろしいですか？{0}注意　：　Twitterサーバからも削除されます！{0}　タブからIDを削除する場合は、「IDを移動」を使ってください。{0}　タブを削除する場合は、「タブを削除」を使ってください。{0}{0}削除処理を中止するには、「キャンセル」ボタンを押してください。</value>
+  </data>
+  <data name="DeleteStripMenuItem_ClickText2" xml:space="preserve">
+    <value>削除確認</value>
+  </data>
+  <data name="DeleteStripMenuItem_ClickText3" xml:space="preserve">
+    <value>削除失敗</value>
+  </data>
+  <data name="DeleteStripMenuItem_ClickText4" xml:space="preserve">
+    <value>削除成功</value>
+  </data>
   <data name="DMPeriod_ValidatingText1" xml:space="preserve">
     <value>更新間隔には数値（0または15～600）を指定してください。</value>
   </data>
   <data name="DMPeriod_ValidatingText2" xml:space="preserve">
     <value>更新間隔には数値（0または15～600）を指定してください。</value>
   </data>
+  <data name="FavAddToolStripMenuItem_ClickText1" xml:space="preserve">
+    <value>選択された発言をFavoritesに追加します。よろしいですか？</value>
+  </data>
+  <data name="FavAddToolStripMenuItem_ClickText2" xml:space="preserve">
+    <value>Fav確認</value>
+  </data>
+  <data name="FavAddToolStripMenuItem_ClickText3" xml:space="preserve">
+    <value>Fav追加中...</value>
+  </data>
+  <data name="FavAddToolStripMenuItem_ClickText4" xml:space="preserve">
+    <value>Fav追加なし</value>
+  </data>
+  <data name="FavRemoveToolStripMenuItem_ClickText1" xml:space="preserve">
+    <value>選択された発言をFavoritesから削除します。よろしいですか？</value>
+  </data>
+  <data name="FavRemoveToolStripMenuItem_ClickText2" xml:space="preserve">
+    <value>Fav確認</value>
+  </data>
+  <data name="FavRemoveToolStripMenuItem_ClickText3" xml:space="preserve">
+    <value>Fav削除中...</value>
+  </data>
+  <data name="FavRemoveToolStripMenuItem_ClickText4" xml:space="preserve">
+    <value>Fav削除なし</value>
+  </data>
   <data name="Form1_LoadText1" xml:space="preserve">
     <value>更新中...</value>
   </data>
   <data name="GetTimelineWorker_RunWorkerCompletedText1" xml:space="preserve">
     <value>Recent更新完了</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText10" xml:space="preserve">
+    <value>起動時読込完了</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText11" xml:space="preserve">
+    <value>DMRcv更新完了</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText12" xml:space="preserve">
+    <value>DMSnt更新中...</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText13" xml:space="preserve">
+    <value>DMSnt更新完了</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText14" xml:space="preserve">
+    <value>POST完了</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText15" xml:space="preserve">
+    <value>Fav追加(</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText16" xml:space="preserve">
+    <value>) 失敗:</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText17" xml:space="preserve">
+    <value>Fav削除(</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText18" xml:space="preserve">
+    <value>) 失敗:</value>
   </data>
   <data name="GetTimelineWorker_RunWorkerCompletedText2" xml:space="preserve">
     <value> ポストまで読み込み完了。さらに読み込みますか？</value>
@@ -184,6 +265,27 @@
   <data name="GetTimelineWorker_RunWorkerCompletedText7" xml:space="preserve">
     <value>Reply更新中...</value>
   </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText8" xml:space="preserve">
+    <value>DMRcv更新中...</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText9" xml:space="preserve">
+    <value>Reply更新完了</value>
+  </data>
+  <data name="IDRuleMenuItem_ClickText1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="IDRuleMenuItem_ClickText2" xml:space="preserve">
+    <value />
+  </data>
+  <data name="IDRuleMenuItem_ClickText3" xml:space="preserve">
+    <value />
+  </data>
+  <data name="InfoTwitterMenuItem_ClickText1" xml:space="preserve">
+    <value>Twitterからのお知らせはありません。</value>
+  </data>
+  <data name="InfoTwitterMenuItem_ClickText2" xml:space="preserve">
+    <value>Twitterからのお知らせ</value>
+  </data>
   <data name="LoadConfigurationText1" xml:space="preserve">
     <value>この設定ファイルは Tween により自動生成されました。手動で変更しないでください。</value>
   </data>
@@ -202,6 +304,21 @@
   <data name="NextThreshold_ValidatingText2" xml:space="preserve">
     <value>閾値には数値（1～20）を指定してください。</value>
   </data>
+  <data name="PostWorker_RunWorkerCompletedText1" xml:space="preserve">
+    <value>Tween 例外発生</value>
+  </data>
+  <data name="PostWorker_RunWorkerCompletedText2" xml:space="preserve">
+    <value>エラーが発生しました。申し訳ありません。ログをexeファイルのある場所にTween.logとして作ったので、kiri.feather@gmail.comまで送っていただけると助かります。ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。</value>
+  </data>
+  <data name="PostWorker_RunWorkerCompletedText3" xml:space="preserve">
+    <value>エラー発生</value>
+  </data>
+  <data name="PostWorker_RunWorkerCompletedText4" xml:space="preserve">
+    <value>POST完了</value>
+  </data>
+  <data name="PostWorker_RunWorkerCompletedText5" xml:space="preserve">
+    <value>Recent更新中...</value>
+  </data>
   <data name="Refresh" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\re.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -213,6 +330,21 @@
   </data>
   <data name="Refresh4" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\re4.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RefreshDirectMessageText1" xml:space="preserve">
+    <value>新着</value>
+  </data>
+  <data name="RefreshDirectMessageText2" xml:space="preserve">
+    <value>件</value>
+  </data>
+  <data name="RefreshStripMenuItem_ClickText1" xml:space="preserve">
+    <value>Recent更新中...</value>
+  </data>
+  <data name="RefreshStripMenuItem_ClickText2" xml:space="preserve">
+    <value>Reply更新中...</value>
+  </data>
+  <data name="RefreshStripMenuItem_ClickText3" xml:space="preserve">
+    <value>DMRcv更新中...</value>
   </data>
   <data name="RefreshTimelineText1" xml:space="preserve">
     <value>新着</value>
@@ -286,6 +418,15 @@
   <data name="SetFiltersText9" xml:space="preserve">
     <value>移動する</value>
   </data>
+  <data name="SetStatusLabelText1" xml:space="preserve">
+    <value>[タブ: {0}/{1} 全体: {2}/{3} (返信: {4})] [時速: 投 {5}/ ☆ {6}/ 流 {7}] [間隔: </value>
+  </data>
+  <data name="SetStatusLabelText2" xml:space="preserve">
+    <value>-]</value>
+  </data>
+  <data name="SetStatusLabelText3" xml:space="preserve">
+    <value>]</value>
+  </data>
   <data name="StartupReadDM_ValidatingText1" xml:space="preserve">
     <value>読み込みページ数には数値（1～999）を指定してください。</value>
   </data>
@@ -312,6 +453,15 @@
   </data>
   <data name="TabIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\3b.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TabMenuItem_ClickText1" xml:space="preserve">
+    <value>(新規タブ)</value>
+  </data>
+  <data name="TabMenuItem_ClickText2" xml:space="preserve">
+    <value>タブ　""{0}""　は既に存在するため、追加できません。別の名前を指定してください。</value>
+  </data>
+  <data name="TabMenuItem_ClickText3" xml:space="preserve">
+    <value>タブ追加</value>
   </data>
   <data name="TextProxyPort_ValidatingText1" xml:space="preserve">
     <value>ポート番号には整数値を指定してください。</value>
@@ -384,5 +534,14 @@
   </data>
   <data name="UnhandledExceptionText9" xml:space="preserve">
     <value>エラーが発生しました。ごめんなさい。ログをexeファイルのある場所に {0} として作ったので、kiri.feather@gmail.comまで送っていただけると助かります。{1}ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。{1}「OK」ボタンをクリックするとログを開きます。ログを開かない場合は「キャンセル」ボタンをクリックしてください。</value>
+  </data>
+  <data name="UpdateFollowersMenuItem1_ClickText1" xml:space="preserve">
+    <value>Followers取得中...</value>
+  </data>
+  <data name="UpdateFollowersMenuItem1_ClickText2" xml:space="preserve">
+    <value>Followers取得エラー：</value>
+  </data>
+  <data name="UpdateFollowersMenuItem1_ClickText3" xml:space="preserve">
+    <value>Followers取得完了</value>
   </data>
 </root>
