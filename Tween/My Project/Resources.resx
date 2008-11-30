@@ -129,6 +129,27 @@
   <data name="AddCustomTabsText4" xml:space="preserve">
     <value>ユーザ名</value>
   </data>
+  <data name="AddNewTabText1" xml:space="preserve">
+    <value>(新規タブ)</value>
+  </data>
+  <data name="AddNewTabText2" xml:space="preserve">
+    <value>名前</value>
+  </data>
+  <data name="AddNewTabText3" xml:space="preserve">
+    <value>投稿</value>
+  </data>
+  <data name="AddNewTabText4" xml:space="preserve">
+    <value>日時</value>
+  </data>
+  <data name="AddNewTabText5" xml:space="preserve">
+    <value>ユーザ名</value>
+  </data>
+  <data name="AddTabMenuItem_ClickText1" xml:space="preserve">
+    <value>タブ　""{0}""　は既に存在するため、追加できません。別の名前を指定してください。</value>
+  </data>
+  <data name="AddTabMenuItem_ClickText2" xml:space="preserve">
+    <value>タブ追加</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="At" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\5b.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -166,6 +187,42 @@
   <data name="ChangeLog" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ChangeLog.txt;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;shift_jis</value>
   </data>
+  <data name="CheckNewVersionText1" xml:space="preserve">
+    <value>Tween更新確認</value>
+  </data>
+  <data name="CheckNewVersionText10" xml:space="preserve">
+    <value>更新版のバージョン取得に失敗しました。しばらく待ってから再度お試しください。</value>
+  </data>
+  <data name="CheckNewVersionText2" xml:space="preserve">
+    <value>Tween更新結果</value>
+  </data>
+  <data name="CheckNewVersionText3" xml:space="preserve">
+    <value>新しいバージョン {0} が公開されています。更新しますか？</value>
+  </data>
+  <data name="CheckNewVersionText4" xml:space="preserve">
+    <value>アップデーターのダウンロードに失敗しました。しばらく待ってから再度お試しください。</value>
+  </data>
+  <data name="CheckNewVersionText5" xml:space="preserve">
+    <value>最新版が公開されていますが、ダウンロードに失敗しました。しばらく待ってから再度お試しください。</value>
+  </data>
+  <data name="CheckNewVersionText6" xml:space="preserve">
+    <value>新しいバージョンは見つかりません。 {0} が公開されています。強制的に更新しますか？</value>
+  </data>
+  <data name="CheckNewVersionText7" xml:space="preserve">
+    <value>最新版をお使いです。更新の必要はありませんでした。使用中Ver：</value>
+  </data>
+  <data name="CheckNewVersionText8" xml:space="preserve">
+    <value>最新Ver：</value>
+  </data>
+  <data name="CheckNewVersionText9" xml:space="preserve">
+    <value>バージョンチェック失敗</value>
+  </data>
+  <data name="ClearTabMenuItem_ClickText1" xml:space="preserve">
+    <value>このタブの発言をクリアしてもよろしいですか？{0}（サーバーから発言は削除しません。）</value>
+  </data>
+  <data name="ClearTabMenuItem_ClickText2" xml:space="preserve">
+    <value>タブクリア確認</value>
+  </data>
   <data name="ContextMenuStrip3_OpeningText1" xml:space="preserve">
     <value>(アイコンが取得できていません)</value>
   </data>
@@ -189,6 +246,15 @@
   </data>
   <data name="DMPeriod_ValidatingText2" xml:space="preserve">
     <value>更新間隔には数値（0または15～600）を指定してください。</value>
+  </data>
+  <data name="DoTabSearchText1" xml:space="preserve">
+    <value>正規表現パターンが間違っています。</value>
+  </data>
+  <data name="DoTabSearchText2" xml:space="preserve">
+    <value>検索条件に一致するデータは見つかりません。</value>
+  </data>
+  <data name="DoTabSearchText3" xml:space="preserve">
+    <value>検索</value>
   </data>
   <data name="FavAddToolStripMenuItem_ClickText1" xml:space="preserve">
     <value>選択された発言をFavoritesに追加します。よろしいですか？</value>
@@ -272,13 +338,25 @@
     <value>Reply更新完了</value>
   </data>
   <data name="IDRuleMenuItem_ClickText1" xml:space="preserve">
-    <value />
+    <value>(新規タブ)</value>
   </data>
   <data name="IDRuleMenuItem_ClickText2" xml:space="preserve">
-    <value />
+    <value>タブ　""{0}""　は既に存在するため、追加できません。別の名前を指定してください。</value>
   </data>
   <data name="IDRuleMenuItem_ClickText3" xml:space="preserve">
-    <value />
+    <value>タブ追加</value>
+  </data>
+  <data name="IDRuleMenuItem_ClickText4" xml:space="preserve">
+    <value>Recentに残しますか？{0}  「はい」　：残す{0}  「いいえ」：残さない</value>
+  </data>
+  <data name="IDRuleMenuItem_ClickText5" xml:space="preserve">
+    <value>移動確認</value>
+  </data>
+  <data name="IDRuleMenuItem_ClickText6" xml:space="preserve">
+    <value>マークをつけますか？{0}  「はい」　：つける{0}  「いいえ」：つけない</value>
+  </data>
+  <data name="IDRuleMenuItem_ClickText7" xml:space="preserve">
+    <value>マーク確認</value>
   </data>
   <data name="InfoTwitterMenuItem_ClickText1" xml:space="preserve">
     <value>Twitterからのお知らせはありません。</value>
@@ -288,6 +366,24 @@
   </data>
   <data name="LoadConfigurationText1" xml:space="preserve">
     <value>この設定ファイルは Tween により自動生成されました。手動で変更しないでください。</value>
+  </data>
+  <data name="MenuItemSearchNext_ClickText1" xml:space="preserve">
+    <value>正規表現パターンが間違っています。</value>
+  </data>
+  <data name="MenuItemSearchNext_ClickText2" xml:space="preserve">
+    <value>検索条件に一致するデータは見つかりません。</value>
+  </data>
+  <data name="MenuItemSearchNext_ClickText3" xml:space="preserve">
+    <value>検索</value>
+  </data>
+  <data name="MenuItemSearchPrev_ClickText1" xml:space="preserve">
+    <value>正規表現パターンが間違っています。</value>
+  </data>
+  <data name="MenuItemSearchPrev_ClickText2" xml:space="preserve">
+    <value>検索条件に一致するデータは見つかりません。</value>
+  </data>
+  <data name="MenuItemSearchPrev_ClickText3" xml:space="preserve">
+    <value>検索</value>
   </data>
   <data name="MIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\4b.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -358,11 +454,29 @@
   <data name="RefreshTimelineText4" xml:space="preserve">
     <value>起動読込</value>
   </data>
+  <data name="RemoveSpecifiedTabText1" xml:space="preserve">
+    <value>このタブを削除してもよろしいですか？{0}（このタブの発言はRecentへ戻されます。）</value>
+  </data>
+  <data name="RemoveSpecifiedTabText2" xml:space="preserve">
+    <value>タブの削除確認</value>
+  </data>
   <data name="ReplyBlink" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\6o.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Repry" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\5o.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SaveLogMenuItem_ClickText1" xml:space="preserve">
+    <value>選択中タブの全発言を保存しますか？{0}　「はい」　　　：全発言を保存する{0}　「いいえ」　　：選択している発言のみ保存する{0}　「キャンセル」：保存処理をキャンセル{0}（タブ区切りのテキストファイル形式で保存します）</value>
+  </data>
+  <data name="SaveLogMenuItem_ClickText2" xml:space="preserve">
+    <value>保存対象選択</value>
+  </data>
+  <data name="SaveLogMenuItem_ClickText3" xml:space="preserve">
+    <value>TSVファイル(*.tsv)|*.tsv|すべてのファイル(*.*)|*.*</value>
+  </data>
+  <data name="SaveLogMenuItem_ClickText4" xml:space="preserve">
+    <value>保存先のファイルを選択してください</value>
   </data>
   <data name="Save_ClickText1" xml:space="preserve">
     <value>ユーザー名とパスワードを指定してください。</value>
@@ -417,6 +531,18 @@
   </data>
   <data name="SetFiltersText9" xml:space="preserve">
     <value>移動する</value>
+  </data>
+  <data name="SetMainWindowTitleText1" xml:space="preserve">
+    <value>{0}件 (未読＠)</value>
+  </data>
+  <data name="SetMainWindowTitleText2" xml:space="preserve">
+    <value>{0}件 (未読)</value>
+  </data>
+  <data name="SetMainWindowTitleText3" xml:space="preserve">
+    <value>{0} ({1})件 (未読)</value>
+  </data>
+  <data name="SetMainWindowTitleText4" xml:space="preserve">
+    <value>{0}/{1}件 (未読/総件数)</value>
   </data>
   <data name="SetStatusLabelText1" xml:space="preserve">
     <value>[タブ: {0}/{1} 全体: {2}/{3} (返信: {4})] [時速: 投 {5}/ ☆ {6}/ 流 {7}] [間隔: </value>

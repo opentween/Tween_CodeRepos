@@ -96,6 +96,69 @@ Namespace My.Resources
             End Get
         End Property
         
+        '''<summary>
+        '''  (新規タブ) に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property AddNewTabText1() As String
+            Get
+                Return ResourceManager.GetString("AddNewTabText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  名前 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property AddNewTabText2() As String
+            Get
+                Return ResourceManager.GetString("AddNewTabText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  投稿 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property AddNewTabText3() As String
+            Get
+                Return ResourceManager.GetString("AddNewTabText3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  日時 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property AddNewTabText4() As String
+            Get
+                Return ResourceManager.GetString("AddNewTabText4", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  ユーザ名 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property AddNewTabText5() As String
+            Get
+                Return ResourceManager.GetString("AddNewTabText5", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  タブ　&quot;&quot;{0}&quot;&quot;　は既に存在するため、追加できません。別の名前を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property AddTabMenuItem_ClickText1() As String
+            Get
+                Return ResourceManager.GetString("AddTabMenuItem_ClickText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  タブ追加 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property AddTabMenuItem_ClickText2() As String
+            Get
+                Return ResourceManager.GetString("AddTabMenuItem_ClickText2", resourceCulture)
+            End Get
+        End Property
+        
         Friend ReadOnly Property At() As System.Drawing.Icon
             Get
                 Dim obj As Object = ResourceManager.GetObject("At", resourceCulture)
@@ -213,6 +276,114 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Tween更新確認 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property CheckNewVersionText1() As String
+            Get
+                Return ResourceManager.GetString("CheckNewVersionText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  更新版のバージョン取得に失敗しました。しばらく待ってから再度お試しください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property CheckNewVersionText10() As String
+            Get
+                Return ResourceManager.GetString("CheckNewVersionText10", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Tween更新結果 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property CheckNewVersionText2() As String
+            Get
+                Return ResourceManager.GetString("CheckNewVersionText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  新しいバージョン {0} が公開されています。更新しますか？ に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property CheckNewVersionText3() As String
+            Get
+                Return ResourceManager.GetString("CheckNewVersionText3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  アップデーターのダウンロードに失敗しました。しばらく待ってから再度お試しください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property CheckNewVersionText4() As String
+            Get
+                Return ResourceManager.GetString("CheckNewVersionText4", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  最新版が公開されていますが、ダウンロードに失敗しました。しばらく待ってから再度お試しください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property CheckNewVersionText5() As String
+            Get
+                Return ResourceManager.GetString("CheckNewVersionText5", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  新しいバージョンは見つかりません。 {0} が公開されています。強制的に更新しますか？ に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property CheckNewVersionText6() As String
+            Get
+                Return ResourceManager.GetString("CheckNewVersionText6", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  最新版をお使いです。更新の必要はありませんでした。使用中Ver： に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property CheckNewVersionText7() As String
+            Get
+                Return ResourceManager.GetString("CheckNewVersionText7", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  最新Ver： に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property CheckNewVersionText8() As String
+            Get
+                Return ResourceManager.GetString("CheckNewVersionText8", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  バージョンチェック失敗 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property CheckNewVersionText9() As String
+            Get
+                Return ResourceManager.GetString("CheckNewVersionText9", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  このタブの発言をクリアしてもよろしいですか？{0}（サーバーから発言は削除しません。） に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property ClearTabMenuItem_ClickText1() As String
+            Get
+                Return ResourceManager.GetString("ClearTabMenuItem_ClickText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  タブクリア確認 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property ClearTabMenuItem_ClickText2() As String
+            Get
+                Return ResourceManager.GetString("ClearTabMenuItem_ClickText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  (アイコンが取得できていません) に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property ContextMenuStrip3_OpeningText1() As String
@@ -281,6 +452,33 @@ Namespace My.Resources
         Friend ReadOnly Property DMPeriod_ValidatingText2() As String
             Get
                 Return ResourceManager.GetString("DMPeriod_ValidatingText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  正規表現パターンが間違っています。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property DoTabSearchText1() As String
+            Get
+                Return ResourceManager.GetString("DoTabSearchText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  検索条件に一致するデータは見つかりません。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property DoTabSearchText2() As String
+            Get
+                Return ResourceManager.GetString("DoTabSearchText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  検索 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property DoTabSearchText3() As String
+            Get
+                Return ResourceManager.GetString("DoTabSearchText3", resourceCulture)
             End Get
         End Property
         
@@ -528,7 +726,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''   に類似しているローカライズされた文字列を検索します。
+        '''  (新規タブ) に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property IDRuleMenuItem_ClickText1() As String
             Get
@@ -537,7 +735,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''   に類似しているローカライズされた文字列を検索します。
+        '''  タブ　&quot;&quot;{0}&quot;&quot;　は既に存在するため、追加できません。別の名前を指定してください。 に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property IDRuleMenuItem_ClickText2() As String
             Get
@@ -546,11 +744,47 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''   に類似しているローカライズされた文字列を検索します。
+        '''  タブ追加 に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property IDRuleMenuItem_ClickText3() As String
             Get
                 Return ResourceManager.GetString("IDRuleMenuItem_ClickText3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recentに残しますか？{0}  「はい」　：残す{0}  「いいえ」：残さない に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property IDRuleMenuItem_ClickText4() As String
+            Get
+                Return ResourceManager.GetString("IDRuleMenuItem_ClickText4", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  移動確認 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property IDRuleMenuItem_ClickText5() As String
+            Get
+                Return ResourceManager.GetString("IDRuleMenuItem_ClickText5", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  マークをつけますか？{0}  「はい」　：つける{0}  「いいえ」：つけない に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property IDRuleMenuItem_ClickText6() As String
+            Get
+                Return ResourceManager.GetString("IDRuleMenuItem_ClickText6", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  マーク確認 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property IDRuleMenuItem_ClickText7() As String
+            Get
+                Return ResourceManager.GetString("IDRuleMenuItem_ClickText7", resourceCulture)
             End Get
         End Property
         
@@ -578,6 +812,60 @@ Namespace My.Resources
         Friend ReadOnly Property LoadConfigurationText1() As String
             Get
                 Return ResourceManager.GetString("LoadConfigurationText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  正規表現パターンが間違っています。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property MenuItemSearchNext_ClickText1() As String
+            Get
+                Return ResourceManager.GetString("MenuItemSearchNext_ClickText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  検索条件に一致するデータは見つかりません。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property MenuItemSearchNext_ClickText2() As String
+            Get
+                Return ResourceManager.GetString("MenuItemSearchNext_ClickText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  検索 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property MenuItemSearchNext_ClickText3() As String
+            Get
+                Return ResourceManager.GetString("MenuItemSearchNext_ClickText3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  正規表現パターンが間違っています。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property MenuItemSearchPrev_ClickText1() As String
+            Get
+                Return ResourceManager.GetString("MenuItemSearchPrev_ClickText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  検索条件に一致するデータは見つかりません。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property MenuItemSearchPrev_ClickText2() As String
+            Get
+                Return ResourceManager.GetString("MenuItemSearchPrev_ClickText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  検索 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property MenuItemSearchPrev_ClickText3() As String
+            Get
+                Return ResourceManager.GetString("MenuItemSearchPrev_ClickText3", resourceCulture)
             End Get
         End Property
         
@@ -778,6 +1066,24 @@ Namespace My.Resources
             End Get
         End Property
         
+        '''<summary>
+        '''  このタブを削除してもよろしいですか？{0}（このタブの発言はRecentへ戻されます。） に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property RemoveSpecifiedTabText1() As String
+            Get
+                Return ResourceManager.GetString("RemoveSpecifiedTabText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  タブの削除確認 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property RemoveSpecifiedTabText2() As String
+            Get
+                Return ResourceManager.GetString("RemoveSpecifiedTabText2", resourceCulture)
+            End Get
+        End Property
+        
         Friend ReadOnly Property ReplyBlink() As System.Drawing.Icon
             Get
                 Dim obj As Object = ResourceManager.GetObject("ReplyBlink", resourceCulture)
@@ -816,6 +1122,42 @@ Namespace My.Resources
         Friend ReadOnly Property Save_ClickText3() As String
             Get
                 Return ResourceManager.GetString("Save_ClickText3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  選択中タブの全発言を保存しますか？{0}　「はい」　　　：全発言を保存する{0}　「いいえ」　　：選択している発言のみ保存する{0}　「キャンセル」：保存処理をキャンセル{0}（タブ区切りのテキストファイル形式で保存します） に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property SaveLogMenuItem_ClickText1() As String
+            Get
+                Return ResourceManager.GetString("SaveLogMenuItem_ClickText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  保存対象選択 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property SaveLogMenuItem_ClickText2() As String
+            Get
+                Return ResourceManager.GetString("SaveLogMenuItem_ClickText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  TSVファイル(*.tsv)|*.tsv|すべてのファイル(*.*)|*.* に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property SaveLogMenuItem_ClickText3() As String
+            Get
+                Return ResourceManager.GetString("SaveLogMenuItem_ClickText3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  保存先のファイルを選択してください に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property SaveLogMenuItem_ClickText4() As String
+            Get
+                Return ResourceManager.GetString("SaveLogMenuItem_ClickText4", resourceCulture)
             End Get
         End Property
         
@@ -951,6 +1293,42 @@ Namespace My.Resources
         Friend ReadOnly Property SetFiltersText9() As String
             Get
                 Return ResourceManager.GetString("SetFiltersText9", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  {0}件 (未読＠) に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property SetMainWindowTitleText1() As String
+            Get
+                Return ResourceManager.GetString("SetMainWindowTitleText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  {0}件 (未読) に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property SetMainWindowTitleText2() As String
+            Get
+                Return ResourceManager.GetString("SetMainWindowTitleText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  {0} ({1})件 (未読) に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property SetMainWindowTitleText3() As String
+            Get
+                Return ResourceManager.GetString("SetMainWindowTitleText3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  {0}/{1}件 (未読/総件数) に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property SetMainWindowTitleText4() As String
+            Get
+                Return ResourceManager.GetString("SetMainWindowTitleText4", resourceCulture)
             End Get
         End Property
         
