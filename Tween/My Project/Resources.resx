@@ -136,6 +136,21 @@
   <data name="Button3_ClickText2" xml:space="preserve">
     <value>ブラウザを指定してください</value>
   </data>
+  <data name="ButtonDelete_ClickText1" xml:space="preserve">
+    <value>このルールを削除してもよろしいですか？{0}   『{1}』</value>
+  </data>
+  <data name="ButtonDelete_ClickText2" xml:space="preserve">
+    <value>ルール削除確認</value>
+  </data>
+  <data name="ButtonOK_ClickText1" xml:space="preserve">
+    <value>ルールを指定してください。</value>
+  </data>
+  <data name="ButtonOK_ClickText2" xml:space="preserve">
+    <value>ルールチェック</value>
+  </data>
+  <data name="ButtonOK_ClickText3" xml:space="preserve">
+    <value>正規表現エラー：</value>
+  </data>
   <data name="ChangeLog" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ChangeLog.txt;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;shift_jis</value>
   </data>
@@ -144,6 +159,30 @@
   </data>
   <data name="DMPeriod_ValidatingText2" xml:space="preserve">
     <value>更新間隔には数値（0または15～600）を指定してください。</value>
+  </data>
+  <data name="Form1_LoadText1" xml:space="preserve">
+    <value>更新中...</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText1" xml:space="preserve">
+    <value>Recent更新完了</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText2" xml:space="preserve">
+    <value> ポストまで読み込み完了。さらに読み込みますか？</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText3" xml:space="preserve">
+    <value>読み込み継続確認</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText4" xml:space="preserve">
+    <value>Reply更新中...</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText5" xml:space="preserve">
+    <value>Recent更新中...</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText6" xml:space="preserve">
+    <value>pages</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText7" xml:space="preserve">
+    <value>Reply更新中...</value>
   </data>
   <data name="LoadConfigurationText1" xml:space="preserve">
     <value>この設定ファイルは Tween により自動生成されました。手動で変更しないでください。</value>
@@ -175,6 +214,18 @@
   <data name="Refresh4" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\re4.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="RefreshTimelineText1" xml:space="preserve">
+    <value>新着</value>
+  </data>
+  <data name="RefreshTimelineText2" xml:space="preserve">
+    <value>件</value>
+  </data>
+  <data name="RefreshTimelineText3" xml:space="preserve">
+    <value>ログ読込</value>
+  </data>
+  <data name="RefreshTimelineText4" xml:space="preserve">
+    <value>起動読込</value>
+  </data>
   <data name="ReplyBlink" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\6o.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -201,6 +252,39 @@
   </data>
   <data name="SearchItem4Url" xml:space="preserve">
     <value>http://search.twitter.com/search?q=&amp;amp;ands={0}&amp;amp;phrase=&amp;amp;ors=&amp;amp;nots=&amp;amp;tag=&amp;amp;lang=en&amp;amp;from=&amp;amp;to=&amp;amp;ref=&amp;amp;near=&amp;amp;within=15&amp;amp;units=mi&amp;amp;since=&amp;amp;until=&amp;amp;rpp=15</value>
+  </data>
+  <data name="SetFiltersText1" xml:space="preserve">
+    <value>[ユーザ･･･{0}]  </value>
+  </data>
+  <data name="SetFiltersText10" xml:space="preserve">
+    <value>マークする</value>
+  </data>
+  <data name="SetFiltersText11" xml:space="preserve">
+    <value>何もせず</value>
+  </data>
+  <data name="SetFiltersText2" xml:space="preserve">
+    <value>[ユーザ･･･(全て)]  </value>
+  </data>
+  <data name="SetFiltersText3" xml:space="preserve">
+    <value>[本文･･･</value>
+  </data>
+  <data name="SetFiltersText4" xml:space="preserve">
+    <value>]  </value>
+  </data>
+  <data name="SetFiltersText5" xml:space="preserve">
+    <value>複合/</value>
+  </data>
+  <data name="SetFiltersText6" xml:space="preserve">
+    <value>単一/</value>
+  </data>
+  <data name="SetFiltersText7" xml:space="preserve">
+    <value>Regexp/</value>
+  </data>
+  <data name="SetFiltersText8" xml:space="preserve">
+    <value>URL/</value>
+  </data>
+  <data name="SetFiltersText9" xml:space="preserve">
+    <value>移動する</value>
   </data>
   <data name="StartupReadDM_ValidatingText1" xml:space="preserve">
     <value>読み込みページ数には数値（1～999）を指定してください。</value>
@@ -241,6 +325,36 @@
   <data name="TimelinePeriod_ValidatingText2" xml:space="preserve">
     <value>更新間隔には数値（0または15～600）を指定してください。</value>
   </data>
+  <data name="TimerDM_TickText1" xml:space="preserve">
+    <value>DMRcv更新中...</value>
+  </data>
+  <data name="TimerTimeline_TickText1" xml:space="preserve">
+    <value>Recent更新中...</value>
+  </data>
+  <data name="TraceOutText1" xml:space="preserve">
+    <value>このファイルの内容を kiri.feather@gmail.com まで送っていただけると助かります。</value>
+  </data>
+  <data name="TraceOutText2" xml:space="preserve">
+    <value>ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。</value>
+  </data>
+  <data name="TraceOutText3" xml:space="preserve">
+    <value>動作環境:</value>
+  </data>
+  <data name="TraceOutText4" xml:space="preserve">
+    <value>   オペレーティング システム: {0}</value>
+  </data>
+  <data name="TraceOutText5" xml:space="preserve">
+    <value>   共通言語ランタイム          : {0}</value>
+  </data>
+  <data name="TraceOutText6" xml:space="preserve">
+    <value>   Tween.exeのバージョン    : {0}</value>
+  </data>
+  <data name="TweenAboutBox_LoadText1" xml:space="preserve">
+    <value>{0} のバージョン情報</value>
+  </data>
+  <data name="TweenAboutBox_LoadText2" xml:space="preserve">
+    <value>バージョン {0}</value>
+  </data>
   <data name="UnhandledExceptionText1" xml:space="preserve">
     <value>**** エラー ログ: {0} ****</value>
   </data>
@@ -257,13 +371,13 @@
     <value>動作環境:</value>
   </data>
   <data name="UnhandledExceptionText5" xml:space="preserve">
-    <value>オペレーティング システム: {0}</value>
+    <value>   オペレーティング システム: {0}</value>
   </data>
   <data name="UnhandledExceptionText6" xml:space="preserve">
-    <value>共通言語ランタイム       : {0}</value>
+    <value>   共通言語ランタイム          : {0}</value>
   </data>
   <data name="UnhandledExceptionText7" xml:space="preserve">
-    <value>Tween.exeのバージョン    : {0}</value>
+    <value>   Tween.exeのバージョン    : {0}</value>
   </data>
   <data name="UnhandledExceptionText8" xml:space="preserve">
     <value>例外 {0}: {1}</value>

@@ -107,6 +107,51 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  このルールを削除してもよろしいですか？{0}   『{1}』 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property ButtonDelete_ClickText1() As String
+            Get
+                Return ResourceManager.GetString("ButtonDelete_ClickText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  ルール削除確認 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property ButtonDelete_ClickText2() As String
+            Get
+                Return ResourceManager.GetString("ButtonDelete_ClickText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  ルールを指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property ButtonOK_ClickText1() As String
+            Get
+                Return ResourceManager.GetString("ButtonOK_ClickText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  ルールチェック に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property ButtonOK_ClickText2() As String
+            Get
+                Return ResourceManager.GetString("ButtonOK_ClickText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  正規表現エラー： に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property ButtonOK_ClickText3() As String
+            Get
+                Return ResourceManager.GetString("ButtonOK_ClickText3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  更新履歴
         '''
         '''***Ver0.1.6.1(Unreleased)
@@ -146,6 +191,78 @@ Namespace My.Resources
         Friend ReadOnly Property DMPeriod_ValidatingText2() As String
             Get
                 Return ResourceManager.GetString("DMPeriod_ValidatingText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  更新中... に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property Form1_LoadText1() As String
+            Get
+                Return ResourceManager.GetString("Form1_LoadText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recent更新完了 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property GetTimelineWorker_RunWorkerCompletedText1() As String
+            Get
+                Return ResourceManager.GetString("GetTimelineWorker_RunWorkerCompletedText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''   ポストまで読み込み完了。さらに読み込みますか？ に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property GetTimelineWorker_RunWorkerCompletedText2() As String
+            Get
+                Return ResourceManager.GetString("GetTimelineWorker_RunWorkerCompletedText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  読み込み継続確認 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property GetTimelineWorker_RunWorkerCompletedText3() As String
+            Get
+                Return ResourceManager.GetString("GetTimelineWorker_RunWorkerCompletedText3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Reply更新中... に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property GetTimelineWorker_RunWorkerCompletedText4() As String
+            Get
+                Return ResourceManager.GetString("GetTimelineWorker_RunWorkerCompletedText4", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recent更新中... に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property GetTimelineWorker_RunWorkerCompletedText5() As String
+            Get
+                Return ResourceManager.GetString("GetTimelineWorker_RunWorkerCompletedText5", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  pages に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property GetTimelineWorker_RunWorkerCompletedText6() As String
+            Get
+                Return ResourceManager.GetString("GetTimelineWorker_RunWorkerCompletedText6", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Reply更新中... に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property GetTimelineWorker_RunWorkerCompletedText7() As String
+            Get
+                Return ResourceManager.GetString("GetTimelineWorker_RunWorkerCompletedText7", resourceCulture)
             End Get
         End Property
         
@@ -229,6 +346,42 @@ Namespace My.Resources
             End Get
         End Property
         
+        '''<summary>
+        '''  新着 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property RefreshTimelineText1() As String
+            Get
+                Return ResourceManager.GetString("RefreshTimelineText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  件 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property RefreshTimelineText2() As String
+            Get
+                Return ResourceManager.GetString("RefreshTimelineText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  ログ読込 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property RefreshTimelineText3() As String
+            Get
+                Return ResourceManager.GetString("RefreshTimelineText3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  起動読込 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property RefreshTimelineText4() As String
+            Get
+                Return ResourceManager.GetString("RefreshTimelineText4", resourceCulture)
+            End Get
+        End Property
+        
         Friend ReadOnly Property ReplyBlink() As System.Drawing.Icon
             Get
                 Dim obj As Object = ResourceManager.GetObject("ReplyBlink", resourceCulture)
@@ -303,6 +456,105 @@ Namespace My.Resources
         Friend ReadOnly Property SearchItem4Url() As String
             Get
                 Return ResourceManager.GetString("SearchItem4Url", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  [ユーザ･･･{0}]   に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property SetFiltersText1() As String
+            Get
+                Return ResourceManager.GetString("SetFiltersText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  マークする に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property SetFiltersText10() As String
+            Get
+                Return ResourceManager.GetString("SetFiltersText10", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  何もせず に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property SetFiltersText11() As String
+            Get
+                Return ResourceManager.GetString("SetFiltersText11", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  [ユーザ･･･(全て)]   に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property SetFiltersText2() As String
+            Get
+                Return ResourceManager.GetString("SetFiltersText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  [本文･･･ に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property SetFiltersText3() As String
+            Get
+                Return ResourceManager.GetString("SetFiltersText3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  ]   に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property SetFiltersText4() As String
+            Get
+                Return ResourceManager.GetString("SetFiltersText4", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  複合/ に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property SetFiltersText5() As String
+            Get
+                Return ResourceManager.GetString("SetFiltersText5", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  単一/ に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property SetFiltersText6() As String
+            Get
+                Return ResourceManager.GetString("SetFiltersText6", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Regexp/ に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property SetFiltersText7() As String
+            Get
+                Return ResourceManager.GetString("SetFiltersText7", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  URL/ に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property SetFiltersText8() As String
+            Get
+                Return ResourceManager.GetString("SetFiltersText8", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  移動する に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property SetFiltersText9() As String
+            Get
+                Return ResourceManager.GetString("SetFiltersText9", resourceCulture)
             End Get
         End Property
         
@@ -422,6 +674,96 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  DMRcv更新中... に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property TimerDM_TickText1() As String
+            Get
+                Return ResourceManager.GetString("TimerDM_TickText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recent更新中... に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property TimerTimeline_TickText1() As String
+            Get
+                Return ResourceManager.GetString("TimerTimeline_TickText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  このファイルの内容を kiri.feather@gmail.com まで送っていただけると助かります。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property TraceOutText1() As String
+            Get
+                Return ResourceManager.GetString("TraceOutText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property TraceOutText2() As String
+            Get
+                Return ResourceManager.GetString("TraceOutText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  動作環境: に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property TraceOutText3() As String
+            Get
+                Return ResourceManager.GetString("TraceOutText3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''     オペレーティング システム: {0} に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property TraceOutText4() As String
+            Get
+                Return ResourceManager.GetString("TraceOutText4", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''     共通言語ランタイム          : {0} に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property TraceOutText5() As String
+            Get
+                Return ResourceManager.GetString("TraceOutText5", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''     Tween.exeのバージョン    : {0} に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property TraceOutText6() As String
+            Get
+                Return ResourceManager.GetString("TraceOutText6", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  {0} のバージョン情報 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property TweenAboutBox_LoadText1() As String
+            Get
+                Return ResourceManager.GetString("TweenAboutBox_LoadText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  バージョン {0} に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property TweenAboutBox_LoadText2() As String
+            Get
+                Return ResourceManager.GetString("TweenAboutBox_LoadText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  **** エラー ログ: {0} **** に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property UnhandledExceptionText1() As String
@@ -467,7 +809,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  オペレーティング システム: {0} に類似しているローカライズされた文字列を検索します。
+        '''     オペレーティング システム: {0} に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property UnhandledExceptionText5() As String
             Get
@@ -476,7 +818,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  共通言語ランタイム       : {0} に類似しているローカライズされた文字列を検索します。
+        '''     共通言語ランタイム          : {0} に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property UnhandledExceptionText6() As String
             Get
@@ -485,7 +827,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Tween.exeのバージョン    : {0} に類似しているローカライズされた文字列を検索します。
+        '''     Tween.exeのバージョン    : {0} に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property UnhandledExceptionText7() As String
             Get
