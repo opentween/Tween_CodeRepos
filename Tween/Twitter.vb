@@ -1465,7 +1465,7 @@ Partial Public Class Twitter
     Public Function GetTweenBinary(ByVal strVer As String) As String
         Dim resStatus As String = ""
         Dim ret As String = ""
-        ret = DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/Tween" + strVer + ".gz", resStatus, MySocket.REQ_TYPE.ReqGETFile), String)
+        ret = DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/Tween" + strVer + ".gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFile), String)
         If ret.Length = 0 Then
             '取得OKなら、続いてresources.dllダウンロード
             Return Me.GetTweenResourcesDll(strVer)
@@ -1491,13 +1491,13 @@ Partial Public Class Twitter
 
         Using writer As IO.StreamWriter = New IO.StreamWriter(fileName)
             writer.WriteLine("**** TraceOut: {0} ****", DateTime.Now.ToString())
-            writer.WriteLine("このファイルの内容を kiri.feather@gmail.com まで送っていただけると助かります。")
-            writer.WriteLine("ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。")
+            writer.WriteLine(My.Resources.TraceOutText1)
+            writer.WriteLine(My.Resources.TraceOutText2)
             writer.WriteLine()
-            writer.WriteLine("動作環境:")
-            writer.WriteLine("   オペレーティング システム: {0}", Environment.OSVersion.VersionString)
-            writer.WriteLine("   共通言語ランタイム       : {0}", Environment.Version.ToString())
-            writer.WriteLine("   Tween.exeのバージョン    : {0}", My.Application.Info.Version.ToString())
+            writer.WriteLine(My.Resources.TraceOutText3)
+            writer.WriteLine(My.Resources.TraceOutText4, Environment.OSVersion.VersionString)
+            writer.WriteLine(My.Resources.TraceOutText5, Environment.Version.ToString())
+            writer.WriteLine(My.Resources.TraceOutText6, My.Application.Info.Version.ToString())
             writer.WriteLine(Message)
             writer.WriteLine()
         End Using

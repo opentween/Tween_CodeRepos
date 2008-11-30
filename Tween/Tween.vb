@@ -494,7 +494,7 @@ Public Class TweenMain
         ChangeImageSize()
 
 
-        StatusLabel.Text = "更新中..."      '画面右下の状態表示を変更
+        StatusLabel.Text = My.Resources.Form1_LoadText1       '画面右下の状態表示を変更
         StatusLabelUrl.Text = ""            '画面左下のリンク先URL表示部を初期化
         'PostedText.Text = ""
         PostBrowser.DocumentText = ""       '発言詳細部初期化
@@ -654,7 +654,7 @@ Public Class TweenMain
         args.page = 1
         args.endPage = 1
         args.type = WORKERTYPE.Timeline
-        StatusLabel.Text = "Recent更新中..."
+        StatusLabel.Text = My.Resources.TimerTimeline_TickText1
         NotifyIcon1.Icon = NIconRefresh(0)
         _refreshIconCnt = 0
         TimerRefreshIcon.Enabled = True
@@ -672,7 +672,7 @@ Public Class TweenMain
         args.page = 1
         args.endPage = 1
         args.type = WORKERTYPE.DirectMessegeRcv
-        StatusLabel.Text = "DMRcv更新中..."
+        StatusLabel.Text = My.Resources.TimerDM_TickText1
         NotifyIcon1.Icon = NIconRefresh(0)
         _refreshIconCnt = 0
         TimerRefreshIcon.Enabled = True
@@ -972,10 +972,10 @@ Public Class TweenMain
             If Not _initial AndAlso _pop <> "" Then
                 If RepCnt > 0 AndAlso _tabs(1).notify Then
                     NotifyIcon1.BalloonTipIcon = ToolTipIcon.Warning
-                    NotifyIcon1.BalloonTipTitle = "Tween [Reply!] 新着 " + cnt.ToString() + "件"
+                    NotifyIcon1.BalloonTipTitle = "Tween [Reply!] " + My.Resources.RefreshTimelineText1 + " " + cnt.ToString() + My.Resources.RefreshTimelineText2
                 Else
                     NotifyIcon1.BalloonTipIcon = ToolTipIcon.Info
-                    NotifyIcon1.BalloonTipTitle = "Tween 新着 " + cnt.ToString() + "件"
+                    NotifyIcon1.BalloonTipTitle = "Tween " + My.Resources.RefreshTimelineText1 + " " + cnt.ToString() + My.Resources.RefreshTimelineText2
                 End If
                 NotifyIcon1.BalloonTipText = _pop
                 NotifyIcon1.ShowBalloonTip(500)
@@ -990,10 +990,10 @@ Public Class TweenMain
             End If
             '*** 暫定 ***
             If OldItems Then
-                StatusLabel.Text = "ログ読込 [" + firstDate + "] ～ [" + endDate + "]"
+                StatusLabel.Text = My.Resources.RefreshTimelineText3 + " [" + firstDate + "] ～ [" + endDate + "]"
             End If
             If _initial And Not OldItems Then
-                StatusLabel.Text = "起動読込 [" + firstDate + "] ～ [" + endDate + "]"
+                StatusLabel.Text = My.Resources.RefreshTimelineText4 + " [" + firstDate + "] ～ [" + endDate + "]"
             End If
         End If
 
@@ -1413,7 +1413,7 @@ Public Class TweenMain
             Case WORKERTYPE.CreateNewSocket
                 Exit Sub
             Case WORKERTYPE.Timeline
-                StatusLabel.Text = "Recent更新完了"
+                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText1
                 Dim statusCount As Integer = rslt.TLine.Count
                 If rslt.TLine.Count > 0 Then
                     RefreshTimeline(rslt.TLine)
@@ -1435,15 +1435,15 @@ Public Class TweenMain
                         If rslt.page + 1 <= rslt.endPage AndAlso SettingDialog.ReadPages >= rslt.page + 1 Then
                             If rslt.page Mod 10 = 0 Then
                                 Dim flashRslt As Integer = Win32Api.FlashWindow(Me.Handle.ToInt32, 1)
-                                If MessageBox.Show((rslt.page * 20).ToString + " ポストまで読み込み完了。さらに読み込みますか？", _
-                                                   "読み込み継続確認", _
+                                If MessageBox.Show((rslt.page * 20).ToString + My.Resources.GetTimelineWorker_RunWorkerCompletedText2, _
+                                                   My.Resources.GetTimelineWorker_RunWorkerCompletedText3, _
                                                    MessageBoxButtons.YesNo, _
                                                    MessageBoxIcon.Question) = Windows.Forms.DialogResult.No Then
                                     If SettingDialog.CheckReply Then
                                         args.page = 1
                                         args.endPage = 1
                                         args.type = WORKERTYPE.Reply
-                                        StatusLabel.Text = "Reply更新中..."
+                                        StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText4
                                         NotifyIcon1.Icon = NIconRefresh(0)
                                         _refreshIconCnt = 0
                                         TimerRefreshIcon.Enabled = True
@@ -1477,7 +1477,7 @@ Public Class TweenMain
                             args.page = 1
                             args.endPage = 1
                             args.type = WORKERTYPE.Reply
-                            StatusLabel.Text = "Reply更新中..."
+                            StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText4
                             NotifyIcon1.Icon = NIconRefresh(0)
                             _refreshIconCnt = 0
                             TimerRefreshIcon.Enabled = True
@@ -1515,7 +1515,7 @@ Public Class TweenMain
                             args.page = rslt.page + 1
                             args.endPage = rslt.endPage
                             args.type = WORKERTYPE.Timeline
-                            StatusLabel.Text = "Recent更新中..." + args.page.ToString() + "pages"
+                            StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText5 + args.page.ToString() + My.Resources.GetTimelineWorker_RunWorkerCompletedText6
                             NotifyIcon1.Icon = NIconRefresh(0)
                             _refreshIconCnt = 0
                             TimerRefreshIcon.Enabled = True
@@ -1534,7 +1534,7 @@ Public Class TweenMain
                                 args.page = 1
                                 args.endPage = 1
                                 args.type = WORKERTYPE.Reply
-                                StatusLabel.Text = "Reply更新中..."
+                                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText7
                                 NotifyIcon1.Icon = NIconRefresh(0)
                                 _refreshIconCnt = 0
                                 TimerRefreshIcon.Enabled = True

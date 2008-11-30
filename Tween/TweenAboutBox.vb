@@ -31,12 +31,12 @@ Public NotInheritable Class TweenAboutBox
         Else
             ApplicationTitle = System.IO.Path.GetFileNameWithoutExtension(My.Application.Info.AssemblyName)
         End If
-        Me.Text = String.Format("{0} のバージョン情報", ApplicationTitle)
+        Me.Text = String.Format(My.Resources.TweenAboutBox_LoadText1, ApplicationTitle)
         ' バージョン情報ボックスに表示されたテキストをすべて初期化します。
         ' TODO: [プロジェクト] メニューの下にある [プロジェクト プロパティ] ダイアログの [アプリケーション] ペインで、アプリケーションのアセンブリ情報を 
         '    カスタマイズします。
         Me.LabelProductName.Text = My.Application.Info.ProductName
-        Me.LabelVersion.Text = String.Format("バージョン {0}", My.Application.Info.Version.ToString)
+        Me.LabelVersion.Text = String.Format(My.Resources.TweenAboutBox_LoadText2, My.Application.Info.Version.ToString)
         Me.LabelCopyright.Text = My.Application.Info.Copyright
         Me.LabelCompanyName.Text = My.Application.Info.CompanyName
         Me.TextBoxDescription.Text = My.Application.Info.Description

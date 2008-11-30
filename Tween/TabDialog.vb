@@ -25,45 +25,49 @@ Public Class FilterDialog
         tabName = DirectCast(ComboTabs.SelectedItem, String)
 
         ListFilters.Items.Clear()
+        Dim fs As New System.Text.StringBuilder
+        fs.EnsureCapacity(512)
         For Each ts As TabStructure In _tabs
             If ts.tabName = tabName Then
                 For Each ft As FilterClass In ts.filters
-                    Dim fs As String = ""
+                    fs.Length = 0
                     If ft.SearchBoth Then
                         If ft.IDFilter <> "" Then
-                            fs += "[ユーザ･･･" + ft.IDFilter + "]  "
+                            fs.AppendFormat(My.Resources.SetFiltersText1, ft.IDFilter)
                         Else
-                            fs += "[ユーザ･･･(全て)]  "
+                            fs.Append(My.Resources.SetFiltersText2)
                         End If
                     End If
                     If ft.BodyFilter.Count > 0 Then
-                        fs += "[本文･･･"
+                        fs.Append(My.Resources.SetFiltersText3)
                         For Each bf As String In ft.BodyFilter
-                            fs += bf + " "
+                            fs.Append(bf)
+                            fs.Append(" ")
                         Next
-                        fs = fs.Trim + "]  "
+                        fs.Length -= 1
+                        fs.Append(My.Resources.SetFiltersText4)
                     End If
-                    fs += "("
+                    fs.Append("(")
                     If ft.SearchBoth Then
-                        fs += "複合/"
+                        fs.Append(My.Resources.SetFiltersText5)
                     Else
-                        fs += "単一/"
+                        fs.Append(My.Resources.SetFiltersText6)
                     End If
                     If ft.UseRegex Then
-                        fs += "Regexp/"
+                        fs.Append(My.Resources.SetFiltersText7)
                     End If
                     If ft.SearchURL Then
-                        fs += "URL/"
+                        fs.Append(My.Resources.SetFiltersText8)
                     End If
                     If ft.moveFrom Then
-                        fs += "移動する"
+                        fs.Append(My.Resources.SetFiltersText9)
                     ElseIf ft.SetMark Then
-                        fs += "マークする"
+                        fs.Append(My.Resources.SetFiltersText10)
                     Else
-                        fs += "何もせず"
+                        fs.Append(My.Resources.SetFiltersText11)
                     End If
-                    fs += ")"
-                    ListFilters.Items.Add(fs)
+                    fs.Append(")")
+                    ListFilters.Items.Add(fs.ToString())
                 Next
                 Exit For
             End If
@@ -207,9 +211,9 @@ Public Class FilterDialog
 
     Private Sub ButtonDelete_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonDelete.Click
         If ListFilters.SelectedIndex = -1 Then Exit Sub
+        Dim tmp As String = String.Format(My.Resources.ButtonDelete_ClickText1, vbCrLf, ListFilters.SelectedItem.ToString)
 
-        If MessageBox.Show("このルールを削除してもよろしいですか？" + vbCrLf + "   『" + ListFilters.SelectedItem.ToString + "』", _
-            "ルール削除確認", _
+        If MessageBox.Show(tmp, My.Resources.ButtonDelete_ClickText2, _
             MessageBoxButtons.OKCancel, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then Exit Sub
 
         Dim i As Integer = ListFilters.SelectedIndex
@@ -314,28 +318,28 @@ Public Class FilterDialog
         If RadioAND.Checked Then
             MSG1.Text = MSG1.Text.Replace("　", " ")
             If UID.Text.Trim = "" And MSG1.Text.Trim = "" Then
-                MessageBox.Show("ルールを指定してください。", "ルールチェック", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                MessageBox.Show(My.Resources.ButtonOK_ClickText1, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 Exit Sub
             End If
             If CheckRegex.Checked And MSG1.Text <> "" Then
                 Try
                     Dim rgx As New System.Text.RegularExpressions.Regex(MSG1.Text)
                 Catch ex As Exception
-                    MessageBox.Show("正規表現エラー：" + ex.Message, "ルールチェック", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                    MessageBox.Show(My.Resources.ButtonOK_ClickText3 + ex.Message, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                     Exit Sub
                 End Try
             End If
         Else
             MSG2.Text = MSG2.Text.Replace("　", " ")
             If MSG2.Text.Trim = "" Then
-                MessageBox.Show("ルールを指定してください。", "ルールチェック", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                MessageBox.Show(My.Resources.ButtonOK_ClickText1, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 Exit Sub
             End If
             If CheckRegex.Checked And MSG2.Text <> "" Then
                 Try
                     Dim rgx As New System.Text.RegularExpressions.Regex(MSG2.Text)
                 Catch ex As Exception
-                    MessageBox.Show("正規表現エラー：" + ex.Message, "ルールチェック", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                    MessageBox.Show(My.Resources.ButtonOK_ClickText3 + ex.Message, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                     Exit Sub
                 End Try
             End If
