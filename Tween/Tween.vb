@@ -1549,7 +1549,7 @@ Public Class TweenMain
                                     args.page = 1
                                     args.endPage = 1
                                     args.type = WORKERTYPE.DirectMessegeRcv
-                                    StatusLabel.Text = "DMRcv更新中..."
+                                    StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText8
                                     NotifyIcon1.Icon = NIconRefresh(0)
                                     _refreshIconCnt = 0
                                     TimerRefreshIcon.Enabled = True
@@ -1564,7 +1564,7 @@ Public Class TweenMain
                     End If
                 End If
             Case WORKERTYPE.Reply
-                StatusLabel.Text = "Reply更新完了"
+                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText9
                 If rslt.TLine.Count > 0 Then
                     RefreshTimeline(rslt.TLine)
                 End If
@@ -1582,11 +1582,11 @@ Public Class TweenMain
                         If rslt.page + 1 <= rslt.endPage AndAlso SettingDialog.ReadPagesReply >= rslt.page + 1 Then
                             If rslt.page Mod 10 = 0 Then
                                 Dim flashRslt As Integer = Win32Api.FlashWindow(Me.Handle.ToInt32, 1)
-                                If MessageBox.Show((rslt.page * 20).ToString + " ポストまで読み込み完了。さらに読み込みますか？", _
-                                                   "読み込み継続確認", _
+                                If MessageBox.Show((rslt.page * 20).ToString + My.Resources.GetTimelineWorker_RunWorkerCompletedText2, _
+                                                   My.Resources.GetTimelineWorker_RunWorkerCompletedText3, _
                                                    MessageBoxButtons.YesNo, _
                                                    MessageBoxIcon.Question) = Windows.Forms.DialogResult.No Then
-                                    StatusLabel.Text = "起動時読込完了"
+                                    StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText10
                                     Exit Sub
                                 End If
                             End If
@@ -1612,7 +1612,7 @@ Public Class TweenMain
                             args.page = 1
                             args.endPage = 1
                             args.type = WORKERTYPE.DirectMessegeRcv
-                            StatusLabel.Text = "DMRcv更新中..."
+                            StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText8
                             NotifyIcon1.Icon = NIconRefresh(0)
                             _refreshIconCnt = 0
                             TimerRefreshIcon.Enabled = True
@@ -1625,7 +1625,7 @@ Public Class TweenMain
                     End If
                 End If
             Case WORKERTYPE.DirectMessegeRcv
-                StatusLabel.Text = "DMRcv更新完了"
+                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText11
                 If rslt.TLine.Count > 0 Then
                     RefreshDirectMessage(rslt.TLine, True)
                 End If
@@ -1650,7 +1650,7 @@ Public Class TweenMain
                     args.page = rslt.endPage
                     args.endPage = rslt.endPage
                     args.type = WORKERTYPE.DirectMessegeRcv
-                    StatusLabel.Text = "DMRcv更新中..."
+                    StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText8
                     NotifyIcon1.Icon = NIconRefresh(0)
                     _refreshIconCnt = 0
                     TimerRefreshIcon.Enabled = True
@@ -1665,7 +1665,7 @@ Public Class TweenMain
                 args.page = 1
                 args.endPage = 1
                 args.type = WORKERTYPE.DirectMessegeSnt
-                StatusLabel.Text = "DMSnt更新中..."
+                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText12
                 NotifyIcon1.Icon = NIconRefresh(0)
                 _refreshIconCnt = 0
                 TimerRefreshIcon.Enabled = True
@@ -1675,7 +1675,7 @@ Public Class TweenMain
                 Loop
                 GetTimelineWorker.RunWorkerAsync(args)
             Case WORKERTYPE.DirectMessegeSnt
-                StatusLabel.Text = "DMSnt更新完了"
+                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText13
                 If rslt.TLine.Count > 0 Then
                     RefreshDirectMessage(rslt.TLine, False)
                 End If
@@ -1694,7 +1694,7 @@ Public Class TweenMain
                     args.page = rslt.endPage
                     args.endPage = rslt.endPage
                     args.type = WORKERTYPE.DirectMessegeSnt
-                    StatusLabel.Text = "DMSnt更新中..."
+                    StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText12
                     NotifyIcon1.Icon = NIconRefresh(0)
                     _refreshIconCnt = 0
                     TimerRefreshIcon.Enabled = True
@@ -1718,7 +1718,7 @@ Public Class TweenMain
                         args.page = 1
                         args.endPage = 1
                         args.type = WORKERTYPE.Timeline
-                        StatusLabel.Text = "Recent更新中..."
+                        StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText5
                         NotifyIcon1.Icon = NIconRefresh(0)
                         _refreshIconCnt = 0
                         TimerRefreshIcon.Enabled = True
@@ -1733,7 +1733,7 @@ Public Class TweenMain
                         args.page = 1
                         args.endPage = 1
                         args.type = WORKERTYPE.Reply
-                        StatusLabel.Text = "Reply更新中..."
+                        StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText4
                         NotifyIcon1.Icon = NIconRefresh(0)
                         _refreshIconCnt = 0
                         TimerRefreshIcon.Enabled = True
@@ -1744,7 +1744,7 @@ Public Class TweenMain
                         GetTimelineWorker.RunWorkerAsync(args)
                         Exit Sub
                     End If
-                    StatusLabel.Text = "起動時読込完了"
+                    StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText10
                     _initial = False
                 End If
             Case WORKERTYPE.PostMessage
@@ -1758,7 +1758,7 @@ Public Class TweenMain
                     TimerRefreshIcon.Enabled = False
                     NotifyIcon1.Icon = NIconAtRed
                 Else
-                    StatusLabel.Text = "POST完了"
+                    StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText14
                     _history.Add("")
                     _hisIdx = _history.Count - 1
                     SetMainWindowTitle()
@@ -1769,7 +1769,7 @@ Public Class TweenMain
                 args.type = WORKERTYPE.Timeline
                 If Not GetTimelineWorker.IsBusy Then
                     'TimerTimeline.Enabled = False
-                    StatusLabel.Text = "Recent更新中..."
+                    StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText5
                     NotifyIcon1.Icon = NIconRefresh(0)
                     _refreshIconCnt = 0
                     TimerRefreshIcon.Enabled = True
@@ -1780,7 +1780,8 @@ Public Class TweenMain
                     GetTimelineWorker.RunWorkerAsync(args)
                 End If
             Case WORKERTYPE.FavAdd
-                StatusLabel.Text = "Fav追加(" + rslt.page.ToString + "/" + rslt.ids.Count.ToString + ") 失敗:" + (rslt.page - rslt.sIds.Count).ToString
+                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText15 + rslt.page.ToString + "/" + rslt.ids.Count.ToString + _
+                                    My.Resources.GetTimelineWorker_RunWorkerCompletedText16 + (rslt.page - rslt.sIds.Count).ToString
                 If rslt.page < rslt.ids.Count Then
                     args.page = rslt.page
                     args.ids = rslt.ids
@@ -1832,7 +1833,8 @@ Public Class TweenMain
                     End If
                 End If
             Case WORKERTYPE.FavRemove
-                StatusLabel.Text = "Fav削除(" + rslt.page.ToString + "/" + rslt.ids.Count.ToString + ") 失敗:" + (rslt.page - rslt.sIds.Count).ToString
+                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText17 + rslt.page.ToString + "/" + rslt.ids.Count.ToString + _
+                                    My.Resources.GetTimelineWorker_RunWorkerCompletedText18 + (rslt.page - rslt.sIds.Count).ToString
                 If rslt.page < rslt.ids.Count Then
                     args.page = rslt.page
                     args.ids = rslt.ids
@@ -1945,7 +1947,8 @@ Public Class TweenMain
         If ListTab.SelectedTab.Text = "Direct" OrElse MyList.SelectedItems.Count = 0 Then Exit Sub
 
         If MyList.SelectedItems.Count > 1 Then
-            If MessageBox.Show("選択された発言をFavoritesに追加します。よろしいですか？", "Fav確認", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then
+            If MessageBox.Show(My.Resources.FavAddToolStripMenuItem_ClickText1, My.Resources.FavAddToolStripMenuItem_ClickText2, _
+                               MessageBoxButtons.OKCancel, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then
                 Exit Sub
             End If
         End If
@@ -1953,7 +1956,7 @@ Public Class TweenMain
         NotifyIcon1.Icon = NIconRefresh(0)
         _refreshIconCnt = 0
         TimerRefreshIcon.Enabled = True
-        StatusLabel.Text = "Fav追加中..."
+        StatusLabel.Text = My.Resources.FavAddToolStripMenuItem_ClickText3
 
         Dim args As New GetWorkerArg()
         args.ids = New List(Of String)()
@@ -1966,7 +1969,7 @@ Public Class TweenMain
         Next
         args.type = WORKERTYPE.FavAdd
         If args.ids.Count = 0 Then
-            StatusLabel.Text = "Fav追加なし"
+            StatusLabel.Text = My.Resources.FavAddToolStripMenuItem_ClickText4
             Exit Sub
         End If
 
@@ -1995,12 +1998,13 @@ Public Class TweenMain
         If ListTab.SelectedTab.Text = "Direct" OrElse MyList.SelectedItems.Count = 0 Then Exit Sub
 
         If MyList.SelectedItems.Count > 1 Then
-            If MessageBox.Show("選択された発言をFavoritesから削除します。よろしいですか？", "Fav確認", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then
+            If MessageBox.Show(My.Resources.FavRemoveToolStripMenuItem_ClickText1, My.Resources.FavRemoveToolStripMenuItem_ClickText2, _
+                               MessageBoxButtons.OKCancel, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then
                 Exit Sub
             End If
         End If
 
-        StatusLabel.Text = "Fav削除中..."
+        StatusLabel.Text = My.Resources.FavRemoveToolStripMenuItem_ClickText3
         NotifyIcon1.Icon = NIconRefresh(0)
         _refreshIconCnt = 0
         TimerRefreshIcon.Enabled = True
@@ -2016,7 +2020,7 @@ Public Class TweenMain
         Next
         args.type = WORKERTYPE.FavRemove
         If args.ids.Count = 0 Then
-            StatusLabel.Text = "Fav削除なし"
+            StatusLabel.Text = My.Resources.FavRemoveToolStripMenuItem_ClickText4
             Exit Sub
         End If
 
@@ -2207,7 +2211,7 @@ Public Class TweenMain
             End If
             If Not _initial AndAlso NewPostPopMenuItem.Checked AndAlso _tabs(2).notify Then
                 NotifyIcon1.BalloonTipIcon = ToolTipIcon.Warning
-                NotifyIcon1.BalloonTipTitle = "Tween [DM] 新着 " + newCnt.ToString() + "件"
+                NotifyIcon1.BalloonTipTitle = "Tween [DM] " + My.Resources.RefreshDirectMessageText1 + " " + newCnt.ToString() + My.Resources.RefreshDirectMessageText2
                 NotifyIcon1.BalloonTipText = _pop
                 NotifyIcon1.ShowBalloonTip(500)
             End If
@@ -2270,13 +2274,9 @@ Public Class TweenMain
 
             If Not myPost Then Exit Sub
         End If
+        Dim tmp As String = String.Format(My.Resources.DeleteStripMenuItem_ClickText1, vbCrLf)
 
-        If MessageBox.Show("選択されている自発言(またはDM)を削除してもよろしいですか？" + vbCrLf + _
-             "注意　：　Twitterサーバからも削除されます！" + vbCrLf + _
-             "　タブからIDを削除する場合は、「IDを移動」を使ってください。" + vbCrLf + _
-             "　タブを削除する場合は、「タブを削除」を使ってください。" + vbCrLf + vbCrLf + _
-             "削除処理を中止するには、「キャンセル」ボタンを押してください。", _
-             "削除確認", _
+        If MessageBox.Show(tmp, My.Resources.DeleteStripMenuItem_ClickText2, _
               MessageBoxButtons.OKCancel, _
               MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then Exit Sub
 
@@ -2337,9 +2337,9 @@ Public Class TweenMain
 
             If msg <> "" Then
                 'StatusLabel.Text = "削除失敗 " + msg
-                StatusLabel.Text = "削除失敗"
+                StatusLabel.Text = My.Resources.DeleteStripMenuItem_ClickText3
             Else
-                StatusLabel.Text = "削除成功"
+                StatusLabel.Text = My.Resources.DeleteStripMenuItem_ClickText4
             End If
         ElseIf ListTab.SelectedTab.Text = "Direct" Then
             Dim cnt As Integer = 0
@@ -2374,9 +2374,9 @@ Public Class TweenMain
 
             If msg <> "" Then
                 'StatusLabel.Text = "削除失敗 " + msg
-                StatusLabel.Text = "削除失敗"
+                StatusLabel.Text = My.Resources.DeleteStripMenuItem_ClickText3
             Else
-                StatusLabel.Text = "削除成功"
+                StatusLabel.Text = My.Resources.DeleteStripMenuItem_ClickText4
             End If
         End If
 
@@ -2604,7 +2604,7 @@ Public Class TweenMain
                 args.page = 1
                 args.endPage = 1
                 args.type = WORKERTYPE.Timeline
-                StatusLabel.Text = "Recent更新中..."
+                StatusLabel.Text = My.Resources.RefreshStripMenuItem_ClickText1
                 Do While GetTimelineWorker.IsBusy
                     Threading.Thread.Sleep(1)
                     Application.DoEvents()
@@ -2615,7 +2615,7 @@ Public Class TweenMain
                 args.page = 1
                 args.endPage = 1
                 args.type = WORKERTYPE.Reply
-                StatusLabel.Text = "Reply更新中..."
+                StatusLabel.Text = My.Resources.RefreshStripMenuItem_ClickText2
                 Do While GetTimelineWorker.IsBusy
                     Threading.Thread.Sleep(1)
                     Application.DoEvents()
@@ -2627,7 +2627,7 @@ Public Class TweenMain
             args.page = 1
             args.endPage = 1
             args.type = WORKERTYPE.DirectMessegeRcv
-            StatusLabel.Text = "DMRcv更新中..."
+            StatusLabel.Text = My.Resources.RefreshStripMenuItem_ClickText3
             Do While GetTimelineWorker.IsBusy
                 Threading.Thread.Sleep(1)
                 Application.DoEvents()
@@ -2855,13 +2855,13 @@ Public Class TweenMain
             myTab.colHd1.Text = ""
             myTab.colHd1.Width = 26
             If Not _iconCol Then
-                myTab.colHd2.Text = "名前"
+                myTab.colHd2.Text = My.Resources.AddCustomTabsText1
                 myTab.colHd2.Width = 80
-                myTab.colHd3.Text = "投稿"
+                myTab.colHd3.Text = My.Resources.AddCustomTabsText2
                 myTab.colHd3.Width = 300
-                myTab.colHd4.Text = "日時"
+                myTab.colHd4.Text = My.Resources.AddCustomTabsText3
                 myTab.colHd4.Width = 50
-                myTab.colHd5.Text = "ユーザ名"
+                myTab.colHd5.Text = My.Resources.AddCustomTabsText4
                 myTab.colHd5.Width = 50
             End If
 
@@ -5148,8 +5148,8 @@ RETRY:
                     Me.TopMost = SettingDialog.AlwaysTop
                     If tabName <> "" Then
                         If Not AddNewTab(tabName) Then
-                            MessageBox.Show("タブ　""" + tabName + """　は既に存在するため、追加できません。別の名前を指定してください。", _
-                                            "タブ追加", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                            Dim tmp As String = String.Format(My.Resources.TabMenuItem_ClickText2, tabName)
+                            MessageBox.Show(tmp, My.Resources.TabMenuItem_ClickText3, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                         Else
                             Exit Do
                         End If
@@ -5199,7 +5199,7 @@ RETRY:
 
     Private Sub InfoTwitterMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles InfoTwitterMenuItem.Click
         If clsTw.InfoTwitter.Trim() = "" Then
-            MessageBox.Show("Twitterからのお知らせはありません。", "Twitterからのお知らせ", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            MessageBox.Show(My.Resources.InfoTwitterMenuItem_ClickText1, My.Resources.InfoTwitterMenuItem_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Information)
         Else
             Dim inf As String = clsTw.InfoTwitter.Trim()
             inf = "<html><head></head><body>" + inf + "</body></html>"
@@ -5305,6 +5305,7 @@ RETRY:
                 TimerRefreshIcon.Enabled = False
                 NotifyIcon1.Icon = NIconAtRed
             End If
+            ' ？？？？要確認 文字列リソースは作成のみしておく
             If rslt.retMsg.StartsWith("Tween 例外発生") Then
                 MessageBox.Show("エラーが発生しました。申し訳ありません。ログをexeファイルのある場所にTween.logとして作ったので、kiri.feather@gmail.comまで送っていただけると助かります。ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。", "エラー発生", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End If
@@ -5331,7 +5332,7 @@ RETRY:
                             _postTimestamps.RemoveAt(i)
                         End If
                     Next
-                    StatusLabel.Text = "POST完了"
+                    StatusLabel.Text = My.Resources.PostWorker_RunWorkerCompletedText4
                     StatusText.Text = ""
                     _history.Add("")
                     _hisIdx = _history.Count - 1
@@ -5343,7 +5344,7 @@ RETRY:
                 args.type = WORKERTYPE.Timeline
                 If Not GetTimelineWorker.IsBusy Then
                     'TimerTimeline.Enabled = False
-                    StatusLabel.Text = "Recent更新中..."
+                    StatusLabel.Text = My.Resources.PostWorker_RunWorkerCompletedText5
                     NotifyIcon1.Icon = NIconRefresh(0)
                     _refreshIconCnt = 0
                     TimerRefreshIcon.Enabled = True
@@ -5889,11 +5890,12 @@ RETRY:
             End If
         Next
 
-        slbl.AppendFormat("[タブ: {0}/{1} 全体: {2}/{3} (返信: {4})] [時速: 投 {5}/ ☆ {6}/ 流 {7}] [間隔: ", tur, tal, ur, al, urat, _postTimestamps.Count, _favTimestamps.Count, _tlCount)
+        slbl.EnsureCapacity(256)
+        slbl.AppendFormat(My.Resources.SetStatusLabelText1, tur, tal, ur, al, urat, _postTimestamps.Count, _favTimestamps.Count, _tlCount)
         If SettingDialog.TimelinePeriodInt = 0 Then
-            slbl.Append("-]")
+            slbl.Append(My.Resources.SetStatusLabelText2)
         Else
-            slbl.Append((TimerTimeline.Interval / 1000).ToString() + "]")
+            slbl.Append((TimerTimeline.Interval / 1000).ToString() + My.Resources.SetStatusLabelText3)
         End If
         StatusLabelUrl.Text = slbl.ToString()
     End Sub
@@ -5946,14 +5948,14 @@ RETRY:
     End Sub
 
     Private Sub UpdateFollowersMenuItem1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UpdateFollowersMenuItem1.Click
-        StatusLabel.Text = "Followers取得中..."
+        StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText1
         Dim ret As String
         ret = clsTwSync.GetFollowers()
         If ret <> "" Then
-            StatusLabel.Text = "Followers取得エラー：" & ret
+            StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText2 & ret
             Exit Sub
         End If
-        StatusLabel.Text = "Followers取得完了"
+        StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText3
     End Sub
 
     Private Sub SplitContainer1_SplitterMoved(ByVal sender As Object, ByVal e As System.Windows.Forms.SplitterEventArgs) Handles SplitContainer1.SplitterMoved
@@ -5986,12 +5988,12 @@ RETRY:
             Else
                 Me.IconNameToolStripMenuItem.Enabled = False
                 Me.SaveIconPictureToolStripMenuItem.Enabled = False
-                Me.IconNameToolStripMenuItem.Text = "(アイコンが取得できていません)"
+                Me.IconNameToolStripMenuItem.Text = My.Resources.ContextMenuStrip3_OpeningText1
             End If
         Else
             Me.IconNameToolStripMenuItem.Enabled = False
             Me.SaveIconPictureToolStripMenuItem.Enabled = False
-            Me.IconNameToolStripMenuItem.Text = "(発言を選択してください)"
+            Me.IconNameToolStripMenuItem.Text = My.Resources.ContextMenuStrip3_OpeningText2
         End If
     End Sub
 
