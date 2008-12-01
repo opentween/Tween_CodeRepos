@@ -45,15 +45,19 @@ Namespace My
 
         Private Sub MyApplication_Startup(ByVal sender As Object, ByVal e As Microsoft.VisualBasic.ApplicationServices.StartupEventArgs) Handles Me.Startup
             Dim filename As String = Application.Info.DirectoryPath + "\" + Application.Info.ProductName + ".exe.config"
-            Using config As New IO.StreamReader(filename)
-                Dim xmlDoc As New Xml.XmlDocument
-                Try
-                    xmlDoc.Load(config)
-                    ChangeUICulture(xmlDoc.DocumentElement.Item("TwitterSetting").GetAttribute("culturecode"))
-                Catch
-                    '
-                End Try
-            End Using
+            Try
+                Using config As New IO.StreamReader(filename)
+                    Dim xmlDoc As New Xml.XmlDocument
+                    Try
+                        xmlDoc.Load(config)
+                        ChangeUICulture(xmlDoc.DocumentElement.Item("TwitterSetting").GetAttribute("culturecode"))
+                    Catch
+                        '
+                    End Try
+                End Using
+            Catch ex As Exception
+
+            End Try
 
             Dim pt As String = Application.Info.DirectoryPath.Replace("\", "/") + "/" + Application.Info.ProductName
             mt = New System.Threading.Mutex(False, pt)
