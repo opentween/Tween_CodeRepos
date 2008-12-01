@@ -48,12 +48,8 @@ Namespace My
             Try
                 Using config As New IO.StreamReader(filename)
                     Dim xmlDoc As New Xml.XmlDocument
-                    Try
-                        xmlDoc.Load(config)
-                        ChangeUICulture(xmlDoc.DocumentElement.Item("TwitterSetting").GetAttribute("culturecode"))
-                    Catch
-                        '
-                    End Try
+                    xmlDoc.Load(config)
+                    ChangeUICulture(xmlDoc.DocumentElement.Item("TwitterSetting").GetAttribute("culturecode"))
                 End Using
             Catch ex As Exception
 
