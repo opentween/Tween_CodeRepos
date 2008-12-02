@@ -400,15 +400,6 @@
   <data name="NextThreshold_ValidatingText2" xml:space="preserve">
     <value>閾値には数値（1～20）を指定してください。</value>
   </data>
-  <data name="PostWorker_RunWorkerCompletedText1" xml:space="preserve">
-    <value>Tween 例外発生</value>
-  </data>
-  <data name="PostWorker_RunWorkerCompletedText2" xml:space="preserve">
-    <value>エラーが発生しました。申し訳ありません。ログをexeファイルのある場所にTween.logとして作ったので、kiri.feather@gmail.comまで送っていただけると助かります。ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。</value>
-  </data>
-  <data name="PostWorker_RunWorkerCompletedText3" xml:space="preserve">
-    <value>エラー発生</value>
-  </data>
   <data name="PostWorker_RunWorkerCompletedText4" xml:space="preserve">
     <value>POST完了</value>
   </data>

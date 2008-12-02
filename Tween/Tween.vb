@@ -5322,10 +5322,9 @@ RETRY:
                 TimerRefreshIcon.Enabled = False
                 NotifyIcon1.Icon = NIconAtRed
             End If
-            ' ？？？？要確認 文字列リソースは作成のみしておく
-            If rslt.retMsg.StartsWith("Tween 例外発生") Then
-                MessageBox.Show("エラーが発生しました。申し訳ありません。ログをexeファイルのある場所にTween.logとして作ったので、kiri.feather@gmail.comまで送っていただけると助かります。ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。", "エラー発生", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            End If
+            'If rslt.retMsg.StartsWith("Tween 例外発生") Then
+            '   MessageBox.Show("エラーが発生しました。申し訳ありません。ログをexeファイルのある場所にTween.logとして作ったので、kiri.feather@gmail.comまで送っていただけると助かります。ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。", "エラー発生", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            'End If
         End If
 
         Select Case rslt.type
