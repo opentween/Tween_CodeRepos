@@ -67,4 +67,23 @@ Public Module MyCommon
     Public cCon As New System.Net.CookieContainer()
 
     Public Const Block As Object = Nothing
+
+    Public Sub TraceOut(ByVal Message As String)
+        If My.Application.CommandLineArgs.Count = 0 OrElse My.Application.CommandLineArgs.Contains("/d") = False Then Exit Sub
+        Dim now As DateTime = DateTime.Now
+        Dim fileName As String = String.Format("TweenTrace-{0:0000}{1:00}{2:00}-{3:00}{4:00}{5:00}.log", now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second)
+
+        Using writer As IO.StreamWriter = New IO.StreamWriter(fileName)
+            writer.WriteLine("**** TraceOut: {0} ****", DateTime.Now.ToString())
+            writer.WriteLine(My.Resources.TraceOutText1)
+            writer.WriteLine(My.Resources.TraceOutText2)
+            writer.WriteLine()
+            writer.WriteLine(My.Resources.TraceOutText3)
+            writer.WriteLine(My.Resources.TraceOutText4, Environment.OSVersion.VersionString)
+            writer.WriteLine(My.Resources.TraceOutText5, Environment.Version.ToString())
+            writer.WriteLine(My.Resources.TraceOutText6, My.Application.Info.Version.ToString())
+            writer.WriteLine(Message)
+            writer.WriteLine()
+        End Using
+    End Sub
 End Module

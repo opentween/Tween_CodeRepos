@@ -40,6 +40,7 @@ Public Class TweenMain
     Private _mySize As Size             '画面サイズ
     Private _myLoc As Point             '画面位置
     Private _mySpDis As Integer         '区切り位置
+    Private _mySpDis2 As Integer        '発言欄区切り位置
     Private _initial As Boolean         'True:起動時処理中
     Private listViewItemSorter As ListViewItemComparer      'リストソート用カスタムクラス
     Private _config As Configuration    'アプリケーション構成ファイルクラス
@@ -406,22 +407,16 @@ Public Class TweenMain
 
 
         'ウィンドウ設定
-        Me.WindowState = FormWindowState.Normal     '通常状態
+        'Me.WindowState = FormWindowState.Normal     '通常状態
         Me.ClientSize = _section.FormSize           'サイズ設定
         _mySize = Me.ClientSize                     'サイズ保持（最小化・最大化されたまま終了した場合の対応用）
         Me.Location = _section.FormLocation         '位置設定
         _myLoc = Me.Location                        '位置保持（最小化・最大化されたまま終了した場合の対応用）
-        Me.SplitContainer1.SplitterDistance = _section.SplitterDistance     'Splitterの位置設定
-        _mySpDis = Me.SplitContainer1.SplitterDistance
-        '発言欄複数行
-        MultiLineMenuItem.Checked = _section.StatusMultiline
-        StatusText.Multiline = _section.StatusMultiline
-        If StatusText.Multiline Then
-            SplitContainer2.SplitterDistance = SplitContainer2.Height - _section.StatusTextHeight - SplitContainer2.SplitterWidth
-        Else
-            SplitContainer2.SplitterDistance = SplitContainer2.Height - SplitContainer2.Panel2MinSize - SplitContainer2.SplitterWidth
-        End If
         Me.TopMost = SettingDialog.AlwaysTop
+        _mySpDis = _section.SplitterDistance
+        _mySpDis2 = _section.StatusTextHeight
+        MultiLineMenuItem.Checked = _section.StatusMultiline
+        Me.Tween_ClientSizeChanged(Me, Nothing)
 
         '全新着通知のチェック状態により、Reply＆DMの新着通知有効無効切り替え（タブ別設定にするため削除予定）
         If SettingDialog.UnreadManage = False Then
@@ -2062,9 +2057,30 @@ Public Class TweenMain
     End Sub
 
     Private Sub Tween_ClientSizeChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.ClientSizeChanged
-        If Me.WindowState = FormWindowState.Normal Then
-            _mySize = Me.ClientSize
-            _mySpDis = Me.SplitContainer1.SplitterDistance
+        Static initialize As Boolean = False
+
+        If Me.WindowState <> FormWindowState.Minimized Then
+            If initialize Then
+                If Me.WindowState = FormWindowState.Normal Then
+                    _mySize = Me.ClientSize
+                    _mySpDis = Me.SplitContainer1.SplitterDistance
+                    If StatusText.Multiline Then _mySpDis2 = Me.StatusText.Height
+                End If
+            ElseIf _section IsNot Nothing Then
+                '初回フォームレイアウト復元
+                Try
+                    Me.SplitContainer1.SplitterDistance = _section.SplitterDistance     'Splitterの位置設定
+                    '発言欄複数行
+                    StatusText.Multiline = _section.StatusMultiline
+                    If StatusText.Multiline Then
+                        SplitContainer2.SplitterDistance = SplitContainer2.Height - _section.StatusTextHeight - SplitContainer2.SplitterWidth
+                    Else
+                        SplitContainer2.SplitterDistance = SplitContainer2.Height - SplitContainer2.Panel2MinSize - SplitContainer2.SplitterWidth
+                    End If
+                    initialize = True
+                Catch ex As Exception
+                End Try
+            End If
         End If
     End Sub
 
@@ -4581,6 +4597,8 @@ RETRY:
                 _section.FormSize = _mySize
                 _section.FormLocation = _myLoc
                 _section.SplitterDistance = _mySpDis
+                _section.StatusMultiline = StatusText.Multiline
+                _section.StatusTextHeight = _mySpDis2
                 _section.UserName = _username
                 _section.Password = _password
                 _section.NextPageThreshold = SettingDialog.NextPageThreshold
@@ -5961,7 +5979,10 @@ RETRY:
     End Sub
 
     Private Sub SplitContainer1_SplitterMoved(ByVal sender As Object, ByVal e As System.Windows.Forms.SplitterEventArgs) Handles SplitContainer1.SplitterMoved
-        If Me.WindowState = FormWindowState.Normal Then _mySpDis = SplitContainer1.SplitterDistance
+        If Me.WindowState = FormWindowState.Normal Then
+            _mySpDis = SplitContainer1.SplitterDistance
+            If StatusText.Multiline Then _mySpDis2 = StatusText.Height
+        End If
     End Sub
 
     Private Sub RepliedStatusOpenMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RepliedStatusOpenMenuItem.Click
@@ -6031,10 +6052,10 @@ RETRY:
     Private Sub SplitContainer2_Panel2_Resize(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SplitContainer2.Panel2.Resize
         Me.StatusText.Multiline = Me.SplitContainer2.Panel2.Height > Me.SplitContainer2.Panel2MinSize + 2
         MultiLineMenuItem.Checked = Me.StatusText.Multiline
-        If _section IsNot Nothing Then
-            _section.StatusMultiline = MultiLineMenuItem.Checked
-            If StatusText.Multiline Then _section.StatusTextHeight = SplitContainer2.Panel2.Height
-        End If
+        'If _section IsNot Nothing Then
+        '    _section.StatusMultiline = MultiLineMenuItem.Checked
+        '    If StatusText.Multiline Then _section.StatusTextHeight = SplitContainer2.Panel2.Height
+        'End If
     End Sub
 
     Private Sub StatusText_MultilineChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusText.MultilineChanged
@@ -6050,7 +6071,11 @@ RETRY:
         StatusText.Multiline = MultiLineMenuItem.Checked
         _section.StatusMultiline = MultiLineMenuItem.Checked
         If MultiLineMenuItem.Checked Then
-            SplitContainer2.SplitterDistance = SplitContainer2.Height - _section.StatusTextHeight - SplitContainer2.SplitterWidth
+            If SplitContainer2.Height - _mySpDis2 - SplitContainer2.SplitterWidth < 0 Then
+                SplitContainer2.SplitterDistance = 0
+            Else
+                SplitContainer2.SplitterDistance = SplitContainer2.Height - _mySpDis2 - SplitContainer2.SplitterWidth
+            End If
         Else
             SplitContainer2.SplitterDistance = SplitContainer2.Height - SplitContainer2.Panel2MinSize - SplitContainer2.SplitterWidth
         End If
@@ -6288,6 +6313,10 @@ RETRY:
             SearchDialog.SWord = _selText
             DoTabSearch(_selText, IsNormalSearch:=True)
         End If
+    End Sub
+
+    Private Sub SplitContainer2_SplitterMoved(ByVal sender As Object, ByVal e As System.Windows.Forms.SplitterEventArgs) Handles SplitContainer2.SplitterMoved
+        If StatusText.Multiline Then _mySpDis2 = StatusText.Height
     End Sub
 End Class
 

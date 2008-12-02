@@ -317,7 +317,7 @@ Partial Public Class Twitter
                     lItem.Id = HttpUtility.HtmlDecode(strPost.Substring(0, pos2))
                 Catch ex As Exception
                     _signed = False
-                    Me.TraceOut("TM-ID:" + strPost)
+                    TraceOut("TM-ID:" + strPost)
                     Return "GetTimeline -> Err: Can't get ID."
                 End Try
                 'Get Name
@@ -327,7 +327,7 @@ Partial Public Class Twitter
                     lItem.Name = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseName.Length, pos2 - pos1 - _parseName.Length))
                 Catch ex As Exception
                     _signed = False
-                    Me.TraceOut("TM-Name:" + strPost)
+                    TraceOut("TM-Name:" + strPost)
                     Return "GetTimeline -> Err: Can't get Name."
                 End Try
                 'Get Nick
@@ -341,7 +341,7 @@ Partial Public Class Twitter
                         lItem.Nick = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseNick.Length, pos2 - pos1 - _parseNick.Length))
                     Catch ex As Exception
                         _signed = False
-                        Me.TraceOut("TM-Nick:" + strPost)
+                        TraceOut("TM-Nick:" + strPost)
                         Return "GetTimeline -> Err: Can't get Nick."
                     End Try
                 End If
@@ -357,7 +357,7 @@ Partial Public Class Twitter
                             orgData = strPost.Substring(pos1 + 8, pos2 - pos1 - 8)
                         Catch ex As Exception
                             _signed = False
-                            Me.TraceOut("TM-VBody:" + strPost)
+                            TraceOut("TM-VBody:" + strPost)
                             Return "GetTimeline -> Err: Can't get Valentine body."
                         End Try
                     End If
@@ -370,7 +370,7 @@ Partial Public Class Twitter
                         lItem.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length))
                     Catch ex As Exception
                         _signed = False
-                        Me.TraceOut("TM-Img:" + strPost)
+                        TraceOut("TM-Img:" + strPost)
                         Return "GetTimeline -> Err: Can't get ImagePath."
                     End Try
 
@@ -411,7 +411,7 @@ Partial Public Class Twitter
                             End If
                         Catch ex As Exception
                             _signed = False
-                            Me.TraceOut("TM-VBody2:" + strPost)
+                            TraceOut("TM-VBody2:" + strPost)
                             Return "GetTimeline -> Err: Can't get Valentine body2."
                         End Try
                     Else
@@ -420,7 +420,7 @@ Partial Public Class Twitter
                             orgData = strPost.Substring(pos1 + _parseMsg1.Length, pos2 - pos1 - _parseMsg1.Length).Trim()
                         Catch ex As Exception
                             _signed = False
-                            Me.TraceOut("TM-Body:" + strPost)
+                            TraceOut("TM-Body:" + strPost)
                             Return "GetTimeline -> Err: Can't get body."
                         End Try
                         orgData = orgData.Replace("&lt;3", "♡")
@@ -503,7 +503,7 @@ Partial Public Class Twitter
                         End If
                     Catch ex As Exception
                         _signed = False
-                        Me.TraceOut("TM-Link:" + strPost)
+                        TraceOut("TM-Link:" + strPost)
                         Return "GetTimeline -> Err: Can't parse links."
                     End Try
 
@@ -516,7 +516,7 @@ Partial Public Class Twitter
                             tmpDate = lItem.PDate
                         Catch ex As Exception
                             _signed = False
-                            Me.TraceOut("TM-Date:" + strPost)
+                            TraceOut("TM-Date:" + strPost)
                             Return "GetTimeline -> Err: Can't get date."
                         End Try
                     Else
@@ -542,7 +542,7 @@ Partial Public Class Twitter
                             End If
                         Catch ex As Exception
                             _signed = False
-                            Me.TraceOut("TM-Fav:" + strPost)
+                            TraceOut("TM-Fav:" + strPost)
                             Return "GetTimeline -> Err: Can't get fav status."
                         End Try
                     Else
@@ -699,7 +699,7 @@ Partial Public Class Twitter
                     lItem.Id = HttpUtility.HtmlDecode(strPost.Substring(0, pos2))
                 Catch ex As Exception
                     _signed = False
-                    Me.TraceOut("DM-ID:" + strPost)
+                    TraceOut("DM-ID:" + strPost)
                     Return "GetDirectMessage -> Err: Can't get ID"
                 End Try
 
@@ -710,7 +710,7 @@ Partial Public Class Twitter
                     lItem.Name = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseName.Length, pos2 - pos1 - _parseName.Length))
                 Catch ex As Exception
                     _signed = False
-                    Me.TraceOut("DM-Name:" + strPost)
+                    TraceOut("DM-Name:" + strPost)
                     Return "GetDirectMessage -> Err: Can't get Name"
                 End Try
 
@@ -721,7 +721,7 @@ Partial Public Class Twitter
                     lItem.Nick = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseNick.Length, pos2 - pos1 - _parseNick.Length))
                 Catch ex As Exception
                     _signed = False
-                    Me.TraceOut("DM-Nick:" + strPost)
+                    TraceOut("DM-Nick:" + strPost)
                     Return "GetDirectMessage -> Err: Can't get Nick."
                 End Try
 
@@ -737,7 +737,7 @@ Partial Public Class Twitter
                         lItem.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length))
                     Catch ex As Exception
                         _signed = False
-                        Me.TraceOut("DM-Img:" + strPost)
+                        TraceOut("DM-Img:" + strPost)
                         Return "GetDirectMessage -> Err: Can't get ImagePath"
                     End Try
 
@@ -747,7 +747,7 @@ Partial Public Class Twitter
                         If pos1 > -1 Then lItem.Protect = True
                     Catch ex As Exception
                         _signed = False
-                        Me.TraceOut("DM-Protect:" + strPost)
+                        TraceOut("DM-Protect:" + strPost)
                         Return "GetDirectMessage -> Err: Can't get Protect"
                     End Try
 
@@ -765,7 +765,7 @@ Partial Public Class Twitter
                         orgData = orgData.Replace("&lt;3", "♡")
                     Catch ex As Exception
                         _signed = False
-                        Me.TraceOut("DM-Body:" + strPost)
+                        TraceOut("DM-Body:" + strPost)
                         Return "GetDirectMessage -> Err: Can't get body"
                     End Try
 
@@ -846,7 +846,7 @@ Partial Public Class Twitter
                         End If
                     Catch ex As Exception
                         _signed = False
-                        Me.TraceOut("DM-Link:" + strPost)
+                        TraceOut("DM-Link:" + strPost)
                         Return "GetDirectMessage -> Err: Can't parse links"
                     End Try
 
@@ -859,7 +859,7 @@ Partial Public Class Twitter
                             tmpDate = lItem.PDate
                         Catch ex As Exception
                             _signed = False
-                            Me.TraceOut("DM-Date:" + strPost)
+                            TraceOut("DM-Date:" + strPost)
                             Return "GetTimeline -> Err: Can't get date."
                         End Try
                     Else
@@ -1483,25 +1483,6 @@ Partial Public Class Twitter
         Dim resStatus As String = ""
         Return DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/TweenRes" + strver + ".gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileRes), String)
     End Function
-
-    Private Sub TraceOut(ByVal Message As String)
-        If My.Application.CommandLineArgs.Count = 0 OrElse My.Application.CommandLineArgs.Contains("/d") = False Then Exit Sub
-        Dim now As DateTime = DateTime.Now
-        Dim fileName As String = String.Format("TweenTrace-{0:0000}{1:00}{2:00}-{3:00}{4:00}{5:00}.log", now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second)
-
-        Using writer As IO.StreamWriter = New IO.StreamWriter(fileName)
-            writer.WriteLine("**** TraceOut: {0} ****", DateTime.Now.ToString())
-            writer.WriteLine(My.Resources.TraceOutText1)
-            writer.WriteLine(My.Resources.TraceOutText2)
-            writer.WriteLine()
-            writer.WriteLine(My.Resources.TraceOutText3)
-            writer.WriteLine(My.Resources.TraceOutText4, Environment.OSVersion.VersionString)
-            writer.WriteLine(My.Resources.TraceOutText5, Environment.Version.ToString())
-            writer.WriteLine(My.Resources.TraceOutText6, My.Application.Info.Version.ToString())
-            writer.WriteLine(Message)
-            writer.WriteLine()
-        End Using
-    End Sub
 
 #If DEBUG Then
     Public Sub GenerateAnalyzeKey()
