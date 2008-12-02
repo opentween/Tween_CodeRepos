@@ -381,15 +381,6 @@
   <data name="NextThreshold_ValidatingText2" xml:space="preserve">
     <value>Threshold must be number 1 to 20.</value>
   </data>
-  <data name="PostWorker_RunWorkerCompletedText1" xml:space="preserve">
-    <value>Tween Exception</value>
-  </data>
-  <data name="PostWorker_RunWorkerCompletedText2" xml:space="preserve">
-    <value>We are sorry but error was happened. A log text was created as Tween.log in same folder of Tween.exe. Please send this to kiri.feather@gmail.com or{1}tweet to @kiri_feather in Twitter.</value>
-  </data>
-  <data name="PostWorker_RunWorkerCompletedText3" xml:space="preserve">
-    <value>Error</value>
-  </data>
   <data name="PostWorker_RunWorkerCompletedText4" xml:space="preserve">
     <value>POST completed</value>
   </data>

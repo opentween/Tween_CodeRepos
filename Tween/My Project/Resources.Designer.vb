@@ -913,33 +913,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Tween 例外発生 に類似しているローカライズされた文字列を検索します。
-        '''</summary>
-        Friend ReadOnly Property PostWorker_RunWorkerCompletedText1() As String
-            Get
-                Return ResourceManager.GetString("PostWorker_RunWorkerCompletedText1", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  エラーが発生しました。申し訳ありません。ログをexeファイルのある場所にTween.logとして作ったので、kiri.feather@gmail.comまで送っていただけると助かります。ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。 に類似しているローカライズされた文字列を検索します。
-        '''</summary>
-        Friend ReadOnly Property PostWorker_RunWorkerCompletedText2() As String
-            Get
-                Return ResourceManager.GetString("PostWorker_RunWorkerCompletedText2", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  エラー発生 に類似しているローカライズされた文字列を検索します。
-        '''</summary>
-        Friend ReadOnly Property PostWorker_RunWorkerCompletedText3() As String
-            Get
-                Return ResourceManager.GetString("PostWorker_RunWorkerCompletedText3", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  POST完了 に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property PostWorker_RunWorkerCompletedText4() As String
