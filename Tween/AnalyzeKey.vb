@@ -1,8 +1,8 @@
 ﻿Public Module AnalyzeKey
     '    このファイルはデバッグビルドのTweenにより自動作成されました   作成日時  2008/10/18 2:06:36
 
-    Public _splitPost As String = "<tr id=""status_"
-    Public _splitPostRecent As String = "<tr id=""status_"
+    Public _splitPost As String = "<tr class=""hentry status reply"" id=""status_"
+    Public _splitPostRecent As String = "<tr class=""hentry status"" id=""status_"
     Public _statusIdTo As String = """"
     Public _splitDM As String = "<tr id=""status_"
     Public _parseName As String = "://twitter.com/"
