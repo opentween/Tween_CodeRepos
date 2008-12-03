@@ -966,12 +966,13 @@ Public Class TweenMain
             End If
             '新着バルーン通知
             If Not _initial AndAlso _pop <> "" Then
+                If SettingDialog.DispUsername Then NotifyIcon1.BalloonTipTitle = _username + " - " Else NotifyIcon1.BalloonTipTitle = ""
                 If RepCnt > 0 AndAlso _tabs(1).notify Then
                     NotifyIcon1.BalloonTipIcon = ToolTipIcon.Warning
-                    NotifyIcon1.BalloonTipTitle = "Tween [Reply!] " + My.Resources.RefreshTimelineText1 + " " + cnt.ToString() + My.Resources.RefreshTimelineText2
+                    NotifyIcon1.BalloonTipTitle += "Tween [Reply!] " + My.Resources.RefreshTimelineText1 + " " + cnt.ToString() + My.Resources.RefreshTimelineText2
                 Else
                     NotifyIcon1.BalloonTipIcon = ToolTipIcon.Info
-                    NotifyIcon1.BalloonTipTitle = "Tween " + My.Resources.RefreshTimelineText1 + " " + cnt.ToString() + My.Resources.RefreshTimelineText2
+                    NotifyIcon1.BalloonTipTitle += "Tween " + My.Resources.RefreshTimelineText1 + " " + cnt.ToString() + My.Resources.RefreshTimelineText2
                 End If
                 NotifyIcon1.BalloonTipText = _pop
                 NotifyIcon1.ShowBalloonTip(500)
@@ -2228,7 +2229,8 @@ Public Class TweenMain
             End If
             If Not _initial AndAlso NewPostPopMenuItem.Checked AndAlso _tabs(2).notify Then
                 NotifyIcon1.BalloonTipIcon = ToolTipIcon.Warning
-                NotifyIcon1.BalloonTipTitle = "Tween [DM] " + My.Resources.RefreshDirectMessageText1 + " " + newCnt.ToString() + My.Resources.RefreshDirectMessageText2
+                If SettingDialog.DispUsername Then NotifyIcon1.BalloonTipTitle = _username + " - " Else NotifyIcon1.BalloonTipTitle = ""
+                NotifyIcon1.BalloonTipTitle += "Tween [DM] " + My.Resources.RefreshDirectMessageText1 + " " + newCnt.ToString() + My.Resources.RefreshDirectMessageText2
                 NotifyIcon1.BalloonTipText = _pop
                 NotifyIcon1.ShowBalloonTip(500)
             End If
