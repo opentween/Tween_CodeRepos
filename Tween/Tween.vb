@@ -588,7 +588,9 @@ Public Class TweenMain
         SetNotifyIconText()
 
         AddHandler My.Computer.Network.NetworkAvailabilityChanged, AddressOf Network_NetworkAvailabilityChanged
-        Me.Visible = True
+        If SettingDialog.MinimizeToTray = False OrElse Me.WindowState <> FormWindowState.Minimized Then
+            Me.Visible = True
+        End If
     End Sub
 
     Private Sub Network_NetworkAvailabilityChanged(ByVal sender As Object, ByVal e As Devices.NetworkAvailableEventArgs)
