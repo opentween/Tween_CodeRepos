@@ -30,6 +30,7 @@ Imports System.IO
 Imports System.Web
 Imports System.Reflection
 Imports System.ComponentModel
+Imports System.Xml.XPath
 
 Public Class TweenMain
     Private clsTw As Twitter            'Twitter用通信データ処理カスタムクラス
@@ -6316,6 +6317,23 @@ RETRY:
 
     Private Sub SplitContainer2_SplitterMoved(ByVal sender As Object, ByVal e As System.Windows.Forms.SplitterEventArgs) Handles SplitContainer2.SplitterMoved
         If StatusText.Multiline Then _mySpDis2 = StatusText.Height
+    End Sub
+
+    Private Sub TweenMain_DragDrop(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DragEventArgs) Handles MyBase.DragDrop
+        Dim data As String = TryCast(e.Data.GetData(DataFormats.StringFormat, True), String)
+        If data IsNot Nothing Then
+            StatusText.Text += data
+        End If
+    End Sub
+
+    Private Sub TweenMain_DragOver(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DragEventArgs) Handles MyBase.DragOver
+        Dim data As String = TryCast(e.Data.GetData(DataFormats.StringFormat, True), String)
+        Console.WriteLine(data)
+        If data IsNot Nothing Then
+            e.Effect = DragDropEffects.Copy
+        Else
+            e.Effect = DragDropEffects.None
+        End If
     End Sub
 End Class
 
