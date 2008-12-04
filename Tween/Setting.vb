@@ -80,6 +80,7 @@ Public Class Setting
     Private _MyStartupFollowers As Boolean
     Private _MyRestrictFavCheck As Boolean
     Private _MyAlwaysTop As Boolean
+    Private _MyUrlConvertAuto As Boolean
 
     'Public Enum LogUnitEnum
     '    Minute
@@ -329,6 +330,7 @@ Public Class Setting
             _MyStartupFollowers = CheckStartupFollowers.Checked
             _MyRestrictFavCheck = CheckFavRestrict.Checked
             _MyAlwaysTop = CheckAlwaysTop.Checked
+            _MyUrlConvertAuto = CheckAutoConvertUrl.Checked
 
             'TweenMain.SetMainWindowTitle()
             'TweenMain.SetNotifyIconText()
@@ -462,6 +464,7 @@ Public Class Setting
         CheckStartupFollowers.Checked = _MyStartupFollowers
         CheckFavRestrict.Checked = _MyRestrictFavCheck
         CheckAlwaysTop.Checked = _MyAlwaysTop
+        CheckAutoConvertUrl.Checked = _MyUrlConvertAuto
 
         'TweenMain.SetMainWindowTitle()
         'TweenMain.SetNotifyIconText()
@@ -1207,6 +1210,15 @@ Public Class Setting
         End Get
         Set(ByVal value As Boolean)
             _MyAlwaysTop = value
+        End Set
+    End Property
+
+    Public Property UrlConvertAuto() As Boolean
+        Get
+            Return _MyUrlConvertAuto
+        End Get
+        Set(ByVal value As Boolean)
+            _MyUrlConvertAuto = value
         End Set
     End Property
 

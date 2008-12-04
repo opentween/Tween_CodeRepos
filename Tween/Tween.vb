@@ -1151,6 +1151,8 @@ Public Class TweenMain
 
         _history(_history.Count - 1) = StatusText.Text.Trim
 
+        If SettingDialog.UrlConvertAuto Then UrlConvertAutoToolStripMenuItem_Click(Nothing, Nothing)
+
         Dim args As New GetWorkerArg()
         args.page = 0
         args.endPage = 0
@@ -6087,7 +6089,7 @@ RETRY:
 
     Private Function UrlConvert(ByVal Converter_Type As UrlConverter) As Boolean
         Dim result As String = ""
-        Dim url As Regex = New Regex("\b(?:https?|shttp)://(?:(?:[-_.!~*'()a-zA-Z0-9;:&=+$,]|%[0-9A-Fa-f" + _
+        Dim url As Regex = New Regex("(?<![0-9A-Za-z])(?:https?|shttp)://(?:(?:[-_.!~*'()a-zA-Z0-9;:&=+$,]|%[0-9A-Fa-f" + _
                                      "][0-9A-Fa-f])*@)?(?:(?:[a-zA-Z0-9](?:[-a-zA-Z0-9]*[a-zA-Z0-9])?\.)" + _
                                      "*[a-zA-Z](?:[-a-zA-Z0-9]*[a-zA-Z0-9])?\.?|[0-9]+\.[0-9]+\.[0-9]+\." + _
                                      "[0-9]+)(?::[0-9]*)?(?:/(?:[-_.!~*'()a-zA-Z0-9:@&=+$,]|%[0-9A-Fa-f]" + _
