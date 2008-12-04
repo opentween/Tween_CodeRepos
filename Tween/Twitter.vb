@@ -1182,7 +1182,6 @@ Partial Public Class Twitter
     End Property
 
     Public Sub GetWedata()
-        Exit Sub
         Dim resStatus As String = ""
         Dim resMsg As String = ""
 
