@@ -249,6 +249,9 @@ Partial Public Class Twitter
         Else
             strSepTmp = _splitPost
         End If
+        ''''''''''''''''''''''''''''''
+        strSepTmp = "<tr class=""hentry status"
+        '''''''''''''''''''''''''''''''
         pos1 = retMsg.IndexOf(strSepTmp)
         If pos1 = -1 Then
             '0件 or 取得失敗
@@ -312,9 +315,11 @@ Partial Public Class Twitter
 
                 Try
                     'Get ID
-                    pos1 = 0
-                    pos2 = strPost.IndexOf(_statusIdTo, 0)
-                    lItem.Id = HttpUtility.HtmlDecode(strPost.Substring(0, pos2))
+                    'pos1 = 0
+                    pos1 = strPost.IndexOf("id=""status_", 0)
+                    pos2 = strPost.IndexOf(_statusIdTo, pos1 + 11)
+
+                    lItem.Id = HttpUtility.HtmlDecode(strPost.Substring(pos1 + 11, pos2 - pos1 - 11))
                 Catch ex As Exception
                     _signed = False
                     TraceOut("TM-ID:" + strPost)
@@ -670,6 +675,7 @@ Partial Public Class Twitter
         'End If
 
         '各メッセージに分割可能か？
+        _splitDM = "<tr class=""hentry direct_message"
         pos1 = retMsg.IndexOf(_splitDM)
         If pos1 = -1 Then
             '0件
@@ -694,9 +700,10 @@ Partial Public Class Twitter
 
                 'Get ID
                 Try
-                    pos1 = 0
-                    pos2 = strPost.IndexOf("""", 0)
-                    lItem.Id = HttpUtility.HtmlDecode(strPost.Substring(0, pos2))
+                    'pos1 = 0
+                    pos1 = strPost.IndexOf("id=""direct_message_", 0)
+                    pos2 = strPost.IndexOf("""", pos1 + 19)
+                    lItem.Id = HttpUtility.HtmlDecode(strPost.Substring(pos1 + 19, pos2 - pos1 - 19))
                 Catch ex As Exception
                     _signed = False
                     TraceOut("DM-ID:" + strPost)
@@ -1166,6 +1173,7 @@ Partial Public Class Twitter
     End Property
 
     Public Sub GetWedata()
+        Exit Sub
         Dim resStatus As String = ""
         Dim resMsg As String = ""
 
