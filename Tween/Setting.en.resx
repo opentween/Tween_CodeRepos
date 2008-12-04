@@ -208,6 +208,12 @@
   <data name="Label15.Text" xml:space="preserve">
     <value>Sounds will play when you enable this option and set sound file for each tabs.</value>
   </data>
+  <data name="OneWayLv.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 16</value>
+  </data>
+  <data name="OneWayLv.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
   <data name="Label16.Size" type="System.Drawing.Size, System.Drawing">
     <value>145, 12</value>
   </data>
@@ -331,6 +337,18 @@
   <data name="Label17.Text" xml:space="preserve">
     <value>Not read</value>
   </data>
+  <data name="GroupBox1.Text" xml:space="preserve">
+    <value>Font &amp; Color</value>
+  </data>
+  <data name="cmbNameBalloon.Items" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="cmbNameBalloon.Items1" xml:space="preserve">
+    <value>User ID</value>
+  </data>
+  <data name="cmbNameBalloon.Items2" xml:space="preserve">
+    <value>Nickname</value>
+  </data>
   <data name="Label10.Size" type="System.Drawing.Size, System.Drawing">
     <value>103, 12</value>
   </data>
@@ -361,6 +379,12 @@
   <data name="Label23.Text" xml:space="preserve">
     <value>Date Format in List</value>
   </data>
+  <data name="CheckBox3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 16</value>
+  </data>
+  <data name="CheckBox3.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
   <data name="Label25.Size" type="System.Drawing.Size, System.Drawing">
     <value>139, 12</value>
   </data>
@@ -378,6 +402,12 @@
   </data>
   <data name="Label27.Text" xml:space="preserve">
     <value>Tweet with Ctrl-Enter</value>
+  </data>
+  <data name="IconSize.Items" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="IconSize.Items4" xml:space="preserve">
+    <value>48*48(single column)</value>
   </data>
   <data name="Label38.Size" type="System.Drawing.Size, System.Drawing">
     <value>89, 12</value>
@@ -475,11 +505,29 @@
   <data name="Label45.Text" xml:space="preserve">
     <value>Title format</value>
   </data>
+  <data name="ComboDispTitle.Items" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="ComboDispTitle.Items1" xml:space="preserve">
+    <value>Program Version</value>
+  </data>
+  <data name="ComboDispTitle.Items2" xml:space="preserve">
+    <value>Latest your post</value>
+  </data>
+  <data name="ComboDispTitle.Items3" xml:space="preserve">
+    <value>unread @reply items</value>
+  </data>
+  <data name="ComboDispTitle.Items4" xml:space="preserve">
+    <value>unread items</value>
+  </data>
+  <data name="ComboDispTitle.Items5" xml:space="preserve">
+    <value>unread items(unread @reply items)</value>
+  </data>
+  <data name="ComboDispTitle.Items6" xml:space="preserve">
+    <value>unread items/all items</value>
+  </data>
   <data name="Label47.Text" xml:space="preserve">
     <value>Apply after restarting</value>
-  </data>
-  <data name="TabPage1.Text" xml:space="preserve">
-    <value>Basic</value>
   </data>
   <data name="Label54.Size" type="System.Drawing.Size, System.Drawing">
     <value>131, 12</value>
@@ -529,8 +577,20 @@
   <data name="Label52.Text" xml:space="preserve">
     <value>Tweeting Limitation per Hour</value>
   </data>
-  <data name="TabPage2.Text" xml:space="preserve">
-    <value>Behavior</value>
+  <data name="TabPage1.Text" xml:space="preserve">
+    <value>Basic</value>
+  </data>
+  <data name="CheckAutoConvertUrl.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 16</value>
+  </data>
+  <data name="CheckAutoConvertUrl.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="Label29.Size" type="System.Drawing.Size, System.Drawing">
+    <value>103, 12</value>
+  </data>
+  <data name="Label29.Text" xml:space="preserve">
+    <value>Auto shorten URLs</value>
   </data>
   <data name="CheckAlwaysTop.Size" type="System.Drawing.Size, System.Drawing">
     <value>58, 16</value>
@@ -578,17 +638,14 @@
   <data name="Button3.Text" xml:space="preserve">
     <value>Open...</value>
   </data>
+  <data name="TabPage2.Text" xml:space="preserve">
+    <value>Behavior</value>
+  </data>
   <data name="TabPage3.Text" xml:space="preserve">
     <value>View</value>
   </data>
   <data name="TabPage4.Text" xml:space="preserve">
     <value>Fonts &amp; Colors</value>
-  </data>
-  <data name="TabPage5.Text" xml:space="preserve">
-    <value>Connection</value>
-  </data>
-  <data name="GroupBox2.Text" xml:space="preserve">
-    <value>Proxy Server</value>
   </data>
   <data name="Label55.Size" type="System.Drawing.Size, System.Drawing">
     <value>320, 12</value>
@@ -638,82 +695,13 @@
   <data name="RadioProxyNone.Text" xml:space="preserve">
     <value>Don't Use</value>
   </data>
+  <data name="GroupBox2.Text" xml:space="preserve">
+    <value>Proxy Server</value>
+  </data>
+  <data name="TabPage5.Text" xml:space="preserve">
+    <value>Connection</value>
+  </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Settings</value>
-  </data>
-  <data name="CheckBox3.Text" xml:space="preserve">
-    <value>Enable</value>
-  </data>
-  <data name="cmbNameBalloon.Items" xml:space="preserve">
-    <value>None</value>
-  </data>
-  <data name="cmbNameBalloon.Items1" xml:space="preserve">
-    <value>User ID</value>
-  </data>
-  <data name="cmbNameBalloon.Items2" xml:space="preserve">
-    <value>Nickname</value>
-  </data>
-  <data name="ComboBox1.Items" xml:space="preserve">
-    <value>yy-MM-dd HH:mm:ss</value>
-  </data>
-  <data name="ComboBox1.Items1" xml:space="preserve">
-    <value>HH:mm:ss yy-MM-dd</value>
-  </data>
-  <data name="ComboBox1.Items2" xml:space="preserve">
-    <value>MM-dd HH:mm:ss</value>
-  </data>
-  <data name="ComboBox1.Items3" xml:space="preserve">
-    <value>HH:mm:ss MM-dd</value>
-  </data>
-  <data name="ComboBox1.Items4" xml:space="preserve">
-    <value>dd HH:mm:ss</value>
-  </data>
-  <data name="ComboBox1.Items5" xml:space="preserve">
-    <value>HH:mm:ss dd</value>
-  </data>
-  <data name="ComboBox1.Items6" xml:space="preserve">
-    <value>HH:mm:ss</value>
-  </data>
-  <data name="ComboDispTitle.Items" xml:space="preserve">
-    <value>None</value>
-  </data>
-  <data name="ComboDispTitle.Items1" xml:space="preserve">
-    <value>Program Version</value>
-  </data>
-  <data name="ComboDispTitle.Items2" xml:space="preserve">
-    <value>Latest your post</value>
-  </data>
-  <data name="ComboDispTitle.Items3" xml:space="preserve">
-    <value>unread @reply items</value>
-  </data>
-  <data name="ComboDispTitle.Items4" xml:space="preserve">
-    <value>unread items</value>
-  </data>
-  <data name="ComboDispTitle.Items5" xml:space="preserve">
-    <value>unread items(unread @reply items)</value>
-  </data>
-  <data name="ComboDispTitle.Items6" xml:space="preserve">
-    <value>unread items/all items</value>
-  </data>
-  <data name="GroupBox1.Text" xml:space="preserve">
-    <value>Font &amp; Color</value>
-  </data>
-  <data name="IconSize.Items" xml:space="preserve">
-    <value>None</value>
-  </data>
-  <data name="IconSize.Items1" xml:space="preserve">
-    <value>16*16</value>
-  </data>
-  <data name="IconSize.Items2" xml:space="preserve">
-    <value>24*24</value>
-  </data>
-  <data name="IconSize.Items3" xml:space="preserve">
-    <value>48*48</value>
-  </data>
-  <data name="IconSize.Items4" xml:space="preserve">
-    <value>48*48(single column)</value>
-  </data>
-  <data name="OneWayLv.Text" xml:space="preserve">
-    <value>Enable</value>
   </data>
 </root>

@@ -1174,6 +1174,7 @@ Public Property CloseToExit() As Boolean
             Me("statustextheight") = value
         End Set
     End Property
+
     <ConfigurationProperty("culturecode", DefaultValue:="")> _
     Public Property cultureCode() As String
         Get
@@ -1181,6 +1182,16 @@ Public Property CloseToExit() As Boolean
         End Get
         Set(ByVal value As String)
             Me("culturecode") = value
+        End Set
+    End Property
+
+    <ConfigurationProperty("urlconvertauto", DefaultValue:=False)> _
+    Public Property UrlConvertAuto() As Boolean
+        Get
+            Return CBool(Me("urlconvertauto"))
+        End Get
+        Set(ByVal value As Boolean)
+            Me("urlconvertauto") = value
         End Set
     End Property
 
