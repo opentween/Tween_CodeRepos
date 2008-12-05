@@ -695,7 +695,6 @@ Public Class TweenMain
 
     Private Sub TimerDM_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerDM.Tick
         If My.Computer.Network.IsAvailable = False Then Exit Sub
-        GC.Collect()
         Dim args As New GetWorkerArg()
         args.page = 1
         args.endPage = 1
@@ -1392,6 +1391,8 @@ Public Class TweenMain
         If _endingFlag OrElse e.Cancelled Then
             Exit Sub
         End If
+
+        GC.Collect()
 
         TimerRefreshIcon.Enabled = False
         If My.Computer.Network.IsAvailable Then
