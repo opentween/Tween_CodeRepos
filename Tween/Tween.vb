@@ -3990,12 +3990,15 @@ RETRY:
 
         If _iconSz <> 48 Then
             For Each key As String In TIconList.Images.Keys
-                Dim img2 As New Bitmap(sz, sz)
-                Dim g As Graphics = Graphics.FromImage(img2)
-
-                g.InterpolationMode = Drawing2D.InterpolationMode.Default
-                g.DrawImage(TIconList.Images(key), 0, 0, sz, sz)
-                TIconSmallList.Images.Add(key, img2)
+                Using img2 As New Bitmap(sz, sz)
+                    Using g As Graphics = Graphics.FromImage(img2)
+                        g.InterpolationMode = Drawing2D.InterpolationMode.Default
+                        g.DrawImage(TIconList.Images(key), 0, 0, sz, sz)
+                        TIconSmallList.Images.Add(key, img2)
+                        g.Dispose()
+                        img2.Dispose()
+                    End Using
+                End Using
             Next
         End If
     End Sub
@@ -4084,6 +4087,7 @@ RETRY:
         _item = MyList.SelectedItems(0)
         dTxt = "<html><head><style type=""text/css"">p {font-family: """ + _fntDetail.Name + """, sans-serif; font-size: " + _fntDetail.Size.ToString + "pt;} --></style></head><body style=""margin:0px""><p>" + _item.SubItems(7).Text + "</p></body></html>"
         NameLabel.Text = _item.SubItems(1).Text + "/" + _item.SubItems(4).Text
+        If UserPicture.Image IsNot Nothing Then UserPicture.Image.Dispose()
         UserPicture.Image = TIconList.Images(_item.SubItems(6).Text)
         NameLabel.Text = _item.SubItems(1).Text + "/" + _item.SubItems(4).Text
 
