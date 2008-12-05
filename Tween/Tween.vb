@@ -62,7 +62,6 @@ Public Class TweenMain
     Private _clTarget As Color            '選択発言者の他の発言用背景色
     Private _clAtTarget As Color          '選択発言中の返信先用背景色
     Private _clAtFromTarget As Color      '選択発言者への返信発言用背景色
-    Private _postCounter As Integer       '取得発言数カウンタ（カウントしているが未使用。タブ別カウンタに変更＆未読数カウントとして未読アイコン表示パフォーマンスUPできるように改善したい）
     Private TIconList As ImageList        '発言詳細部用アイコン画像リスト
     Private TIconSmallList As ImageList   'リスト表示用アイコン画像リスト
     Private _iconSz As Integer            'アイコンサイズ（現在は16、24、48の3種類。将来直接数字指定可能とする 注：24x24の場合に26と指定しているのはMSゴシック系フォントのための仕様）
@@ -93,8 +92,6 @@ Public Class TweenMain
     Private _tlTimestamps As New Dictionary(Of Date, Integer)()
     Private _tlCount As Integer
     Private ReadOnly _syncObject As New Object()    'ロック用  
-    Private _StatusSelectionStart As Integer        ' 一時退避用
-    Private _StatusSelectionLength As Integer       ' 一時退避用
 
     ' 以下DrawItem関連
     Private _brsHighLight As New SolidBrush(Color.FromKnownColor(KnownColor.Highlight))
@@ -166,6 +163,39 @@ Public Class TweenMain
         Public sIds As List(Of String)              'Fav追加・削除成功分のID
         Public tName As String                      'Fav追加・削除時のタブ名
     End Structure
+
+    Private Sub TweenMain_Disposed(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Disposed
+        '後始末
+        SettingDialog.Dispose()
+        TabDialog.Dispose()
+        SearchDialog.Dispose()
+        fDialog.Dispose()
+        UrlDialog.Dispose()
+        If TIconList IsNot Nothing Then TIconList.Dispose()
+        If TIconSmallList IsNot Nothing Then TIconSmallList.Dispose()
+        If NIconAt IsNot Nothing Then NIconAt.Dispose()
+        If NIconAtRed IsNot Nothing Then NIconAtRed.Dispose()
+        If NIconAtSmoke IsNot Nothing Then NIconAtSmoke.Dispose()
+        If NIconRefresh(0) IsNot Nothing Then NIconRefresh(0).Dispose()
+        If NIconRefresh(1) IsNot Nothing Then NIconRefresh(1).Dispose()
+        If NIconRefresh(2) IsNot Nothing Then NIconRefresh(2).Dispose()
+        If NIconRefresh(3) IsNot Nothing Then NIconRefresh(3).Dispose()
+        If TabIcon IsNot Nothing Then TabIcon.Dispose()
+        If MainIcon IsNot Nothing Then MainIcon.Dispose()
+        _brsHighLight.Dispose()
+        _brsHighLightText.Dispose()
+        If _brsForeColorUnread IsNot Nothing Then _brsForeColorUnread.Dispose()
+        If _brsForeColorReaded IsNot Nothing Then _brsForeColorReaded.Dispose()
+        If _brsForeColorFav IsNot Nothing Then _brsForeColorFav.Dispose()
+        If _brsForeColorOWL IsNot Nothing Then _brsForeColorOWL.Dispose()
+        If _brsBackColorMine IsNot Nothing Then _brsBackColorMine.Dispose()
+        If _brsBackColorAt IsNot Nothing Then _brsBackColorAt.Dispose()
+        If _brsBackColorYou IsNot Nothing Then _brsBackColorYou.Dispose()
+        If _brsBackColorAtYou IsNot Nothing Then _brsBackColorAtYou.Dispose()
+        If _brsBackColorAtTo IsNot Nothing Then _brsBackColorAtTo.Dispose()
+        If _brsBackColorNone IsNot Nothing Then _brsBackColorNone.Dispose()
+        sf.Dispose()
+    End Sub
 
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         '着せ替えアイコン対応
@@ -1988,17 +2018,8 @@ Public Class TweenMain
     End Sub
 
     Private Sub FavRemoveToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FavRemoveToolStripMenuItem.Click
-
         Dim cnt As Integer = 0
-        Dim rtn As String = ""
-        Dim msg As String = ""
-        Dim cnt2 As Integer = 0
         Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim MyList2 As DetailsListView = Nothing
-        Dim cnt3 As Integer = 0
-        Dim tabName As String = ListTab.SelectedTab.Text
-        Dim idx As Integer = 0
-        Dim flw As Boolean = False
 
         If ListTab.SelectedTab.Text = "Direct" OrElse MyList.SelectedItems.Count = 0 Then Exit Sub
 
@@ -2118,7 +2139,6 @@ Public Class TweenMain
     Private Sub RefreshDirectMessage(ByVal tlList As List(Of Twitter.MyListItem), ByVal IsReceive As Boolean)
         Dim lItem As Twitter.MyListItem
         Dim cnt As Integer = 0
-        Dim unread As Integer = 0
         Dim newCnt As Integer = 0
         Dim _pop As String = ""
         Dim topItem As ListViewItem
@@ -2619,8 +2639,6 @@ Public Class TweenMain
     End Sub
 
     Private Sub RefreshStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RefreshStripMenuItem.Click
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-
         NotifyIcon1.Icon = NIconRefresh(0)
         _refreshIconCnt = 0
         TimerRefreshIcon.Enabled = True
@@ -3144,7 +3162,6 @@ Public Class TweenMain
 
     Private Sub ListTab_MouseMove(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListTab.MouseMove
         Dim cpos As New Point(e.X, e.Y)
-        Dim spos As Point = ListTab.PointToClient(cpos)
 
         If e.Button = Windows.Forms.MouseButtons.Left And _tabDrag Then
             Dim tn As String = ""
@@ -3838,7 +3855,6 @@ RETRY:
         Dim fnd As Boolean = True
         Dim toIdx As Integer
         Dim stp As Integer = 1
-        Dim tabIdx As Integer = 0
 
         myList.Focus()
 RETRY:
@@ -3995,8 +4011,6 @@ RETRY:
                         g.InterpolationMode = Drawing2D.InterpolationMode.Default
                         g.DrawImage(TIconList.Images(key), 0, 0, sz, sz)
                         TIconSmallList.Images.Add(key, img2)
-                        g.Dispose()
-                        img2.Dispose()
                     End Using
                 End Using
             Next
@@ -4009,7 +4023,6 @@ RETRY:
 
     Private Sub CheckNewVersion(Optional ByVal startup As Boolean = False)
         Dim retMsg As String
-        Dim resStatus As String = ""
         Dim strVer As String
         Dim forceUpdate As Boolean = My.Computer.Keyboard.ShiftKeyDown
 
@@ -4288,7 +4301,6 @@ RETRY:
         Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
         If MyList.SelectedItems.Count = 0 Then Exit Sub
 
-        Dim user As String = MyList.SelectedItems(0).SubItems(4).Text
         Dim fIdx As Integer = MyList.SelectedItems(0).Index + 1
         If fIdx > MyList.Items.Count - 1 Then Exit Sub
 
@@ -4312,7 +4324,6 @@ RETRY:
         Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
         If MyList.SelectedItems.Count = 0 Then Exit Sub
 
-        Dim user As String = MyList.SelectedItems(0).SubItems(4).Text
         Dim fIdx As Integer = MyList.SelectedItems(0).Index - 1
         If fIdx < 0 Then Exit Sub
 
@@ -4842,7 +4853,6 @@ RETRY:
 
     Private Sub Tabs_MouseDown(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListTab.MouseDown
         Dim cpos As New Point(e.X, e.Y)
-        Dim spos As Point = ListTab.PointToClient(cpos)
         If e.Button = Windows.Forms.MouseButtons.Left Then
             For i As Integer = 0 To ListTab.TabPages.Count - 1
                 Dim rect As Rectangle = ListTab.GetTabRect(i)
@@ -5609,7 +5619,6 @@ RETRY:
                     If Not ts2.Equals(ts) AndAlso ts2.tabName <> "Reply" AndAlso ts2.tabName <> "Direct" Then
                         For Each itm As ListViewItem In ts2.listCustom.Items
                             Dim mv As Boolean = False
-                            Dim nf As Boolean = False
                             Dim mk As Boolean = False
                             Dim lItem As New Twitter.MyListItem()
 
@@ -5714,7 +5723,6 @@ RETRY:
                 Next
                 For Each itm As ListViewItem In itms
                     Dim mv As Boolean = False
-                    Dim nf As Boolean = False
                     Dim mk As Boolean = False
                     Dim lItem As New Twitter.MyListItem()
 
@@ -6131,7 +6139,6 @@ RETRY:
                                      "*)?(?:\?(?:[-_.!~*'()a-zA-Z0-9;/?:@&=+$,]|%[0-9A-Fa-f][0-9A-Fa-f])" + _
                                      "*)?(?:#(?:[-_.!~*'()a-zA-Z0-9;/?:@&=+$,]|%[0-9A-Fa-f][0-9A-Fa-f])*)?")
 
-        Dim src As String = ""
 
         If StatusText.SelectionLength > 0 Then
             Dim tmp As String = StatusText.SelectedText

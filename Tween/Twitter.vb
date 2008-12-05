@@ -431,6 +431,7 @@ Partial Public Class Twitter
                             TraceOut("TM-Body:" + strPost)
                             Return "GetTimeline -> Err: Can't get body."
                         End Try
+                        orgData = Regex.Replace(orgData, "<a href=""https://twitter\.com/" + lItem.Name + "/status/[0-9]+"">\.\.\.</a>$", "")
                         orgData = orgData.Replace("&lt;3", "♡")
                     End If
 
@@ -611,9 +612,6 @@ Partial Public Class Twitter
 
         Dim retMsg As String = ""
         Dim resStatus As String = ""
-        Dim moreRead As Boolean = True
-        Dim oldID As String = ""
-        Dim oldName As String = ""
 
         endPage = page
 
@@ -778,6 +776,7 @@ Partial Public Class Twitter
                             pos2 = strPost.IndexOf(_parseDM2, pos1, StringComparison.Ordinal)
                             orgData = strPost.Substring(pos1 + _parseDM11.Length, pos2 - pos1 - _parseDM11.Length).Trim()
                         End If
+                        orgData = Regex.Replace(orgData, "<a href=""https://twitter\.com/" + lItem.Name + "/status/[0-9]+"">\.\.\.</a>$", "")
                         orgData = orgData.Replace("&lt;3", "♡")
                     Catch ex As Exception
                         _signed = False
@@ -922,7 +921,6 @@ Partial Public Class Twitter
 
         Dim resStatus As String = ""
         Dim img As Image = Nothing
-        Dim cnt As Integer = 1
 
         img = DirectCast(_mySock.GetWebResponse(pathUrl, resStatus, MySocket.REQ_TYPE.ReqGETBinary), System.Drawing.Image)
         If Not img Is Nothing Then

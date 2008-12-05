@@ -1195,7 +1195,7 @@ Public Property CloseToExit() As Boolean
         End Set
     End Property
 
-    Private Function EncryptString(ByVal str As String) As String
+    Private Shared Function EncryptString(ByVal str As String) As String
         '文字列をバイト型配列にする
         Dim bytesIn As Byte() = System.Text.Encoding.UTF8.GetBytes(str)
 
@@ -1236,7 +1236,7 @@ Public Property CloseToExit() As Boolean
         End Using
     End Function
 
-    Private Function DecryptString(ByVal str As String) As String
+    Private Shared Function DecryptString(ByVal str As String) As String
         'DESCryptoServiceProviderオブジェクトの作成
         Dim des As New System.Security.Cryptography.DESCryptoServiceProvider
 
