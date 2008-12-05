@@ -233,9 +233,9 @@ Partial Public Class Twitter
 
         ' tr 要素の class 属性を消去
         Do
-            Dim idx As Integer = retMsg.IndexOf("<tr class=""")
+            Dim idx As Integer = retMsg.IndexOf("<tr class=""", StringComparison.Ordinal)
             If idx = -1 Then Exit Do
-            retMsg = retMsg.Remove(idx + 4, retMsg.IndexOf("""", idx + 11 + 1) - idx - 2) ' 11 = "<tr class=""".Length
+            retMsg = retMsg.Remove(idx + 4, retMsg.IndexOf("""", idx + 11 + 1, StringComparison.Ordinal) - idx - 2) ' 11 = "<tr class=""".Length
         Loop
 
         If _endingFlag Then Return ""
@@ -257,7 +257,7 @@ Partial Public Class Twitter
             strSepTmp = _splitPost
         End If
 
-        pos1 = retMsg.IndexOf(strSepTmp)
+        pos1 = retMsg.IndexOf(strSepTmp, StringComparison.Ordinal)
         If pos1 = -1 Then
             '0件 or 取得失敗
             _signed = False
@@ -302,9 +302,9 @@ Partial Public Class Twitter
                     End If
 
                     'TwitterInfoの取得
-                    pos1 = retMsg.IndexOf(_getInfoTwitter)
+                    pos1 = retMsg.IndexOf(_getInfoTwitter, StringComparison.Ordinal)
                     If pos1 > -1 Then
-                        pos2 = retMsg.IndexOf(_getInfoTwitterTo, pos1)
+                        pos2 = retMsg.IndexOf(_getInfoTwitterTo, pos1, StringComparison.Ordinal)
                         If pos2 > -1 Then
                             _infoTwitter = retMsg.Substring(pos1 + _getInfoTwitter.Length, pos2 - pos1 - _getInfoTwitter.Length)
                         Else
@@ -321,7 +321,7 @@ Partial Public Class Twitter
                 Try
                     'Get ID
                     pos1 = 0
-                    pos2 = strPost.IndexOf(_statusIdTo, 0)
+                    pos2 = strPost.IndexOf(_statusIdTo, 0, StringComparison.Ordinal)
                     lItem.Id = HttpUtility.HtmlDecode(strPost.Substring(0, pos2))
                 Catch ex As Exception
                     _signed = False
@@ -330,8 +330,8 @@ Partial Public Class Twitter
                 End Try
                 'Get Name
                 Try
-                    pos1 = strPost.IndexOf(_parseName, pos2)
-                    pos2 = strPost.IndexOf(_parseNameTo, pos1)
+                    pos1 = strPost.IndexOf(_parseName, pos2, StringComparison.Ordinal)
+                    pos2 = strPost.IndexOf(_parseNameTo, pos1, StringComparison.Ordinal)
                     lItem.Name = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseName.Length, pos2 - pos1 - _parseName.Length))
                 Catch ex As Exception
                     _signed = False
@@ -340,12 +340,12 @@ Partial Public Class Twitter
                 End Try
                 'Get Nick
                 '''バレンタイン対応
-                If strPost.IndexOf("twitter.com/images/heart.png", pos2) > -1 Then
+                If strPost.IndexOf("twitter.com/images/heart.png", pos2, StringComparison.Ordinal) > -1 Then
                     lItem.Nick = lItem.Name
                 Else
                     Try
-                        pos1 = strPost.IndexOf(_parseNick, pos2)
-                        pos2 = strPost.IndexOf(_parseNickTo, pos1 + _parseNick.Length)
+                        pos1 = strPost.IndexOf(_parseNick, pos2, StringComparison.Ordinal)
+                        pos2 = strPost.IndexOf(_parseNickTo, pos1 + _parseNick.Length, StringComparison.Ordinal)
                         lItem.Nick = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseNick.Length, pos2 - pos1 - _parseNick.Length))
                     Catch ex As Exception
                         _signed = False
@@ -358,10 +358,10 @@ Partial Public Class Twitter
                 If links.Contains(lItem.Id) = False Then
                     orgData = ""
                     'バレンタイン
-                    If strPost.IndexOf("<form action=""/status/update"" id=""heartForm", 0) > -1 Then
+                    If strPost.IndexOf("<form action=""/status/update"" id=""heartForm", 0, StringComparison.Ordinal) > -1 Then
                         Try
-                            pos1 = strPost.IndexOf("<strong>", 0)
-                            pos2 = strPost.IndexOf("</strong>", pos1)
+                            pos1 = strPost.IndexOf("<strong>", 0, StringComparison.Ordinal)
+                            pos2 = strPost.IndexOf("</strong>", pos1, StringComparison.Ordinal)
                             orgData = strPost.Substring(pos1 + 8, pos2 - pos1 - 8)
                         Catch ex As Exception
                             _signed = False
@@ -373,8 +373,8 @@ Partial Public Class Twitter
 
                     'Get ImagePath
                     Try
-                        pos1 = strPost.IndexOf(_parseImg, pos2)
-                        pos2 = strPost.IndexOf(_parseImgTo, pos1 + _parseImg.Length)
+                        pos1 = strPost.IndexOf(_parseImg, pos2, StringComparison.Ordinal)
+                        pos2 = strPost.IndexOf(_parseImgTo, pos1 + _parseImg.Length, StringComparison.Ordinal)
                         lItem.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length))
                     Catch ex As Exception
                         _signed = False
@@ -383,37 +383,37 @@ Partial Public Class Twitter
                     End Try
 
                     'Protect
-                    If strPost.IndexOf(_isProtect, pos2) > -1 Then
+                    If strPost.IndexOf(_isProtect, pos2, StringComparison.Ordinal) > -1 Then
                         lItem.Protect = True
                     End If
 
                     'Get Message
-                    pos1 = strPost.IndexOf(_parseMsg1, pos2)
+                    pos1 = strPost.IndexOf(_parseMsg1, pos2, StringComparison.Ordinal)
                     If pos1 < 0 Then
                         'Valentine対応その２
                         Try
-                            If strPost.IndexOf("<div id=""doyouheart", pos2) > -1 Then
+                            If strPost.IndexOf("<div id=""doyouheart", pos2, StringComparison.Ordinal) > -1 Then
                                 orgData += " <3 you! Do you <3 "
-                                pos1 = strPost.IndexOf("<a href", pos2)
-                                pos2 = strPost.IndexOf("?", pos1)
+                                pos1 = strPost.IndexOf("<a href", pos2, StringComparison.Ordinal)
+                                pos2 = strPost.IndexOf("?", pos1, StringComparison.Ordinal)
                                 orgData += strPost.Substring(pos1, pos2 - pos1 + 1)
                             Else
                                 'pos1 = strPost.IndexOf("."" />", pos2)
-                                pos1 = strPost.IndexOf(_parseProtectMsg1, pos2)
+                                pos1 = strPost.IndexOf(_parseProtectMsg1, pos2, StringComparison.Ordinal)
                                 If pos1 = -1 Then
                                     'If orgData <> "You" Then
                                     '    orgData += lItem.Name + " <3 's "
                                     'Else
                                     orgData += " <3 's "
                                     'End If
-                                    pos1 = strPost.IndexOf("<a href", pos2)
+                                    pos1 = strPost.IndexOf("<a href", pos2, StringComparison.Ordinal)
                                     If pos1 > -1 Then
-                                        pos2 = strPost.IndexOf("!", pos1)
+                                        pos2 = strPost.IndexOf("!", pos1, StringComparison.Ordinal)
                                         orgData += strPost.Substring(pos1, pos2 - pos1 + 1)
                                     End If
                                 Else
                                     'pos2 = strPost.IndexOf("<span class=""meta entry-meta"">", pos1)
-                                    pos2 = strPost.IndexOf(_parseProtectMsg2, pos1)
+                                    pos2 = strPost.IndexOf(_parseProtectMsg2, pos1, StringComparison.Ordinal)
                                     orgData = strPost.Substring(pos1 + _parseProtectMsg1.Length, pos2 - pos1 - _parseProtectMsg1.Length).Trim()
                                 End If
                             End If
@@ -424,7 +424,7 @@ Partial Public Class Twitter
                         End Try
                     Else
                         Try
-                            pos2 = strPost.IndexOf(_parseMsg2, pos1)
+                            pos2 = strPost.IndexOf(_parseMsg2, pos1, StringComparison.Ordinal)
                             orgData = strPost.Substring(pos1 + _parseMsg1.Length, pos2 - pos1 - _parseMsg1.Length).Trim()
                         Catch ex As Exception
                             _signed = False
@@ -444,12 +444,12 @@ Partial Public Class Twitter
                             posl2 = 0
                             posl3 = 0
                             Do While True
-                                If orgData.IndexOf("<a href=""" + svc, posl2) > -1 Then
+                                If orgData.IndexOf("<a href=""" + svc, posl2, StringComparison.Ordinal) > -1 Then
                                     Dim urlStr As String = ""
                                     Try
-                                        posl1 = orgData.IndexOf("<a href=""" + svc, posl2)
-                                        posl1 = orgData.IndexOf(svc, posl1)
-                                        posl2 = orgData.IndexOf("""", posl1)
+                                        posl1 = orgData.IndexOf("<a href=""" + svc, posl2, StringComparison.Ordinal)
+                                        posl1 = orgData.IndexOf(svc, posl1, StringComparison.Ordinal)
+                                        posl2 = orgData.IndexOf("""", posl1, StringComparison.Ordinal)
                                         urlStr = orgData.Substring(posl1, posl2 - posl1)
                                         Dim Response As String = ""
                                         Dim retUrlStr As String = ""
@@ -484,7 +484,7 @@ Partial Public Class Twitter
                     lItem.OrgData = lItem.OrgData.Replace(vbLf, "<br>")
 
                     Try
-                        If orgData.IndexOf(_parseLink1) = -1 Then
+                        If orgData.IndexOf(_parseLink1, StringComparison.Ordinal) = -1 Then
                             lItem.Data = HttpUtility.HtmlDecode(orgData)
                         Else
                             lItem.Data = ""
@@ -492,7 +492,7 @@ Partial Public Class Twitter
                             posl3 = 0
                             Do While True
 
-                                posl1 = orgData.IndexOf(_parseLink1, posl3)
+                                posl1 = orgData.IndexOf(_parseLink1, posl3, StringComparison.Ordinal)
                                 If posl1 = -1 Then Exit Do
 
                                 If (posl3 + _parseLink3.Length <> posl1) Or posl3 = 0 Then
@@ -502,8 +502,8 @@ Partial Public Class Twitter
                                         lItem.Data += HttpUtility.HtmlDecode(orgData.Substring(0, posl1))
                                     End If
                                 End If
-                                posl2 = orgData.IndexOf(_parseLink2, posl1)
-                                posl3 = orgData.IndexOf(_parseLink3, posl2)
+                                posl2 = orgData.IndexOf(_parseLink2, posl1, StringComparison.Ordinal)
+                                posl3 = orgData.IndexOf(_parseLink3, posl2, StringComparison.Ordinal)
                                 lItem.Data += HttpUtility.HtmlDecode(orgData.Substring(posl2 + _parseLink2.Length, posl3 - posl2 - _parseLink2.Length))
                             Loop
 
@@ -516,10 +516,10 @@ Partial Public Class Twitter
                     End Try
 
                     'Get Date
-                    pos1 = strPost.IndexOf(_parseDate, pos2)
+                    pos1 = strPost.IndexOf(_parseDate, pos2, StringComparison.Ordinal)
                     If pos1 > -1 Then
                         Try
-                            pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length)
+                            pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length, StringComparison.Ordinal)
                             lItem.PDate = DateTime.ParseExact(strPost.Substring(pos1 + _parseDate.Length, pos2 - pos1 - _parseDate.Length), "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz", System.Globalization.DateTimeFormatInfo.InvariantInfo, Globalization.DateTimeStyles.None)
                             tmpDate = lItem.PDate
                         Catch ex As Exception
@@ -532,17 +532,17 @@ Partial Public Class Twitter
                     End If
 
                     'Get Reply
-                    If strPost.IndexOf(_isReplyEng + _uid + _isReplyTo) > 0 Or strPost.IndexOf(_isReplyJpn + _uid + _isReplyTo) > 0 Then
+                    If strPost.IndexOf(_isReplyEng + _uid + _isReplyTo, StringComparison.Ordinal) > 0 Or strPost.IndexOf(_isReplyJpn + _uid + _isReplyTo, StringComparison.Ordinal) > 0 Then
                         lItem.Reply = True
                     Else
                         lItem.Reply = False
                     End If
 
                     'Get Fav
-                    pos1 = strPost.IndexOf(_parseStar, pos2)
+                    pos1 = strPost.IndexOf(_parseStar, pos2, StringComparison.Ordinal)
                     If pos1 > -1 Then
                         Try
-                            pos2 = strPost.IndexOf(_parseStarTo, pos1 + _parseStar.Length)
+                            pos2 = strPost.IndexOf(_parseStarTo, pos1 + _parseStar.Length, StringComparison.Ordinal)
                             If strPost.Substring(pos1 + _parseStar.Length, pos2 - pos1 - _parseStar.Length) = _parseStarEmpty Then
                                 lItem.Fav = False
                             Else
@@ -570,10 +570,10 @@ Partial Public Class Twitter
                 'テスト実装：DMカウント取得
                 getDM = False
                 If intCnt = posts.Length And gType = GetTypes.GET_TIMELINE And page = 1 Then
-                    pos1 = strPost.IndexOf(_parseDMcountFrom, pos2)
+                    pos1 = strPost.IndexOf(_parseDMcountFrom, pos2, StringComparison.Ordinal)
                     If pos1 > -1 Then
                         Try
-                            pos2 = strPost.IndexOf(_parseDMcountTo, pos1 + _parseDMcountFrom.Length)
+                            pos2 = strPost.IndexOf(_parseDMcountTo, pos1 + _parseDMcountFrom.Length, StringComparison.Ordinal)
                             Dim dmCnt As Integer = Integer.Parse(strPost.Substring(pos1 + _parseDMcountFrom.Length, pos2 - pos1 - _parseDMcountFrom.Length))
                             If dmCnt > _dmCount Then
                                 _dmCount = dmCnt
@@ -639,9 +639,9 @@ Partial Public Class Twitter
 
         ' tr 要素の class 属性を消去
         Do
-            Dim idx As Integer = retMsg.IndexOf("<tr class=""")
+            Dim idx As Integer = retMsg.IndexOf("<tr class=""", StringComparison.Ordinal)
             If idx = -1 Then Exit Do
-            retMsg = retMsg.Remove(idx + 4, retMsg.IndexOf("""", idx + 11 + 1) - idx - 2) ' 11 = "<tr class=""".Length
+            retMsg = retMsg.Remove(idx + 4, retMsg.IndexOf("""", idx + 11 + 1, StringComparison.Ordinal) - idx - 2) ' 11 = "<tr class=""".Length
         Loop
 
         If retMsg.Length = 0 Then
@@ -686,7 +686,7 @@ Partial Public Class Twitter
         'End If
 
         '各メッセージに分割可能か？
-        pos1 = retMsg.IndexOf(_splitDM)
+        pos1 = retMsg.IndexOf(_splitDM, StringComparison.Ordinal)
         If pos1 = -1 Then
             '0件
             Return ""
@@ -711,7 +711,7 @@ Partial Public Class Twitter
                 'Get ID
                 Try
                     pos1 = 0
-                    pos2 = strPost.IndexOf("""", 0)
+                    pos2 = strPost.IndexOf("""", 0, StringComparison.Ordinal)
                     lItem.Id = HttpUtility.HtmlDecode(strPost.Substring(0, pos2))
                 Catch ex As Exception
                     _signed = False
@@ -721,8 +721,8 @@ Partial Public Class Twitter
 
                 'Get Name
                 Try
-                    pos1 = strPost.IndexOf(_parseName, pos2)
-                    pos2 = strPost.IndexOf(_parseNameTo, pos1)
+                    pos1 = strPost.IndexOf(_parseName, pos2, StringComparison.Ordinal)
+                    pos2 = strPost.IndexOf(_parseNameTo, pos1, StringComparison.Ordinal)
                     lItem.Name = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseName.Length, pos2 - pos1 - _parseName.Length))
                 Catch ex As Exception
                     _signed = False
@@ -732,8 +732,8 @@ Partial Public Class Twitter
 
                 'Get Nick
                 Try
-                    pos1 = strPost.IndexOf(_parseNick, pos2)
-                    pos2 = strPost.IndexOf(_parseNickTo, pos1 + _parseNick.Length)
+                    pos1 = strPost.IndexOf(_parseNick, pos2, StringComparison.Ordinal)
+                    pos2 = strPost.IndexOf(_parseNickTo, pos1 + _parseNick.Length, StringComparison.Ordinal)
                     lItem.Nick = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseNick.Length, pos2 - pos1 - _parseNick.Length))
                 Catch ex As Exception
                     _signed = False
@@ -748,8 +748,8 @@ Partial Public Class Twitter
                 If flg = False Then
                     'Get ImagePath
                     Try
-                        pos1 = strPost.IndexOf(_parseImg, pos2)
-                        pos2 = strPost.IndexOf(_parseImgTo, pos1 + _parseImg.Length)
+                        pos1 = strPost.IndexOf(_parseImg, pos2, StringComparison.Ordinal)
+                        pos2 = strPost.IndexOf(_parseImgTo, pos1 + _parseImg.Length, StringComparison.Ordinal)
                         lItem.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length))
                     Catch ex As Exception
                         _signed = False
@@ -759,7 +759,7 @@ Partial Public Class Twitter
 
                     'Get Protect 
                     Try
-                        pos1 = strPost.IndexOf(_isProtect, pos2)
+                        pos1 = strPost.IndexOf(_isProtect, pos2, StringComparison.Ordinal)
                         If pos1 > -1 Then lItem.Protect = True
                     Catch ex As Exception
                         _signed = False
@@ -769,13 +769,13 @@ Partial Public Class Twitter
 
                     'Get Message
                     Try
-                        pos1 = strPost.IndexOf(_parseDM1, pos2)
+                        pos1 = strPost.IndexOf(_parseDM1, pos2, StringComparison.Ordinal)
                         If pos1 > -1 Then
-                            pos2 = strPost.IndexOf(_parseDM2, pos1)
+                            pos2 = strPost.IndexOf(_parseDM2, pos1, StringComparison.Ordinal)
                             orgData = strPost.Substring(pos1 + _parseDM1.Length, pos2 - pos1 - _parseDM1.Length).Trim()
                         Else
-                            pos1 = strPost.IndexOf(_parseDM11, pos2)
-                            pos2 = strPost.IndexOf(_parseDM2, pos1)
+                            pos1 = strPost.IndexOf(_parseDM11, pos2, StringComparison.Ordinal)
+                            pos2 = strPost.IndexOf(_parseDM2, pos1, StringComparison.Ordinal)
                             orgData = strPost.Substring(pos1 + _parseDM11.Length, pos2 - pos1 - _parseDM11.Length).Trim()
                         End If
                         orgData = orgData.Replace("&lt;3", "♡")
@@ -795,12 +795,12 @@ Partial Public Class Twitter
                             posl2 = 0
                             posl3 = 0
                             Do While True
-                                If orgData.IndexOf("<a href=""" + svc, posl2) > -1 Then
+                                If orgData.IndexOf("<a href=""" + svc, posl2, StringComparison.Ordinal) > -1 Then
                                     Dim urlStr As String = ""
                                     Try
-                                        posl1 = orgData.IndexOf("<a href=""" + svc, posl2)
-                                        posl1 = orgData.IndexOf(svc, posl1)
-                                        posl2 = orgData.IndexOf("""", posl1)
+                                        posl1 = orgData.IndexOf("<a href=""" + svc, posl2, StringComparison.Ordinal)
+                                        posl1 = orgData.IndexOf(svc, posl1, StringComparison.Ordinal)
+                                        posl2 = orgData.IndexOf("""", posl1, StringComparison.Ordinal)
                                         urlStr = orgData.Substring(posl1, posl2 - posl1)
                                         Dim Response As String = ""
                                         Dim retUrlStr As String = ""
@@ -834,7 +834,7 @@ Partial Public Class Twitter
                     lItem.OrgData = lItem.OrgData.Replace(vbLf, "<br>")
 
                     Try
-                        If orgData.IndexOf(_parseLink1) = -1 Then
+                        If orgData.IndexOf(_parseLink1, StringComparison.Ordinal) = -1 Then
                             lItem.Data = HttpUtility.HtmlDecode(orgData)
                         Else
                             lItem.Data = ""
@@ -842,7 +842,7 @@ Partial Public Class Twitter
                             posl3 = 0
                             Do While True
 
-                                posl1 = orgData.IndexOf(_parseLink1, posl3)
+                                posl1 = orgData.IndexOf(_parseLink1, posl3, StringComparison.Ordinal)
                                 If posl1 = -1 Then Exit Do
 
                                 If (posl3 + _parseLink3.Length <> posl1) Or posl3 = 0 Then
@@ -852,8 +852,8 @@ Partial Public Class Twitter
                                         lItem.Data += HttpUtility.HtmlDecode(orgData.Substring(0, posl1))
                                     End If
                                 End If
-                                posl2 = orgData.IndexOf(_parseLink2, posl1)
-                                posl3 = orgData.IndexOf(_parseLink3, posl2)
+                                posl2 = orgData.IndexOf(_parseLink2, posl1, StringComparison.Ordinal)
+                                posl3 = orgData.IndexOf(_parseLink3, posl2, StringComparison.Ordinal)
                                 lItem.Data += HttpUtility.HtmlDecode(orgData.Substring(posl2 + _parseLink2.Length, posl3 - posl2 - _parseLink2.Length))
                             Loop
 
@@ -867,10 +867,10 @@ Partial Public Class Twitter
                     End Try
 
                     'Get Date
-                    pos1 = strPost.IndexOf(_parseDate, pos2)
+                    pos1 = strPost.IndexOf(_parseDate, pos2, StringComparison.Ordinal)
                     If pos1 > -1 Then
                         Try
-                            pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length)
+                            pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length, StringComparison.Ordinal)
                             lItem.PDate = DateTime.ParseExact(strPost.Substring(pos1 + _parseDate.Length, pos2 - pos1 - _parseDate.Length), "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz", System.Globalization.DateTimeFormatInfo.InvariantInfo, Globalization.DateTimeStyles.None)
                             tmpDate = lItem.PDate
                         Catch ex As Exception
@@ -938,12 +938,12 @@ Partial Public Class Twitter
         Dim pos1 As Integer
         Dim pos2 As Integer
 
-        pos1 = resMsg.IndexOf(_getAuthKey)
+        pos1 = resMsg.IndexOf(_getAuthKey, StringComparison.Ordinal)
         If pos1 < 0 Then
             'データ不正？
             Return -7
         End If
-        pos2 = resMsg.IndexOf(_getAuthKeyTo, pos1 + _getAuthKey.Length)
+        pos2 = resMsg.IndexOf(_getAuthKeyTo, pos1 + _getAuthKey.Length, StringComparison.Ordinal)
         If pos2 > -1 Then
             _authKey = resMsg.Substring(pos1 + _getAuthKey.Length, pos2 - pos1 - _getAuthKey.Length)
         Else
@@ -957,12 +957,12 @@ Partial Public Class Twitter
         Dim pos1 As Integer
         Dim pos2 As Integer
 
-        pos1 = resMsg.IndexOf(_getAuthKey)
+        pos1 = resMsg.IndexOf(_getAuthKey, StringComparison.Ordinal)
         If pos1 < 0 Then
             'データ不正？
             Return -7
         End If
-        pos2 = resMsg.IndexOf("""", pos1 + _getAuthKey.Length)
+        pos2 = resMsg.IndexOf("""", pos1 + _getAuthKey.Length, StringComparison.Ordinal)
         _authKeyDM = resMsg.Substring(pos1 + _getAuthKey.Length, pos2 - pos1 - _getAuthKey.Length)
 
         Return 0

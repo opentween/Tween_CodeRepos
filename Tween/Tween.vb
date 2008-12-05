@@ -819,9 +819,11 @@ Public Class TweenMain
                     Else
                         For Each fs As String In ft.BodyFilter
                             If ft.UseRegex Then
-                                If Not Regex.IsMatch(lItem.Name + tBody, fs, RegexOptions.IgnoreCase) Then bHit = False
+                                If Not Regex.IsMatch(lItem.Name, fs, RegexOptions.IgnoreCase) Then bHit = False
+                                If Not Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) Then bHit = False
                             Else
-                                If Not (lItem.Name + tBody).ToLower.Contains(fs.ToLower) Then bHit = False
+                                If Not lItem.Name.ToLower.Contains(fs.ToLower) Then bHit = False
+                                If Not tBody.ToLower.Contains(fs.ToLower) Then bHit = False
                             End If
                             If Not bHit Then Exit For
                         Next
@@ -868,12 +870,13 @@ Public Class TweenMain
 
             If lItem.Reply OrElse Regex.IsMatch(lItem.Data, "@" + _username + "([^a-zA-Z0-9_]|$)", RegexOptions.IgnoreCase) Then
                 Dim lvItem2 As ListViewItem = DirectCast(lvItem.Clone, System.Windows.Forms.ListViewItem)
-                _tabs(1).allCount += 1
-                If Not _readed AndAlso _tabs(1).unreadManage Then
+                Dim myTs As TabStructure = GetTSbyName("Reply")
+                myTs.allCount += 1
+                If Not _readed AndAlso myTs.unreadManage Then
                     lvItem2.Font = _fntUnread
                     lvItem2.ForeColor = _clUnread
                     lvItem2.SubItems(8).Text = "False"
-                    _tabs(1).unreadCount += 1
+                    myTs.unreadCount += 1
                 Else
                     lvItem2.Font = _fntReaded
                     lvItem2.ForeColor = _clReaded
@@ -886,29 +889,30 @@ Public Class TweenMain
                     lvItem2.ForeColor = _clFav
                 End If
                 If lvItem2.SubItems(8).Text = "False" Then
-                    If _tabs(1).oldestUnreadItem IsNot Nothing Then
-                        If lvItem2.SubItems(5).Text < _tabs(1).oldestUnreadItem.SubItems(5).Text Then _tabs(1).oldestUnreadItem = lvItem2
+                    If myTs.oldestUnreadItem IsNot Nothing Then
+                        If lvItem2.SubItems(5).Text < myTs.oldestUnreadItem.SubItems(5).Text Then myTs.oldestUnreadItem = lvItem2
                     Else
-                        _tabs(1).oldestUnreadItem = lvItem2
+                        myTs.oldestUnreadItem = lvItem2
                     End If
                 End If
-                _tabs(1).listCustom.Items.Add(lvItem2)
-                If _tabs(1).notify Then nf = True
-                If _tabs(1).soundFile <> "" Then snd = _tabs(1).soundFile '優先度高
+                myTs.listCustom.Items.Add(lvItem2)
+                If myTs.notify Then nf = True
+                If myTs.soundFile <> "" Then snd = myTs.soundFile '優先度高
                 RepCnt += 1
             End If
 
             If Not mv Then
-                _tabs(0).allCount += 1
-                If Not _readed AndAlso _tabs(0).unreadManage Then
+                Dim myTs As TabStructure = GetTSbyName("Recent")
+                myTs.allCount += 1
+                If Not _readed AndAlso myTs.unreadManage Then
                     lvItem.Font = _fntUnread
                     lvItem.ForeColor = _clUnread
                     lvItem.SubItems(8).Text = "False"
-                    _tabs(0).unreadCount += 1
-                    If _tabs(0).oldestUnreadItem IsNot Nothing Then
-                        If lvItem.SubItems(5).Text < _tabs(0).oldestUnreadItem.SubItems(5).Text Then _tabs(0).oldestUnreadItem = lvItem
+                    myTs.unreadCount += 1
+                    If myTs.oldestUnreadItem IsNot Nothing Then
+                        If lvItem.SubItems(5).Text < myTs.oldestUnreadItem.SubItems(5).Text Then myTs.oldestUnreadItem = lvItem
                     Else
-                        _tabs(0).oldestUnreadItem = lvItem
+                        myTs.oldestUnreadItem = lvItem
                     End If
                 Else
                     lvItem.Font = _fntReaded
@@ -922,9 +926,9 @@ Public Class TweenMain
                     lvItem.ForeColor = _clFav
                 End If
                 If mk Then lvItem.SubItems(0).Text += "♪"
-                _tabs(0).listCustom.Items.Add(lvItem)
-                If _tabs(0).notify Then nf = True
-                If snd = "" Then snd = _tabs(0).soundFile
+                myTs.listCustom.Items.Add(lvItem)
+                If myTs.notify Then nf = True
+                If snd = "" Then snd = myTs.soundFile
             End If
 
 
@@ -969,7 +973,7 @@ Public Class TweenMain
             '新着バルーン通知
             If Not _initial AndAlso _pop <> "" Then
                 If SettingDialog.DispUsername Then NotifyIcon1.BalloonTipTitle = _username + " - " Else NotifyIcon1.BalloonTipTitle = ""
-                If RepCnt > 0 AndAlso _tabs(1).notify Then
+                If RepCnt > 0 AndAlso GetTSbyName("Reply").notify Then
                     NotifyIcon1.BalloonTipIcon = ToolTipIcon.Warning
                     NotifyIcon1.BalloonTipTitle += "Tween [Reply!] " + My.Resources.RefreshTimelineText1 + " " + cnt.ToString() + My.Resources.RefreshTimelineText2
                 Else
@@ -1064,9 +1068,9 @@ Public Class TweenMain
 
             name = _item.SubItems(4).Text
             Do While True
-                pos1 = dTxt.IndexOf(_replyHtml, pos2)
+                pos1 = dTxt.IndexOf(_replyHtml, pos2, StringComparison.Ordinal)
                 If pos1 = -1 Then Exit Do
-                pos2 = dTxt.IndexOf(""">", pos1 + _replyHtml.Length)
+                pos2 = dTxt.IndexOf(""">", pos1 + _replyHtml.Length, StringComparison.Ordinal)
                 If pos2 > -1 Then
                     at.Add(dTxt.Substring(pos1 + _replyHtml.Length, pos2 - pos1 - _replyHtml.Length))
                 End If
@@ -2126,33 +2130,34 @@ Public Class TweenMain
         Dim Protect As String
 
         Dim _item As ListViewItem
+        Dim ts As TabStructure = GetTSbyName("Direct")
 
-        If _tabs(2).listCustom.Items.Count > 0 Then
+        If ts.listCustom.Items.Count > 0 Then
             If ListLockMenuItem.Checked Then
-                topItem = _tabs(2).listCustom.TopItem
+                topItem = ts.listCustom.TopItem
             Else
                 If listViewItemSorter.Column = 3 Then
                     If listViewItemSorter.Order = SortOrder.Ascending Then
                         '日時昇順
-                        _item = _tabs(2).listCustom.GetItemAt(0, _tabs(2).listCustom.ClientSize.Height - 1)
-                        If _item Is Nothing Then _item = _tabs(2).listCustom.Items(_tabs(2).listCustom.Items.Count - 1)
-                        If _item.Index = _tabs(2).listCustom.Items.Count - 1 Then
+                        _item = ts.listCustom.GetItemAt(0, ts.listCustom.ClientSize.Height - 1)
+                        If _item Is Nothing Then _item = ts.listCustom.Items(ts.listCustom.Items.Count - 1)
+                        If _item.Index = ts.listCustom.Items.Count - 1 Then
                             topItem = Nothing
                         Else
-                            topItem = _tabs(2).listCustom.TopItem
+                            topItem = ts.listCustom.TopItem
                         End If
                     Else
                         '日時降順
-                        _item = _tabs(2).listCustom.GetItemAt(0, 25)
-                        If _item Is Nothing Then _item = _tabs(2).listCustom.Items(0)
+                        _item = ts.listCustom.GetItemAt(0, 25)
+                        If _item Is Nothing Then _item = ts.listCustom.Items(0)
                         If _item.Index = 0 Then
                             topItem = Nothing
                         Else
-                            topItem = _tabs(2).listCustom.TopItem
+                            topItem = ts.listCustom.TopItem
                         End If
                     End If
                 Else
-                    topItem = _tabs(2).listCustom.TopItem
+                    topItem = ts.listCustom.TopItem
                 End If
 
             End If
@@ -2161,7 +2166,7 @@ Public Class TweenMain
         End If
 
         'DirectMsg.SuspendLayout()
-        _tabs(2).listCustom.BeginUpdate()
+        ts.listCustom.BeginUpdate()
 
         For cnt = 0 To tlList.Count - 1
             _readed = True
@@ -2182,8 +2187,8 @@ Public Class TweenMain
             End If
             lvItem.ToolTipText = lItem.Data
             lvItem.ImageKey = lItem.ImageUrl
-            _tabs(2).allCount += 1
-            If SettingDialog.UnreadManage AndAlso Not _initial AndAlso _tabs(2).unreadManage Then
+            ts.allCount += 1
+            If SettingDialog.UnreadManage AndAlso Not _initial AndAlso ts.unreadManage Then
                 lvItem.Font = _fntUnread
                 lvItem.ForeColor = _clUnread
                 If Not IsReceive Then
@@ -2193,16 +2198,16 @@ Public Class TweenMain
                 _readed = False
                 If dmFont = False Then
                     dmFont = True
-                    ListTab.TabPages(2).ImageIndex = 0
+                    ts.tabPage.ImageIndex = 0
                 End If
-                _tabs(2).unreadCount += 1
-                If _tabs(2).oldestUnreadItem IsNot Nothing Then
-                    If lvItem.SubItems(5).Text < _tabs(2).oldestUnreadItem.SubItems(5).Text Then _tabs(2).oldestUnreadItem = lvItem
+                ts.unreadCount += 1
+                If ts.oldestUnreadItem IsNot Nothing Then
+                    If lvItem.SubItems(5).Text < ts.oldestUnreadItem.SubItems(5).Text Then ts.oldestUnreadItem = lvItem
                 Else
-                    _tabs(2).oldestUnreadItem = lvItem
+                    ts.oldestUnreadItem = lvItem
                 End If
             End If
-            _tabs(2).listCustom.Items.Add(lvItem)
+            ts.listCustom.Items.Add(lvItem)
 
             newCnt += 1
             Select Case SettingDialog.NameBalloon
@@ -2222,16 +2227,16 @@ Public Class TweenMain
 
         If newCnt > 0 Then
             If topItem IsNot Nothing Then
-                If _tabs(2).listCustom.Items.Count > 0 AndAlso topItem.Index > -1 Then
-                    _tabs(2).listCustom.EnsureVisible(_tabs(2).listCustom.Items.Count - 1)
-                    _tabs(2).listCustom.EnsureVisible(topItem.Index)
+                If ts.listCustom.Items.Count > 0 AndAlso topItem.Index > -1 Then
+                    ts.listCustom.EnsureVisible(ts.listCustom.Items.Count - 1)
+                    ts.listCustom.EnsureVisible(topItem.Index)
                 End If
             Else
-                If listViewItemSorter.Column = 3 AndAlso listViewItemSorter.Order = SortOrder.Ascending AndAlso _tabs(2).listCustom.Items.Count > 0 Then
-                    _tabs(2).listCustom.EnsureVisible(_tabs(2).listCustom.Items.Count - 1)
+                If listViewItemSorter.Column = 3 AndAlso listViewItemSorter.Order = SortOrder.Ascending AndAlso ts.listCustom.Items.Count > 0 Then
+                    ts.listCustom.EnsureVisible(ts.listCustom.Items.Count - 1)
                 End If
             End If
-            If Not _initial AndAlso NewPostPopMenuItem.Checked AndAlso _tabs(2).notify Then
+            If Not _initial AndAlso NewPostPopMenuItem.Checked AndAlso ts.notify Then
                 NotifyIcon1.BalloonTipIcon = ToolTipIcon.Warning
                 If SettingDialog.DispUsername Then NotifyIcon1.BalloonTipTitle = _username + " - " Else NotifyIcon1.BalloonTipTitle = ""
                 NotifyIcon1.BalloonTipTitle += "Tween [DM] " + My.Resources.RefreshDirectMessageText1 + " " + newCnt.ToString() + My.Resources.RefreshDirectMessageText2
@@ -2240,19 +2245,19 @@ Public Class TweenMain
             End If
 
         End If
-        If Not _initial AndAlso SettingDialog.PlaySound AndAlso _tabs(2).soundFile <> "" Then
+        If Not _initial AndAlso SettingDialog.PlaySound AndAlso ts.soundFile <> "" Then
             Try
-                My.Computer.Audio.Play(My.Application.Info.DirectoryPath.ToString() + "\" + _tabs(2).soundFile, AudioPlayMode.Background)
+                My.Computer.Audio.Play(My.Application.Info.DirectoryPath.ToString() + "\" + ts.soundFile, AudioPlayMode.Background)
             Catch ex As Exception
 
             End Try
         End If
         'DirectMsg.ResumeLayout(True)
-        _tabs(2).listCustom.EndUpdate()
+        ts.listCustom.EndUpdate()
 
         If SettingDialog.UnreadManage Then
-            If _tabs(2).unreadManage AndAlso _tabs(2).unreadCount > 0 AndAlso _tabs(2).tabPage.ImageIndex = -1 Then
-                _tabs(2).tabPage.ImageIndex = 0
+            If ts.unreadManage AndAlso ts.unreadCount > 0 AndAlso ts.tabPage.ImageIndex = -1 Then
+                ts.tabPage.ImageIndex = 0
             End If
         End If
 
@@ -3486,7 +3491,10 @@ RETRY:
             Else
                 ' 通常検索（CaseSensitive）
                 For idx As Integer = cidx To toIdx
-                    If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word, StringComparison.CurrentCulture) > -1 Then
+                    If myList.Items(idx).SubItems(1).Text.Contains(_word) _
+                        OrElse myList.Items(idx).SubItems(2).Text.Contains(_word) _
+                        OrElse myList.Items(idx).SubItems(4).Text.Contains(_word) _
+                    Then
                         For Each itm As ListViewItem In myList.SelectedItems
                             itm.Selected = False
                         Next
@@ -3522,7 +3530,10 @@ RETRY:
             Else
                 ' 通常検索（IgnoreCase）
                 For idx As Integer = cidx To toIdx
-                    If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word, StringComparison.CurrentCultureIgnoreCase) > -1 Then
+                    If myList.Items(idx).SubItems(1).Text.Contains(_word) _
+                        OrElse myList.Items(idx).SubItems(2).Text.Contains(_word) _
+                        OrElse myList.Items(idx).SubItems(4).Text.Contains(_word) _
+                    Then
                         For Each itm As ListViewItem In myList.SelectedItems
                             itm.Selected = False
                         Next
@@ -3615,7 +3626,10 @@ RETRY:
             Else
                 ' 通常検索（CaseSensitive）
                 For idx As Integer = cidx To toIdx
-                    If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word, StringComparison.CurrentCulture) > -1 Then
+                    If myList.Items(idx).SubItems(1).Text.Contains(_word) _
+                        OrElse myList.Items(idx).SubItems(2).Text.Contains(_word) _
+                        OrElse myList.Items(idx).SubItems(4).Text.Contains(_word) _
+                    Then
                         For Each itm As ListViewItem In myList.SelectedItems
                             itm.Selected = False
                         Next
@@ -3651,7 +3665,10 @@ RETRY:
             Else
                 ' 通常検索（IgnoreCase）
                 For idx As Integer = cidx To toIdx
-                    If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word, StringComparison.CurrentCultureIgnoreCase) > -1 Then
+                    If myList.Items(idx).SubItems(1).Text.Contains(_word) _
+                        OrElse myList.Items(idx).SubItems(2).Text.Contains(_word) _
+                        OrElse myList.Items(idx).SubItems(4).Text.Contains(_word) _
+                    Then
                         For Each itm As ListViewItem In myList.SelectedItems
                             itm.Selected = False
                         Next
@@ -3733,7 +3750,10 @@ RETRY:
                 ' 通常検索（CaseSensitive）
                 If myList.Items.Count > 0 Then
                     For idx As Integer = cidx To toIdx Step -1
-                        If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word) > -1 Then
+                        If myList.Items(idx).SubItems(1).Text.Contains(_word) _
+                            OrElse myList.Items(idx).SubItems(2).Text.Contains(_word) _
+                            OrElse myList.Items(idx).SubItems(4).Text.Contains(_word) _
+                        Then
                             For Each itm As ListViewItem In myList.SelectedItems
                                 itm.Selected = False
                             Next
@@ -3773,7 +3793,10 @@ RETRY:
                 ' 通常検索（CaseSensitive）
                 If myList.Items.Count > 0 Then
                     For idx As Integer = cidx To toIdx Step -1
-                        If (myList.Items(idx).SubItems(1).Text + myList.Items(idx).SubItems(2).Text + myList.Items(idx).SubItems(4).Text).IndexOf(_word, StringComparison.CurrentCultureIgnoreCase) > -1 Then
+                        If myList.Items(idx).SubItems(1).Text.Contains(_word) _
+                            OrElse myList.Items(idx).SubItems(2).Text.Contains(_word) _
+                            OrElse myList.Items(idx).SubItems(4).Text.Contains(_word) _
+                        Then
                             For Each itm As ListViewItem In myList.SelectedItems
                                 itm.Selected = False
                             Next
@@ -3820,27 +3843,28 @@ RETRY:
         myList.Focus()
 RETRY:
         If _itnm = _ntnm AndAlso Not fnd Then
-            '全て既読の場合、Recentの最新発言を選択
+            '全て既読の場合、一番頭のタブの最新発言を選択
             ListTab.SelectedIndex = 0
-            If _tabs(0).listCustom.Items.Count > 0 Then
+            Dim ts As TabStructure = GetTSbyName(ListTab.SelectedTab.Text)     '一番最初のタブ
+            If ts.listCustom.Items.Count > 0 Then
                 '選択済みのものがあったら、選択状態クリア
-                For Each itm As ListViewItem In _tabs(0).listCustom.SelectedItems
+                For Each itm As ListViewItem In ts.listCustom.SelectedItems
                     itm.Selected = False
                 Next
                 If listViewItemSorter.Column = 3 Then
                     If listViewItemSorter.Order = SortOrder.Ascending Then
-                        _tabs(0).listCustom.Items(_tabs(0).listCustom.Items.Count - 1).Selected = True
-                        _tabs(0).listCustom.Items(_tabs(0).listCustom.Items.Count - 1).Focused = True
-                        _tabs(0).listCustom.EnsureVisible(_tabs(0).listCustom.Items.Count - 1)
+                        ts.listCustom.Items(ts.listCustom.Items.Count - 1).Selected = True
+                        ts.listCustom.Items(ts.listCustom.Items.Count - 1).Focused = True
+                        ts.listCustom.EnsureVisible(ts.listCustom.Items.Count - 1)
                     Else
-                        _tabs(0).listCustom.Items(0).Selected = True
-                        _tabs(0).listCustom.Items(0).Focused = True
-                        _tabs(0).listCustom.EnsureVisible(0)
+                        ts.listCustom.Items(0).Selected = True
+                        ts.listCustom.Items(0).Focused = True
+                        ts.listCustom.EnsureVisible(0)
                     End If
                 Else
-                    _tabs(0).listCustom.Items(_tabs(0).listCustom.Items.Count - 1).Selected = True
-                    _tabs(0).listCustom.Items(_tabs(0).listCustom.Items.Count - 1).Focused = True
-                    _tabs(0).listCustom.EnsureVisible(_tabs(0).listCustom.Items.Count - 1)
+                    ts.listCustom.Items(ts.listCustom.Items.Count - 1).Selected = True
+                    ts.listCustom.Items(ts.listCustom.Items.Count - 1).Focused = True
+                    ts.listCustom.EnsureVisible(ts.listCustom.Items.Count - 1)
                 End If
             End If
             Exit Sub
@@ -4371,9 +4395,9 @@ RETRY:
         Dim pos2 As Integer
 
         Do While True
-            pos1 = dTxt.IndexOf(_replyHtml, pos2)
+            pos1 = dTxt.IndexOf(_replyHtml, pos2, StringComparison.Ordinal)
             If pos1 = -1 Then Exit Do
-            pos2 = dTxt.IndexOf(""">", pos1 + _replyHtml.Length)
+            pos2 = dTxt.IndexOf(""">", pos1 + _replyHtml.Length, StringComparison.Ordinal)
             If pos2 > -1 Then
                 at.Add(dTxt.Substring(pos1 + _replyHtml.Length, pos2 - pos1 - _replyHtml.Length))
             End If
@@ -4418,9 +4442,9 @@ RETRY:
         Dim pos2 As Integer
 
         Do While True
-            pos1 = dTxt.IndexOf(_replyHtml, pos2)
+            pos1 = dTxt.IndexOf(_replyHtml, pos2, StringComparison.Ordinal)
             If pos1 = -1 Then Exit Do
-            pos2 = dTxt.IndexOf(""">", pos1 + _replyHtml.Length)
+            pos2 = dTxt.IndexOf(""">", pos1 + _replyHtml.Length, StringComparison.Ordinal)
             If pos2 > -1 Then
                 at.Add(dTxt.Substring(pos1 + _replyHtml.Length, pos2 - pos1 - _replyHtml.Length))
             End If
@@ -4659,6 +4683,7 @@ RETRY:
                 _section.StartupFollowers = SettingDialog.StartupFollowers
                 _section.RestrictFavCheck = SettingDialog.RestrictFavCheck
                 _section.AlwaysTop = SettingDialog.AlwaysTop
+                _section.UrlConvertAuto = SettingDialog.UrlConvertAuto
 
                 _section.DisplayIndex1 = _tabs(0).colHd1.DisplayIndex
                 _section.Width1 = _tabs(0).colHd1.Width
@@ -4819,11 +4844,12 @@ RETRY:
                 Dim rect As Rectangle = ListTab.GetTabRect(i)
                 If rect.Left <= cpos.X AndAlso cpos.X <= rect.Right AndAlso _
                    rect.Top <= cpos.Y AndAlso cpos.Y <= rect.Bottom Then
-                    If i < 3 Then
-                        _tabDrag = False
-                    Else
-                        _tabDrag = True
-                    End If
+                    'If i < 3 Then
+                    '    _tabDrag = False
+                    'Else
+                    '    _tabDrag = True
+                    'End If
+                    _tabDrag = True
                     Exit For
                 End If
             Next
@@ -4868,12 +4894,12 @@ RETRY:
                 bef = False
                 i = ListTab.TabPages.Count - 1
             End If
-            'Recent,Reply,Directタブは固定
-            If tn = "Recent" OrElse tn = "Reply" OrElse tn = "Direct" Then
-                tn = "Direct"
-                bef = False
-                i = 2
-            End If
+            ''Recent,Reply,Directタブは固定
+            'If tn = "Recent" OrElse tn = "Reply" OrElse tn = "Direct" Then
+            '    tn = "Direct"
+            '    bef = False
+            '    i = 2
+            'End If
 
             Dim ts As TabStructure = DirectCast(e.Data.GetData(GetType(TabStructure)), Tween.TabStructure)
 
@@ -4926,7 +4952,7 @@ RETRY:
                     _reply_to_name = MyList.SelectedItems(0).SubItems(4).Text
                 Else
                     If isAuto Then
-                        If StatusText.Text.IndexOf("@" + MyList.SelectedItems(0).SubItems(4).Text + " ") > -1 Then Exit Sub
+                        If StatusText.Text.Contains("@" + MyList.SelectedItems(0).SubItems(4).Text + " ") Then Exit Sub
                         If Not StatusText.Text.StartsWith("@") Then
                             If StatusText.Text.StartsWith(". ") Then
                                 ' 複数リプライ
@@ -4973,7 +4999,7 @@ RETRY:
                         sTxt = ". " + sTxt
                     End If
                     For cnt As Integer = 0 To MyList.SelectedItems.Count - 1
-                        If sTxt.IndexOf("@" + MyList.SelectedItems(cnt).SubItems(4).Text + " ") = -1 Then
+                        If Not sTxt.Contains("@" + MyList.SelectedItems(cnt).SubItems(4).Text + " ") Then
                             sTxt = sTxt.Insert(2, "@" + MyList.SelectedItems(cnt).SubItems(4).Text + " ")
                         End If
                     Next
@@ -4995,9 +5021,9 @@ RETRY:
                             Dim dTxt As String = MyList.SelectedItems(cnt).SubItems(7).Text
                             Dim atId As String = ""
                             Do While True
-                                pos1 = dTxt.IndexOf(_replyHtml, pos2)
+                                pos1 = dTxt.IndexOf(_replyHtml, pos2, StringComparison.Ordinal)
                                 If pos1 = -1 Then Exit Do
-                                pos2 = dTxt.IndexOf(""">", pos1 + _replyHtml.Length)
+                                pos2 = dTxt.IndexOf(""">", pos1 + _replyHtml.Length, StringComparison.Ordinal)
                                 If pos2 > -1 Then
                                     atId = "@" + dTxt.Substring(pos1 + _replyHtml.Length, pos2 - pos1 - _replyHtml.Length) + " "
                                     If Not ids.Contains(atId) AndAlso atId <> "@" + _username + " " Then
@@ -5063,9 +5089,6 @@ RETRY:
                 Exit For
             End If
         Next
-    End Sub
-
-    Private Sub ListTab_MouseClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListTab.MouseClick
     End Sub
 
     Private Sub UreadManageMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UreadManageMenuItem.Click
@@ -5630,9 +5653,11 @@ RETRY:
                                 Else
                                     For Each fs As String In ft.BodyFilter
                                         If ft.UseRegex Then
-                                            If Not Regex.IsMatch(lItem.Name + tBody, fs, RegexOptions.IgnoreCase) Then bHit = False
+                                            If Not Regex.IsMatch(lItem.Name, fs, RegexOptions.IgnoreCase) Then bHit = False
+                                            If Not Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) Then bHit = False
                                         Else
-                                            If Not (lItem.Name + tBody).ToLower().Contains(fs.ToLower) Then bHit = False
+                                            If Not lItem.Name.ToLower().Contains(fs.ToLower) Then bHit = False
+                                            If Not tBody.ToLower().Contains(fs.ToLower) Then bHit = False
                                         End If
                                         If Not bHit Then Exit For
                                     Next
@@ -5675,9 +5700,9 @@ RETRY:
                                 If Not mv Then
                                     If mk Then itm.SubItems(0).Text += "♪"
                                 Else
-                                    _tabs(0).allCount -= 1
-                                    If itm.SubItems(8).Text = "False" Then _tabs(0).unreadCount -= 1
-                                    _tabs(0).listCustom.Items.Remove(itm)
+                                    ts2.allCount -= 1
+                                    If itm.SubItems(8).Text = "False" Then ts2.unreadCount -= 1
+                                    ts2.listCustom.Items.Remove(itm)
                                 End If
                             End If
                         Next
@@ -5708,6 +5733,7 @@ RETRY:
 
                     '                            For Each ts As TabStructure In _tabs
                     Dim hit As Boolean = False
+                    Dim ts2 As TabStructure = GetTSbyName("Recent")
 
                     For Each ft As FilterClass In ts.filters
                         Dim bHit As Boolean = True
@@ -5733,9 +5759,11 @@ RETRY:
                         Else
                             For Each fs As String In ft.BodyFilter
                                 If ft.UseRegex Then
-                                    If Not Regex.IsMatch(lItem.Name + tBody, fs, RegexOptions.IgnoreCase) Then bHit = False
+                                    If Not Regex.IsMatch(lItem.Name, fs, RegexOptions.IgnoreCase) Then bHit = False
+                                    If Not Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) Then bHit = False
                                 Else
-                                    If Not (lItem.Name + tBody).ToLower.Contains(fs.ToLower()) Then bHit = False
+                                    If Not lItem.Name.ToLower.Contains(fs.ToLower()) Then bHit = False
+                                    If Not tBody.ToLower.Contains(fs.ToLower()) Then bHit = False
                                 End If
                                 If Not bHit Then Exit For
                             Next
@@ -5779,26 +5807,26 @@ RETRY:
                             End If
                         Next
                         If hit = False Then
-                            _tabs(0).allCount += 1
+                            ts2.allCount += 1
                             If itm.SubItems(8).Text = "False" Then
-                                If _tabs(0).unreadManage AndAlso SettingDialog.UnreadManage Then
-                                    _tabs(0).unreadCount += 1
-                                    If _tabs(0).oldestUnreadItem Is Nothing Then
-                                        _tabs(0).oldestUnreadItem = itm
+                                If ts2.unreadManage AndAlso SettingDialog.UnreadManage Then
+                                    ts2.unreadCount += 1
+                                    If ts2.oldestUnreadItem Is Nothing Then
+                                        ts2.oldestUnreadItem = itm
                                     Else
-                                        If _tabs(0).oldestUnreadItem.SubItems(5).Text > itm.SubItems(5).Text Then
-                                            _tabs(0).oldestUnreadItem = itm
+                                        If ts2.oldestUnreadItem.SubItems(5).Text > itm.SubItems(5).Text Then
+                                            ts2.oldestUnreadItem = itm
                                         End If
                                     End If
                                 Else
                                     itm.SubItems(8).Text = "True"
                                 End If
                             End If
-                            _tabs(0).listCustom.Items.Add(DirectCast(itm.Clone, System.Windows.Forms.ListViewItem))
+                            ts2.listCustom.Items.Add(DirectCast(itm.Clone, System.Windows.Forms.ListViewItem))
                         End If
                     End If
                     If ts.unreadCount > 0 AndAlso ts.tabPage.ImageIndex = -1 Then ts.tabPage.ImageIndex = 0
-                    If _tabs(0).unreadCount > 0 AndAlso _tabs(0).tabPage.ImageIndex = -1 Then _tabs(0).tabPage.ImageIndex = 0
+                    If ts2.unreadCount > 0 AndAlso ts2.tabPage.ImageIndex = -1 Then ts2.tabPage.ImageIndex = 0
                 Next
             End If
         Next
@@ -6119,7 +6147,7 @@ RETRY:
                 If Not result = "" Then
                     Dim undotmp As New urlUndo
 
-                    StatusText.Select(StatusText.Text.IndexOf(tmp), tmp.Length)
+                    StatusText.Select(StatusText.Text.IndexOf(tmp, StringComparison.Ordinal), tmp.Length)
                     StatusText.SelectedText = result
 
                     'undoバッファにセット
@@ -6144,7 +6172,7 @@ RETRY:
                 Dim undotmp As New urlUndo
 
                 '選んだURLを選択（？）
-                StatusText.Select(StatusText.Text.IndexOf(tmp), tmp.Length)
+                StatusText.Select(StatusText.Text.IndexOf(tmp, StringComparison.Ordinal), tmp.Length)
 
                 '短縮URL変換
                 result = clsTwSync.MakeShortUrl(Converter_Type, StatusText.SelectedText)
@@ -6154,7 +6182,7 @@ RETRY:
                 End If
 
                 If Not result = "" Then
-                    StatusText.Select(StatusText.Text.IndexOf(tmp), tmp.Length)
+                    StatusText.Select(StatusText.Text.IndexOf(tmp, StringComparison.Ordinal), tmp.Length)
                     StatusText.SelectedText = result
                     'undoバッファにセット
                     undotmp.Before = tmp
@@ -6341,6 +6369,13 @@ RETRY:
             e.Effect = DragDropEffects.None
         End If
     End Sub
+
+    Private Function GetTSbyName(ByVal Name As String) As TabStructure
+        For i As Integer = 0 To _tabs.Count - 1
+            If _tabs(i).tabName.Equals(Name) Then Return _tabs(i)
+        Next
+        Return Nothing
+    End Function
 End Class
 
 Public Class TabStructure
