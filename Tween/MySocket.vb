@@ -87,8 +87,6 @@ Public Class MySocket
             Optional ByVal referer As String = "", _
             Optional ByVal timeout As Integer = 15000) As Object
         Dim webReq As HttpWebRequest
-        Dim dataB As Byte()
-        Dim strm As Stream
         Dim cpolicy As System.Net.Cache.HttpRequestCachePolicy = New Cache.HttpRequestCachePolicy(Cache.HttpRequestCacheLevel.NoCacheNoStore)
 
         Try
@@ -119,7 +117,7 @@ Public Class MySocket
                reqType = REQ_TYPE.ReqPOSTAPI Then
                 webReq.Method = "POST"
                 webReq.Timeout = timeout
-                dataB = Encoding.ASCII.GetBytes(data)
+                Dim dataB As Byte() = Encoding.ASCII.GetBytes(data)
                 webReq.ContentLength = dataB.Length
                 Select Case reqType
                     Case REQ_TYPE.ReqPOST
@@ -194,91 +192,73 @@ Public Class MySocket
                     Next
                 End If
                 resStatus = webRes.StatusCode.ToString() + " " + webRes.ResponseUri.AbsoluteUri
-                strm = webRes.GetResponseStream()
 
-                Select Case reqType
-                    Case REQ_TYPE.ReqGET, REQ_TYPE.ReqPOST, REQ_TYPE.ReqPOSTEncode, REQ_TYPE.ReqPOSTEncodeProtoVer1, REQ_TYPE.ReqPOSTEncodeProtoVer2, REQ_TYPE.ReqPOSTEncodeProtoVer3, REQ_TYPE.ReqGetNoCache, REQ_TYPE.ReqPOSTAPI, REQ_TYPE.ReqGetAPI
-                        Dim rtStr As String
-                        Using sr As New StreamReader(strm, _enc)
-                            rtStr = sr.ReadToEnd()
-                        End Using
-                        strm.Close()
-                        strm.Dispose()
-                        webRes.Close()
-                        Return rtStr
-                    Case REQ_TYPE.ReqGETBinary
-                        Dim readData(1023) As Byte
-                        Dim readSize As Integer = 0
-                        Dim img As Image
-                        Using mem As New MemoryStream
-                            While True
-                                readSize = strm.Read(readData, 0, readData.Length)
-                                If readSize = 0 Then
-                                    Exit While
-                                End If
-                                mem.Write(readData, 0, readSize)
-                            End While
-                            img = Image.FromStream(mem, True)
-                            strm.Close()
-                            strm.Dispose()
-                            webRes.Close()
-                        End Using
-                        Return img
-                    Case REQ_TYPE.ReqGETFile
-                        Dim fs As New System.IO.FileStream(My.Application.Info.DirectoryPath + "\TweenNew.exe", FileMode.Create, FileAccess.Write)
-                        Dim b As Integer
-                        Using fs
-                            While True
-                                b = strm.ReadByte()
-                                If b = -1 Then Exit While
-                                fs.WriteByte(Convert.ToByte(b))
-                            End While
-                        End Using
-                        strm.Close()
-                        strm.Dispose()
-                        webRes.Close()
-                    Case REQ_TYPE.ReqGETFileUp
-                        Dim fs As New System.IO.FileStream(My.Application.Info.DirectoryPath + "\TweenUp.exe", FileMode.Create, FileAccess.Write)
-                        Dim b As Integer
-                        Using fs
-                            While True
-                                b = strm.ReadByte()
-                                If b = -1 Then Exit While
-                                fs.WriteByte(Convert.ToByte(b))
-                            End While
-                        End Using
-                        strm.Close()
-                        strm.Dispose()
-                        webRes.Close()
-                    Case REQ_TYPE.ReqGETFileRes
-                        If Directory.Exists(My.Application.Info.DirectoryPath + "\en") = False Then
-                            Directory.CreateDirectory(My.Application.Info.DirectoryPath + "\en")
-                        End If
-                        Dim fs As New System.IO.FileStream(My.Application.Info.DirectoryPath + "\en\Tween.resourcesNew.dll", FileMode.Create, FileAccess.Write)
-                        Dim b As Integer
-                        Using fs
-                            While True
-                                b = strm.ReadByte()
-                                If b = -1 Then Exit While
-                                fs.WriteByte(Convert.ToByte(b))
-                            End While
-                        End Using
-                        strm.Close()
-                        strm.Dispose()
-                        webRes.Close()
-                    Case REQ_TYPE.ReqGETForwardTo
-                        strm.Close()
-                        strm.Dispose()
-                        Dim rtStr As String = ""
-                        If webRes.StatusCode = HttpStatusCode.Moved OrElse _
-                           webRes.StatusCode = HttpStatusCode.Found Then
-                            rtStr = webRes.Headers.GetValues("Location")(0)
+                Using strm As Stream = webRes.GetResponseStream()
+                    Select Case reqType
+                        Case REQ_TYPE.ReqGET, REQ_TYPE.ReqPOST, REQ_TYPE.ReqPOSTEncode, REQ_TYPE.ReqPOSTEncodeProtoVer1, REQ_TYPE.ReqPOSTEncodeProtoVer2, REQ_TYPE.ReqPOSTEncodeProtoVer3, REQ_TYPE.ReqGetNoCache, REQ_TYPE.ReqPOSTAPI, REQ_TYPE.ReqGetAPI
+                            Dim rtStr As String
+                            Using sr As New StreamReader(strm, _enc)
+                                rtStr = sr.ReadToEnd()
+                            End Using
                             Return rtStr
-                        End If
-                        webRes.Close()
-                End Select
+                        Case REQ_TYPE.ReqGETBinary
+                            Dim readData(1023) As Byte
+                            Dim readSize As Integer = 0
+                            Dim img As Image
+                            Using mem As New MemoryStream
+                                While True
+                                    readSize = strm.Read(readData, 0, readData.Length)
+                                    If readSize = 0 Then
+                                        Exit While
+                                    End If
+                                    mem.Write(readData, 0, readSize)
+                                End While
+                                img = Image.FromStream(mem, True)
+                            End Using
+                            Return img
+                        Case REQ_TYPE.ReqGETFile
+                            Dim fs As New System.IO.FileStream(My.Application.Info.DirectoryPath + "\TweenNew.exe", FileMode.Create, FileAccess.Write)
+                            Dim b As Integer
+                            Using fs
+                                While True
+                                    b = strm.ReadByte()
+                                    If b = -1 Then Exit While
+                                    fs.WriteByte(Convert.ToByte(b))
+                                End While
+                            End Using
+                        Case REQ_TYPE.ReqGETFileUp
+                            Dim fs As New System.IO.FileStream(My.Application.Info.DirectoryPath + "\TweenUp.exe", FileMode.Create, FileAccess.Write)
+                            Dim b As Integer
+                            Using fs
+                                While True
+                                    b = strm.ReadByte()
+                                    If b = -1 Then Exit While
+                                    fs.WriteByte(Convert.ToByte(b))
+                                End While
+                            End Using
+                        Case REQ_TYPE.ReqGETFileRes
+                            If Directory.Exists(My.Application.Info.DirectoryPath + "\en") = False Then
+                                Directory.CreateDirectory(My.Application.Info.DirectoryPath + "\en")
+                            End If
+                            Dim fs As New System.IO.FileStream(My.Application.Info.DirectoryPath + "\en\Tween.resourcesNew.dll", FileMode.Create, FileAccess.Write)
+                            Dim b As Integer
+                            Using fs
+                                While True
+                                    b = strm.ReadByte()
+                                    If b = -1 Then Exit While
+                                    fs.WriteByte(Convert.ToByte(b))
+                                End While
+                            End Using
+                        Case REQ_TYPE.ReqGETForwardTo
+                            Dim rtStr As String = ""
+                            If webRes.StatusCode = HttpStatusCode.Moved OrElse _
+                               webRes.StatusCode = HttpStatusCode.Found Then
+                                rtStr = webRes.Headers.GetValues("Location")(0)
+                                Return rtStr
+                            End If
+                    End Select
+                End Using
             End Using
-
         Catch ex As System.Net.WebException
             If ex.Status = WebExceptionStatus.ProtocolError Then
                 Dim eres As HttpWebResponse = CType(ex.Response, HttpWebResponse)
