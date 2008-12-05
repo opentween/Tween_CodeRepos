@@ -164,6 +164,13 @@ Public Class TweenMain
         Public tName As String                      'Fav追加・削除時のタブ名
     End Structure
 
+    '検索処理タイプ
+    Private Enum SEARCHTYPE
+        DialogSearch
+        NextSearch
+        PrevSearch
+    End Enum
+
     Private Sub TweenMain_Disposed(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Disposed
         '後始末
         SettingDialog.Dispose()
@@ -833,7 +840,7 @@ Public Class TweenMain
                         tBody = lItem.Data
                     End If
                     If ft.SearchBoth Then
-                        If ft.IDFilter = "" OrElse lItem.Name.Equals(ft.IDFilter, StringComparison.CurrentCultureIgnoreCase) Then
+                        If ft.IDFilter = "" OrElse lItem.Name.Equals(ft.IDFilter, StringComparison.OrdinalIgnoreCase) Then
                             For Each fs As String In ft.BodyFilter
                                 If ft.UseRegex Then
                                     If Not Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) Then bHit = False
@@ -848,11 +855,11 @@ Public Class TweenMain
                     Else
                         For Each fs As String In ft.BodyFilter
                             If ft.UseRegex Then
-                                If Not Regex.IsMatch(lItem.Name, fs, RegexOptions.IgnoreCase) Then bHit = False
-                                If Not Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) Then bHit = False
+                                If Not (Regex.IsMatch(lItem.Name, fs, RegexOptions.IgnoreCase) OrElse _
+                                        Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase)) Then bHit = False
                             Else
-                                If Not lItem.Name.ToLower.Contains(fs.ToLower) Then bHit = False
-                                If Not tBody.ToLower.Contains(fs.ToLower) Then bHit = False
+                                If Not (lItem.Name.ToLower().Contains(fs.ToLower()) OrElse _
+                                        tBody.ToLower().Contains(fs.ToLower())) Then bHit = False
                             End If
                             If Not bHit Then Exit For
                         Next
@@ -1891,12 +1898,6 @@ Public Class TweenMain
                     For Each tp As TabPage In ListTab.TabPages
                         If tp.Text = rslt.tName Then
                             Dim MyList As DetailsListView = DirectCast(tp.Controls(0), DetailsListView)
-                            Dim idxt As Integer = 0
-                            For idxt = 0 To _tabs.Count - 1
-                                If _tabs(idxt).tabName = rslt.tName Then
-                                    Exit For
-                                End If
-                            Next
                             For Each itm As ListViewItem In MyList.Items
                                 If rslt.sIds.Contains(itm.SubItems(5).Text) Then
                                     itm.SubItems(9).Text = "False"
@@ -1905,7 +1906,7 @@ Public Class TweenMain
                                         flw = True
                                         itm.SubItems(10).Text = "False"
                                     End If
-                                    If SettingDialog.UnreadManage AndAlso _tabs(idxt).unreadManage AndAlso itm.SubItems(8).Text = "False" Then
+                                    If SettingDialog.UnreadManage AndAlso GetTSbyName(rslt.tName).unreadManage AndAlso itm.SubItems(8).Text = "False" Then
                                         _cl = _clUnread
                                     Else
                                         _cl = _clReaded
@@ -1917,21 +1918,17 @@ Public Class TweenMain
                                     For idx As Integer = 0 To ListTab.TabCount - 1
                                         If ListTab.TabPages(idx).Text <> rslt.tName AndAlso ListTab.TabPages(idx).Text <> "Direct" Then
                                             Dim MyList2 As DetailsListView = DirectCast(ListTab.TabPages(idx).Controls(0), DetailsListView)
-                                            Dim idxt2 As Integer = 0
                                             Dim _cl2 As Color
-                                            For idxt2 = 0 To _tabs.Count - 1
-                                                If _tabs(idxt2).tabName = ListTab.TabPages(idx).Text Then
-                                                    If SettingDialog.UnreadManage AndAlso _tabs(idxt2).unreadManage AndAlso itm.SubItems(8).Text = "False" Then
-                                                        _cl2 = _clUnread
-                                                    Else
-                                                        _cl2 = _clReaded
-                                                    End If
-                                                    If Not flw And SettingDialog.OneWayLove Then
-                                                        _cl2 = _clOWL
-                                                    End If
-                                                    Exit For
-                                                End If
-                                            Next
+                                            If SettingDialog.UnreadManage AndAlso _
+                                               GetTSbyName(ListTab.TabPages(idx).Text).unreadManage AndAlso _
+                                               itm.SubItems(8).Text = "False" Then
+                                                _cl2 = _clUnread
+                                            Else
+                                                _cl2 = _clReaded
+                                            End If
+                                            If Not flw And SettingDialog.OneWayLove Then
+                                                _cl2 = _clOWL
+                                            End If
                                             For cnt3 As Integer = 0 To MyList2.Items.Count - 1
                                                 If itm.SubItems(5).Text = MyList2.Items(cnt3).SubItems(5).Text Then
                                                     MyList2.Items(cnt3).ForeColor = _cl2
@@ -2437,18 +2434,13 @@ Public Class TweenMain
         Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
 
         '現在のタブのIndexを保持
-        Dim idx As Integer = 0
-        For idx = 0 To _tabs.Count - 1
-            If _tabs(idx).tabName = ListTab.SelectedTab.Text Then
-                Exit For
-            End If
-        Next
+        Dim ts As TabStructure = GetTSbyName(ListTab.SelectedTab.Text)
 
-        If _tabs(idx).unreadManage = False Or SettingDialog.UnreadManage = False Then Exit Sub
+        If ts.unreadManage = False Or SettingDialog.UnreadManage = False Then Exit Sub
 
         If MyList.SelectedItems.Count > 0 Then
             For Each lItem As ListViewItem In MyList.SelectedItems
-                ItemReaded(_tabs(idx), lItem)
+                ItemReaded(ts, lItem)
             Next
         End If
 
@@ -2573,14 +2565,9 @@ Public Class TweenMain
 
     Private Sub UnreadStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UnreadStripMenuItem.Click
         Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim idx As Integer = 0
-        For idx = 0 To _tabs.Count - 1
-            If _tabs(idx).tabName = ListTab.SelectedTab.Text Then
-                Exit For
-            End If
-        Next
+        Dim ts As TabStructure = GetTSbyName(ListTab.SelectedTab.Text)
 
-        If Not _tabs(idx).unreadManage OrElse Not SettingDialog.UnreadManage Then Exit Sub
+        If Not ts.unreadManage OrElse Not SettingDialog.UnreadManage Then Exit Sub
 
         If MyList.SelectedItems.Count > 0 Then
             For Each lItem As ListViewItem In MyList.SelectedItems
@@ -2592,40 +2579,40 @@ Public Class TweenMain
                     If lItem.SubItems(9).Text = "True" Then fcl = _clFav
                     'lItem.ForeColor = fcl
                     MyList.ChangeItemStyles(lItem.Index, lItem.BackColor, fcl, _fntUnread)
-                    _tabs(idx).unreadCount += 1
-                    If _tabs(idx).oldestUnreadItem Is Nothing Then
-                        _tabs(idx).oldestUnreadItem = lItem
+                    ts.unreadCount += 1
+                    If ts.oldestUnreadItem Is Nothing Then
+                        ts.oldestUnreadItem = lItem
                     Else
-                        If _tabs(idx).oldestUnreadItem.SubItems(5).Text > lItem.SubItems(5).Text Then
-                            _tabs(idx).oldestUnreadItem = lItem
+                        If ts.oldestUnreadItem.SubItems(5).Text > lItem.SubItems(5).Text Then
+                            ts.oldestUnreadItem = lItem
                         End If
                     End If
-                    If _tabs(idx).tabName <> "Direct" Then
+                    If ts.tabName <> "Direct" Then
                         '全タブの未読状態を合わせる
-                        For Each ts As TabStructure In _tabs
-                            If Not ts.listCustom.Equals(MyList) AndAlso ts.tabName <> "Direct" AndAlso ts.unreadManage Then
-                                For Each itm As ListViewItem In ts.listCustom.Items
+                        For Each tst As TabStructure In _tabs
+                            If Not tst.listCustom.Equals(MyList) AndAlso tst.tabName <> "Direct" AndAlso tst.unreadManage Then
+                                For Each itm As ListViewItem In tst.listCustom.Items
                                     If itm.SubItems(5).Text = lItem.SubItems(5).Text Then
                                         itm.SubItems(8).Text = "False"
                                         'itm.Font = _fntUnread
                                         'itm.ForeColor = fcl
-                                        ts.listCustom.ChangeItemStyles(itm.Index, itm.BackColor, fcl, _fntUnread)
-                                        ts.unreadCount += 1
-                                        If ts.tabPage.ImageIndex = -1 Then
-                                            ts.tabPage.ImageIndex = 0
+                                        tst.listCustom.ChangeItemStyles(itm.Index, itm.BackColor, fcl, _fntUnread)
+                                        tst.unreadCount += 1
+                                        If tst.tabPage.ImageIndex = -1 Then
+                                            tst.tabPage.ImageIndex = 0
                                         End If
-                                        If ts.oldestUnreadItem Is Nothing Then
-                                            ts.oldestUnreadItem = itm
+                                        If tst.oldestUnreadItem Is Nothing Then
+                                            tst.oldestUnreadItem = itm
                                         Else
-                                            If ts.oldestUnreadItem.SubItems(5).Text > itm.SubItems(5).Text Then
-                                                ts.oldestUnreadItem = itm
+                                            If tst.oldestUnreadItem.SubItems(5).Text > itm.SubItems(5).Text Then
+                                                tst.oldestUnreadItem = itm
                                             End If
                                         End If
                                         Exit For
                                     End If
                                 Next
-                                If ts.unreadCount > 0 AndAlso ts.tabPage.ImageIndex = -1 Then
-                                    ts.tabPage.ImageIndex = 0
+                                If tst.unreadCount > 0 AndAlso tst.tabPage.ImageIndex = -1 Then
+                                    tst.tabPage.ImageIndex = 0
                                 End If
                             End If
                         Next
@@ -2633,8 +2620,8 @@ Public Class TweenMain
                 End If
             Next
         End If
-        If _tabs(idx).unreadCount > 0 AndAlso _tabs(idx).tabPage.ImageIndex = -1 Then
-            _tabs(idx).tabPage.ImageIndex = 0
+        If ts.unreadCount > 0 AndAlso ts.tabPage.ImageIndex = -1 Then
+            ts.tabPage.ImageIndex = 0
         End If
 
     End Sub
@@ -3470,25 +3457,58 @@ Public Class TweenMain
         System.Diagnostics.Debug.WriteLine("呼び出し回数" & _drawcount.ToString() & "total処理時間：" & _drawtime.ToString() & "ミリ秒")
 #End If
     End Sub
-    Private Sub DoTabSearch(ByVal _word As String, Optional ByVal IsNormalSearch As Boolean = False)
+
+    Private Sub DoTabSearch(ByVal _word As String, _
+                            ByVal CaseSensitive As Boolean, _
+                            ByVal UseRegex As Boolean, _
+                            ByVal SType As SEARCHTYPE)
         Dim myList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
         Dim cidx As Integer = 0
         Dim fnd As Boolean = False
         Dim toIdx As Integer
+        Dim stp As Integer = 1
+
+        If myList.Items.Count = 0 Then
+            MessageBox.Show(My.Resources.DoTabSearchText2, My.Resources.DoTabSearchText3, MessageBoxButtons.OK, MessageBoxIcon.Information)
+        End If
 
         If myList.SelectedItems.Count > 0 Then
             cidx = myList.SelectedItems(0).Index
         End If
-
         toIdx = myList.Items.Count - 1
+
+        Select Case SType
+            Case SEARCHTYPE.DialogSearch    'ダイアログからの検索
+                If myList.SelectedItems.Count > 0 Then
+                    cidx = myList.SelectedItems(0).Index
+                Else
+                    cidx = 0
+                End If
+            Case SEARCHTYPE.NextSearch      '次を検索
+                If myList.SelectedItems.Count > 0 Then
+                    cidx = myList.SelectedItems(0).Index + 1
+                    If cidx > toIdx Then cidx = toIdx
+                Else
+                    cidx = 0
+                End If
+            Case SEARCHTYPE.PrevSearch      '前を検索
+                If myList.SelectedItems.Count > 0 Then
+                    cidx = myList.SelectedItems(0).Index - 1
+                    If cidx < 0 Then cidx = 0
+                Else
+                    cidx = toIdx
+                End If
+                toIdx = 0
+                stp = -1
+        End Select
 RETRY:
-        If Not IsNormalSearch AndAlso SearchDialog.CheckSearchCaseSensitive.Checked Then
-            If SearchDialog.CheckSearchRegex.Checked Then
+        If CaseSensitive Then
+            If UseRegex Then
                 ' 正規表現検索（CaseSensitive）
                 Dim _search As Regex
                 Try
                     _search = New Regex(_word)
-                    For idx As Integer = cidx To toIdx
+                    For idx As Integer = cidx To toIdx Step stp
                         If _search.IsMatch(myList.Items(idx).SubItems(1).Text) _
                             OrElse _search.IsMatch(myList.Items(idx).SubItems(2).Text) _
                             OrElse _search.IsMatch(myList.Items(idx).SubItems(4).Text) _
@@ -3508,10 +3528,10 @@ RETRY:
                 End Try
             Else
                 ' 通常検索（CaseSensitive）
-                For idx As Integer = cidx To toIdx
-                    If myList.Items(idx).SubItems(1).Text.Contains(_word) _
-                        OrElse myList.Items(idx).SubItems(2).Text.Contains(_word) _
-                        OrElse myList.Items(idx).SubItems(4).Text.Contains(_word) _
+                For idx As Integer = cidx To toIdx Step stp
+                    If myList.Items(idx).SubItems(1).Text.IndexOf(_word, StringComparison.Ordinal) > -1 _
+                        OrElse myList.Items(idx).SubItems(2).Text.IndexOf(_word, StringComparison.Ordinal) > -1 _
+                        OrElse myList.Items(idx).SubItems(4).Text.IndexOf(_word, StringComparison.Ordinal) > -1 _
                     Then
                         For Each itm As ListViewItem In myList.SelectedItems
                             itm.Selected = False
@@ -3524,10 +3544,10 @@ RETRY:
                 Next
             End If
         Else
-            If Not IsNormalSearch AndAlso SearchDialog.CheckSearchRegex.Checked Then
+            If UseRegex Then
                 ' 正規表現検索（IgnoreCase）
                 Try
-                    For idx As Integer = cidx To toIdx
+                    For idx As Integer = cidx To toIdx Step stp
                         If Regex.IsMatch(myList.Items(idx).SubItems(1).Text, _word, RegexOptions.IgnoreCase) _
                             OrElse Regex.IsMatch(myList.Items(idx).SubItems(2).Text, _word, RegexOptions.IgnoreCase) _
                             OrElse Regex.IsMatch(myList.Items(idx).SubItems(4).Text, _word, RegexOptions.IgnoreCase) _
@@ -3548,9 +3568,9 @@ RETRY:
             Else
                 ' 通常検索（IgnoreCase）
                 For idx As Integer = cidx To toIdx
-                    If myList.Items(idx).SubItems(1).Text.Contains(_word) _
-                        OrElse myList.Items(idx).SubItems(2).Text.Contains(_word) _
-                        OrElse myList.Items(idx).SubItems(4).Text.Contains(_word) _
+                    If myList.Items(idx).SubItems(1).Text.IndexOf(_word, StringComparison.OrdinalIgnoreCase) > -1 _
+                        OrElse myList.Items(idx).SubItems(2).Text.IndexOf(_word, StringComparison.OrdinalIgnoreCase) > -1 _
+                        OrElse myList.Items(idx).SubItems(4).Text.IndexOf(_word, StringComparison.OrdinalIgnoreCase) > -1 _
                     Then
                         For Each itm As ListViewItem In myList.SelectedItems
                             itm.Selected = False
@@ -3565,282 +3585,72 @@ RETRY:
         End If
 
         If Not fnd Then
-            If cidx > 0 AndAlso toIdx > -1 Then
-                toIdx = cidx
-                cidx = 0
-                fnd = True
-                GoTo RETRY
-                'End If
-            End If
+            Select Case SType
+                Case SEARCHTYPE.DialogSearch, SEARCHTYPE.NextSearch
+                    toIdx = cidx
+                    cidx = 0
+                Case SEARCHTYPE.PrevSearch
+                    toIdx = cidx
+                    cidx = myList.Items.Count - 1
+            End Select
+            fnd = True
+            GoTo RETRY
         End If
 
         MessageBox.Show(My.Resources.DoTabSearchText2, My.Resources.DoTabSearchText3, MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 
     Private Sub MenuItemSubSearch_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemSubSearch.Click
-        Dim _word As String
         SearchDialog.Owner = Me
         If SearchDialog.ShowDialog() = Windows.Forms.DialogResult.Cancel Then
             Me.TopMost = SettingDialog.AlwaysTop
             Exit Sub
         End If
         Me.TopMost = SettingDialog.AlwaysTop
-        _word = SearchDialog.SWord
 
-        If _word <> "" Then
-            DoTabSearch(_word)
+        If SearchDialog.SWord <> "" Then
+            DoTabSearch(SearchDialog.SWord, _
+                        SearchDialog.CheckCaseSensitive, _
+                        SearchDialog.CheckRegex, _
+                        SEARCHTYPE.DialogSearch)
         End If
     End Sub
 
     Private Sub MenuItemSearchNext_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemSearchNext.Click
-        Dim myList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim _word As String
-        Dim cidx As Integer = 0
-        Dim fnd As Boolean = False
-        Dim toIdx As Integer
-
-        _word = SearchDialog.SWord
-
-        If _word = "" Then
+        If SearchDialog.SWord = "" Then
             If SearchDialog.ShowDialog() = Windows.Forms.DialogResult.Cancel Then
                 Me.TopMost = SettingDialog.AlwaysTop
                 Exit Sub
             End If
             Me.TopMost = SettingDialog.AlwaysTop
-            _word = SearchDialog.SWord
-            If _word = "" Then Exit Sub
-        End If
+            If SearchDialog.SWord = "" Then Exit Sub
 
-        If myList.SelectedItems.Count > 0 Then
-            cidx = myList.SelectedItems(0).Index + 1
-        End If
-
-        toIdx = myList.Items.Count - 1
-RETRY:
-        If SearchDialog.CheckSearchCaseSensitive.Checked Then
-            If SearchDialog.CheckSearchRegex.Checked Then
-                ' 正規表現検索（CaseSensitive）
-                Dim _search As Regex
-                Try
-                    _search = New Regex(_word)
-                    For idx As Integer = cidx To toIdx
-                        If _search.IsMatch(myList.Items(idx).SubItems(1).Text) _
-                            OrElse _search.IsMatch(myList.Items(idx).SubItems(2).Text) _
-                            OrElse _search.IsMatch(myList.Items(idx).SubItems(4).Text) _
-                        Then
-                            For Each itm As ListViewItem In myList.SelectedItems
-                                itm.Selected = False
-                            Next
-                            myList.Items(idx).Selected = True
-                            myList.Items(idx).Focused = True
-                            myList.EnsureVisible(idx)
-                            Exit Sub
-                        End If
-                    Next
-                Catch ex As ArgumentException
-                    MsgBox(My.Resources.MenuItemSearchNext_ClickText1, MsgBoxStyle.Critical)
-                    Exit Sub
-                End Try
-            Else
-                ' 通常検索（CaseSensitive）
-                For idx As Integer = cidx To toIdx
-                    If myList.Items(idx).SubItems(1).Text.Contains(_word) _
-                        OrElse myList.Items(idx).SubItems(2).Text.Contains(_word) _
-                        OrElse myList.Items(idx).SubItems(4).Text.Contains(_word) _
-                    Then
-                        For Each itm As ListViewItem In myList.SelectedItems
-                            itm.Selected = False
-                        Next
-                        myList.Items(idx).Selected = True
-                        myList.Items(idx).Focused = True
-                        myList.EnsureVisible(idx)
-                        Exit Sub
-                    End If
-                Next
-            End If
+            DoTabSearch(SearchDialog.SWord, _
+                        SearchDialog.CheckCaseSensitive, _
+                        SearchDialog.CheckRegex, _
+                        SEARCHTYPE.DialogSearch)
         Else
-            If SearchDialog.CheckSearchRegex.Checked Then
-                ' 正規表現検索（IgnoreCase）
-                Try
-                    For idx As Integer = cidx To toIdx
-                        If Regex.IsMatch(myList.Items(idx).SubItems(1).Text, _word, RegexOptions.IgnoreCase) _
-                            OrElse Regex.IsMatch(myList.Items(idx).SubItems(2).Text, _word, RegexOptions.IgnoreCase) _
-                            OrElse Regex.IsMatch(myList.Items(idx).SubItems(4).Text, _word, RegexOptions.IgnoreCase) _
-                        Then
-                            For Each itm As ListViewItem In myList.SelectedItems
-                                itm.Selected = False
-                            Next
-                            myList.Items(idx).Selected = True
-                            myList.Items(idx).Focused = True
-                            myList.EnsureVisible(idx)
-                            Exit Sub
-                        End If
-                    Next
-                Catch ex As ArgumentException
-                    MsgBox(My.Resources.MenuItemSearchNext_ClickText1, MsgBoxStyle.Critical)
-                    Exit Sub
-                End Try
-            Else
-                ' 通常検索（IgnoreCase）
-                For idx As Integer = cidx To toIdx
-                    If myList.Items(idx).SubItems(1).Text.Contains(_word) _
-                        OrElse myList.Items(idx).SubItems(2).Text.Contains(_word) _
-                        OrElse myList.Items(idx).SubItems(4).Text.Contains(_word) _
-                    Then
-                        For Each itm As ListViewItem In myList.SelectedItems
-                            itm.Selected = False
-                        Next
-                        myList.Items(idx).Selected = True
-                        myList.Items(idx).Focused = True
-                        myList.EnsureVisible(idx)
-                        Exit Sub
-                    End If
-                Next
-            End If
+            DoTabSearch(SearchDialog.SWord, _
+                        SearchDialog.CheckCaseSensitive, _
+                        SearchDialog.CheckRegex, _
+                        SEARCHTYPE.NextSearch)
         End If
-
-        If Not fnd Then
-            If cidx > 0 AndAlso toIdx > -1 Then
-                'If MessageBox.Show("検索条件に一致するデータは見つかりません。" + vbCrLf + "もう一度先頭から検索しますか？", "検索", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = Windows.Forms.DialogResult.Yes Then
-                toIdx = cidx
-                cidx = 0
-                fnd = True
-                GoTo RETRY
-                'End If
-            End If
-        End If
-
-        MessageBox.Show(My.Resources.MenuItemSearchNext_ClickText2, My.Resources.MenuItemSearchNext_ClickText3, MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 
     Private Sub MenuItemSearchPrev_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemSearchPrev.Click
-        Dim myList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim _word As String
-        Dim cidx As Integer = 0
-        Dim fnd As Boolean = False
-        Dim toIdx As Integer
-
-        _word = SearchDialog.SWord
-
-        If _word = "" Then
+        If SearchDialog.SWord = "" Then
             If SearchDialog.ShowDialog() = Windows.Forms.DialogResult.Cancel Then
                 Me.TopMost = SettingDialog.AlwaysTop
                 Exit Sub
             End If
             Me.TopMost = SettingDialog.AlwaysTop
-            _word = SearchDialog.SWord
-            If _word = "" Then Exit Sub
+            If SearchDialog.SWord = "" Then Exit Sub
         End If
 
-        If myList.SelectedItems.Count > 0 Then
-            cidx = myList.SelectedItems(0).Index - 1
-        End If
-
-        toIdx = 0
-RETRY:
-        If SearchDialog.CheckSearchCaseSensitive.Checked Then
-            If SearchDialog.CheckSearchRegex.Checked Then
-                ' 正規表現検索（CaseSensitive）
-                Dim _search As Regex
-                Try
-                    _search = New Regex(_word)
-                    If myList.Items.Count > 0 Then
-                        For idx As Integer = cidx To toIdx Step -1
-                            If _search.IsMatch(myList.Items(idx).SubItems(1).Text) _
-                                OrElse _search.IsMatch(myList.Items(idx).SubItems(2).Text) _
-                                OrElse _search.IsMatch(myList.Items(idx).SubItems(4).Text) _
-                            Then
-                                For Each itm As ListViewItem In myList.SelectedItems
-                                    itm.Selected = False
-                                Next
-                                myList.Items(idx).Selected = True
-                                myList.Items(idx).Focused = True
-                                myList.EnsureVisible(idx)
-                                Exit Sub
-                            End If
-                        Next
-                    End If
-                Catch Err As ArgumentException
-                    MsgBox(My.Resources.MenuItemSearchPrev_ClickText1, MsgBoxStyle.Critical)
-                    Exit Sub
-                End Try
-            Else
-                ' 通常検索（CaseSensitive）
-                If myList.Items.Count > 0 Then
-                    For idx As Integer = cidx To toIdx Step -1
-                        If myList.Items(idx).SubItems(1).Text.Contains(_word) _
-                            OrElse myList.Items(idx).SubItems(2).Text.Contains(_word) _
-                            OrElse myList.Items(idx).SubItems(4).Text.Contains(_word) _
-                        Then
-                            For Each itm As ListViewItem In myList.SelectedItems
-                                itm.Selected = False
-                            Next
-                            myList.Items(idx).Selected = True
-                            myList.Items(idx).Focused = True
-                            myList.EnsureVisible(idx)
-                            Exit Sub
-                        End If
-                    Next
-                End If
-            End If
-        Else
-            If SearchDialog.CheckSearchRegex.Checked = True Then
-                ' 正規表現検索（IgnoreCase）
-                Try
-                    If myList.Items.Count > 0 Then
-                        For idx As Integer = cidx To toIdx Step -1
-                            If Regex.IsMatch(myList.Items(idx).SubItems(1).Text, _word, RegexOptions.IgnoreCase) _
-                                OrElse Regex.IsMatch(myList.Items(idx).SubItems(2).Text, _word, RegexOptions.IgnoreCase) _
-                                OrElse Regex.IsMatch(myList.Items(idx).SubItems(4).Text, _word, RegexOptions.IgnoreCase) _
-                            Then
-                                For Each itm As ListViewItem In myList.SelectedItems
-                                    itm.Selected = False
-                                Next
-                                myList.Items(idx).Selected = True
-                                myList.Items(idx).Focused = True
-                                myList.EnsureVisible(idx)
-                                Exit Sub
-                            End If
-                        Next
-                    End If
-                Catch Err As ArgumentException
-                    MsgBox(My.Resources.MenuItemSearchPrev_ClickText1, MsgBoxStyle.Critical)
-                    Exit Sub
-                End Try
-            Else
-                ' 通常検索（CaseSensitive）
-                If myList.Items.Count > 0 Then
-                    For idx As Integer = cidx To toIdx Step -1
-                        If myList.Items(idx).SubItems(1).Text.Contains(_word) _
-                            OrElse myList.Items(idx).SubItems(2).Text.Contains(_word) _
-                            OrElse myList.Items(idx).SubItems(4).Text.Contains(_word) _
-                        Then
-                            For Each itm As ListViewItem In myList.SelectedItems
-                                itm.Selected = False
-                            Next
-                            myList.Items(idx).Selected = True
-                            myList.Items(idx).Focused = True
-                            myList.EnsureVisible(idx)
-                            Exit Sub
-                        End If
-                    Next
-                End If
-            End If
-        End If
-
-
-
-        If Not fnd Then
-            If cidx > 0 AndAlso toIdx > -1 Then
-                toIdx = cidx
-                cidx = myList.Items.Count - 1
-                fnd = True
-                GoTo RETRY
-                'End If
-            End If
-        End If
-
-        MessageBox.Show(My.Resources.MenuItemSearchPrev_ClickText2, My.Resources.MenuItemSearchPrev_ClickText3, MessageBoxButtons.OK, MessageBoxIcon.Information)
+        DoTabSearch(SearchDialog.SWord, _
+                    SearchDialog.CheckCaseSensitive, _
+                    SearchDialog.CheckRegex, _
+                    SEARCHTYPE.PrevSearch)
     End Sub
 
     Private Sub AboutMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AboutMenuItem.Click
@@ -4823,17 +4633,13 @@ RETRY:
         inputName.Dispose()
         Me.TopMost = SettingDialog.AlwaysTop
         If newTabText <> "" Then
-            For i As Integer = 0 To _tabs.Count - 1
-                If _tabs(i).tabName = ListTab.SelectedTab.Text Then
-                    Dim _ts As TabStructure = _tabs(i)
-                    TabDialog.RemoveTab(ListTab.SelectedTab.Text)
-                    _tabs.Remove(_tabs(i))
-                    _ts.tabName = newTabText
-                    ListTab.SelectedTab.Text = newTabText
-                    _tabs.Add(_ts)
-                    Exit For
-                End If
-            Next
+            Dim _ts As TabStructure = GetTSbyName(ListTab.SelectedTab.Text)
+            TabDialog.RemoveTab(ListTab.SelectedTab.Text)
+            _tabs.Remove(_ts)
+            _ts.tabName = newTabText
+            ListTab.SelectedTab.Text = newTabText
+            _tabs.Add(_ts)
+            'タブ名のリスト作り直し
             For i As Integer = 0 To ListTab.TabCount - 1
                 If ListTab.TabPages(i).Text <> "Recent" AndAlso _
                    ListTab.TabPages(i).Text <> "Reply" AndAlso _
@@ -5652,7 +5458,7 @@ RETRY:
                                     tBody = lItem.Data
                                 End If
                                 If ft.SearchBoth Then
-                                    If ft.IDFilter = "" OrElse lItem.Name.Equals(ft.IDFilter, StringComparison.CurrentCultureIgnoreCase) Then
+                                    If ft.IDFilter = "" OrElse lItem.Name.Equals(ft.IDFilter, StringComparison.OrdinalIgnoreCase) Then
                                         For Each fs As String In ft.BodyFilter
                                             If ft.UseRegex Then
                                                 If Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) = False Then bHit = False
@@ -5667,11 +5473,11 @@ RETRY:
                                 Else
                                     For Each fs As String In ft.BodyFilter
                                         If ft.UseRegex Then
-                                            If Not Regex.IsMatch(lItem.Name, fs, RegexOptions.IgnoreCase) Then bHit = False
-                                            If Not Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) Then bHit = False
+                                            If Not (Regex.IsMatch(lItem.Name, fs, RegexOptions.IgnoreCase) OrElse _
+                                                    Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase)) Then bHit = False
                                         Else
-                                            If Not lItem.Name.ToLower().Contains(fs.ToLower) Then bHit = False
-                                            If Not tBody.ToLower().Contains(fs.ToLower) Then bHit = False
+                                            If Not (lItem.Name.ToLower().Contains(fs.ToLower()) OrElse _
+                                                    tBody.ToLower().Contains(fs.ToLower())) Then bHit = False
                                         End If
                                         If Not bHit Then Exit For
                                     Next
@@ -5762,7 +5568,7 @@ RETRY:
                                     If ft.UseRegex Then
                                         If Not Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) Then bHit = False
                                     Else
-                                        If Not tBody.ToLower.Contains(fs.ToLower()) Then bHit = False
+                                        If Not tBody.ToLower().Contains(fs.ToLower()) Then bHit = False
                                     End If
                                     If Not bHit Then Exit For
                                 Next
@@ -5772,11 +5578,11 @@ RETRY:
                         Else
                             For Each fs As String In ft.BodyFilter
                                 If ft.UseRegex Then
-                                    If Not Regex.IsMatch(lItem.Name, fs, RegexOptions.IgnoreCase) Then bHit = False
-                                    If Not Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) Then bHit = False
+                                    If Not (Regex.IsMatch(lItem.Name, fs, RegexOptions.IgnoreCase) OrElse _
+                                            Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase)) Then bHit = False
                                 Else
-                                    If Not lItem.Name.ToLower.Contains(fs.ToLower()) Then bHit = False
-                                    If Not tBody.ToLower.Contains(fs.ToLower()) Then bHit = False
+                                    If Not (lItem.Name.ToLower().Contains(fs.ToLower()) OrElse _
+                                            tBody.ToLower().Contains(fs.ToLower())) Then bHit = False
                                 End If
                                 If Not bHit Then Exit For
                             Next
@@ -5813,7 +5619,7 @@ RETRY:
                         End If
                         ts.listCustom.Items.Add(itm2)
                     Else
-                        For Each itmr As ListViewItem In _tabs(0).listCustom.Items
+                        For Each itmr As ListViewItem In GetTSbyName("Recent").listCustom.Items
                             If itmr.SubItems(5).Text = itm.SubItems(5).Text Then
                                 hit = True
                                 Exit For
@@ -5903,35 +5709,36 @@ RETRY:
 
     Private Sub SetMainWindowTitle()
         'メインウインドウタイトルの書き換え
-        Dim ttl As New StringBuilder
-        Dim urat As Integer = _tabs(1).unreadCount + _tabs(2).unreadCount
+        Dim ttl As New StringBuilder(256)
         Dim ur As Integer = 0
         Dim al As Integer = 0
+        Static myVer As String = My.Application.Info.Version.ToString()
         If SettingDialog.DispLatestPost <> DispTitleEnum.None AndAlso _
            SettingDialog.DispLatestPost <> DispTitleEnum.Post AndAlso _
            SettingDialog.DispLatestPost <> DispTitleEnum.Ver Then
             For Each ts As TabStructure In _tabs
-                ur += ts.unreadCount
-                al += ts.allCount
+                If ts IsNot Nothing Then
+                    ur += ts.unreadCount
+                    al += ts.allCount
+                End If
             Next
         End If
 
-        ttl.EnsureCapacity(256)
-        If SettingDialog.DispUsername Then ttl.Append(_username + " - ")
+        If SettingDialog.DispUsername Then ttl.Append(_username).Append(" - ")
         ttl.Append("Tween  ")
         Select Case SettingDialog.DispLatestPost
             Case DispTitleEnum.Ver
-                ttl.Append("Ver:" + My.Application.Info.Version.ToString())
+                ttl.Append("Ver:").Append(myVer)
             Case DispTitleEnum.Post
                 If _history IsNot Nothing AndAlso _history.Count > 1 Then
                     ttl.Append(_history(_history.Count - 2))
                 End If
             Case DispTitleEnum.UnreadRepCount
-                ttl.AppendFormat(My.Resources.SetMainWindowTitleText1, urat)
+                ttl.AppendFormat(My.Resources.SetMainWindowTitleText1, GetTSbyName("Reply").unreadCount + GetTSbyName("Direct").unreadCount)
             Case DispTitleEnum.UnreadAllCount
                 ttl.AppendFormat(My.Resources.SetMainWindowTitleText2, ur)
             Case DispTitleEnum.UnreadAllRepCount
-                ttl.AppendFormat(My.Resources.SetMainWindowTitleText3, ur, urat)
+                ttl.AppendFormat(My.Resources.SetMainWindowTitleText3, ur, GetTSbyName("Reply").unreadCount + GetTSbyName("Direct").unreadCount)
             Case DispTitleEnum.UnreadCountAllCount
                 ttl.AppendFormat(My.Resources.SetMainWindowTitleText4, ur, al)
         End Select
@@ -5942,7 +5749,7 @@ RETRY:
     Private Sub SetStatusLabel()
         'ステータス欄にカウント表示
         'タブ未読数/タブ発言数 全未読数/総発言数 (未読＠＋未読DM数)
-        Dim urat As Integer = _tabs(1).unreadCount + _tabs(2).unreadCount
+        Dim urat As Integer = GetTSbyName("Reply").unreadCount + GetTSbyName("Direct").unreadCount
         Dim ur As Integer = 0
         Dim al As Integer = 0
         Dim tur As Integer = 0
@@ -6357,7 +6164,13 @@ RETRY:
 
         If _selText IsNot Nothing Then
             SearchDialog.SWord = _selText
-            DoTabSearch(_selText, IsNormalSearch:=True)
+            SearchDialog.CheckCaseSensitive = False
+            SearchDialog.CheckRegex = False
+
+            DoTabSearch(SearchDialog.SWord, _
+                        SearchDialog.CheckCaseSensitive, _
+                        SearchDialog.CheckRegex, _
+                        SEARCHTYPE.NextSearch)
         End If
     End Sub
 

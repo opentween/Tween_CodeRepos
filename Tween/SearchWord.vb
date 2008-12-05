@@ -44,6 +44,24 @@ Public Class SearchWord
         End Set
     End Property
 
+    Public Property CheckCaseSensitive() As Boolean
+        Get
+            Return CheckSearchCaseSensitive.Checked
+        End Get
+        Set(ByVal value As Boolean)
+            CheckSearchCaseSensitive.Checked = value
+        End Set
+    End Property
+
+    Public Property CheckRegex() As Boolean
+        Get
+            Return CheckSearchRegex.Checked
+        End Get
+        Set(ByVal value As Boolean)
+            CheckSearchRegex.Checked = value
+        End Set
+    End Property
+
     Private Sub SearchWord_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
         SWordText.SelectAll()
         SWordText.Focus()
