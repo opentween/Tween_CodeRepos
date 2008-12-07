@@ -661,4 +661,19 @@
   <data name="UpdateFollowersMenuItem1_ClickText3" xml:space="preserve">
     <value>Followers取得完了</value>
   </data>
+  <data name="BlackFavAddToolStripMenuItem_ClickText1" xml:space="preserve">
+    <value>選択された発言をBlack Favoritesに追加します。よろしいですか？</value>
+  </data>
+  <data name="BlackFavAddToolStripMenuItem_ClickText2" xml:space="preserve">
+    <value>BlackFav確認</value>
+  </data>
+  <data name="BlackFavAddToolStripMenuItem_ClickText3" xml:space="preserve">
+    <value>BlackFav追加中...</value>
+  </data>
+  <data name="BlackFavAddToolStripMenuItem_ClickText4" xml:space="preserve">
+    <value>BlackFav追加なし</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText15_black" xml:space="preserve">
+    <value>BlackFav追加(</value>
+  </data>
 </root>
