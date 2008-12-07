@@ -98,6 +98,9 @@ Partial Class TweenMain
         Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator
         Me.FavAddToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.FavRemoveToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.ToolStripSeparator22 = New System.Windows.Forms.ToolStripSeparator
+        Me.BlackFavAddToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.BlackFavRemoveToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator
         Me.MoveToHomeToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.MoveToFavToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
@@ -591,7 +594,7 @@ Partial Class TweenMain
         '
         'ContextMenuStrip2
         '
-        Me.ContextMenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ReplyStripMenuItem, Me.ReplyAllStripMenuItem, Me.DMStripMenuItem, Me.ToolStripSeparator2, Me.FavAddToolStripMenuItem, Me.FavRemoveToolStripMenuItem, Me.ToolStripSeparator1, Me.MoveToHomeToolStripMenuItem, Me.MoveToFavToolStripMenuItem, Me.StatusOpenMenuItem, Me.RepliedStatusOpenMenuItem, Me.FavorareMenuItem, Me.OpenURLMenuItem, Me.ToolStripSeparator3, Me.TabMenuItem, Me.IDRuleMenuItem, Me.ToolStripSeparator4, Me.ReadedStripMenuItem, Me.UnreadStripMenuItem, Me.JumpUnreadMenuItem, Me.ToolStripSeparator10, Me.SelectAllMenuItem, Me.ToolStripSeparator5, Me.DeleteStripMenuItem, Me.ToolStripSeparator8, Me.RefreshStripMenuItem})
+        Me.ContextMenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ReplyStripMenuItem, Me.ReplyAllStripMenuItem, Me.DMStripMenuItem, Me.ToolStripSeparator2, Me.FavAddToolStripMenuItem, Me.FavRemoveToolStripMenuItem, Me.ToolStripSeparator22, Me.BlackFavAddToolStripMenuItem, Me.BlackFavRemoveToolStripMenuItem, Me.ToolStripSeparator1, Me.MoveToHomeToolStripMenuItem, Me.MoveToFavToolStripMenuItem, Me.StatusOpenMenuItem, Me.RepliedStatusOpenMenuItem, Me.FavorareMenuItem, Me.OpenURLMenuItem, Me.ToolStripSeparator3, Me.TabMenuItem, Me.IDRuleMenuItem, Me.ToolStripSeparator4, Me.ReadedStripMenuItem, Me.UnreadStripMenuItem, Me.JumpUnreadMenuItem, Me.ToolStripSeparator10, Me.SelectAllMenuItem, Me.ToolStripSeparator5, Me.DeleteStripMenuItem, Me.ToolStripSeparator8, Me.RefreshStripMenuItem})
         Me.ContextMenuStrip2.Name = "ContextMenuStrip2"
         Me.ContextMenuStrip2.OwnerItem = Me.MenuItemOperate
         Me.ContextMenuStrip2.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
@@ -626,6 +629,21 @@ Partial Class TweenMain
         '
         Me.FavRemoveToolStripMenuItem.Name = "FavRemoveToolStripMenuItem"
         resources.ApplyResources(Me.FavRemoveToolStripMenuItem, "FavRemoveToolStripMenuItem")
+        '
+        'ToolStripSeparator22
+        '
+        Me.ToolStripSeparator22.Name = "ToolStripSeparator22"
+        resources.ApplyResources(Me.ToolStripSeparator22, "ToolStripSeparator22")
+        '
+        'BlackFavAddToolStripMenuItem
+        '
+        Me.BlackFavAddToolStripMenuItem.Name = "BlackFavAddToolStripMenuItem"
+        resources.ApplyResources(Me.BlackFavAddToolStripMenuItem, "BlackFavAddToolStripMenuItem")
+        '
+        'BlackFavRemoveToolStripMenuItem
+        '
+        resources.ApplyResources(Me.BlackFavRemoveToolStripMenuItem, "BlackFavRemoveToolStripMenuItem")
+        Me.BlackFavRemoveToolStripMenuItem.Name = "BlackFavRemoveToolStripMenuItem"
         '
         'ToolStripSeparator1
         '
@@ -1018,5 +1036,8 @@ Partial Class TweenMain
     Friend WithEvents SearchItem4ToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents CurrentTabToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripMenuItem4 As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator22 As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents BlackFavAddToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents BlackFavRemoveToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class

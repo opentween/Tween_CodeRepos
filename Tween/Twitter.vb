@@ -1019,6 +1019,23 @@ Partial Public Class Twitter
         Return ""
     End Function
 
+	' Contributed by shuyoko <http://twitter.com/shuyoko> BEGIN:
+    Public Function GetBlackFavId(ByVal id As String, ByRef blackid As String) As String
+        Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
+        Dim resStatus As String = ""
+        Dim resMsg As String = DirectCast(_mySock.GetWebResponse("http://blavotter.hocha.org/blackfav/getblack.php?format=simple&id=" + id, resStatus, MySocket.REQ_TYPE.ReqGET), String)
+
+        If resStatus.StartsWith("OK") = False Then
+            Return resStatus
+        End If
+
+        blackid = resMsg
+
+        Return ""
+
+    End Function
+    ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
+
     Public Function PostFavAdd(ByVal id As String) As String
         If _endingFlag Then Return ""
 

@@ -188,6 +188,42 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  選択された発言をBlack Favoritesに追加します。よろしいですか？ に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property BlackFavAddToolStripMenuItem_ClickText1() As String
+            Get
+                Return ResourceManager.GetString("BlackFavAddToolStripMenuItem_ClickText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  BlackFav確認 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property BlackFavAddToolStripMenuItem_ClickText2() As String
+            Get
+                Return ResourceManager.GetString("BlackFavAddToolStripMenuItem_ClickText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  BlackFav追加中... に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property BlackFavAddToolStripMenuItem_ClickText3() As String
+            Get
+                Return ResourceManager.GetString("BlackFavAddToolStripMenuItem_ClickText3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  BlackFav追加なし に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property BlackFavAddToolStripMenuItem_ClickText4() As String
+            Get
+                Return ResourceManager.GetString("BlackFavAddToolStripMenuItem_ClickText4", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  実行形式ファイル(*.exe)|*.exe|すべてのファイル(*.*)|*.* に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property Button3_ClickText1() As String
@@ -623,6 +659,15 @@ Namespace My.Resources
         Friend ReadOnly Property GetTimelineWorker_RunWorkerCompletedText15() As String
             Get
                 Return ResourceManager.GetString("GetTimelineWorker_RunWorkerCompletedText15", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  BlackFav追加( に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property GetTimelineWorker_RunWorkerCompletedText15_black() As String
+            Get
+                Return ResourceManager.GetString("GetTimelineWorker_RunWorkerCompletedText15_black", resourceCulture)
             End Get
         End Property
         
