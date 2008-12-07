@@ -137,6 +137,7 @@ Public Class TweenMain
         PostMessage             '発言POST
         FavAdd                  'Fav追加
         FavRemove               'Fav削除
+        BlackFavAdd             'BlackFav追加 (Added by shuyoko <http://twitter.com/shuyoko>)
         CreateNewSocket         'Socket再作成
     End Enum
 
@@ -1324,6 +1325,14 @@ Public Class TweenMain
                     Next
                 Case WORKERTYPE.FavRemove
                     ret = clsTw.PostFavRemove(args.ids(args.page))
+                ' Contributed by shuyoko <http://twitter.com/shuyoko> BEGIN:
+                Case WORKERTYPE.BlackFavAdd
+                    Dim blackid As String = ""
+                    ret = clsTw.GetBlackFavId(args.ids(args.page), blackid)
+                    If (ret = "") Then
+                        ret = clsTw.PostFavAdd(blackid)
+                    End If
+                ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
                 Case WORKERTYPE.CreateNewSocket
                     clsTw.CreateNewSocket()
             End Select
@@ -1331,11 +1340,11 @@ Public Class TweenMain
                 _reply_to_id = 0
                 _reply_to_name = Nothing
             End If
-            If ret = "" OrElse (ret <> "" AndAlso (args.type = WORKERTYPE.PostMessage OrElse args.type = WORKERTYPE.FavAdd OrElse args.type = WORKERTYPE.FavRemove)) Then Exit For
+            If ret = "" OrElse (ret <> "" AndAlso (args.type = WORKERTYPE.PostMessage OrElse args.type = WORKERTYPE.FavAdd OrElse args.type = WORKERTYPE.FavRemove OrElse args.type = WORKERTYPE.BlackFavAdd)) Then Exit For
             Threading.Thread.Sleep(500)
         Next
 
-        If args.type = WORKERTYPE.FavAdd OrElse args.type = WORKERTYPE.FavRemove Then
+        If args.type = WORKERTYPE.FavAdd OrElse args.type = WORKERTYPE.FavRemove OrElse args.type = WORKERTYPE.BlackFavAdd Then
             rslt.ids = args.ids
             rslt.sIds = args.sIds
             If ret = "" Then rslt.sIds.Add(args.ids(args.page))
@@ -1822,6 +1831,26 @@ Public Class TweenMain
                     Loop
                     GetTimelineWorker.RunWorkerAsync(args)
                 End If
+            ' Contributed by shuyoko <http://twitter.com/shuyoko> BEGIN:
+            Case WORKERTYPE.BlackFavAdd
+                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText15_black + rslt.page.ToString + "/" + rslt.ids.Count.ToString + _
+                                    My.Resources.GetTimelineWorker_RunWorkerCompletedText16 + (rslt.page - rslt.sIds.Count).ToString
+                If rslt.page < rslt.ids.Count Then
+                    args.page = rslt.page
+                    args.ids = rslt.ids
+                    args.sIds = rslt.sIds
+                    args.tName = rslt.tName
+                    args.type = WORKERTYPE.BlackFavAdd
+                    NotifyIcon1.Icon = NIconRefresh(0)
+                    _refreshIconCnt = 0
+                    TimerRefreshIcon.Enabled = True
+                    Do While GetTimelineWorker.IsBusy
+                        Threading.Thread.Sleep(1)
+                        Application.DoEvents()
+                    Loop
+                    GetTimelineWorker.RunWorkerAsync(args)
+                End If
+            ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
             Case WORKERTYPE.FavAdd
                 StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText15 + rslt.page.ToString + "/" + rslt.ids.Count.ToString + _
                                     My.Resources.GetTimelineWorker_RunWorkerCompletedText16 + (rslt.page - rslt.sIds.Count).ToString
@@ -5766,6 +5795,7 @@ RETRY:
             End If
         Next
 
+        slbl.EnsureCapacity(256)
         slbl.AppendFormat(My.Resources.SetStatusLabelText1, tur, tal, ur, al, urat, _postTimestamps.Count, _favTimestamps.Count, _tlCount)
         If SettingDialog.TimelinePeriodInt = 0 Then
             slbl.Append(My.Resources.SetStatusLabelText2)
@@ -6202,6 +6232,54 @@ RETRY:
         Next
         Return Nothing
     End Function
+
+    ' Contributed by shuyoko <http://twitter.com/shuyoko> BEGIN:
+    Private Sub BlackFavAddToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BlackFavAddToolStripMenuItem.Click
+
+        Dim cnt As Integer = 0
+        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
+
+        If ListTab.SelectedTab.Text = "Direct" OrElse MyList.SelectedItems.Count = 0 Then Exit Sub
+
+        If MyList.SelectedItems.Count > 1 Then
+            If MessageBox.Show(My.Resources.BlackFavAddToolStripMenuItem_ClickText1, My.Resources.BlackFavAddToolStripMenuItem_ClickText2, _
+                               MessageBoxButtons.OKCancel, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then
+                Exit Sub
+            End If
+        End If
+
+        NotifyIcon1.Icon = NIconRefresh(0)
+        _refreshIconCnt = 0
+        TimerRefreshIcon.Enabled = True
+        StatusLabel.Text = My.Resources.BlackFavAddToolStripMenuItem_ClickText3
+
+        Dim args As New GetWorkerArg()
+        args.ids = New List(Of String)()
+        args.sIds = New List(Of String)()
+        args.tName = ListTab.SelectedTab.Text
+        For cnt = 0 To MyList.SelectedItems.Count - 1
+            If MyList.SelectedItems(cnt).SubItems(9).Text = "False" Then
+                args.ids.Add(MyList.SelectedItems(cnt).SubItems(5).Text)
+            End If
+        Next
+        args.type = WORKERTYPE.BlackFavAdd
+        If args.ids.Count = 0 Then
+            StatusLabel.Text = My.Resources.BlackFavAddToolStripMenuItem_ClickText4
+            Exit Sub
+        End If
+
+        Do While GetTimelineWorker.IsBusy
+            Threading.Thread.Sleep(1)
+            Application.DoEvents()
+        Loop
+
+        GetTimelineWorker.RunWorkerAsync(args)
+    End Sub
+    ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
+
+    Private Sub BlackFavRemoveToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BlackFavRemoveToolStripMenuItem.Click
+        ' STUB
+    End Sub
 End Class
 
 Public Class TabStructure
