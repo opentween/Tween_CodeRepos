@@ -4495,6 +4495,8 @@ RETRY:
                 _section.DMPeriod = SettingDialog.DMPeriodInt
                 _section.MaxPostNum = SettingDialog.MaxPostNum
                 _section.ReadPages = SettingDialog.ReadPages
+                _section.ReadPagesReply = SettingDialog.ReadPagesReply
+                _section.ReadPagesDM = SettingDialog.ReadPagesDM
                 _section.Readed = SettingDialog.Readed
                 _section.IconSize = SettingDialog.IconSz
                 _section.StatusText = SettingDialog.Status
@@ -5415,6 +5417,8 @@ RETRY:
     End Sub
 
     Private Sub WedataMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles WedataMenuItem.Click
+        Dim sb As New StringBuilder
+        MsgBox(sb.Capacity.ToString)
         If clsTwSync IsNot Nothing Then
             clsTwSync.GetWedata()
         End If
