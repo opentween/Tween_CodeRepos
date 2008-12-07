@@ -457,15 +457,19 @@ Partial Public Class Twitter
                                         retUrlStr = DirectCast(_mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
                                         If retUrlStr.Length > 0 Then
                                             Dim uri As Uri = New Uri(retUrlStr)
-                                            Dim sb As StringBuilder = New StringBuilder(uri.Scheme + uri.SchemeDelimiter + uri.Host + uri.AbsolutePath, 256)
-                                            For Each c As Char In retUrlStr.Substring(sb.Length)
-                                                If Convert.ToInt32(c) > 127 Then
-                                                    sb.Append("%" + Convert.ToInt16(c).ToString("X2"))
-                                                Else
-                                                    sb.Append(c)
-                                                End If
-                                            Next
-                                            orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + sb.ToString())
+                                            If Not uri.AbsolutePath = "/" Then
+                                                Dim sb As StringBuilder = New StringBuilder(uri.Scheme + uri.SchemeDelimiter + uri.Host + uri.AbsolutePath, 256)
+                                                For Each c As Char In retUrlStr.Substring(sb.Length)
+                                                    If Convert.ToInt32(c) > 127 Then
+                                                        sb.Append("%" + Convert.ToInt16(c).ToString("X2"))
+                                                    Else
+                                                        sb.Append(c)
+                                                    End If
+                                                Next
+                                                orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + sb.ToString())
+                                            Else
+                                                orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
+                                            End If
                                         End If
                                     Catch ex As Exception
                                         '_signed = False
