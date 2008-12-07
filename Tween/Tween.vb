@@ -3401,9 +3401,10 @@ Public Class TweenMain
                     If wd2 - iSize - 5 > 0 Then
                         Dim sRct As New Rectangle(x + 5 + iSize, e.Item.Bounds.Y, wd2 - iSize - 5, e.Item.Font.Height)
                         Dim sRct2 As New Rectangle(x + 5 + iSize, e.Item.Bounds.Y + e.Item.Font.Height, wd2 - iSize - 5, iSize - e.Item.Font.Height)
-                        Dim fnt As New Font(e.Item.Font, FontStyle.Bold)
-                        e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text, fnt, _brsHighLightText, sRct, sf)
-                        e.Graphics.DrawString(e.Item.SubItems(2).Text, e.Item.Font, _brsHighLightText, sRct2, sf)
+                        Using fnt As New Font(e.Item.Font, FontStyle.Bold)
+                            e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text, fnt, _brsHighLightText, sRct, sf)
+                            e.Graphics.DrawString(e.Item.SubItems(2).Text, e.Item.Font, _brsHighLightText, sRct2, sf)
+                        End Using
                     End If
                 Else
                     'e.DrawBackground()
@@ -3441,9 +3442,10 @@ Public Class TweenMain
                     If wd2 - iSize - 5 > 0 Then
                         Dim sRct As New Rectangle(x + 5 + iSize, e.Item.Bounds.Y, wd2 - iSize - 5, e.Item.Font.Height)
                         Dim sRct2 As New Rectangle(x + 5 + iSize, e.Item.Bounds.Y + e.Item.Font.Height, wd2 - iSize - 5, iSize - e.Item.Font.Height)
-                        Dim fnt As New Font(e.Item.Font, FontStyle.Bold)
-                        e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text, fnt, brs, sRct, sf)
-                        e.Graphics.DrawString(e.Item.SubItems(2).Text, e.Item.Font, brs, sRct2, sf)
+                        Using fnt As New Font(e.Item.Font, FontStyle.Bold)
+                            e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text, fnt, brs, sRct, sf)
+                            e.Graphics.DrawString(e.Item.SubItems(2).Text, e.Item.Font, brs, sRct2, sf)
+                        End Using
                     End If
                 End If
             End If
@@ -5754,7 +5756,7 @@ RETRY:
         Dim al As Integer = 0
         Dim tur As Integer = 0
         Dim tal As Integer = 0
-        Dim slbl As StringBuilder = New StringBuilder()
+        Dim slbl As StringBuilder = New StringBuilder(256)
         For Each ts As TabStructure In _tabs
             ur += ts.unreadCount
             al += ts.allCount
@@ -5764,7 +5766,6 @@ RETRY:
             End If
         Next
 
-        slbl.EnsureCapacity(256)
         slbl.AppendFormat(My.Resources.SetStatusLabelText1, tur, tal, ur, al, urat, _postTimestamps.Count, _favTimestamps.Count, _tlCount)
         If SettingDialog.TimelinePeriodInt = 0 Then
             slbl.Append(My.Resources.SetStatusLabelText2)

@@ -25,8 +25,7 @@ Public Class FilterDialog
         tabName = DirectCast(ComboTabs.SelectedItem, String)
 
         ListFilters.Items.Clear()
-        Dim fs As New System.Text.StringBuilder
-        fs.EnsureCapacity(512)
+        Dim fs As New System.Text.StringBuilder(512)
         For Each ts As TabStructure In _tabs
             If ts.tabName = tabName Then
                 For Each ft As FilterClass In ts.filters
