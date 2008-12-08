@@ -63,6 +63,13 @@ Public Module MyCommon
         Isgd
     End Enum
 
+    Public Enum HITRESULT
+        None
+        Copy
+        CopyAndMark
+        Move
+    End Enum
+
     Public follower As New Collections.Specialized.StringCollection
     Public cCon As New System.Net.CookieContainer()
 

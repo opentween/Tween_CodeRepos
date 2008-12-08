@@ -601,7 +601,14 @@ Public Class TweenMain
             CheckNewVersion(True)
         End If
 
-        If My.Computer.Network.IsAvailable Then
+        Dim nw As Boolean = True
+        Try
+            nw = My.Computer.Network.IsAvailable
+        Catch ex As Exception
+            nw = True
+        End Try
+
+        If nw Then
             NotifyIcon1.Icon = NIconRefresh(0)
             _refreshIconCnt = 0
             TimerRefreshIcon.Enabled = True
@@ -685,7 +692,14 @@ Public Class TweenMain
     End Sub
 
     Private Sub TimerTimeline_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerTimeline.Tick
-        If Not My.Computer.Network.IsAvailable Then Exit Sub
+        Dim nw As Boolean = True
+        Try
+            nw = My.Computer.Network.IsAvailable
+        Catch ex As Exception
+            nw = True
+        End Try
+
+        If Not nw Then Exit Sub
         Dim args As New GetWorkerArg()
         args.page = 1
         args.endPage = 1
@@ -702,7 +716,13 @@ Public Class TweenMain
     End Sub
 
     Private Sub TimerDM_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerDM.Tick
-        If My.Computer.Network.IsAvailable = False Then Exit Sub
+        Dim nw As Boolean = True
+        Try
+            nw = My.Computer.Network.IsAvailable
+        Catch ex As Exception
+            nw = True
+        End Try
+        If Not nw Then Exit Sub
         Dim args As New GetWorkerArg()
         args.page = 1
         args.endPage = 1
@@ -1396,8 +1416,15 @@ Public Class TweenMain
 
     Private Sub GetTimelineWorker_RunWorkerCompleted(ByVal sender As System.Object, ByVal e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles GetTimelineWorker.RunWorkerCompleted
 
+        Dim nw As Boolean = True
+        Try
+            nw = My.Computer.Network.IsAvailable
+        Catch ex As Exception
+            nw = True
+        End Try
+
         If e.Error IsNot Nothing Then
-            If My.Computer.Network.IsAvailable Then
+            If nw Then
                 NotifyIcon1.Icon = NIconAtRed
             End If
             Throw e.Error
@@ -1411,7 +1438,7 @@ Public Class TweenMain
         GC.Collect()
 
         TimerRefreshIcon.Enabled = False
-        If My.Computer.Network.IsAvailable Then
+        If nw Then
             NotifyIcon1.Icon = NIconAt
         Else
             NotifyIcon1.Icon = NIconAtSmoke
@@ -1423,7 +1450,7 @@ Public Class TweenMain
 
         If rslt.retMsg <> "" Then
             '''''エラー通知方法の変更も設定できるように！
-            If My.Computer.Network.IsAvailable Then
+            If nw Then
                 NotifyIcon1.Icon = NIconAtRed
             End If
             'NotifyIcon1.BalloonTipIcon = ToolTipIcon.Warning
@@ -1472,12 +1499,12 @@ Public Class TweenMain
                 End If
                 TimerTimeline.Enabled = False
                 If rslt.retMsg <> "" Then
-                    If My.Computer.Network.IsAvailable Then
+                    If nw Then
                         If SettingDialog.TimelinePeriodInt > 0 Then TimerTimeline.Enabled = True
                     End If
                     StatusLabel.Text = rslt.retMsg
                 Else
-                    If Not My.Computer.Network.IsAvailable Then Exit Sub
+                    If Not nw Then Exit Sub
                     If SettingDialog.TimelinePeriodInt > 0 AndAlso _
                        Not SettingDialog.CheckReply Then
                         TimerTimeline.Enabled = True
@@ -1621,14 +1648,14 @@ Public Class TweenMain
                     RefreshTimeline(rslt.TLine)
                 End If
                 TimerTimeline.Enabled = False
-                If My.Computer.Network.IsAvailable Then
+                If nw Then
                     If SettingDialog.TimelinePeriodInt > 0 Then TimerTimeline.Enabled = True
                 End If
                 If rslt.retMsg <> "" Then
                     StatusLabel.Text = rslt.retMsg
                     _initial = False
                 Else
-                    If Not My.Computer.Network.IsAvailable Then Exit Sub
+                    If Not nw Then Exit Sub
                     If _initial Then
                         _getDM = False
                         If rslt.page + 1 <= rslt.endPage AndAlso SettingDialog.ReadPagesReply >= rslt.page + 1 Then
@@ -1685,12 +1712,12 @@ Public Class TweenMain
                 If rslt.retMsg <> "" Then
                     StatusLabel.Text = rslt.retMsg
                     If _initial Then TimerDM.Interval = 30000
-                    If My.Computer.Network.IsAvailable Then
+                    If nw Then
                         If SettingDialog.DMPeriodInt > 0 OrElse _initial Then TimerDM.Enabled = True
                     End If
                     Exit Sub
                 End If
-                If Not My.Computer.Network.IsAvailable Then Exit Sub
+                If Not nw Then Exit Sub
 
                 If SettingDialog.DMPeriodInt > 0 Then
                     TimerDM.Interval = SettingDialog.DMPeriodInt * 1000
@@ -1735,12 +1762,12 @@ Public Class TweenMain
                 If rslt.retMsg <> "" Then
                     StatusLabel.Text = rslt.retMsg
                     If _initial Then TimerDM.Interval = 30000
-                    If My.Computer.Network.IsAvailable Then
+                    If nw Then
                         If SettingDialog.DMPeriodInt > 0 OrElse _initial Then TimerDM.Enabled = True
                     End If
                     Exit Sub
                 End If
-                If Not My.Computer.Network.IsAvailable Then Exit Sub
+                If Not nw Then Exit Sub
                 If (rslt.page < rslt.endPage AndAlso Not _initial) OrElse _
                    (rslt.page + 1 < SettingDialog.ReadPagesDM AndAlso _initial) Then
                     args.page = rslt.endPage
@@ -2318,7 +2345,13 @@ Public Class TweenMain
             StatusOpenMenuItem.Enabled = False
             FavorareMenuItem.Enabled = False
         Else
-            If My.Computer.Network.IsAvailable Then
+            Dim nw As Boolean = True
+            Try
+                nw = My.Computer.Network.IsAvailable
+            Catch ex As Exception
+                nw = True
+            End Try
+            If nw Then
                 FavAddToolStripMenuItem.Enabled = True
                 FavRemoveToolStripMenuItem.Enabled = True
                 StatusOpenMenuItem.Enabled = True
@@ -5175,8 +5208,14 @@ RETRY:
     End Sub
 
     Private Sub PostWorker_RunWorkerCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles PostWorker.RunWorkerCompleted
+        Dim nw As Boolean = True
+        Try
+            nw = My.Computer.Network.IsAvailable
+        Catch ex As Exception
+            nw = True
+        End Try
         If e.Error IsNot Nothing Then
-            If My.Computer.Network.IsAvailable Then
+            If nw Then
                 NotifyIcon1.Icon = NIconAtRed
             End If
             Throw e.Error
@@ -5194,7 +5233,7 @@ RETRY:
         UrlUndoToolStripMenuItem.Enabled = False  'Undoをできないように設定
 
         TimerRefreshIcon.Enabled = False
-        If My.Computer.Network.IsAvailable Then
+        If nw Then
             NotifyIcon1.Icon = NIconAt
         Else
             NotifyIcon1.Icon = NIconAtSmoke
@@ -5202,7 +5241,7 @@ RETRY:
 
         If rslt.retMsg <> "" Then
             '''''エラー通知方法の変更も設定できるように！
-            If My.Computer.Network.IsAvailable Then
+            If nw Then
                 TimerRefreshIcon.Enabled = False
                 NotifyIcon1.Icon = NIconAtRed
             End If
