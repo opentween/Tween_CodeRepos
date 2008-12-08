@@ -25,276 +25,8 @@ Imports System.Collections.Generic
 Imports System.Collections.ObjectModel
 Imports Tween.TweenCustomControl
 
-Public Class Statuses
-    Private _statuses As Dictionary(Of Long, MyListItem)
-    Private _addedIds As List(Of Long)
-    Private _tabs As TabInformations
 
-    Public Sub New()
-        _statuses = New Dictionary(Of Long, MyListItem)
-    End Sub
-
-    Public Sub BeginUpdate()
-        _addedIds = New List(Of Long)  'タブ追加用IDコレクション準備
-    End Sub
-
-    Public Function EndUpdate() As String
-        Dim NotifyString As String = _tabs.Distribute(_addedIds)    'タブに追加
-        '_tabs.Sort()    'ソート
-        Return NotifyString     '通知用メッセージを戻す
-    End Function
-
-    Public Sub Add(ByRef Item As MyListItem)
-        If _addedIds Is Nothing Then Throw New Exception("You must call 'BeginUpdate' before to add.")
-        _statuses.Add(Item.Id, Item)
-        _addedIds.Add(Item.Id)
-    End Sub
-
-    Public Function Remove(ByVal Key As Long) As Integer
-        _statuses.Remove(Key)
-    End Function
-
-    Public WriteOnly Property TabsClass() As TabInformations
-        Set(ByVal value As TabInformations)
-            _tabs = value
-        End Set
-    End Property
-End Class
-
-
-
-'Public Class StatusDictionary
-'    Private _tabs As TabInformations  '要素TabsClassクラスのジェネリックリストインスタンス（タブ情報用）
-'    Private _statuses As New Dictionary(Of String, MyListItem)
-'    Private _setting As Setting
-
-'    Private _notifymsg As New NotifyMessage
-
-'    Public Structure NotifyMessage
-'        Public Count As Integer
-'        Public Message As String
-'        Public Reply As Boolean
-'        Public Direct As Boolean
-'        Public AllCount As Integer
-'        Public SoundFile As String
-'    End Structure
-
-'    Public Sub New(ByVal Section As ListSection, ByVal MySetting As Setting)
-'        _tabs = New TabInformations(_section.SortColumn, _section.SortOrder, MySetting)
-'        _setting = MySetting
-'    End Sub
-
-'    Public ReadOnly Property Tabs() As TabInformations
-'        Get
-'            Return _tabs
-'        End Get
-'    End Property
-
-'    Public ReadOnly Property Items(ByVal ID As String) As MyListItem
-'        Get
-'            Return _statuses(ID)
-'        End Get
-'    End Property
-
-'    Public Function Add(ByVal Item As MyListItem, ByVal Initial As Boolean, ByVal DirectMessage As Boolean) As Boolean
-'        If _statuses.ContainsKey(Item.Id) = True Then
-'            Return False
-'        End If
-
-'        DoFilter(Item, Initial, DirectMessage)
-
-'        _statuses.Add(Item.Id, Item)
-'        Return True
-'    End Function
-
-'    Public Function Remove(ByVal ID As String) As Boolean
-'        Dim rd As Boolean = False
-
-'        If _statuses.ContainsKey(ID) Then
-'            rd = _statuses(ID).Readed
-'            _statuses.Remove(ID)
-'        Else
-'            Return False
-'        End If
-
-'        For Each ts As TabsClass In _tabs.Tabs
-'            If ts.Contains(ID) Then
-'                ts.Remove(ID)
-'                ts.AllCount -= 1
-'                If ts.UnreadManage And rd = False Then
-'                    ts.UnreadCount -= 1
-'                    ts.OldestUnreadItem = ""
-'                    For Each tsid As String In ts.StatusIDs
-'                        If _statuses(tsid).Readed = False Then
-'                            ts.OldestUnreadItem = tsid
-'                            Exit For
-'                        End If
-'                    Next
-'                    If ts.UnreadCount = 0 Then ts.TabPage.ImageIndex = -1
-'                End If
-'            End If
-'        Next
-'    End Function
-
-'    Public Property Readed(ByVal ID As String) As Boolean
-'        Get
-'            If _statuses.ContainsKey(ID) Then
-'                Return _statuses(ID).Readed
-'            Else
-'                Return False
-'            End If
-'        End Get
-'        Set(ByVal value As Boolean)
-'            If _statuses.ContainsKey(ID) = False Then Return False
-
-'            For Each ts As TabsClass In _tabs.Tabs
-'                If ts.Contains(ID) Then
-'                    If ts.UnreadManage And _statuses(ID).Readed <> value Then
-'                        If value = True Then
-'                            ts.UnreadCount -= 1
-'                            If ts.OldestUnreadItem = ID Then
-'                                Dim idx As Integer = ts.StatusIDs.IndexOf(ID)
-
-'                            End If
-'                            ts.OldestUnreadItem = ""
-'                            For Each tsid As String In ts.StatusIDs
-'                                If _statuses(tsid).Readed = False Then
-'                                    ts.OldestUnreadItem = tsid
-'                                    Exit For
-'                                End If
-'                            Next
-'                            If ts.UnreadCount = 0 Then ts.TabPage.ImageIndex = -1
-'                        End If
-'                    End If
-'                End If
-'            Next
-'        End Set
-'    End Property
-
-'    Public Function Contains(ByVal ID As String) As Boolean
-'        Return _statuses.ContainsKey(ID)
-'    End Function
-
-'    Public Sub GetNotifyInfo(ByVal nf As NotifyMessage)
-'        nf.AllCount = _notifymsg.AllCount
-'        nf.Count = _notifymsg.Count
-'        nf.Message = _notifymsg.Message
-'        nf.Reply = _notifymsg.Reply
-'        nf.Direct = _notifymsg.Direct
-'        nf.SoundFile = _notifymsg.SoundFile
-'        _notifymsg.AllCount = 0
-'        _notifymsg.Count = 0
-'        _notifymsg.Message = ""
-'        _notifymsg.Reply = False
-'        _notifymsg.Direct = False
-'        _notifymsg.SoundFile = ""
-'    End Sub
-
-'    Private Sub DoFilter(ByVal Item As MyListItem, ByVal Initial As Boolean, ByVal Direct As Boolean)
-'        Dim reply As Boolean = False
-'        Dim nm As String
-'        Dim snd As String = ""
-
-'        If (Initial = False Or (Initial And _setting.Readed = False)) And _setting.UnreadManage Then
-'            Item.Readed = False
-'        End If
-
-'        Dim mv As Boolean = False
-'        Dim nf As Boolean = False
-'        Dim mk As Boolean = False
-'        If Direct = False Then
-'            For Each ts As TabsClass In _tabs.Tabs
-'                Dim hit As Boolean = False
-'                If tskey <> "Recent" And tskey <> "Reply" And tskey <> "Direct" Then
-'                    For Each ft As FilterClass In ts.Filters
-'                        Dim bHit As Boolean = True
-'                        Dim tBody As String = IIf(ft.SearchURL, Item.OrgData, Item.Data)
-'                        If ft.SearchBoth Then
-'                            If ft.IDFilter = "" Or Item.Name = ft.IDFilter Then
-'                                For Each fs As String In ft.BodyFilter
-'                                    If ft.UseRegex Then
-'                                        If Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) = False Then bHit = False
-'                                    Else
-'                                        If tBody.ToLower.Contains(fs.ToLower) = False Then bHit = False
-'                                    End If
-'                                    If bHit = False Then Exit For
-'                                Next
-'                            Else
-'                                bHit = False
-'                            End If
-'                        Else
-'                            For Each fs As String In ft.BodyFilter
-'                                If ft.UseRegex Then
-'                                    If Regex.IsMatch(Item.Name + tBody, fs, RegexOptions.IgnoreCase) = False Then bHit = False
-'                                Else
-'                                    If (Item.Name + tBody).ToLower.Contains(fs.ToLower) = False Then bHit = False
-'                                End If
-'                                If bHit = False Then Exit For
-'                            Next
-'                        End If
-'                        If bHit = True Then
-'                            hit = True
-'                            If ft.SetMark Then mk = True
-'                            If ft.moveFrom Then mv = True
-'                        End If
-'                        If hit And mv And mk Then Exit For
-'                    Next
-'                ElseIf tskey = "Reply" Then
-'                    If Item.Reply Or Regex.IsMatch(Item.Data, "@" + _username + "([^a-zA-Z0-9_]|$)", RegexOptions.IgnoreCase) Then
-'                        hit = True
-'                        reply = True
-'                    End If
-'                End If
-
-'                If hit Then
-'                    ts.Add(Item.Id, Item.Readed)
-'                    If ts.Notify Then nf = True
-'                    If snd = "" Then snd = ts.SoundFile
-'                End If
-'            Next
-'            If mv = False Then
-'                Dim ts As TabsClass = _tabs.Tabs("Recent")
-'                If mk Then Item.Mark = True
-'                ts.Add(Item.Id, Item.Readed)
-'                If ts.Notify Then nf = True
-'                If snd = "" Then snd = ts.SoundFile
-'            End If
-'        Else
-'            Dim ts As TabsClass = _tabs.Tabs("Direct")
-'            ts.Add(Item.Id, Item.Readed)
-'            nf = ts.Notify
-'            snd = ts.SoundFile
-'        End If
-
-
-'        nm = ""
-'        Select Case _setting.NameBalloon
-'            Case NameBalloonEnum.None
-'                nm = ""
-'            Case NameBalloonEnum.UserID
-'                nm = lItem.Name
-'            Case NameBalloonEnum.NickName
-'                nm = lItem.Nick
-'        End Select
-'        Dim pmsg As String
-'        pmsg = nm + " : " + Item.Data
-'        If nf = True Then
-'            _notifymsg.Count += 1
-'            If _notifymsg.Message = "" Then
-'                _notifymsg.Message = pmsg
-'            Else
-'                _notifymsg.Message += vbCrLf + pmsg
-'            End If
-'            If reply Then _notifymsg.Reply = True
-'            If Direct Then _notifymsg.Direct = True
-'        End If
-'        _notifymsg.AllCount += 1
-'        _notifymsg.SoundFile = snd
-'    End Sub
-
-'End Class
-
-Public Class MyListItem
+Public Class PostClass
     Private _Nick As String
     Private _Data As String
     Private _ImageUrl As String
@@ -311,7 +43,7 @@ Public Class MyListItem
     Private _InReplyToUser As String
     Private _InReplyToId As Long
     Private _Source As String
-    Private _ReplyToList As List(Of String)
+    Private _ReplyToList As List(Of Long)
 
     Public Sub New(ByVal Nickname As String, _
             ByVal Data As String, _
@@ -329,7 +61,7 @@ Public Class MyListItem
             ByVal InReplyToUser As String, _
             ByVal InReplyToId As Long, _
             ByVal Source As String, _
-            ByVal ReplyToList As List(Of String))
+            ByVal ReplyToList As List(Of Long))
         _Nick = Nickname
         _Data = Data
         _ImageUrl = ImageUrl
@@ -437,7 +169,7 @@ Public Class MyListItem
             Return _Source
         End Get
     End Property
-    Public ReadOnly Property ReplyToList() As List(Of String)
+    Public ReadOnly Property ReplyToList() As List(Of Long)
         Get
             Return _ReplyToList
         End Get
@@ -448,21 +180,26 @@ Public Class TabInformations
     '個別タブの情報をDictionaryで保持
     Private _sorter As ListViewItemComparerClass
     Private _tabs As New Dictionary(Of String, TabClass)
-    Private _statuses As Statuses
+    'Private Class Statuses
+    Private _statuses As Dictionary(Of Long, PostClass)
+    Private _addedIds As List(Of Long)
+    'Private _tabs As TabInformations
+    'Private _statuses As Statuses
 
     Public Sub New()
         _sorter = New ListViewItemComparerClass
+        _statuses = New Dictionary(Of Long, PostClass)
     End Sub
 
-    Public Sub Add(ByVal TabText As String)
-        _tabs.Add(TabText, New TabClass)
+    Public Sub AddTab(ByVal TabText As String)
+        _tabs.Add(TabText, New TabClass())
     End Sub
 
-    Public Function Contains(ByVal TabText As String) As Boolean
+    Public Function ContainsTab(ByVal TabText As String) As Boolean
         Return _tabs.ContainsKey(TabText)
     End Function
 
-    Public Function Contains(ByVal ts As TabClass) As Boolean
+    Public Function ContainsTab(ByVal ts As TabClass) As Boolean
         Return _tabs.ContainsValue(ts)
     End Function
 
@@ -472,13 +209,13 @@ Public Class TabInformations
         End Get
     End Property
 
-    Public ReadOnly Property Keys() As Collections.Generic.Dictionary(Of String, TabClass).KeyCollection
+    Public ReadOnly Property KeysTab() As Collections.Generic.Dictionary(Of String, TabClass).KeyCollection
         Get
             Return _tabs.Keys
         End Get
     End Property
 
-    Public Sub Sort()
+    Public Sub SortPosts()
         For Each key As String In _tabs.Keys
             _tabs(key).Sort(_sorter)
         Next
@@ -499,90 +236,195 @@ Public Class TabInformations
         End Set
     End Property
 
-    Public WriteOnly Property Statuses() As Statuses
-        Set(ByVal value As Statuses)
-            _statuses = value
-        End Set
-    End Property
+    'Public WriteOnly Property Statuses() As Statuses
+    '    Set(ByVal value As Statuses)
+    '        _statuses = value
+    '    End Set
+    'End Property
 
-    Public Function Distribute(ByVal AddedIDs As List(Of Long)) As String
+    Private Function Distribute(ByVal AddedIDs As List(Of Long)) As List(Of Long)
         '各タブのフィルターと照合。合致したらタブにID追加
-        Return "通知メッセージ"
+        Dim notifyIds As New List(Of Long)
+        For Each id As Long In AddedIDs
+            Dim post As PostClass = _statuses(id)
+            Dim add As Boolean = False
+            For Each tn As String In _tabs.Keys
+                Dim rslt As HITRESULT = _tabs(tn).AddFiltered(post.Id, post.IsRead, post.Name, post.Data, post.OriginalData)
+                If rslt = HITRESULT.CopyAndMark Then post.IsMark = True
+                If rslt <> HITRESULT.None AndAlso _tabs(tn).Notify Then add = True
+            Next
+            If add Then notifyIds.Add(id)
+        Next
+        Me.SortPosts()
+        Return notifyIds
     End Function
 
+    Public Sub RemovePost(ByVal Id As Long)
+        Dim post As PostClass = _statuses(Id)
+        '各タブから該当ID削除
+        For Each key As String In _tabs.Keys
+            Dim tab As TabClass = _tabs(key)
+            If tab.Contains(Id) Then
+                If tab.UnreadManage AndAlso Not post.IsRead Then    '未読管理
+                    tab.UnreadCount -= 1
+                    Me.SetNextUnreadId(Id, tab)
+                    tab.Remove(Id)
+                End If
+            End If
+        Next
+        _statuses.Remove(Id)
+    End Sub
+
+    Public Sub SetNextUnreadId(ByVal CurrentId As Long, ByVal Tab As TabClass)
+        If Tab.OldestUnreadId = CurrentId Then     '次の未読探索
+            If Tab.UnreadCount = 0 OrElse Tab.AllCount <= 1 Then
+                Tab.OldestUnreadId = -1
+            Else
+                Dim idx As Integer = Tab.GetIndex(CurrentId)
+                Dim toIdx As Integer = 0
+                Dim stp As Integer = 1
+                If _sorter.Order = Windows.Forms.SortOrder.Ascending Then
+                    idx -= 1
+                    toIdx = 0
+                    stp = -1
+                Else
+                    idx += 1
+                    toIdx = Tab.AllCount - 1
+                    stp = 1
+                End If
+                For i As Integer = idx To toIdx Step stp
+                    If Not _statuses(Tab.GetId(i)).IsRead Then
+                        Tab.OldestUnreadId = Tab.GetId(i)
+                        Exit For
+                    End If
+                Next
+            End If
+        End If
+    End Sub
+
+    Public Sub BeginUpdate()
+        _addedIds = New List(Of Long)  'タブ追加用IDコレクション準備
+    End Sub
+
+    Public Function EndUpdate() As List(Of Long)
+        If _addedIds Is Nothing Then Throw New Exception("You must call 'BeginUpdate' before to add.")
+        Dim NotifyIds As List(Of Long) = Me.Distribute(_addedIds)    'タブに追加
+        '_tabs.Sort()    'ソート
+        _addedIds.Clear()
+        _addedIds = Nothing
+        Return NotifyIds     '通知用メッセージを戻す
+    End Function
+
+    Public Sub AddPost(ByRef Item As PostClass)
+        If _addedIds Is Nothing Then Throw New Exception("You must call 'BeginUpdate' before to add.")
+        _statuses.Add(Item.Id, Item)
+        _addedIds.Add(Item.Id)
+    End Sub
+
+    Public ReadOnly Property Item(ByVal ID As Long) As PostClass
+        Get
+            Return _statuses(ID)
+        End Get
+    End Property
+    'End Class
 End Class
 
 Public Class TabClass
-    Private _tabPage As System.Windows.Forms.TabPage
-    Private _listCustom As DetailsListView
+    'Private _tabPage As System.Windows.Forms.TabPage
+    'Private _listCustom As DetailsListView
     'Public colHd1 As System.Windows.Forms.ColumnHeader
     'Public colHd2 As System.Windows.Forms.ColumnHeader
     'Public colHd3 As System.Windows.Forms.ColumnHeader
     'Public colHd4 As System.Windows.Forms.ColumnHeader
     'Public colHd5 As System.Windows.Forms.ColumnHeader
     'Public idCol As System.Collections.Specialized.StringCollection
-    'Public tabName As String
+    'Private _tabName As String
     'Public sorter As ListViewItemComparer
     Private _unreadManage As Boolean
     Private _notify As Boolean
     Private _soundFile As String
-    Private _filters As List(Of FilterClass)
-    Private _modified As Boolean
+    Private _filters As List(Of FiltersClass)
+    'Private _modified As Boolean
     'Private _oldestUnreadItem As ListViewItem
-    Private _oldestUnreadItem As String     'ID
+    Private _oldestUnreadItem As Long     'ID
     Private _unreadCount As Integer
-    Private _allCount As Integer
-    Private _ids As List(Of String)
+    Private _ids As List(Of Long)
 
     Public Sub New()
-        _filters = New List(Of FilterClass)
+        _filters = New List(Of FiltersClass)
         _notify = True
         _soundFile = ""
         _unreadManage = True
-        _ids = New List(Of String)
+        _ids = New List(Of Long)
     End Sub
 
     Public Sub Sort(ByVal Sorter As ListViewItemComparerClass)
         _ids.Sort(Sorter)
     End Sub
 
-    Public Sub Add(ByVal ID As String, ByVal Read As Boolean)
-        If _ids.Contains(ID) Then Exit Sub
+    Private Sub Add(ByVal ID As Long, ByVal Read As Boolean)
+        If Me._ids.Contains(ID) Then Exit Sub
 
-        _ids.Add(ID)
-        If _oldestUnreadItem = "" Then
-            If ID < _oldestUnreadItem Then _oldestUnreadItem = ID
-        Else
-            _oldestUnreadItem = ID
+        Me._ids.Add(ID)
+
+        If Not Read AndAlso Me._unreadManage Then
+            Me._unreadCount += 1
+            If Me._oldestUnreadItem = -1 Then
+                Me._oldestUnreadItem = ID
+            Else
+                If ID < Me._oldestUnreadItem Then Me._oldestUnreadItem = ID
+            End If
         End If
-
-        _allCount += 1
-        If Read = False And _unreadManage Then _unreadCount += 1
     End Sub
 
-    Public Sub Remove(ByVal ID As String)
-        If _ids.Contains(ID) = False Then Exit Sub
+    Public Function AddFiltered(ByVal ID As Long, _
+                                ByVal Read As Boolean, _
+                                ByVal Name As String, _
+                                ByVal Body As String, _
+                                ByVal OrgData As String) As HITRESULT
+        Dim rslt As HITRESULT = HITRESULT.None
+        '全フィルタ評価（優先順位あり）
+        For Each ft As FiltersClass In _filters
+            Select Case ft.IsHit(Name, Body, OrgData)
+                Case HITRESULT.None
+                Case HITRESULT.Copy
+                    If rslt <> HITRESULT.CopyAndMark Then rslt = HITRESULT.Copy
+                Case HITRESULT.CopyAndMark
+                    rslt = HITRESULT.CopyAndMark
+                Case HITRESULT.Move
+                    rslt = HITRESULT.Move
+                    Exit For
+            End Select
+        Next
 
-        _ids.Remove(ID)
+        If rslt <> HITRESULT.None Then Me.Add(ID, Read)
+
+        Return rslt 'マーク付けは呼び出し元で行うこと
+    End Function
+
+    Public Sub Remove(ByVal Id As Long)
+        If Not Me._ids.Contains(Id) Then Exit Sub
+
+        Me._ids.Remove(Id)
     End Sub
 
-    Public Property TabPage() As TabPage
-        Get
-            Return _tabPage
-        End Get
-        Set(ByVal value As TabPage)
-            _tabPage = value
-        End Set
-    End Property
+    'Public Property TabPage() As TabPage
+    '    Get
+    '        Return _tabPage
+    '    End Get
+    '    Set(ByVal value As TabPage)
+    '        _tabPage = value
+    '    End Set
+    'End Property
 
-    Public Property ListCustom() As DetailsListView
-        Get
-            Return _listCustom
-        End Get
-        Set(ByVal value As DetailsListView)
-            _listCustom = value
-        End Set
-    End Property
+    'Public Property ListCustom() As DetailsListView
+    '    Get
+    '        Return _listCustom
+    '    End Get
+    '    Set(ByVal value As DetailsListView)
+    '        _listCustom = value
+    '    End Set
+    'End Property
 
     Public Property UnreadManage() As Boolean
         Get
@@ -611,20 +453,20 @@ Public Class TabClass
         End Set
     End Property
 
-    Public Property Modified() As Boolean
-        Get
-            Return _modified
-        End Get
-        Set(ByVal value As Boolean)
-            _modified = value
-        End Set
-    End Property
+    'Public Property Modified() As Boolean
+    '    Get
+    '        Return _modified
+    '    End Get
+    '    Set(ByVal value As Boolean)
+    '        _modified = value
+    '    End Set
+    'End Property
 
-    Public Property OldestUnreadItem() As String
+    Public Property OldestUnreadId() As Long
         Get
             Return _oldestUnreadItem
         End Get
-        Set(ByVal value As String)
+        Set(ByVal value As Long)
             _oldestUnreadItem = value
         End Set
     End Property
@@ -638,53 +480,238 @@ Public Class TabClass
         End Set
     End Property
 
-    Public Property AllCount() As Integer
+    Public ReadOnly Property AllCount() As Integer
         Get
-            Return _allCount
+            Return Me._ids.Count
         End Get
-        Set(ByVal value As Integer)
-            _allCount = value
-        End Set
     End Property
 
-    Public Overrides Function ToString() As String
-        Return _tabPage.Text
-    End Function
-
-    Public Property Filters() As List(Of FilterClass)
+    Public Property Filters() As List(Of FiltersClass)
         Get
             Return _filters
         End Get
-        Set(ByVal value As List(Of FilterClass))
+        Set(ByVal value As List(Of FiltersClass))
             _filters = value
         End Set
     End Property
 
-    Public Function Contains(ByVal ID As String) As Boolean
+    Public Function Contains(ByVal ID As Long) As Boolean
         Return _ids.Contains(ID)
     End Function
 
-    Public ReadOnly Property StatusIDs() As List(Of String)
-        Get
-            Return _ids
-        End Get
-    End Property
+    Public Sub ClearIDs()
+        _ids.Clear()
+        _unreadCount = 0
+        _oldestUnreadItem = -1
+    End Sub
 
+    'Public ReadOnly Property StatusIDs() As List(Of Long)
+    '    Get
+    '        Return _ids
+    '    End Get
+    'End Property
+
+    Public Function GetId(ByVal Index As Integer) As Long
+        Return _ids(Index)
+    End Function
+
+    Public Function GetIndex(ByVal ID As Long) As Integer
+        Return _ids.IndexOf(ID)
+    End Function
 End Class
 
 Public Class FiltersClass
-    Public IDFilter As String
-    Public BodyFilter As New List(Of String)()
-    Public SearchBoth As Boolean
-    Public moveFrom As Boolean
-    Public SetMark As Boolean
-    Public SearchURL As Boolean
-    Public UseRegex As Boolean
+    Private _name As String
+    Private _body As New List(Of String)
+    Private _searchBoth As Boolean
+    Private _moveFrom As Boolean
+    Private _setMark As Boolean
+    Private _searchUrl As Boolean
+    Private _useRegex As Boolean
+
+    Public Sub New(ByVal NameFilter As String, _
+            ByVal BodyFilter As List(Of String), _
+            ByVal SearchBoth As Boolean, _
+            ByVal MoveFrom As Boolean, _
+            ByVal SetMark As Boolean, _
+            ByVal SearchUrl As Boolean, _
+            ByVal UseRegex As Boolean)
+        _name = NameFilter
+        _body = BodyFilter
+        _searchBoth = SearchBoth
+        _moveFrom = MoveFrom
+        _setMark = SetMark
+        _searchUrl = SearchUrl
+        _useRegex = UseRegex
+        If _useRegex Then
+            For Each bs As String In _body
+                Try
+                    Dim rgx As New System.Text.RegularExpressions.Regex(bs)
+                Catch ex As Exception
+                    Throw New Exception(My.Resources.ButtonOK_ClickText3 + ex.Message)
+                    Exit Sub
+                End Try
+            Next
+        End If
+    End Sub
+
+    Private Function MakeSummary() As String
+        Dim fs As New System.Text.StringBuilder()
+        If _searchBoth Then
+            If _name <> "" Then
+                fs.AppendFormat(My.Resources.SetFiltersText1, _name)
+            Else
+                fs.Append(My.Resources.SetFiltersText2)
+            End If
+        End If
+        If _body.Count > 0 Then
+            fs.Append(My.Resources.SetFiltersText3)
+            For Each bf As String In _body
+                fs.Append(bf)
+                fs.Append(" ")
+            Next
+            fs.Length -= 1
+            fs.Append(My.Resources.SetFiltersText4)
+        End If
+        fs.Append("(")
+        If _searchBoth Then
+            fs.Append(My.Resources.SetFiltersText5)
+        Else
+            fs.Append(My.Resources.SetFiltersText6)
+        End If
+        If _useRegex Then
+            fs.Append(My.Resources.SetFiltersText7)
+        End If
+        If _searchUrl Then
+            fs.Append(My.Resources.SetFiltersText8)
+        End If
+        If _moveFrom Then
+            fs.Append(My.Resources.SetFiltersText9)
+        ElseIf _setMark Then
+            fs.Append(My.Resources.SetFiltersText10)
+        Else
+            fs.Append(My.Resources.SetFiltersText11)
+        End If
+        fs.Append(")")
+
+        Return fs.ToString()
+    End Function
+
+    Public Property NameFilter() As String
+        Get
+            Return _name
+        End Get
+        Set(ByVal value As String)
+            _name = value
+        End Set
+    End Property
+
+    Public Property BodyFilter() As List(Of String)
+        Get
+            Return _body
+        End Get
+        Set(ByVal value As List(Of String))
+            _body = value
+        End Set
+    End Property
+
+    Public Property SearchBoth() As Boolean
+        Get
+            Return _searchBoth
+        End Get
+        Set(ByVal value As Boolean)
+            _searchBoth = value
+        End Set
+    End Property
+
+    Public Property MoveFrom() As Boolean
+        Get
+            Return _moveFrom
+        End Get
+        Set(ByVal value As Boolean)
+            _moveFrom = value
+        End Set
+    End Property
+
+    Public Property SetMark() As Boolean
+        Get
+            Return _setMark
+        End Get
+        Set(ByVal value As Boolean)
+            _setMark = value
+        End Set
+    End Property
+
+    Public Property SearchUrl() As Boolean
+        Get
+            Return _searchUrl
+        End Get
+        Set(ByVal value As Boolean)
+            _searchUrl = value
+        End Set
+    End Property
+
+    Public Property UseRegex() As Boolean
+        Get
+            Return _useRegex
+        End Get
+        Set(ByVal value As Boolean)
+            _useRegex = value
+        End Set
+    End Property
+
+    Public ReadOnly Property Summary() As String
+        Get
+            Return MakeSummary()
+        End Get
+    End Property
+
+    Public Function IsHit(ByVal Name As String, ByVal Body As String, ByVal OrgData As String) As HITRESULT
+        Dim bHit As Boolean = True
+        Dim tBody As String
+        If _searchUrl Then
+            tBody = OrgData
+        Else
+            tBody = Body
+        End If
+        If _searchBoth Then
+            If _name = "" OrElse Name.Equals(_name, StringComparison.OrdinalIgnoreCase) Then
+                For Each fs As String In _body
+                    If _useRegex Then
+                        If System.Text.RegularExpressions.Regex.IsMatch(tBody, fs, System.Text.RegularExpressions.RegexOptions.IgnoreCase) = False Then bHit = False
+                    Else
+                        If tBody.ToLower().Contains(fs.ToLower()) = False Then bHit = False
+                    End If
+                    If Not bHit Then Exit For
+                Next
+            Else
+                bHit = False
+            End If
+        Else
+            For Each fs As String In _body
+                If _useRegex Then
+                    If Not (System.Text.RegularExpressions.Regex.IsMatch(Name, fs, System.Text.RegularExpressions.RegexOptions.IgnoreCase) OrElse _
+                            System.Text.RegularExpressions.Regex.IsMatch(tBody, fs, System.Text.RegularExpressions.RegexOptions.IgnoreCase)) Then bHit = False
+                Else
+                    If Not (Name.ToLower().Contains(fs.ToLower()) OrElse _
+                            tBody.ToLower().Contains(fs.ToLower())) Then bHit = False
+                End If
+                If Not bHit Then Exit For
+            Next
+        End If
+        If bHit Then
+            If _setMark Then Return HITRESULT.CopyAndMark
+            If _moveFrom Then Return HITRESULT.Move
+            Return HITRESULT.Copy
+        Else
+            Return HITRESULT.None
+        End If
+    End Function
 End Class
 
 
 Public Class ListViewItemComparerClass
-    Implements IComparer(Of String)
+    Implements IComparer(Of Long)
 
     '''' <summary>
     '''' 比較する方法
@@ -771,11 +798,17 @@ Public Class ListViewItemComparerClass
 
     'xがyより小さいときはマイナスの数、大きいときはプラスの数、
     '同じときは0を返す
-    Public Function Compare(ByVal x As String, ByVal y As String) _
-            As Integer Implements IComparer(Of String).Compare
+    Public Function Compare(ByVal x As Long, ByVal y As Long) _
+            As Integer Implements IComparer(Of Long).Compare
         Dim result As Integer = 0
 
-        result = String.Compare(x, y)
+        If x < y Then
+            result = -1
+        ElseIf x = y Then
+            result = 0
+        Else
+            result = 1
+        End If
         '降順の時は結果を+-逆にする
         If _order = SortOrder.Descending Then
             result = -result
