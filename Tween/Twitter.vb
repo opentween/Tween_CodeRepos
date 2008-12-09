@@ -539,6 +539,8 @@ Partial Public Class Twitter
                     'Get Reply
                     If strPost.IndexOf(_isReplyEng + _uid + _isReplyTo, StringComparison.Ordinal) > 0 Or strPost.IndexOf(_isReplyJpn + _uid + _isReplyTo, StringComparison.Ordinal) > 0 Then
                         lItem.Reply = True
+                    ElseIf Regex.IsMatch(lItem.Data, "@" + _uid + "([^a-zA-Z0-9_]|$)", RegexOptions.IgnoreCase) Then
+                        lItem.Reply = True
                     Else
                         lItem.Reply = False
                     End If

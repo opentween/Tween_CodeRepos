@@ -312,9 +312,6 @@
   <data name="GetTimelineWorker_RunWorkerCompletedText6" xml:space="preserve">
     <value>pages</value>
   </data>
-  <data name="GetTimelineWorker_RunWorkerCompletedText7" xml:space="preserve">
-    <value>Reply refreshing...</value>
-  </data>
   <data name="GetTimelineWorker_RunWorkerCompletedText8" xml:space="preserve">
     <value>DMRcv refreshing...</value>
   </data>

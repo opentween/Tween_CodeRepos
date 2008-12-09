@@ -183,8 +183,14 @@ Public Class TabInformations
     'Private Class Statuses
     Private _statuses As Dictionary(Of Long, PostClass)
     Private _addedIds As List(Of Long)
+    Private _editMode As EDITMODE
     'Private _tabs As TabInformations
     'Private _statuses As Statuses
+
+    Public Enum EDITMODE
+        Post
+        Dm
+    End Enum
 
     Public Sub New()
         _sorter = New ListViewItemComparerClass
@@ -242,23 +248,6 @@ Public Class TabInformations
     '    End Set
     'End Property
 
-    Private Function Distribute(ByVal AddedIDs As List(Of Long)) As List(Of Long)
-        '各タブのフィルターと照合。合致したらタブにID追加
-        Dim notifyIds As New List(Of Long)
-        For Each id As Long In AddedIDs
-            Dim post As PostClass = _statuses(id)
-            Dim add As Boolean = False
-            For Each tn As String In _tabs.Keys
-                Dim rslt As HITRESULT = _tabs(tn).AddFiltered(post.Id, post.IsRead, post.Name, post.Data, post.OriginalData)
-                If rslt = HITRESULT.CopyAndMark Then post.IsMark = True
-                If rslt <> HITRESULT.None AndAlso _tabs(tn).Notify Then add = True
-            Next
-            If add Then notifyIds.Add(id)
-        Next
-        Me.SortPosts()
-        Return notifyIds
-    End Function
-
     Public Sub RemovePost(ByVal Id As Long)
         Dim post As PostClass = _statuses(Id)
         '各タブから該当ID削除
@@ -302,22 +291,54 @@ Public Class TabInformations
         End If
     End Sub
 
-    Public Sub BeginUpdate()
+    Public Sub BeginUpdate(ByVal EditMode As EDITMODE)
+        If _addedIds IsNot Nothing Then Throw New Exception("You must call 'EndUpdate' before begin update.")
+        _editMode = EditMode
         _addedIds = New List(Of Long)  'タブ追加用IDコレクション準備
     End Sub
 
-    Public Function EndUpdate() As List(Of Long)
+    Public Function EndUpdate() As List(Of PostClass)
         If _addedIds Is Nothing Then Throw New Exception("You must call 'BeginUpdate' before to add.")
-        Dim NotifyIds As List(Of Long) = Me.Distribute(_addedIds)    'タブに追加
-        '_tabs.Sort()    'ソート
+        Dim NotifyPosts As List(Of PostClass)
+        If _addedIds.Count > 0 Then
+            NotifyPosts = Me.Distribute(_addedIds)    'タブに追加
+        Else
+            NotifyPosts = New List(Of PostClass)    '空のリスト
+        End If
         _addedIds.Clear()
-        _addedIds = Nothing
-        Return NotifyIds     '通知用メッセージを戻す
+        _addedIds = Nothing     '後始末
+        Me.SortPosts()
+        Return NotifyPosts     '通知用メッセージを戻す
+    End Function
+
+    Private Function Distribute(ByVal AddedIDs As List(Of Long)) As List(Of PostClass)
+        '各タブのフィルターと照合。合致したらタブにID追加
+        Dim notifyPosts As New List(Of PostClass)
+        For Each id As Long In AddedIDs
+            Dim post As PostClass = _statuses(id)
+            If _editMode = EDITMODE.Post Then
+                Dim add As Boolean = False
+                Dim mv As Boolean = False
+                For Each tn As String In _tabs.Keys
+                    Dim rslt As HITRESULT = _tabs(tn).AddFiltered(post.Id, post.IsRead, post.Name, post.Data, post.OriginalData)
+                    If rslt = HITRESULT.CopyAndMark Then post.IsMark = True
+                    If rslt <> HITRESULT.None AndAlso _tabs(tn).Notify Then add = True
+                    If rslt = HITRESULT.Move Then mv = True
+                Next
+                If add Then notifyPosts.Add(post)
+                If Not mv Then _tabs("Recent").Add(post.Id, post.IsRead)
+                If post.IsReply Then _tabs("Reply").Add(post.Id, post.IsRead)
+            Else
+                _tabs("Direct").Add(post.Id, post.IsRead)
+                If _tabs("Direct").Notify Then notifyPosts.Add(post)
+            End If
+        Next
+        Return notifyPosts
     End Function
 
     Public Sub AddPost(ByRef Item As PostClass)
         If _addedIds Is Nothing Then Throw New Exception("You must call 'BeginUpdate' before to add.")
-        _statuses.Add(Item.Id, Item)
+        _statuses.Add(Item.Id, Item)    'DMと区別しない？
         _addedIds.Add(Item.Id)
     End Sub
 
@@ -326,26 +347,14 @@ Public Class TabInformations
             Return _statuses(ID)
         End Get
     End Property
-    'End Class
 End Class
 
 Public Class TabClass
-    'Private _tabPage As System.Windows.Forms.TabPage
-    'Private _listCustom As DetailsListView
-    'Public colHd1 As System.Windows.Forms.ColumnHeader
-    'Public colHd2 As System.Windows.Forms.ColumnHeader
-    'Public colHd3 As System.Windows.Forms.ColumnHeader
-    'Public colHd4 As System.Windows.Forms.ColumnHeader
-    'Public colHd5 As System.Windows.Forms.ColumnHeader
-    'Public idCol As System.Collections.Specialized.StringCollection
-    'Private _tabName As String
-    'Public sorter As ListViewItemComparer
+    '自分のタブ名は分からない
     Private _unreadManage As Boolean
     Private _notify As Boolean
     Private _soundFile As String
     Private _filters As List(Of FiltersClass)
-    'Private _modified As Boolean
-    'Private _oldestUnreadItem As ListViewItem
     Private _oldestUnreadItem As Long     'ID
     Private _unreadCount As Integer
     Private _ids As List(Of Long)
@@ -362,7 +371,8 @@ Public Class TabClass
         _ids.Sort(Sorter)
     End Sub
 
-    Private Sub Add(ByVal ID As Long, ByVal Read As Boolean)
+    '無条件に追加
+    Public Sub Add(ByVal ID As Long, ByVal Read As Boolean)
         If Me._ids.Contains(ID) Then Exit Sub
 
         Me._ids.Add(ID)
@@ -377,6 +387,7 @@ Public Class TabClass
         End If
     End Sub
 
+    'フィルタに合致したら追加
     Public Function AddFiltered(ByVal ID As Long, _
                                 ByVal Read As Boolean, _
                                 ByVal Name As String, _
@@ -385,7 +396,7 @@ Public Class TabClass
         Dim rslt As HITRESULT = HITRESULT.None
         '全フィルタ評価（優先順位あり）
         For Each ft As FiltersClass In _filters
-            Select Case ft.IsHit(Name, Body, OrgData)
+            Select Case ft.IsHit(Name, Body, OrgData)   'フィルタクラスでヒット判定
                 Case HITRESULT.None
                 Case HITRESULT.Copy
                     If rslt <> HITRESULT.CopyAndMark Then rslt = HITRESULT.Copy
@@ -555,6 +566,7 @@ Public Class FiltersClass
         End If
     End Sub
 
+    'フィルタ一覧に表示する文言生成
     Private Function MakeSummary() As String
         Dim fs As New System.Text.StringBuilder()
         If _searchBoth Then
@@ -709,7 +721,7 @@ Public Class FiltersClass
     End Function
 End Class
 
-
+'ソート比較クラス：ID比較のみ
 Public Class ListViewItemComparerClass
     Implements IComparer(Of Long)
 

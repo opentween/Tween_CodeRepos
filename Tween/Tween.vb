@@ -33,23 +33,43 @@ Imports System.ComponentModel
 Imports System.Xml.XPath
 
 Public Class TweenMain
-    Private clsTw As Twitter            'Twitter用通信データ処理カスタムクラス
-    Private clsTwPost As Twitter            'Twitter用通信データ処理カスタムクラス
-    Private clsTwSync As Twitter            'Twitter用通信データ処理カスタムクラス
+    Private clsTw As Twitter            'Twitter用通信データ処理カスタムクラス（非同期通信用）
+    Private clsTwPost As Twitter            'Twitter用通信データ処理カスタムクラス（発言投稿専用）
+    Private clsTwSync As Twitter            'Twitter用通信データ処理カスタムクラス（同期通信用）
+
+    '各種設定
     Private _username As String         'ユーザー名
     Private _password As String         'パスワード（デクリプト済み）
+
     Private _mySize As Size             '画面サイズ
     Private _myLoc As Point             '画面位置
     Private _mySpDis As Integer         '区切り位置
     Private _mySpDis2 As Integer        '発言欄区切り位置
+    Private _iconSz As Integer            'アイコンサイズ（現在は16、24、48の3種類。将来直接数字指定可能とする 注：24x24の場合に26と指定しているのはMSゴシック系フォントのための仕様）
+    Private _iconCol As Boolean           '1列表示の時True（48サイズのとき）
+
+    '雑多なフラグ類
     Private _initial As Boolean         'True:起動時処理中
+    Private _endingFlag As Boolean        '終了フラグ
     Private listViewItemSorter As ListViewItemComparer      'リストソート用カスタムクラス
+    Private _tabDrag As Boolean           'タブドラッグ中フラグ（DoDragDropを実行するかの判定用）
+    Private _rclickTabName As String      '右クリックしたタブの名前（Tabコントロール機能不足対応）
+    Private _curTabText As String = "Recent"
+    Private ReadOnly _syncObject As New Object()    'ロック用  
+
+    '設定ファイル関連
     Private _config As Configuration    'アプリケーション構成ファイルクラス
     Private _section As ListSection     '構成ファイル中のユーザー定義ListSectionクラス
+
+    'サブ画面インスタンス
     Private SettingDialog As New Setting()       '設定画面インスタンス
     Private TabDialog As New TabsDialog()        'タブ選択ダイアログインスタンス
     Private SearchDialog As New SearchWord()     '検索画面インスタンス
     Private _tabs As New List(Of TabStructure)() '要素TabStructureクラスのジェネリックリストインスタンス（タブ情報用）
+    Private fDialog As New FilterDialog() 'フィルター編集画面
+    Private UrlDialog As New OpenURL()
+
+    '表示フォント、色、アイコン
     Private _fntUnread As Font            '未読用フォント
     Private _clUnread As Color            '未読用文字色
     Private _fntReaded As Font            '既読用フォント
@@ -64,34 +84,30 @@ Public Class TweenMain
     Private _clAtFromTarget As Color      '選択発言者への返信発言用背景色
     Private TIconList As ImageList        '発言詳細部用アイコン画像リスト
     Private TIconSmallList As ImageList   'リスト表示用アイコン画像リスト
-    Private _iconSz As Integer            'アイコンサイズ（現在は16、24、48の3種類。将来直接数字指定可能とする 注：24x24の場合に26と指定しているのはMSゴシック系フォントのための仕様）
-    Private _iconCol As Boolean           '1列表示の時True（48サイズのとき）
     Private NIconAt As Icon               'At.ico             タスクトレイアイコン：通常時
     Private NIconAtRed As Icon            'AtRed.ico          タスクトレイアイコン：通信エラー時
     Private NIconAtSmoke As Icon          'AtSmoke.ico        タスクトレイアイコン：オフライン時
     Private NIconRefresh(3) As Icon       'Refresh.ico        タスクトレイアイコン：更新中（アニメーション用に4種類を保持するリスト）
     Private TabIcon As Icon               'Tab.ico            未読のあるタブ用アイコン
     Private MainIcon As Icon              'Main.ico           画面左上のアイコン
+
     Private _anchorItem As ListViewItem   '関連発言移動開始時のリストアイテム
     Private _anchorFlag As Boolean        'True:関連発言移動中（関連移動以外のオペレーションをするとFalseへ。Trueだとリスト背景色をアンカー発言選択中として描画）
-    Private _tabDrag As Boolean           'タブドラッグ中フラグ（DoDragDropを実行するかの判定用）
-    Private _refreshIconCnt As Integer    '更新中アイコンのアニメーション用カウンタ
-    Private _rclickTabName As String      '右クリックしたタブの名前
-    Private fDialog As New FilterDialog() 'フィルター編集画面
-    Private _endingFlag As Boolean        '終了フラグ
-    Private _curTabText As String = "Recent"
-    Private _history As New List(Of String)()
-    Private _hisIdx As Integer
-    Private UrlDialog As New OpenURL()
+
+    Private _history As New List(Of String)()   '発言履歴
+    Private _hisIdx As Integer                  '発言履歴カレントインデックス
+
     Private Const _replyHtml As String = "@<a target=""_self"" href=""https://twitter.com/"
+
+    '発言投稿時のAPI引数（発言編集時に設定。手書きreplyでは設定されない）
     Private _reply_to_id As Integer     ' リプライ先のステータスID 0の場合はリプライではない 注：複数あてのものはリプライではない
     Private _reply_to_name As String    ' リプライ先ステータスの書き込み者の名前
-    Private _getDM As Boolean
+
+    '時速表示用
     Private _postTimestamps As New List(Of Date)()
     Private _favTimestamps As New List(Of Date)()
     Private _tlTimestamps As New Dictionary(Of Date, Integer)()
     Private _tlCount As Integer
-    Private ReadOnly _syncObject As New Object()    'ロック用  
 
     ' 以下DrawItem関連
     Private _brsHighLight As New SolidBrush(Color.FromKnownColor(KnownColor.Highlight))
@@ -115,6 +131,7 @@ Public Class TweenMain
     Private _drawtime As Long = 0
 #End If
 
+    'URL短縮のUndo用
     Private Structure urlUndo
         Public Before As String
         Public After As String
@@ -152,6 +169,7 @@ Public Class TweenMain
         Public tName As String                      'Fav追加・削除時のタブ名
         Public ids As List(Of String)               'Fav追加・削除時のID
         Public sIds As List(Of String)                  'Fav追加・削除成功分のID
+        Public newDM As Boolean
     End Structure
 
     'Backgroundworkerへ処理内容を通知するための引数用構造体
@@ -446,7 +464,6 @@ Public Class TweenMain
 
 
         'ウィンドウ設定
-        'Me.WindowState = FormWindowState.Normal     '通常状態
         Me.ClientSize = _section.FormSize           'サイズ設定
         _mySize = Me.ClientSize                     'サイズ保持（最小化・最大化されたまま終了した場合の対応用）
         Me.Location = _section.FormLocation         '位置設定
@@ -609,14 +626,7 @@ Public Class TweenMain
         End Try
 
         If nw Then
-            NotifyIcon1.Icon = NIconRefresh(0)
-            _refreshIconCnt = 0
-            TimerRefreshIcon.Enabled = True
-            Dim args As New GetWorkerArg()
-            args.page = 1
-            args.endPage = 1
-            args.type = WORKERTYPE.DirectMessegeRcv
-            GetTimelineWorker.RunWorkerAsync(args)
+            GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
         Else
             TimerRefreshIcon.Enabled = False
             NotifyIcon1.Icon = NIconAtSmoke
@@ -666,17 +676,7 @@ Public Class TweenMain
                 If SettingDialog.DMPeriodInt > 0 Then TimerDM.Enabled = True
                 If SettingDialog.TimelinePeriodInt > 0 Then TimerTimeline.Enabled = True
             Else
-                NotifyIcon1.Icon = NIconRefresh(0)
-                _refreshIconCnt = 0
-                TimerRefreshIcon.Enabled = True
-                args.page = 1
-                args.endPage = 1
-                args.type = WORKERTYPE.DirectMessegeRcv
-                Do While GetTimelineWorker.IsBusy
-                    Threading.Thread.Sleep(1)
-                    Application.DoEvents()
-                Loop
-                GetTimelineWorker.RunWorkerAsync(args)
+                GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
             End If
         Else
             TimerRefreshIcon.Enabled = False
@@ -700,19 +700,8 @@ Public Class TweenMain
         End Try
 
         If Not nw Then Exit Sub
-        Dim args As New GetWorkerArg()
-        args.page = 1
-        args.endPage = 1
-        args.type = WORKERTYPE.Timeline
-        StatusLabel.Text = My.Resources.TimerTimeline_TickText1
-        NotifyIcon1.Icon = NIconRefresh(0)
-        _refreshIconCnt = 0
-        TimerRefreshIcon.Enabled = True
-        Do While GetTimelineWorker.IsBusy
-            Threading.Thread.Sleep(1)
-            Application.DoEvents()
-        Loop
-        GetTimelineWorker.RunWorkerAsync(args)
+
+        GetTimeline(WORKERTYPE.Timeline, 1, 1)
     End Sub
 
     Private Sub TimerDM_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerDM.Tick
@@ -723,19 +712,8 @@ Public Class TweenMain
             nw = True
         End Try
         If Not nw Then Exit Sub
-        Dim args As New GetWorkerArg()
-        args.page = 1
-        args.endPage = 1
-        args.type = WORKERTYPE.DirectMessegeRcv
-        StatusLabel.Text = My.Resources.TimerDM_TickText1
-        NotifyIcon1.Icon = NIconRefresh(0)
-        _refreshIconCnt = 0
-        TimerRefreshIcon.Enabled = True
-        Do While GetTimelineWorker.IsBusy
-            Threading.Thread.Sleep(1)
-            Application.DoEvents()
-        Loop
-        GetTimelineWorker.RunWorkerAsync(args)
+
+        GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
     End Sub
 
     Private Sub RefreshTimeline(ByVal tlList As List(Of Twitter.MyListItem), Optional ByVal OldItems As Boolean = False)
@@ -925,7 +903,7 @@ Public Class TweenMain
                 End If
             Next
 
-            If lItem.Reply OrElse Regex.IsMatch(lItem.Data, "@" + _username + "([^a-zA-Z0-9_]|$)", RegexOptions.IgnoreCase) Then
+            If lItem.Reply Then
                 Dim lvItem2 As ListViewItem = DirectCast(lvItem.Clone, System.Windows.Forms.ListViewItem)
                 Dim myTs As TabStructure = GetTSbyName("Reply")
                 myTs.allCount += 1
@@ -1173,7 +1151,7 @@ Public Class TweenMain
                 'その他の人
                 If Not myList.Items(cnt).SubItems(4).Text.Equals(_username, StringComparison.CurrentCultureIgnoreCase) Then
                     '自分以外
-                    If myList.Items(cnt).SubItems(11).Text = "False" AndAlso Not Regex.IsMatch(myList.Items(cnt).SubItems(2).Text, "@" + _username + "([^a-zA-Z0-9_]|$)") Then
+                    If myList.Items(cnt).SubItems(11).Text = "False" Then
                         '通常発言
                         If at.Contains(myList.Items(cnt).SubItems(4).Text) Then
                             '返信先
@@ -1230,7 +1208,7 @@ Public Class TweenMain
         End If
 
         'Dim regex As New Regex("([^A-Za-z0-9@_:;\-]|^)(get|g|fav|follow|f|on|off|stop|quit|leave|l|whois|w|nudge|n|stats|invite|track|untrack|tracks|tracking|d)([^A-Za-z0-9_:\-]|$)", RegexOptions.IgnoreCase)
-        Dim regex As New Regex("^[+\-\[\]\s\\.,*/(){}^~|='&%$#""<>?]*(get|g|fav|follow|f|on|off|stop|quit|leave|l|whois|w|nudge|n|stats|invite|track|untrack|tracks|tracking|\*)([+\-\[\]\s\\.,*/(){}^~|='&%$#""<>?]*|$)", RegexOptions.IgnoreCase)
+        Dim regex As New Regex("^[+\-\[\]\s\\.,*/(){}^~|='&%$#""<>?]*(get|g|fav|follow|f|on|off|stop|quit|leave|l|whois|w|nudge|n|stats|invite|track|untrack|tracks|tracking|\*)([+\-\[\]\s\\.,*/(){}^~|='&%$#""<>?]+|$)", RegexOptions.IgnoreCase)
         Dim regex2 As New Regex("https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+")
         'Dim regex3 As New Regex("^\S*\*[^A-Za-z0-9]")
         'Dim regex3 As New Regex("^\s*\*[^A-Za-z0-9]")
@@ -1247,7 +1225,6 @@ Public Class TweenMain
         ReplyStripMenuItem.Enabled = False
         DMStripMenuItem.Enabled = False
         NotifyIcon1.Icon = NIconRefresh(0)
-        _refreshIconCnt = 0
         TimerRefreshIcon.Enabled = True
         If SettingDialog.UseAPI Then
             Do While PostWorker.IsBusy
@@ -1255,12 +1232,12 @@ Public Class TweenMain
                 Application.DoEvents()
             Loop
             PostWorker.RunWorkerAsync(args)
-        Else
-            Do While GetTimelineWorker.IsBusy
-                Threading.Thread.Sleep(1)
-                Application.DoEvents()
-            Loop
-            GetTimelineWorker.RunWorkerAsync(args)
+            '''Else
+            '''    Do While GetTimelineWorker.IsBusy
+            '''        Threading.Thread.Sleep(1)
+            '''        Application.DoEvents()
+            '''    Loop
+            '''    GetTimelineWorker.RunWorkerAsync(args)
         End If
 
         ListTab.SelectedTab.Controls(0).Focus()
@@ -1377,7 +1354,7 @@ Public Class TweenMain
         rslt.type = args.type
         rslt.imgs = imgs
         rslt.tName = args.tName
-        If getDM Then _getDM = True
+        rslt.newDM = getDM
 
         If _endingFlag Then
             e.Cancel = True
@@ -1510,7 +1487,6 @@ Public Class TweenMain
                         TimerTimeline.Enabled = True
                     End If
                     If _initial Then
-                        _getDM = False
                         If rslt.page + 1 <= rslt.endPage AndAlso SettingDialog.ReadPages >= rslt.page + 1 Then
                             If rslt.page Mod 10 = 0 Then
                                 Dim flashRslt As Integer = Win32Api.FlashWindow(Me.Handle.ToInt32, 1)
@@ -1519,52 +1495,19 @@ Public Class TweenMain
                                                    MessageBoxButtons.YesNo, _
                                                    MessageBoxIcon.Question) = Windows.Forms.DialogResult.No Then
                                     If SettingDialog.CheckReply Then
-                                        args.page = 1
-                                        args.endPage = 1
-                                        args.type = WORKERTYPE.Reply
-                                        StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText4
-                                        NotifyIcon1.Icon = NIconRefresh(0)
-                                        _refreshIconCnt = 0
-                                        TimerRefreshIcon.Enabled = True
-                                        Do While GetTimelineWorker.IsBusy
-                                            Threading.Thread.Sleep(1)
-                                            Application.DoEvents()
-                                        Loop
-                                        GetTimelineWorker.RunWorkerAsync(args)
+                                        GetTimeline(WORKERTYPE.Reply, 1, 1)
                                         Exit Sub
                                     Else
                                         _initial = False
                                     End If
                                 End If
                             End If
-                            args.page = rslt.page + 1
-                            args.endPage = rslt.endPage
-                            args.type = WORKERTYPE.Timeline
-                            'Do While GetDMWorker.IsBusy Or GetLogWorker.IsBusy
-                            NotifyIcon1.Icon = NIconRefresh(0)
-                            _refreshIconCnt = 0
-                            TimerRefreshIcon.Enabled = True
-                            Do While GetTimelineWorker.IsBusy
-                                Threading.Thread.Sleep(1)
-                                Application.DoEvents()
-                            Loop
-                            GetTimelineWorker.RunWorkerAsync(args)
+                            GetTimeline(WORKERTYPE.Timeline, rslt.page + 1, rslt.endPage)
                             Exit Sub
                         End If
                         '_initial = False
                         If SettingDialog.CheckReply Then
-                            args.page = 1
-                            args.endPage = 1
-                            args.type = WORKERTYPE.Reply
-                            StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText4
-                            NotifyIcon1.Icon = NIconRefresh(0)
-                            _refreshIconCnt = 0
-                            TimerRefreshIcon.Enabled = True
-                            Do While GetTimelineWorker.IsBusy
-                                Threading.Thread.Sleep(1)
-                                Application.DoEvents()
-                            Loop
-                            GetTimelineWorker.RunWorkerAsync(args)
+                            GetTimeline(WORKERTYPE.Reply, 1, 1)
                         Else
                             _initial = False
                         End If
@@ -1591,52 +1534,17 @@ Public Class TweenMain
                                 If itv < 15000 Then itv = 15000
                                 TimerTimeline.Interval = itv
                             End If
-                            args.page = rslt.page + 1
-                            args.endPage = rslt.endPage
-                            args.type = WORKERTYPE.Timeline
-                            StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText5 + args.page.ToString() + My.Resources.GetTimelineWorker_RunWorkerCompletedText6
-                            NotifyIcon1.Icon = NIconRefresh(0)
-                            _refreshIconCnt = 0
-                            TimerRefreshIcon.Enabled = True
-                            'Do While GetDMWorker.IsBusy Or GetLogWorker.IsBusy
-                            Do While GetTimelineWorker.IsBusy
-                                Threading.Thread.Sleep(1)
-                                Application.DoEvents()
-                            Loop
-                            GetTimelineWorker.RunWorkerAsync(args)
+                            GetTimeline(WORKERTYPE.Timeline, rslt.page + 1, rslt.endPage)
                         Else
                             If rslt.page = 1 AndAlso statusCount < 17 AndAlso SettingDialog.PeriodAdjust AndAlso SettingDialog.TimelinePeriodInt > 0 Then
                                 TimerTimeline.Interval += 1000
                                 If TimerTimeline.Interval > SettingDialog.TimelinePeriodInt * 1000 Then TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
                             End If
                             If SettingDialog.CheckReply Then
-                                args.page = 1
-                                args.endPage = 1
-                                args.type = WORKERTYPE.Reply
-                                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText7
-                                NotifyIcon1.Icon = NIconRefresh(0)
-                                _refreshIconCnt = 0
-                                TimerRefreshIcon.Enabled = True
-                                Do While GetTimelineWorker.IsBusy
-                                    Threading.Thread.Sleep(1)
-                                    Application.DoEvents()
-                                Loop
-                                GetTimelineWorker.RunWorkerAsync(args)
+                                GetTimeline(WORKERTYPE.Reply, 1, 1)
                             Else
-                                If _getDM Then
-                                    _getDM = False
-                                    args.page = 1
-                                    args.endPage = 1
-                                    args.type = WORKERTYPE.DirectMessegeRcv
-                                    StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText8
-                                    NotifyIcon1.Icon = NIconRefresh(0)
-                                    _refreshIconCnt = 0
-                                    TimerRefreshIcon.Enabled = True
-                                    Do While GetTimelineWorker.IsBusy
-                                        Threading.Thread.Sleep(1)
-                                        Application.DoEvents()
-                                    Loop
-                                    GetTimelineWorker.RunWorkerAsync(args)
+                                If rslt.newDM Then
+                                    GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
                                 End If
                             End If
                         End If
@@ -1657,7 +1565,6 @@ Public Class TweenMain
                 Else
                     If Not nw Then Exit Sub
                     If _initial Then
-                        _getDM = False
                         If rslt.page + 1 <= rslt.endPage AndAlso SettingDialog.ReadPagesReply >= rslt.page + 1 Then
                             If rslt.page Mod 10 = 0 Then
                                 Dim flashRslt As Integer = Win32Api.FlashWindow(Me.Handle.ToInt32, 1)
@@ -1669,37 +1576,13 @@ Public Class TweenMain
                                     Exit Sub
                                 End If
                             End If
-                            args.page = rslt.page + 1
-                            args.endPage = rslt.endPage
-                            args.type = WORKERTYPE.Reply
-                            'Do While GetDMWorker.IsBusy Or GetLogWorker.IsBusy
-
-                            NotifyIcon1.Icon = NIconRefresh(0)
-                            _refreshIconCnt = 0
-                            TimerRefreshIcon.Enabled = True
-                            Do While GetTimelineWorker.IsBusy
-                                Threading.Thread.Sleep(1)
-                                Application.DoEvents()
-                            Loop
-                            GetTimelineWorker.RunWorkerAsync(args)
+                            GetTimeline(WORKERTYPE.Reply, rslt.page + 1, rslt.endPage)
                             Exit Sub
                         End If
                         _initial = False
                     Else
-                        If _getDM Then
-                            _getDM = False
-                            args.page = 1
-                            args.endPage = 1
-                            args.type = WORKERTYPE.DirectMessegeRcv
-                            StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText8
-                            NotifyIcon1.Icon = NIconRefresh(0)
-                            _refreshIconCnt = 0
-                            TimerRefreshIcon.Enabled = True
-                            Do While GetTimelineWorker.IsBusy
-                                Threading.Thread.Sleep(1)
-                                Application.DoEvents()
-                            Loop
-                            GetTimelineWorker.RunWorkerAsync(args)
+                        If rslt.newDM Then
+                            GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
                         End If
                     End If
                 End If
@@ -1726,33 +1609,10 @@ Public Class TweenMain
                 End If
                 If (rslt.page < rslt.endPage AndAlso Not _initial) OrElse _
                    (rslt.page + 1 < SettingDialog.ReadPagesDM AndAlso _initial) Then
-                    args.page = rslt.endPage
-                    args.endPage = rslt.endPage
-                    args.type = WORKERTYPE.DirectMessegeRcv
-                    StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText8
-                    NotifyIcon1.Icon = NIconRefresh(0)
-                    _refreshIconCnt = 0
-                    TimerRefreshIcon.Enabled = True
-                    Do While GetTimelineWorker.IsBusy
-                        Threading.Thread.Sleep(1)
-                        Application.DoEvents()
-                    Loop
-                    GetTimelineWorker.RunWorkerAsync(args)
+                    GetTimeline(WORKERTYPE.DirectMessegeRcv, rslt.endPage, rslt.endPage)
                     Exit Sub
                 End If
-
-                args.page = 1
-                args.endPage = 1
-                args.type = WORKERTYPE.DirectMessegeSnt
-                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText12
-                NotifyIcon1.Icon = NIconRefresh(0)
-                _refreshIconCnt = 0
-                TimerRefreshIcon.Enabled = True
-                Do While GetTimelineWorker.IsBusy
-                    Threading.Thread.Sleep(1)
-                    Application.DoEvents()
-                Loop
-                GetTimelineWorker.RunWorkerAsync(args)
+                GetTimeline(WORKERTYPE.DirectMessegeSnt, 1, 1)
             Case WORKERTYPE.DirectMessegeSnt
                 StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText13
                 If rslt.TLine.Count > 0 Then
@@ -1770,18 +1630,7 @@ Public Class TweenMain
                 If Not nw Then Exit Sub
                 If (rslt.page < rslt.endPage AndAlso Not _initial) OrElse _
                    (rslt.page + 1 < SettingDialog.ReadPagesDM AndAlso _initial) Then
-                    args.page = rslt.endPage
-                    args.endPage = rslt.endPage
-                    args.type = WORKERTYPE.DirectMessegeSnt
-                    StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText12
-                    NotifyIcon1.Icon = NIconRefresh(0)
-                    _refreshIconCnt = 0
-                    TimerRefreshIcon.Enabled = True
-                    Do While GetTimelineWorker.IsBusy
-                        Threading.Thread.Sleep(1)
-                        Application.DoEvents()
-                    Loop
-                    GetTimelineWorker.RunWorkerAsync(args)
+                    GetTimeline(WORKERTYPE.DirectMessegeSnt, rslt.endPage, rslt.endPage)
                     Exit Sub
                 End If
 
@@ -1794,71 +1643,51 @@ Public Class TweenMain
 
                 If _initial Then
                     If SettingDialog.ReadPages > 0 Then
-                        args.page = 1
-                        args.endPage = 1
-                        args.type = WORKERTYPE.Timeline
                         StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText5
-                        NotifyIcon1.Icon = NIconRefresh(0)
-                        _refreshIconCnt = 0
-                        TimerRefreshIcon.Enabled = True
-                        Do While GetTimelineWorker.IsBusy
-                            Threading.Thread.Sleep(1)
-                            Application.DoEvents()
-                        Loop
-                        GetTimelineWorker.RunWorkerAsync(args)
+                        GetTimeline(WORKERTYPE.Timeline, 1, 1)
                         Exit Sub
                     End If
                     If SettingDialog.ReadPagesReply > 0 Then
-                        args.page = 1
-                        args.endPage = 1
-                        args.type = WORKERTYPE.Reply
                         StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText4
-                        NotifyIcon1.Icon = NIconRefresh(0)
-                        _refreshIconCnt = 0
-                        TimerRefreshIcon.Enabled = True
-                        Do While GetTimelineWorker.IsBusy
-                            Threading.Thread.Sleep(1)
-                            Application.DoEvents()
-                        Loop
-                        GetTimelineWorker.RunWorkerAsync(args)
+                        GetTimeline(WORKERTYPE.Reply, 1, 1)
                         Exit Sub
                     End If
                     StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText10
                     _initial = False
                 End If
-            Case WORKERTYPE.PostMessage
-                StatusText.Enabled = True
-                PostButton.Enabled = True
-                ReplyStripMenuItem.Enabled = True
-                DMStripMenuItem.Enabled = True
+                '''Case WORKERTYPE.PostMessage
+                '''    StatusText.Enabled = True
+                '''    PostButton.Enabled = True
+                '''    ReplyStripMenuItem.Enabled = True
+                '''    DMStripMenuItem.Enabled = True
 
-                If rslt.retMsg.Length > 0 Then
-                    StatusLabel.Text = rslt.retMsg
-                    TimerRefreshIcon.Enabled = False
-                    NotifyIcon1.Icon = NIconAtRed
-                Else
-                    StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText14
-                    _history.Add("")
-                    _hisIdx = _history.Count - 1
-                    SetMainWindowTitle()
-                End If
+                '''    If rslt.retMsg.Length > 0 Then
+                '''        StatusLabel.Text = rslt.retMsg
+                '''        TimerRefreshIcon.Enabled = False
+                '''        NotifyIcon1.Icon = NIconAtRed
+                '''    Else
+                '''        StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText14
+                '''        _history.Add("")
+                '''        _hisIdx = _history.Count - 1
+                '''        SetMainWindowTitle()
+                '''    End If
 
-                args.page = 1
-                args.endPage = 1
-                args.type = WORKERTYPE.Timeline
-                If Not GetTimelineWorker.IsBusy Then
-                    'TimerTimeline.Enabled = False
-                    StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText5
-                    NotifyIcon1.Icon = NIconRefresh(0)
-                    _refreshIconCnt = 0
-                    TimerRefreshIcon.Enabled = True
-                    Do While GetTimelineWorker.IsBusy
-                        Threading.Thread.Sleep(1)
-                        Application.DoEvents()
-                    Loop
-                    GetTimelineWorker.RunWorkerAsync(args)
-                End If
-            ' Contributed by shuyoko <http://twitter.com/shuyoko> BEGIN:
+                '''    args.page = 1
+                '''    args.endPage = 1
+                '''    args.type = WORKERTYPE.Timeline
+                '''    If Not GetTimelineWorker.IsBusy Then
+                '''        'TimerTimeline.Enabled = False
+                '''        StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText5
+                '''        NotifyIcon1.Icon = NIconRefresh(0)
+                '''        _refreshIconCnt = 0
+                '''        TimerRefreshIcon.Enabled = True
+                '''        Do While GetTimelineWorker.IsBusy
+                '''            Threading.Thread.Sleep(1)
+                '''            Application.DoEvents()
+                '''        Loop
+                '''        GetTimelineWorker.RunWorkerAsync(args)
+                '''    End If
+                ' Contributed by shuyoko <http://twitter.com/shuyoko> BEGIN:
             Case WORKERTYPE.BlackFavAdd
                 StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText15_black + rslt.page.ToString + "/" + rslt.ids.Count.ToString + _
                                     My.Resources.GetTimelineWorker_RunWorkerCompletedText16 + (rslt.page - rslt.sIds.Count).ToString
@@ -1869,7 +1698,6 @@ Public Class TweenMain
                     args.tName = rslt.tName
                     args.type = WORKERTYPE.BlackFavAdd
                     NotifyIcon1.Icon = NIconRefresh(0)
-                    _refreshIconCnt = 0
                     TimerRefreshIcon.Enabled = True
                     Do While GetTimelineWorker.IsBusy
                         Threading.Thread.Sleep(1)
@@ -1888,7 +1716,6 @@ Public Class TweenMain
                     args.tName = rslt.tName
                     args.type = WORKERTYPE.FavAdd
                     NotifyIcon1.Icon = NIconRefresh(0)
-                    _refreshIconCnt = 0
                     TimerRefreshIcon.Enabled = True
                     Do While GetTimelineWorker.IsBusy
                         Threading.Thread.Sleep(1)
@@ -1941,7 +1768,6 @@ Public Class TweenMain
                     args.tName = rslt.tName
                     args.type = WORKERTYPE.FavRemove
                     NotifyIcon1.Icon = NIconRefresh(0)
-                    _refreshIconCnt = 0
                     TimerRefreshIcon.Enabled = True
                     Do While GetTimelineWorker.IsBusy
                         Threading.Thread.Sleep(1)
@@ -2014,6 +1840,30 @@ Public Class TweenMain
 
     End Sub
 
+    Private Sub GetTimeline(ByVal WorkerType As WORKERTYPE, ByVal fromPage As Integer, ByVal toPage As Integer)
+        Dim args As New GetWorkerArg
+        args.page = fromPage
+        args.endPage = toPage
+        args.type = WorkerType
+        Select Case WorkerType
+            Case TweenMain.WORKERTYPE.Timeline
+                If Not _initial Then StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText5 + args.page.ToString() + My.Resources.GetTimelineWorker_RunWorkerCompletedText6
+            Case TweenMain.WORKERTYPE.Reply
+                If Not _initial Then StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText4
+            Case TweenMain.WORKERTYPE.DirectMessegeRcv
+                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText8
+            Case TweenMain.WORKERTYPE.DirectMessegeSnt
+                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText12
+        End Select
+        NotifyIcon1.Icon = NIconRefresh(0)
+        TimerRefreshIcon.Enabled = True
+        Do While GetTimelineWorker.IsBusy
+            Threading.Thread.Sleep(1)
+            Application.DoEvents()
+        Loop
+        GetTimelineWorker.RunWorkerAsync(args)
+    End Sub
+
     Private Sub NotifyIcon1_MouseClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles NotifyIcon1.MouseClick
         If e.Button = Windows.Forms.MouseButtons.Left Then
             Me.Visible = True
@@ -2043,7 +1893,6 @@ Public Class TweenMain
         End If
 
         NotifyIcon1.Icon = NIconRefresh(0)
-        _refreshIconCnt = 0
         TimerRefreshIcon.Enabled = True
         StatusLabel.Text = My.Resources.FavAddToolStripMenuItem_ClickText3
 
@@ -2086,7 +1935,6 @@ Public Class TweenMain
 
         StatusLabel.Text = My.Resources.FavRemoveToolStripMenuItem_ClickText3
         NotifyIcon1.Icon = NIconRefresh(0)
-        _refreshIconCnt = 0
         TimerRefreshIcon.Enabled = True
 
         Dim args As New GetWorkerArg()
@@ -2389,7 +2237,6 @@ Public Class TweenMain
               MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then Exit Sub
 
         NotifyIcon1.Icon = NIconRefresh(0)
-        _refreshIconCnt = 0
         TimerRefreshIcon.Enabled = True
 
         If ListTab.SelectedTab.Text <> "Direct" Then
@@ -2690,45 +2537,17 @@ Public Class TweenMain
 
     Private Sub RefreshStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RefreshStripMenuItem.Click
         NotifyIcon1.Icon = NIconRefresh(0)
-        _refreshIconCnt = 0
         TimerRefreshIcon.Enabled = True
 
         If ListTab.SelectedTab.Text <> "Direct" Then
             If ListTab.SelectedTab.Text <> "Reply" Then
                 'TimerTimeline.Enabled = False
-                Dim args As New GetWorkerArg()
-                args.page = 1
-                args.endPage = 1
-                args.type = WORKERTYPE.Timeline
-                StatusLabel.Text = My.Resources.RefreshStripMenuItem_ClickText1
-                Do While GetTimelineWorker.IsBusy
-                    Threading.Thread.Sleep(1)
-                    Application.DoEvents()
-                Loop
-                GetTimelineWorker.RunWorkerAsync(args)
+                GetTimeline(WORKERTYPE.Timeline, 1, 1)
             Else
-                Dim args As New GetWorkerArg()
-                args.page = 1
-                args.endPage = 1
-                args.type = WORKERTYPE.Reply
-                StatusLabel.Text = My.Resources.RefreshStripMenuItem_ClickText2
-                Do While GetTimelineWorker.IsBusy
-                    Threading.Thread.Sleep(1)
-                    Application.DoEvents()
-                Loop
-                GetTimelineWorker.RunWorkerAsync(args)
+                GetTimeline(WORKERTYPE.Reply, 1, 1)
             End If
         Else
-            Dim args As New GetWorkerArg()
-            args.page = 1
-            args.endPage = 1
-            args.type = WORKERTYPE.DirectMessegeRcv
-            StatusLabel.Text = My.Resources.RefreshStripMenuItem_ClickText3
-            Do While GetTimelineWorker.IsBusy
-                Threading.Thread.Sleep(1)
-                Application.DoEvents()
-            Loop
-            GetTimelineWorker.RunWorkerAsync(args)
+            GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
         End If
 
     End Sub
@@ -2961,7 +2780,11 @@ Public Class TweenMain
                 myTab.colHd5.Width = 50
             End If
 
-            TabDialog.AddTab(myTab.tabName)
+            If myTab.tabName <> "Recent" AndAlso _
+               myTab.tabName <> "Reply" AndAlso _
+               myTab.tabName <> "Direct" Then
+                TabDialog.AddTab(myTab.tabName)
+            End If
 
             myTab.listCustom.SmallImageList = TIconSmallList
             myTab.listCustom.ListViewItemSorter = listViewItemSorter
@@ -3283,6 +3106,7 @@ Public Class TweenMain
             End If
         Next
     End Sub
+
     Private Sub PostBrowser_StatusTextChanged(ByVal sender As Object, ByVal e As EventArgs) Handles PostBrowser.StatusTextChanged
         'tinyURLに対応する？
         If PostBrowser.StatusText.StartsWith("http") Then
@@ -3565,37 +3389,23 @@ Public Class TweenMain
                 toIdx = 0
                 stp = -1
         End Select
+
+        Dim regOpt As RegexOptions = RegexOptions.None
+        Dim fndOpt As StringComparison = StringComparison.Ordinal
+        If Not CaseSensitive Then
+            regOpt = RegexOptions.IgnoreCase
+            fndOpt = StringComparison.OrdinalIgnoreCase
+        End If
 RETRY:
-        If CaseSensitive Then
-            If UseRegex Then
-                ' 正規表現検索（CaseSensitive）
-                Dim _search As Regex
-                Try
-                    _search = New Regex(_word)
-                    For idx As Integer = cidx To toIdx Step stp
-                        If _search.IsMatch(myList.Items(idx).SubItems(1).Text) _
-                            OrElse _search.IsMatch(myList.Items(idx).SubItems(2).Text) _
-                            OrElse _search.IsMatch(myList.Items(idx).SubItems(4).Text) _
-                        Then
-                            For Each itm As ListViewItem In myList.SelectedItems
-                                itm.Selected = False
-                            Next
-                            myList.Items(idx).Selected = True
-                            myList.Items(idx).Focused = True
-                            myList.EnsureVisible(idx)
-                            Exit Sub
-                        End If
-                    Next
-                Catch ex As ArgumentException
-                    MsgBox(My.Resources.DoTabSearchText1, MsgBoxStyle.Critical)
-                    Exit Sub
-                End Try
-            Else
-                ' 通常検索（CaseSensitive）
+        If UseRegex Then
+            ' 正規表現検索（CaseSensitive）
+            Dim _search As Regex
+            Try
+                _search = New Regex(_word)
                 For idx As Integer = cidx To toIdx Step stp
-                    If myList.Items(idx).SubItems(1).Text.IndexOf(_word, StringComparison.Ordinal) > -1 _
-                        OrElse myList.Items(idx).SubItems(2).Text.IndexOf(_word, StringComparison.Ordinal) > -1 _
-                        OrElse myList.Items(idx).SubItems(4).Text.IndexOf(_word, StringComparison.Ordinal) > -1 _
+                    If _search.IsMatch(myList.Items(idx).SubItems(1).Text, regOpt) _
+                        OrElse _search.IsMatch(myList.Items(idx).SubItems(2).Text, regOpt) _
+                        OrElse _search.IsMatch(myList.Items(idx).SubItems(4).Text, regOpt) _
                     Then
                         For Each itm As ListViewItem In myList.SelectedItems
                             itm.Selected = False
@@ -3606,46 +3416,26 @@ RETRY:
                         Exit Sub
                     End If
                 Next
-            End If
+            Catch ex As ArgumentException
+                MsgBox(My.Resources.DoTabSearchText1, MsgBoxStyle.Critical)
+                Exit Sub
+            End Try
         Else
-            If UseRegex Then
-                ' 正規表現検索（IgnoreCase）
-                Try
-                    For idx As Integer = cidx To toIdx Step stp
-                        If Regex.IsMatch(myList.Items(idx).SubItems(1).Text, _word, RegexOptions.IgnoreCase) _
-                            OrElse Regex.IsMatch(myList.Items(idx).SubItems(2).Text, _word, RegexOptions.IgnoreCase) _
-                            OrElse Regex.IsMatch(myList.Items(idx).SubItems(4).Text, _word, RegexOptions.IgnoreCase) _
-                        Then
-                            For Each itm As ListViewItem In myList.SelectedItems
-                                itm.Selected = False
-                            Next
-                            myList.Items(idx).Selected = True
-                            myList.Items(idx).Focused = True
-                            myList.EnsureVisible(idx)
-                            Exit Sub
-                        End If
+            ' 通常検索（CaseSensitive）
+            For idx As Integer = cidx To toIdx Step stp
+                If myList.Items(idx).SubItems(1).Text.IndexOf(_word, fndOpt) > -1 _
+                    OrElse myList.Items(idx).SubItems(2).Text.IndexOf(_word, fndOpt) > -1 _
+                    OrElse myList.Items(idx).SubItems(4).Text.IndexOf(_word, fndOpt) > -1 _
+                Then
+                    For Each itm As ListViewItem In myList.SelectedItems
+                        itm.Selected = False
                     Next
-                Catch ex As ArgumentException
-                    MsgBox(My.Resources.DoTabSearchText1, MsgBoxStyle.Critical)
+                    myList.Items(idx).Selected = True
+                    myList.Items(idx).Focused = True
+                    myList.EnsureVisible(idx)
                     Exit Sub
-                End Try
-            Else
-                ' 通常検索（IgnoreCase）
-                For idx As Integer = cidx To toIdx
-                    If myList.Items(idx).SubItems(1).Text.IndexOf(_word, StringComparison.OrdinalIgnoreCase) > -1 _
-                        OrElse myList.Items(idx).SubItems(2).Text.IndexOf(_word, StringComparison.OrdinalIgnoreCase) > -1 _
-                        OrElse myList.Items(idx).SubItems(4).Text.IndexOf(_word, StringComparison.OrdinalIgnoreCase) > -1 _
-                    Then
-                        For Each itm As ListViewItem In myList.SelectedItems
-                            itm.Selected = False
-                        Next
-                        myList.Items(idx).Selected = True
-                        myList.Items(idx).Focused = True
-                        myList.EnsureVisible(idx)
-                        Exit Sub
-                    End If
-                Next
-            End If
+                End If
+            Next
         End If
 
         If Not fnd Then
@@ -4949,11 +4739,12 @@ RETRY:
 
     Private Sub TimerRefreshIcon_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerRefreshIcon.Tick
         If Not TimerRefreshIcon.Enabled Then Exit Sub
+        Static iconCnt As Integer = 0
 
-        _refreshIconCnt += 1
-        If _refreshIconCnt > 3 Then _refreshIconCnt = 0
+        iconCnt += 1
+        If iconCnt > 3 Then iconCnt = 0
 
-        NotifyIcon1.Icon = NIconRefresh(_refreshIconCnt)
+        NotifyIcon1.Icon = NIconRefresh(iconCnt)
     End Sub
 
     Private Sub ContextMenuTabProperty_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuTabProperty.Opening
@@ -5227,7 +5018,6 @@ RETRY:
         End If
 
         Dim rslt As GetWorkerResult = DirectCast(e.Result, GetWorkerResult)
-        Dim args As New GetWorkerArg()
 
         urlUndoBuffer = Nothing
         UrlUndoToolStripMenuItem.Enabled = False  'Undoをできないように設定
@@ -5278,20 +5068,8 @@ RETRY:
                     SetMainWindowTitle()
                 End If
 
-                args.page = 1
-                args.endPage = 1
-                args.type = WORKERTYPE.Timeline
                 If Not GetTimelineWorker.IsBusy Then
-                    'TimerTimeline.Enabled = False
-                    StatusLabel.Text = My.Resources.PostWorker_RunWorkerCompletedText5
-                    NotifyIcon1.Icon = NIconRefresh(0)
-                    _refreshIconCnt = 0
-                    TimerRefreshIcon.Enabled = True
-                    Do While GetTimelineWorker.IsBusy
-                        Threading.Thread.Sleep(1)
-                        Application.DoEvents()
-                    Loop
-                    GetTimelineWorker.RunWorkerAsync(args)
+                    GetTimeline(WORKERTYPE.Timeline, 1, 1)
                 End If
         End Select
     End Sub
@@ -6292,7 +6070,6 @@ RETRY:
         End If
 
         NotifyIcon1.Icon = NIconRefresh(0)
-        _refreshIconCnt = 0
         TimerRefreshIcon.Enabled = True
         StatusLabel.Text = My.Resources.BlackFavAddToolStripMenuItem_ClickText3
 
