@@ -289,21 +289,24 @@ Namespace My.Resources
         '''<summary>
         '''  更新履歴
         '''
-        '''***Ver0.1.6.1(Unreleased)
+        '''***Ver0.1.7.1(Unreleased)
+        '''-Wedata使うように戻し
+        '''-入力欄のURLを投稿時に自動短縮するオプション追加
+        '''-固定タブの順序変更もできるように
+        '''-発言抜け対策
+        '''-メモリリーク修正
+        '''-発言の後ろにつく...のリンク削除
+        '''-発言をブラックふぁぼったーに追加する機能をマージ (@shuyoko 氏によるもの。ありがとうございます)
+        '''-起動時読み込みページ数設定のうち、ReplyとDMが保存されていなかったのを修正
+        '''***Ver0.1.7.0(2008/12/04)
         '''-コマンド回避ロジックを調整
+        '''-ブラウザなどから選択文字列やリンクをドラッグ＆ドロップした場合に、入力欄へ入力するようにした。
+        '''-バルーンを表示する際にユーザー名を表示するオプションの設定を見るようにした。
+        '''-最小化で起動した場合に起動できない問題とそれに関連する不具合修正
+        '''-TwitterのHTML変更対応
         '''***Ver0.1.6.0(2008/11/28)
         '''-詳細発言表示部分からの右クリック検索をローカライズ対応可能にした。その他メニュー項目の見直しを行った。
-        '''-初期化完了してからフォームを表示するようにした（つもり）
-        '''-詳細発言表示部分からの右クリックメニューでURLをコピーできるようにした
-        '''-詳細発言表示部分からの検索の際に文字列を正規化していなかったのを修正
-        '''-文字列を選択していなかったときに検索をしようとした場合の動作を修正
-        '''-詳細発言表示部分からの右クリックメニューで、選択文字列を現在のタブで検索できるようにした。
-        '''-Twitterコマンド誤認問題が本家で修正されたのにあわせ、回避ロジック修正
-        '''-HTML解析に失敗したとき、切り出したHTMLをファイル出力（コマンドライン引数&apos;/d&apos;の時のみ）
-        '''-DMが取れないケースに対応
-        '''***Ver0.1.5.0(2008/11/25)
-        '''-アイコンサイズ48*48の1列表示が正常に表示されないバグ修正
-        '''***Ver0.1.4.0(2008/ [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        '''-初期化完了 [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property ChangeLog() As String
             Get
@@ -740,15 +743,6 @@ Namespace My.Resources
         Friend ReadOnly Property GetTimelineWorker_RunWorkerCompletedText6() As String
             Get
                 Return ResourceManager.GetString("GetTimelineWorker_RunWorkerCompletedText6", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Reply更新中... に類似しているローカライズされた文字列を検索します。
-        '''</summary>
-        Friend ReadOnly Property GetTimelineWorker_RunWorkerCompletedText7() As String
-            Get
-                Return ResourceManager.GetString("GetTimelineWorker_RunWorkerCompletedText7", resourceCulture)
             End Get
         End Property
         
