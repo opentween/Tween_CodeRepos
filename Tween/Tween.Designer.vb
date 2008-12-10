@@ -872,6 +872,7 @@ Partial Class TweenMain
         '
         'PostWorker
         '
+        Me.PostWorker.WorkerSupportsCancellation = True
         '
         'OpenFileDialog1
         '
