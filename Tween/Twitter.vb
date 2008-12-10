@@ -152,7 +152,7 @@ Partial Public Class Twitter
         _mySock = New MySocket("UTF-8", Username, Password, ProxyType, ProxyAddress, ProxyPort, ProxyUser, ProxyPassword)
         _uid = Username
         _pwd = Password
-        follower.Add(_uid)
+        'follower.Add(_uid)
         _proxyType = ProxyType
         _proxyAddress = ProxyAddress
         _proxyPort = ProxyPort
@@ -668,6 +668,7 @@ Partial Public Class Twitter
         'If page = 1 And gType = GetTypes.GET_DMRCV Then
         '    pos1 = retMsg.IndexOf(_followerList)
         '    If pos1 = -1 Then
+        '        If follower.Count = 0 Then follower.Add(_uid)
         '        '取得失敗
         '        _signed = False
         '        Return "GetDirectMessage -> Err: Busy(3)"
@@ -683,6 +684,7 @@ Partial Public Class Twitter
         '            follower.Add(retMsg.Substring(pos2 + _followerMbr2.Length, pos1 - pos2 - _followerMbr2.Length))
         '            pos1 = retMsg.IndexOf(_followerMbr1, pos1)
         '        Loop
+        '        follower.RemoveAt(follower.Count - 1)
         '    Catch ex As Exception
         '        _signed = False
         '        Return "GetDirectMessage -> Err: Can't get followers"
@@ -1110,21 +1112,21 @@ Partial Public Class Twitter
                 Return resStatus
             End If
 
-            Dim rd As Xml.XmlTextReader = New Xml.XmlTextReader(New System.IO.StringReader(resMsg))
-            Dim lc As Integer = 0
+            Using rd As Xml.XmlTextReader = New Xml.XmlTextReader(New System.IO.StringReader(resMsg))
+                Dim lc As Integer = 0
 
-            rd.Read()
-            While rd.EOF = False
-                If rd.IsStartElement("screen_name") Then
-                    follower.Add(rd.ReadElementString("screen_name"))
-                    lc += 1
-                Else
-                    rd.Read()
-                End If
-            End While
-            rd.Close()
+                rd.Read()
+                While rd.EOF = False
+                    If rd.IsStartElement("screen_name") Then
+                        follower.Add(rd.ReadElementString("screen_name"))
+                        lc += 1
+                    Else
+                        rd.Read()
+                    End If
+                End While
+                If lc = 0 Then Exit Do
+            End Using
 
-            If lc = 0 Then Exit Do
         Loop
 
         Return ""

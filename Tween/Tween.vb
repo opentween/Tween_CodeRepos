@@ -417,14 +417,14 @@ Public Class TweenMain
         If _username = "" Or _password = "" Then
             '設定せずにキャンセルされた場合はプログラム終了
             If SettingDialog.ShowDialog() = Windows.Forms.DialogResult.Cancel Then
-                Application.Exit()
+                Application.Exit()  '強制終了
                 Exit Sub
             End If
             _username = SettingDialog.UserID
             _password = SettingDialog.PasswordStr
             '設定されたが、依然ユーザー名とパスワードが未設定ならプログラム終了
             If _username = "" Or _password = "" Then
-                Application.Exit()
+                Application.Exit()  '強制終了
                 Exit Sub
             End If
             '新しい設定を反映
@@ -1244,17 +1244,20 @@ Public Class TweenMain
     End Sub
 
     Private Sub EndToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles EndToolStripMenuItem.Click
-        Application.Exit()
+        'Application.Exit()
+        _endingFlag = True
+        Me.Close()
     End Sub
 
     Private Sub Tween_FormClosing(ByVal sender As System.Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles MyBase.FormClosing
-        If Not SettingDialog.CloseToExit AndAlso e.CloseReason = CloseReason.UserClosing Then
+        If Not SettingDialog.CloseToExit AndAlso e.CloseReason = CloseReason.UserClosing AndAlso _endingFlag = False Then
+            '_endingFlag=False:フォームの×ボタン
             e.Cancel = True
             Me.Visible = False
-
         Else
             _endingFlag = True
             GetTimelineWorker.CancelAsync()
+            PostWorker.CancelAsync()
             If clsTw IsNot Nothing Then clsTw.Ending = True
             If clsTwPost IsNot Nothing Then clsTwPost.Ending = True
 
@@ -1278,7 +1281,7 @@ Public Class TweenMain
     End Sub
 
     Private Sub GetTimelineWorker_DoWork(ByVal sender As System.Object, ByVal e As System.ComponentModel.DoWorkEventArgs) Handles GetTimelineWorker.DoWork
-        If _endingFlag Then
+        If GetTimelineWorker.CancellationPending OrElse _endingFlag Then
             e.Cancel = True
             Exit Sub
         End If
@@ -1337,6 +1340,10 @@ Public Class TweenMain
                 _reply_to_id = 0
                 _reply_to_name = Nothing
             End If
+            If GetTimelineWorker.CancellationPending Then
+                e.Cancel = True
+                Exit Sub
+            End If
             If ret = "" OrElse (ret <> "" AndAlso (args.type = WORKERTYPE.PostMessage OrElse args.type = WORKERTYPE.FavAdd OrElse args.type = WORKERTYPE.FavRemove OrElse args.type = WORKERTYPE.BlackFavAdd)) Then Exit For
             Threading.Thread.Sleep(500)
         Next
@@ -1356,7 +1363,7 @@ Public Class TweenMain
         rslt.tName = args.tName
         rslt.newDM = getDM
 
-        If _endingFlag Then
+        If GetTimelineWorker.CancellationPending Then
             e.Cancel = True
             Exit Sub
         End If
@@ -1393,6 +1400,10 @@ Public Class TweenMain
 
     Private Sub GetTimelineWorker_RunWorkerCompleted(ByVal sender As System.Object, ByVal e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles GetTimelineWorker.RunWorkerCompleted
 
+        If _endingFlag OrElse e.Cancelled Then
+            Exit Sub
+        End If
+
         Dim nw As Boolean = True
         Try
             nw = My.Computer.Network.IsAvailable
@@ -1405,10 +1416,6 @@ Public Class TweenMain
                 NotifyIcon1.Icon = NIconAtRed
             End If
             Throw e.Error
-            Exit Sub
-        End If
-
-        If _endingFlag OrElse e.Cancelled Then
             Exit Sub
         End If
 
@@ -3702,7 +3709,12 @@ RETRY:
                         retMsg = clsTwSync.GetTweenUpBinary()
                         If retMsg.Length = 0 Then
                             System.Diagnostics.Process.Start(My.Application.Info.DirectoryPath + "\TweenUp.exe")
-                            Application.Exit()
+                            If startup Then
+                                Application.Exit()
+                            Else
+                                _endingFlag = True
+                                Me.Close()
+                            End If
                             Exit Sub
                         Else
                             If Not startup Then MessageBox.Show(My.Resources.CheckNewVersionText4, My.Resources.CheckNewVersionText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
@@ -3720,7 +3732,12 @@ RETRY:
                             retMsg = clsTwSync.GetTweenUpBinary()
                             If retMsg.Length = 0 Then
                                 System.Diagnostics.Process.Start(My.Application.Info.DirectoryPath + "\TweenUp.exe")
-                                Application.Exit()
+                                If startup Then
+                                    Application.Exit()
+                                Else
+                                    _endingFlag = True
+                                    Me.Close()
+                                End If
                                 Exit Sub
                             Else
                                 If Not startup Then MessageBox.Show(My.Resources.CheckNewVersionText4, My.Resources.CheckNewVersionText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
@@ -4939,7 +4956,7 @@ RETRY:
     End Sub
 
     Private Sub PostWorker_DoWork(ByVal sender As System.Object, ByVal e As System.ComponentModel.DoWorkEventArgs) Handles PostWorker.DoWork
-        If _endingFlag Then
+        If PostWorker.CancellationPending OrElse _endingFlag Then
             e.Cancel = True
             Exit Sub
         End If
@@ -4967,7 +4984,7 @@ RETRY:
         rslt.imgs = Nothing
         rslt.tName = args.tName
 
-        If _endingFlag Then
+        If PostWorker.CancellationPending Then
             e.Cancel = True
             Exit Sub
         End If
@@ -4999,6 +5016,10 @@ RETRY:
     End Sub
 
     Private Sub PostWorker_RunWorkerCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles PostWorker.RunWorkerCompleted
+        If _endingFlag OrElse e.Cancelled Then
+            Exit Sub
+        End If
+
         Dim nw As Boolean = True
         Try
             nw = My.Computer.Network.IsAvailable
@@ -5010,10 +5031,6 @@ RETRY:
                 NotifyIcon1.Icon = NIconAtRed
             End If
             Throw e.Error
-            Exit Sub
-        End If
-
-        If _endingFlag OrElse e.Cancelled Then
             Exit Sub
         End If
 
