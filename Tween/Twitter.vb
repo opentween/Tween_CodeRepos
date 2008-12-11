@@ -458,7 +458,7 @@ Partial Public Class Twitter
                                         If retUrlStr.Length > 0 Then
                                             Dim uri As Uri = New Uri(retUrlStr)
                                             If Not uri.AbsolutePath = "/" Then
-                                                Dim sb As StringBuilder = New StringBuilder(uri.Scheme + uri.SchemeDelimiter + uri.Host + uri.AbsolutePath, 256)
+                                                Dim sb As StringBuilder = New StringBuilder(uri.Scheme + uri.SchemeDelimiter + uri.Host + "/", 256)
                                                 For Each c As Char In retUrlStr.Substring(sb.Length)
                                                     If Convert.ToInt32(c) > 127 Then
                                                         sb.Append("%" + Convert.ToInt16(c).ToString("X2"))
