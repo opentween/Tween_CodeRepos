@@ -5574,6 +5574,8 @@ RETRY:
                 Exit For
             End If
         Next
+        SetMainWindowTitle()
+        SetStatusLabel()
     End Sub
 
     Private Sub SetMainWindowTitle()
