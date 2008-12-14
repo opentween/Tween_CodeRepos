@@ -5261,21 +5261,11 @@ RETRY:
     End Sub
 
     Private Sub ReFilter()
+        Me.Cursor = Cursors.WaitCursor
 
         '☆☆☆☆　暫定対応　☆☆☆☆
         '発言保持をクラス化したとき、ちゃんと対応する
         'このコードではメンテできない
-
-
-        'Dim modify As Boolean = False
-        'For Each ts As TabStructure In _tabs
-        '    If ts.modified Then
-        '        modify = True
-        '        ts.modified = False
-        '    End If
-        'Next
-        'If modify = False Then Exit Sub
-
 
         For Each ts As TabStructure In _tabs
             ts.listCustom.BeginUpdate()
@@ -5528,6 +5518,7 @@ RETRY:
             ts.listCustom.EndUpdate()
         Next
 
+        Me.Cursor = Cursors.Default
     End Sub
 
     Private Sub OpenURLMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OpenURLMenuItem.Click
@@ -5695,7 +5686,10 @@ RETRY:
     End Sub
 
     Private Sub UpdateFollowersMenuItem1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UpdateFollowersMenuItem1.Click
+        Me.Cursor = Cursors.WaitCursor
         StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText1
+        Threading.Thread.Sleep(1)
+        My.Application.DoEvents()
         Dim ret As String
         ret = clsTwSync.GetFollowers()
         If ret <> "" Then
@@ -5703,6 +5697,7 @@ RETRY:
             Exit Sub
         End If
         StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText3
+        Me.Cursor = Cursors.Default
     End Sub
 
     Private Sub SplitContainer1_SplitterMoved(ByVal sender As Object, ByVal e As System.Windows.Forms.SplitterEventArgs) Handles SplitContainer1.SplitterMoved
