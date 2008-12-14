@@ -1286,6 +1286,8 @@ Public Class TweenMain
             Exit Sub
         End If
 
+        Threading.Thread.CurrentThread.Priority = Threading.ThreadPriority.BelowNormal
+
         Dim ret As String = ""
         Dim tlList As New List(Of Twitter.MyListItem)()
         Dim rslt As New GetWorkerResult()
