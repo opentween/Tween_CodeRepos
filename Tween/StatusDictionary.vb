@@ -44,6 +44,7 @@ Public Class PostClass
     Private _InReplyToId As Long
     Private _Source As String
     Private _ReplyToList As List(Of Long)
+    Private _IsMe As Boolean
 
     Public Sub New(ByVal Nickname As String, _
             ByVal Data As String, _
@@ -61,7 +62,8 @@ Public Class PostClass
             ByVal InReplyToUser As String, _
             ByVal InReplyToId As Long, _
             ByVal Source As String, _
-            ByVal ReplyToList As List(Of Long))
+            ByVal ReplyToList As List(Of Long), _
+            ByVal IsMe As Boolean)
         _Nick = Nickname
         _Data = Data
         _ImageUrl = ImageUrl
@@ -79,6 +81,7 @@ Public Class PostClass
         _InReplyToId = InReplyToId
         _Source = Source
         _ReplyToList = ReplyToList
+        _IsMe = IsMe
     End Sub
     Public ReadOnly Property Nickname() As String
         Get
@@ -174,6 +177,11 @@ Public Class PostClass
             Return _ReplyToList
         End Get
     End Property
+    Public ReadOnly Property IsMe() As Boolean
+        Get
+            Return _IsMe
+        End Get
+    End Property
 End Class
 
 Public Class TabInformations
@@ -197,8 +205,12 @@ Public Class TabInformations
         _statuses = New Dictionary(Of Long, PostClass)
     End Sub
 
-    Public Sub AddTab(ByVal TabText As String)
-        _tabs.Add(TabText, New TabClass())
+    Public Sub AddTab(ByVal TabName As String)
+        _tabs.Add(TabName, New TabClass())
+    End Sub
+
+    Public Sub AddTab(ByVal TabName As String, ByVal Tab As TabClass)
+        _tabs.Add(TabName, Tab)
     End Sub
 
     Public Function ContainsTab(ByVal TabText As String) As Boolean
