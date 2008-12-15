@@ -126,6 +126,10 @@ Public Class TweenMain
     Private _columnIdx As Integer   'ListviewのDisplayIndex退避用（DrawItemで使用）
     Private _columnChangeFlag As Boolean
 
+    '''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Private _statuses As New TabInformations()
+    '''''''''''''''''''''''''''''''''''''''''''''''''''''
+
 #If DEBUG Then
     Private _drawcount As Long = 0
     Private _drawtime As Long = 0
@@ -516,6 +520,10 @@ Public Class TweenMain
         clsTw.NextThreshold = SettingDialog.NextPageThreshold   '次頁取得閾値
         clsTw.NextPages = SettingDialog.NextPagesInt    '閾値オーバー時の読み込みページ数（未使用）
 
+        ''''''''''''''''''''''''''''''''''''''''
+        '_statuses.SortOrder = DirectCast(_section.SortOrder, System.Windows.Forms.SortOrder)
+        ''''''''''''''''''''''''''''''''''''''''
+
         _iconCol = False
         Select Case SettingDialog.IconSz
             Case IconSizes.IconNone
@@ -578,6 +586,12 @@ Public Class TweenMain
 
         For idx As Integer = 0 To _section.ListElement.Count - 1
             Dim name As String = _section.ListElement(idx).Name
+            ''''''''''''''''''''''''''''''''''''''''
+            'Dim tb As New TabClass
+            'tb.Notify = _section.ListElement(idx).Notify
+            'tb.SoundFile = _section.ListElement(idx).SoundFile
+            'tb.UnreadManage = _section.ListElement(idx).UnreadManage
+            ''''''''''''''''''''''''''''''''''''''''
             Dim myTab As New TabStructure()
             myTab.tabPage = New TabPage()
             myTab.listCustom = New DetailsListView()
@@ -595,8 +609,14 @@ Public Class TweenMain
                 If flt.TabName = name Then
                     Dim fcls As New FilterClass()
                     Dim bflt() As String = flt.BodyFilter.Split(Chr(32))
+                    '''''''''''''''''''''''''''''''''''''''''
+                    'Dim body As New List(Of String)
+                    '''''''''''''''''''''''''''''''''''''''''
                     For Each tmpFlt As String In bflt
                         If tmpFlt.Trim <> "" Then fcls.BodyFilter.Add(tmpFlt.Trim)
+                        '''''''''''''''''''''''''''''''''''''''''
+                        'If tmpFlt.Trim <> "" Then body.Add(tmpFlt.Trim)
+                        '''''''''''''''''''''''''''''''''''''''''
                     Next
                     fcls.IDFilter = flt.IdFilter
                     fcls.SearchBoth = flt.SearchBoth
@@ -605,10 +625,24 @@ Public Class TweenMain
                     fcls.moveFrom = flt.MoveFrom
                     fcls.SetMark = flt.SetMark
                     myTab.filters.Add(fcls)
+                    ''''''''''''''''''''''''''''''''''''''''
+                    'Dim filter As New FiltersClass(flt.IdFilter, _
+                    '                                body, _
+                    '                                flt.SearchBoth, _
+                    '                                flt.MoveFrom, _
+                    '                                flt.SetMark, _
+                    '                                flt.UrlSearch, _
+                    '                                flt.RegexEnable)
+                    'tb.Filters.Add(filter)
+
+                    ''''''''''''''''''''''''''''''''''''''''
                 End If
             Next
             myTab.tabName = name
             _tabs.Add(myTab)
+            ''''''''''''''''''''''''''''''''''''''''
+            '_statuses.AddTab(name, tb)
+            ''''''''''''''''''''''''''''''''''''''''
         Next
 
         AddCustomTabs()
@@ -705,6 +739,8 @@ Public Class TweenMain
     End Sub
 
     Private Sub TimerDM_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerDM.Tick
+        GC.Collect()
+
         Dim nw As Boolean = True
         Try
             nw = My.Computer.Network.IsAvailable
@@ -1420,8 +1456,6 @@ Public Class TweenMain
             Throw e.Error
             Exit Sub
         End If
-
-        GC.Collect()
 
         TimerRefreshIcon.Enabled = False
         If nw Then
