@@ -386,7 +386,9 @@ Partial Class TweenMain
         resources.ApplyResources(Me.PostBrowser, "PostBrowser")
         Me.PostBrowser.IsWebBrowserContextMenuEnabled = False
         Me.PostBrowser.Name = "PostBrowser"
+        Me.PostBrowser.ScriptErrorsSuppressed = True
         Me.PostBrowser.TabStop = False
+        Me.PostBrowser.Url = New System.Uri("about:blank", System.UriKind.Absolute)
         '
         'ContextMenuStrip4
         '
