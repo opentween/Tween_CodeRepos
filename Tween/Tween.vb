@@ -5720,10 +5720,9 @@ RETRY:
     End Sub
 
     Private Sub UpdateFollowersMenuItem1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UpdateFollowersMenuItem1.Click
-        Me.Cursor = Cursors.WaitCursor
         StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText1
-        Threading.Thread.Sleep(1)
         My.Application.DoEvents()
+        Me.Cursor = Cursors.WaitCursor
         Dim ret As String
         ret = clsTwSync.GetFollowers()
         If ret <> "" Then
