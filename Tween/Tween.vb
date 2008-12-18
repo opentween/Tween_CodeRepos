@@ -414,6 +414,7 @@ Public Class TweenMain
         SettingDialog.StartupFollowers = _section.StartupFollowers
         SettingDialog.RestrictFavCheck = _section.RestrictFavCheck
         SettingDialog.AlwaysTop = _section.AlwaysTop
+        SettingDialog.UrlConvertAuto = _section.UrlConvertAuto
 
         _initial = True
 
@@ -3247,6 +3248,7 @@ Public Class TweenMain
                     End If
                     rct = New Rectangle(x, e.Item.SubItems(_columnIdx).Bounds.Y + 1, wd, iSize)
                     iSize = iSize
+
                 End If
 
                 If e.Item.Selected Then
@@ -3382,6 +3384,7 @@ Public Class TweenMain
         Else
             e.DrawDefault = True
         End If
+
 #If DEBUG Then
         _drawcount += 1
         _drawtime += System.Environment.TickCount - iStart
