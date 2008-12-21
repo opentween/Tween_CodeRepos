@@ -1194,6 +1194,50 @@ Public Property CloseToExit() As Boolean
             Me("urlconvertauto") = value
         End Set
     End Property
+    <ConfigurationProperty("outputz", DefaultValue:=False)> _
+    Public Property Outputz() As Boolean
+        Get
+            Return CBool(Me("outputz"))
+        End Get
+        Set(ByVal value As Boolean)
+            Me("outputz") = value
+        End Set
+    End Property
+    <ConfigurationProperty("outputzkey", DefaultValue:="")> _
+    Public Property OutputzKey() As String
+        Get
+            Dim key As String = ""
+            If CStr(Me("outputzkey")).Length > 0 Then
+                Try
+                    key = DecryptString(CStr(Me("outputzkey")))
+                Catch ex As Exception
+                    key = ""
+                End Try
+            End If
+            Return key
+        End Get
+        Set(ByVal value As String)
+            Dim key As String = value.Trim()
+            If key.Length > 0 Then
+                Try
+                    Me("outputzkey") = EncryptString(key)
+                Catch ex As Exception
+                    Me("outputzkey") = ""
+                End Try
+            Else
+                Me("outputzkey") = ""
+            End If
+        End Set
+    End Property
+    <ConfigurationProperty("outputzurlmode", DefaultValue:=OutputzUrlmode.twittercom)> _
+    Public Property OutputzUrlmode() As OutputzUrlmode
+        Get
+            Return DirectCast(Me("outputzurlmode"), OutputzUrlmode)
+        End Get
+        Set(ByVal value As OutputzUrlmode)
+            Me("outputzurlmode") = value
+        End Set
+    End Property
 
     Private Shared Function EncryptString(ByVal str As String) As String
         '文字列をバイト型配列にする
