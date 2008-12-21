@@ -415,6 +415,16 @@ Public Class TweenMain
         SettingDialog.RestrictFavCheck = _section.RestrictFavCheck
         SettingDialog.AlwaysTop = _section.AlwaysTop
         SettingDialog.UrlConvertAuto = _section.UrlConvertAuto
+        SettingDialog.Outputz = _section.Outputz
+        SettingDialog.OutputzKey = _section.OutputzKey
+        SettingDialog.OutputzUrlmode = _section.OutputzUrlmode
+
+        Select Case SettingDialog.OutputzUrlmode
+            Case OutputzUrlmode.twittercom
+                _Outputz = New Outputz(SettingDialog.OutputzKey, "http://twitter.com")
+            Case OutputzUrlmode.twittercomWithUsername
+                _Outputz = New Outputz(SettingDialog.OutputzKey, "http://twitter.com/" + SettingDialog.UserID)
+        End Select
 
         _initial = True
 
@@ -4422,6 +4432,9 @@ RETRY:
                 _section.RestrictFavCheck = SettingDialog.RestrictFavCheck
                 _section.AlwaysTop = SettingDialog.AlwaysTop
                 _section.UrlConvertAuto = SettingDialog.UrlConvertAuto
+                _section.Outputz = SettingDialog.Outputz
+                _section.OutputzKey = SettingDialog.OutputzKey
+                _section.OutputzUrlmode = SettingDialog.OutputzUrlmode
 
                 _section.DisplayIndex1 = _tabs(0).colHd1.DisplayIndex
                 _section.Width1 = _tabs(0).colHd1.Width

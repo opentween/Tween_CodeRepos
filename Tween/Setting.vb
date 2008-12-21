@@ -81,6 +81,9 @@ Public Class Setting
     Private _MyRestrictFavCheck As Boolean
     Private _MyAlwaysTop As Boolean
     Private _MyUrlConvertAuto As Boolean
+    Private _MyOutputz As Boolean
+    Private _MyOutputzKey As String
+    Private _MyOutputzUrlmode As OutputzUrlmode
 
     'Public Enum LogUnitEnum
     '    Minute
@@ -331,7 +334,19 @@ Public Class Setting
             _MyRestrictFavCheck = CheckFavRestrict.Checked
             _MyAlwaysTop = CheckAlwaysTop.Checked
             _MyUrlConvertAuto = CheckAutoConvertUrl.Checked
+            _MyOutputz = CheckOutputz.Checked
+            _Outputz.Enable = _MyOutputz
+            _MyOutputzKey = TextBoxOutputzKey.Text.Trim()
+            _Outputz.key = _MyOutputzKey
 
+            Select Case ComboBoxOutputzUrlmode.SelectedIndex
+                Case 0
+                    _MyOutputzUrlmode = OutputzUrlmode.twittercom
+                    _Outputz.url = "http://twitter.com/"
+                Case 1
+                    _MyOutputzUrlmode = OutputzUrlmode.twittercomWithUsername
+                    _Outputz.url = "http://twitter.com/" + _MyuserID
+            End Select
             'TweenMain.SetMainWindowTitle()
             'TweenMain.SetNotifyIconText()
 
@@ -465,7 +480,17 @@ Public Class Setting
         CheckFavRestrict.Checked = _MyRestrictFavCheck
         CheckAlwaysTop.Checked = _MyAlwaysTop
         CheckAutoConvertUrl.Checked = _MyUrlConvertAuto
+        CheckOutputz.Checked = _MyOutputz
+        _Outputz.Enable = _MyOutputz
+        TextBoxOutputzKey.Text = _MyOutputzKey
+        _Outputz.key = _MyOutputzKey
 
+        Select Case _MyOutputzUrlmode
+            Case OutputzUrlmode.twittercom
+                ComboBoxOutputzUrlmode.SelectedIndex = 0
+            Case OutputzUrlmode.twittercomWithUsername
+                ComboBoxOutputzUrlmode.SelectedIndex = 1
+        End Select
         'TweenMain.SetMainWindowTitle()
         'TweenMain.SetNotifyIconText()
 
@@ -1221,6 +1246,30 @@ Public Class Setting
             _MyUrlConvertAuto = value
         End Set
     End Property
+    Public Property Outputz() As Boolean
+        Get
+            Return _MyOutputz
+        End Get
+        Set(ByVal value As Boolean)
+            _MyOutputz = value
+        End Set
+    End Property
+    Public Property OutputzKey() As String
+        Get
+            Return _MyOutputzKey
+        End Get
+        Set(ByVal value As String)
+            _MyOutputzKey = value
+        End Set
+    End Property
+    Public Property OutputzUrlmode() As OutputzUrlmode
+        Get
+            Return _MyOutputzUrlmode
+        End Get
+        Set(ByVal value As OutputzUrlmode)
+            _MyOutputzUrlmode = value
+        End Set
+    End Property
 
     Private Sub Button3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button3.Click
         Dim filedlg As New OpenFileDialog()
@@ -1260,6 +1309,20 @@ Public Class Setting
             MessageBox.Show(My.Resources.TextProxyPort_ValidatingText2)
             e.Cancel = True
             Exit Sub
+        End If
+    End Sub
+
+    Private Sub CheckOutputz_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CheckOutputz.CheckedChanged
+        If CheckOutputz.Checked = True Then
+            Label59.Enabled = True
+            Label60.Enabled = True
+            TextBoxOutputzKey.Enabled = True
+            ComboBoxOutputzUrlmode.Enabled = True
+        Else
+            Label59.Enabled = False
+            Label60.Enabled = False
+            TextBoxOutputzKey.Enabled = False
+            ComboBoxOutputzUrlmode.Enabled = False
         End If
     End Sub
 End Class

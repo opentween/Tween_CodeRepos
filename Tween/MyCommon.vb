@@ -63,6 +63,11 @@ Public Module MyCommon
         Isgd
     End Enum
 
+    Public Enum OutputzUrlmode
+        twittercom
+        twittercomWithUsername
+    End Enum
+
     Public Enum HITRESULT
         None
         Copy
@@ -93,4 +98,6 @@ Public Module MyCommon
             writer.WriteLine()
         End Using
     End Sub
+
+    Public _Outputz As Outputz
 End Module
