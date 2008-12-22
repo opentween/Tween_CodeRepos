@@ -121,6 +121,7 @@
     <Compile Include="OpenURL.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="outputz.vb" />
     <Compile Include="SearchWord.Designer.vb">
       <DependentUpon>SearchWord.vb</DependentUpon>
     </Compile>
