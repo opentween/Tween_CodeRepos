@@ -1175,6 +1175,7 @@ Partial Class Setting
         '
         resources.ApplyResources(Me.TextBoxOutputzKey, "TextBoxOutputzKey")
         Me.TextBoxOutputzKey.Name = "TextBoxOutputzKey"
+        Me.TextBoxOutputzKey.UseSystemPasswordChar = True
         '
         'CheckOutputz
         '
