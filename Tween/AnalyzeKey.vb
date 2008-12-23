@@ -29,7 +29,7 @@
     Public _followerMbr3 As String = "<"
     Public _getInfoTwitter As String = "<div id=""top_alert"">"
     Public _getInfoTwitterTo As String = "</div>"
-    Public _isProtect As String = "<img alt=""Icon_red_lock"""
+    Public _isProtect As String = "<img alt=""Icon_lock"""
     Public _isReplyEng As String = ">in reply to "
     Public _isReplyJpn As String = ">u8fd4u4fe1: "
     Public _isReplyTo As String = "<"
