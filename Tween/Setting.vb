@@ -335,7 +335,7 @@ Public Class Setting
             _MyAlwaysTop = CheckAlwaysTop.Checked
             _MyUrlConvertAuto = CheckAutoConvertUrl.Checked
             _MyOutputz = CheckOutputz.Checked
-            _Outputz.Enable = _MyOutputz
+            _Outputz.Enabled = _MyOutputz
             _MyOutputzKey = TextBoxOutputzKey.Text.Trim()
             _Outputz.key = _MyOutputzKey
 
@@ -481,7 +481,7 @@ Public Class Setting
         CheckAlwaysTop.Checked = _MyAlwaysTop
         CheckAutoConvertUrl.Checked = _MyUrlConvertAuto
         CheckOutputz.Checked = _MyOutputz
-        _Outputz.Enable = _MyOutputz
+        _Outputz.Enabled = _MyOutputz
         TextBoxOutputzKey.Text = _MyOutputzKey
         _Outputz.key = _MyOutputzKey
 
@@ -497,6 +497,7 @@ Public Class Setting
         TabControl1.SelectedIndex = 0
         ActiveControl = Username
 
+        CheckOutputz_CheckedChanged(sender, e)
     End Sub
 
     Private Sub TimelinePeriod_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles TimelinePeriod.Validating

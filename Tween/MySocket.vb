@@ -85,21 +85,22 @@ Public Class MySocket
             Optional ByVal reqType As REQ_TYPE = REQ_TYPE.ReqGET, _
             Optional ByVal data As String = "", _
             Optional ByVal referer As String = "", _
-            Optional ByVal timeout As Integer = 15000) As Object
+            Optional ByVal timeOut As Integer = 15000, _
+            Optional ByVal userAgent As String = "Mozilla/5.0 (Windows; U; Windows NT 5.1; ja; rv:1.9) Gecko/2008051206 Firefox/3.0") As Object
         Dim webReq As HttpWebRequest
         Dim cpolicy As System.Net.Cache.HttpRequestCachePolicy = New Cache.HttpRequestCachePolicy(Cache.HttpRequestCacheLevel.NoCacheNoStore)
 
         Try
             webReq = _
                 CType(WebRequest.Create(url), HttpWebRequest)
-            webReq.Timeout = timeout
+            webReq.Timeout = timeOut
             If reqType <> REQ_TYPE.ReqPOSTAPI And reqType <> REQ_TYPE.ReqGetAPI Then
                 webReq.CookieContainer = cCon
                 webReq.AutomaticDecompression = DecompressionMethods.Deflate Or DecompressionMethods.GZip
             End If
             webReq.KeepAlive = False
             webReq.AllowAutoRedirect = False
-            webReq.UserAgent = "Mozilla/5.0 (Windows; U; Windows NT 5.1; ja; rv:1.9) Gecko/2008051206 Firefox/3.0"
+            webReq.UserAgent = userAgent
             If reqType = REQ_TYPE.ReqGetNoCache Then
                 webReq.CachePolicy = cpolicy
             End If
