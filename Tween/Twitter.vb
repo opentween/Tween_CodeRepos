@@ -1500,13 +1500,13 @@ Partial Public Class Twitter
 
     Public Function GetVersionInfo() As String
         Dim resStatus As String = ""
-        Return DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/version2.txt?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus), String)
+        Return DirectCast(_mySock.GetWebResponse("http://tween.sourceforge.jp/version2.txt?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus), String)
     End Function
 
     Public Function GetTweenBinary(ByVal strVer As String) As String
         Dim resStatus As String = ""
         Dim ret As String = ""
-        ret = DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/Tween" + strVer + ".gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFile), String)
+        ret = DirectCast(_mySock.GetWebResponse("http://tween.sourceforge.jp/Tween" + strVer + ".gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFile), String)
         If ret.Length = 0 Then
             '取得OKなら、続いてresources.dllダウンロード
             Return Me.GetTweenResourcesDll(strVer)
@@ -1517,12 +1517,12 @@ Partial Public Class Twitter
 
     Public Function GetTweenUpBinary() As String
         Dim resStatus As String = ""
-        Return DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/TweenUp.gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileUp), String)
+        Return DirectCast(_mySock.GetWebResponse("http://tween.sourceforge.jp/TweenUp.gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileUp), String)
     End Function
 
     Public Function GetTweenResourcesDll(ByVal strver As String) As String
         Dim resStatus As String = ""
-        Return DirectCast(_mySock.GetWebResponse("http://www.asahi-net.or.jp/~ne5h-ykmz/TweenRes" + strver + ".gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileRes), String)
+        Return DirectCast(_mySock.GetWebResponse("http://tween.sourceforge.jp/TweenRes" + strver + ".gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileRes), String)
     End Function
 
 #If DEBUG Then

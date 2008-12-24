@@ -3871,7 +3871,7 @@ RETRY:
             Application.DoEvents()
         Loop
 
-        ExecWorker.RunWorkerAsync("http://www.asahi-net.or.jp/~ne5h-ykmz/index.html")
+        ExecWorker.RunWorkerAsync("http://tween.sourceforge.jp/index.html")
     End Sub
 
     Private Sub ListTab_KeyDown(ByVal sender As System.Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles ListTab.KeyDown
