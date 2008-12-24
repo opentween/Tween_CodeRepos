@@ -252,8 +252,10 @@ Public Class MySocket
                             End Using
                         Case REQ_TYPE.ReqGETForwardTo
                             Dim rtStr As String = ""
-                            If webRes.StatusCode = HttpStatusCode.Moved OrElse _
-                               webRes.StatusCode = HttpStatusCode.Found Then
+                            If webRes.StatusCode = HttpStatusCode.MovedPermanently OrElse _
+                               webRes.StatusCode = HttpStatusCode.Found OrElse _
+                               webRes.StatusCode = HttpStatusCode.SeeOther OrElse _
+                               webRes.StatusCode = HttpStatusCode.TemporaryRedirect Then
                                 rtStr = webRes.Headers.GetValues("Location")(0)
                                 Return rtStr
                             End If
