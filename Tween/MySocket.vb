@@ -24,6 +24,7 @@
 Imports System.IO
 Imports System.Net
 Imports System.Text
+Imports System.IO.Compression
 
 Public Class MySocket
     Private _enc As Encoding
@@ -225,38 +226,14 @@ Public Class MySocket
                             End Using
                             Return img
                         Case REQ_TYPE.ReqGETFile
-                            Dim fs As New System.IO.FileStream(My.Application.Info.DirectoryPath + "\TweenNew.exe", FileMode.Create, FileAccess.Write)
-                            Dim b As Integer
-                            Using fs
-                                While True
-                                    b = strm.ReadByte()
-                                    If b = -1 Then Exit While
-                                    fs.WriteByte(Convert.ToByte(b))
-                                End While
-                            End Using
+                            StreamToFile(strm, My.Application.Info.DirectoryPath + "\TweenNew.exe", webRes.ContentEncoding)
                         Case REQ_TYPE.ReqGETFileUp
-                            Dim fs As New System.IO.FileStream(My.Application.Info.DirectoryPath + "\TweenUp.exe", FileMode.Create, FileAccess.Write)
-                            Dim b As Integer
-                            Using fs
-                                While True
-                                    b = strm.ReadByte()
-                                    If b = -1 Then Exit While
-                                    fs.WriteByte(Convert.ToByte(b))
-                                End While
-                            End Using
+                            StreamToFile(strm, My.Application.Info.DirectoryPath + "\TweenUp.exe", webRes.ContentEncoding)
                         Case REQ_TYPE.ReqGETFileRes
                             If Directory.Exists(My.Application.Info.DirectoryPath + "\en") = False Then
                                 Directory.CreateDirectory(My.Application.Info.DirectoryPath + "\en")
                             End If
-                            Dim fs As New System.IO.FileStream(My.Application.Info.DirectoryPath + "\en\Tween.resourcesNew.dll", FileMode.Create, FileAccess.Write)
-                            Dim b As Integer
-                            Using fs
-                                While True
-                                    b = strm.ReadByte()
-                                    If b = -1 Then Exit While
-                                    fs.WriteByte(Convert.ToByte(b))
-                                End While
-                            End Using
+                            StreamToFile(strm, My.Application.Info.DirectoryPath + "\en\Tween.resourcesNew.dll", webRes.ContentEncoding)
                         Case REQ_TYPE.ReqGETForwardTo
                             Dim rtStr As String = ""
                             If webRes.StatusCode = HttpStatusCode.MovedPermanently OrElse _
@@ -312,5 +289,24 @@ Public Class MySocket
 
     Public Sub CreateCredentialInfo()
         _cre = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes(_uid + ":" + _pwd))
+    End Sub
+
+    Private Sub StreamToFile(ByVal InStream As Stream, ByVal Path As String, ByVal Encoding As String)
+        Dim strm As Stream
+        If Encoding.Equals("gzip") OrElse Encoding.Equals("deflate") Then
+            strm = InStream
+        Else
+            strm = New GZipStream(InStream, CompressionMode.Decompress)
+        End If
+        Using strm
+            Using fs As New FileStream(Path, FileMode.Create, FileAccess.Write)
+                Dim b As Integer
+                While True
+                    b = strm.ReadByte()
+                    If b = -1 Then Exit While
+                    fs.WriteByte(Convert.ToByte(b))
+                End While
+            End Using
+        End Using
     End Sub
 End Class
