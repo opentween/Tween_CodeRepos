@@ -216,13 +216,11 @@ Public Class MySocket
                                 End While
                                 img = Image.FromStream(mem, True)
                                 If img.RawFormat.Guid = Imaging.ImageFormat.Icon.Guid Then
-                                    If img.RawFormat.Guid = Imaging.ImageFormat.Icon.Guid Then
-                                        mem.Seek(0, SeekOrigin.Begin)
-                                        Using icn As Icon = New Icon(mem)
-                                            If icn Is Nothing Then Return False
-                                            img = icn.ToBitmap()
-                                        End Using
-                                    End If
+                                    mem.Seek(0, SeekOrigin.Begin)
+                                    Using icn As Icon = New Icon(mem)
+                                        If icn Is Nothing Then Return Nothing
+                                        img = icn.ToBitmap()
+                                    End Using
                                 End If
                             End Using
                             Return img
