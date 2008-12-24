@@ -265,11 +265,6 @@ Public Class MySocket
                                webRes.StatusCode = HttpStatusCode.Found OrElse _
                                webRes.StatusCode = HttpStatusCode.SeeOther OrElse _
                                webRes.StatusCode = HttpStatusCode.TemporaryRedirect Then
-                                Try
-
-                                Catch ex As Exception
-
-                                End Try
                                 rtStr = webRes.Headers.GetValues("Location")(0)
                                 Return rtStr
                             End If
