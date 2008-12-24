@@ -931,9 +931,8 @@ Partial Public Class Twitter
         Dim img As Image = Nothing
 
         img = TryCast(_mySock.GetWebResponse(pathUrl, resStatus, MySocket.REQ_TYPE.ReqGETBinary), System.Drawing.Image)
-        If img Is Nothing Then Return False
 
-        If Not img Is Nothing Then
+        If img IsNot Nothing Then
             imgKeys.Add(pathUrl)
             imgs.Images.Add(pathUrl, img)
             Return True
