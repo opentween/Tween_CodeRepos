@@ -930,7 +930,9 @@ Partial Public Class Twitter
         Dim resStatus As String = ""
         Dim img As Image = Nothing
 
-        img = DirectCast(_mySock.GetWebResponse(pathUrl, resStatus, MySocket.REQ_TYPE.ReqGETBinary), System.Drawing.Image)
+        img = TryCast(_mySock.GetWebResponse(pathUrl, resStatus, MySocket.REQ_TYPE.ReqGETBinary), System.Drawing.Image)
+        If img Is Nothing Then Return False
+
         If Not img Is Nothing Then
             imgKeys.Add(pathUrl)
             imgs.Images.Add(pathUrl, img)
@@ -1208,7 +1210,7 @@ Partial Public Class Twitter
         Dim resStatus As String = ""
         Dim resMsg As String = ""
 
-        resMsg = DirectCast(_mySock.GetWebResponse(wedataUrl, resStatus, timeout:=10 * 1000), String) 'タイムアウト時間を10秒に設定
+        resMsg = DirectCast(_mySock.GetWebResponse(wedataUrl, resStatus, timeOut:=5 * 1000), String) 'タイムアウト時間を5秒に設定
         If resMsg.Length = 0 Then Exit Sub
 
         Dim rs As New System.IO.StringReader(resMsg)
