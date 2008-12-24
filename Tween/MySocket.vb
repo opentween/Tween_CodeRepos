@@ -215,6 +215,15 @@ Public Class MySocket
                                     mem.Write(readData, 0, readSize)
                                 End While
                                 img = Image.FromStream(mem, True)
+                                If img.RawFormat.Guid = Imaging.ImageFormat.Icon.Guid Then
+                                    If img.RawFormat.Guid = Imaging.ImageFormat.Icon.Guid Then
+                                        mem.Seek(0, SeekOrigin.Begin)
+                                        Using icn As Icon = New Icon(mem)
+                                            If icn Is Nothing Then Return False
+                                            img = icn.ToBitmap()
+                                        End Using
+                                    End If
+                                End If
                             End Using
                             Return img
                         Case REQ_TYPE.ReqGETFile
@@ -256,6 +265,11 @@ Public Class MySocket
                                webRes.StatusCode = HttpStatusCode.Found OrElse _
                                webRes.StatusCode = HttpStatusCode.SeeOther OrElse _
                                webRes.StatusCode = HttpStatusCode.TemporaryRedirect Then
+                                Try
+
+                                Catch ex As Exception
+
+                                End Try
                                 rtStr = webRes.Headers.GetValues("Location")(0)
                                 Return rtStr
                             End If

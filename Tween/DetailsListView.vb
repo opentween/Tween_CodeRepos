@@ -164,7 +164,7 @@ Namespace TweenCustomControl
                     Me.changeBounds = Rectangle.Empty
                 End If
             End If
-            If m.Msg = WM_VSCROLL Or m.Msg = WM_MOUSEWHEEL Then
+            If m.Msg = WM_VSCROLL OrElse m.Msg = WM_MOUSEWHEEL Then
                 RaiseEvent Scrolled(Me, New System.EventArgs)
             End If
             MyBase.WndProc(m)
