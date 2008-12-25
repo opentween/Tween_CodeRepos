@@ -993,7 +993,12 @@ Partial Public Class Twitter
         Dim resMsg As String = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _statusUpdatePathAPI, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI, dataStr), String)
 
         If resStatus.StartsWith("OK") Then
-            Return _Outputz.Post(_mySock, postStr.Length)
+            resStatus = _Outputz.Post(_mySock, postStr.Length)
+            If resStatus.Length > 0 Then
+                Return "Outputz:" + resStatus
+            Else
+                Return ""
+            End If
         Else
             Return resStatus
         End If

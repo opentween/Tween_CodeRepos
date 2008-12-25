@@ -289,6 +289,14 @@ Namespace My.Resources
         '''<summary>
         '''  更新履歴
         '''
+        '''***Ver0.1.9.0(2008/12/24)
+        '''-twurl.nlで圧縮されたURLの展開ができなかったのを修正
+        '''-特定のアイコンによりエラーが起きるのを修正
+        '''-wedata通信時のタイムアウトを5秒に(暫定)
+        '''-Outputz対応コードの修正
+        '''-Twitterのhtml構造変更対応
+        '''-BlackFavショートカット削除
+        '''-バージョンアップのチェック＆更新版ダウンロード先をSourceForge.jpに変更（次版より）
         '''***Ver0.1.8.0(2008/12/15)
         '''-Wedata使うように戻し
         '''-入力欄のURLを投稿時に自動短縮するオプション追加
@@ -299,13 +307,7 @@ Namespace My.Resources
         '''-発言をブラックふぁぼったーに追加する機能をマージ (@shuyoko 氏によるもの。ありがとうございます)
         '''-起動時読み込みページ数設定のうち、ReplyとDMが保存されていなかったのを修正
         '''-オフライン検知で例外発生する場合の対応
-        '''-ID振り分けルールのタブ選択ダイアログで、Recent,Reply,Directが表示されてしまうバグ修正
-        '''-短縮URL展開が失敗する場合があったので修正
-        '''***Ver0.1.7.0(2008/12/04)
-        '''-コマンド回避ロジックを調整
-        '''-ブラウザなどから選択文字列やリンクをドラッグ＆ドロップした場合に、入力欄へ入力するようにした。
-        '''-バルーンを表示する際にユーザー名を表示するオプションの設定を見るようにした。
-        '''-最小化で起動した場合に起動できな [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        '''-ID振り分けルール [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property ChangeLog() As String
             Get
@@ -1473,6 +1475,15 @@ Namespace My.Resources
         Friend ReadOnly Property TabMenuItem_ClickText3() As String
             Get
                 Return ResourceManager.GetString("TabMenuItem_ClickText3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  復活の呪文を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property TextBoxOutputzKey_Validating() As String
+            Get
+                Return ResourceManager.GetString("TextBoxOutputzKey_Validating", resourceCulture)
             End Get
         End Property
         

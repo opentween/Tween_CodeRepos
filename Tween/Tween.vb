@@ -5098,7 +5098,7 @@ RETRY:
             NotifyIcon1.Icon = NIconAtSmoke
         End If
 
-        If rslt.retMsg <> "" Then
+        If rslt.retMsg.Length > 0 Then
             '''''エラー通知方法の変更も設定できるように！
             If nw Then
                 TimerRefreshIcon.Enabled = False
@@ -5118,7 +5118,7 @@ RETRY:
                 ReplyStripMenuItem.Enabled = True
                 DMStripMenuItem.Enabled = True
 
-                If rslt.retMsg.Length > 0 Then
+                If rslt.retMsg.Length > 0 AndAlso Not rslt.retMsg.StartsWith("Outputz") Then
                     StatusLabel.Text = rslt.retMsg
                     TimerRefreshIcon.Enabled = False
                     NotifyIcon1.Icon = NIconAtRed
@@ -5130,7 +5130,11 @@ RETRY:
                             _postTimestamps.RemoveAt(i)
                         End If
                     Next
-                    StatusLabel.Text = My.Resources.PostWorker_RunWorkerCompletedText4
+                    If rslt.retMsg.Length > 0 Then
+                        StatusLabel.Text = rslt.retMsg
+                    Else
+                        StatusLabel.Text = My.Resources.PostWorker_RunWorkerCompletedText4
+                    End If
                     StatusText.Text = ""
                     _history.Add("")
                     _hisIdx = _history.Count - 1
