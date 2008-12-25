@@ -1326,5 +1326,16 @@ Public Class Setting
             ComboBoxOutputzUrlmode.Enabled = False
         End If
     End Sub
+
+    Private Sub TextBoxOutputzKey_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles TextBoxOutputzKey.Validating
+        If CheckOutputz.Checked Then
+            TextBoxOutputzKey.Text = Trim(TextBoxOutputzKey.Text)
+            If TextBoxOutputzKey.Text.Length = 0 Then
+                MessageBox.Show(My.Resources.TextBoxOutputzKey_Validating)
+                e.Cancel = True
+                Exit Sub
+            End If
+        End If
+    End Sub
 End Class
 

@@ -190,163 +190,269 @@ Partial Class Setting
         '
         'Label1
         '
+        Me.Label1.AccessibleDescription = Nothing
+        Me.Label1.AccessibleName = Nothing
         resources.ApplyResources(Me.Label1, "Label1")
+        Me.Label1.Font = Nothing
         Me.Label1.Name = "Label1"
         '
         'Label2
         '
+        Me.Label2.AccessibleDescription = Nothing
+        Me.Label2.AccessibleName = Nothing
         resources.ApplyResources(Me.Label2, "Label2")
+        Me.Label2.Font = Nothing
         Me.Label2.Name = "Label2"
         '
         'Username
         '
+        Me.Username.AccessibleDescription = Nothing
+        Me.Username.AccessibleName = Nothing
         resources.ApplyResources(Me.Username, "Username")
+        Me.Username.BackgroundImage = Nothing
+        Me.Username.Font = Nothing
         Me.Username.Name = "Username"
         '
         'Password
         '
+        Me.Password.AccessibleDescription = Nothing
+        Me.Password.AccessibleName = Nothing
         resources.ApplyResources(Me.Password, "Password")
+        Me.Password.BackgroundImage = Nothing
+        Me.Password.Font = Nothing
         Me.Password.Name = "Password"
         Me.Password.UseSystemPasswordChar = True
         '
         'Save
         '
-        Me.Save.DialogResult = System.Windows.Forms.DialogResult.OK
+        Me.Save.AccessibleDescription = Nothing
+        Me.Save.AccessibleName = Nothing
         resources.ApplyResources(Me.Save, "Save")
+        Me.Save.BackgroundImage = Nothing
+        Me.Save.DialogResult = System.Windows.Forms.DialogResult.OK
+        Me.Save.Font = Nothing
         Me.Save.Name = "Save"
         Me.Save.UseVisualStyleBackColor = True
         '
         'Cancel
         '
+        Me.Cancel.AccessibleDescription = Nothing
+        Me.Cancel.AccessibleName = Nothing
+        resources.ApplyResources(Me.Cancel, "Cancel")
+        Me.Cancel.BackgroundImage = Nothing
         Me.Cancel.CausesValidation = False
         Me.Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        resources.ApplyResources(Me.Cancel, "Cancel")
+        Me.Cancel.Font = Nothing
         Me.Cancel.Name = "Cancel"
         Me.Cancel.UseVisualStyleBackColor = True
         '
         'Label3
         '
+        Me.Label3.AccessibleDescription = Nothing
+        Me.Label3.AccessibleName = Nothing
         resources.ApplyResources(Me.Label3, "Label3")
+        Me.Label3.Font = Nothing
         Me.Label3.Name = "Label3"
         '
         'TimelinePeriod
         '
+        Me.TimelinePeriod.AccessibleDescription = Nothing
+        Me.TimelinePeriod.AccessibleName = Nothing
         resources.ApplyResources(Me.TimelinePeriod, "TimelinePeriod")
+        Me.TimelinePeriod.BackgroundImage = Nothing
+        Me.TimelinePeriod.Font = Nothing
         Me.TimelinePeriod.Name = "TimelinePeriod"
         '
         'Label4
         '
+        Me.Label4.AccessibleDescription = Nothing
+        Me.Label4.AccessibleName = Nothing
         resources.ApplyResources(Me.Label4, "Label4")
+        Me.Label4.Font = Nothing
         Me.Label4.Name = "Label4"
         '
         'NextThreshold
         '
+        Me.NextThreshold.AccessibleDescription = Nothing
+        Me.NextThreshold.AccessibleName = Nothing
         resources.ApplyResources(Me.NextThreshold, "NextThreshold")
+        Me.NextThreshold.BackgroundImage = Nothing
+        Me.NextThreshold.Font = Nothing
         Me.NextThreshold.Name = "NextThreshold"
         '
         'DMPeriod
         '
+        Me.DMPeriod.AccessibleDescription = Nothing
+        Me.DMPeriod.AccessibleName = Nothing
         resources.ApplyResources(Me.DMPeriod, "DMPeriod")
+        Me.DMPeriod.BackgroundImage = Nothing
+        Me.DMPeriod.Font = Nothing
         Me.DMPeriod.Name = "DMPeriod"
         '
         'Label5
         '
+        Me.Label5.AccessibleDescription = Nothing
+        Me.Label5.AccessibleName = Nothing
         resources.ApplyResources(Me.Label5, "Label5")
+        Me.Label5.Font = Nothing
         Me.Label5.Name = "Label5"
         '
         'NextPages
         '
+        Me.NextPages.AccessibleDescription = Nothing
+        Me.NextPages.AccessibleName = Nothing
         resources.ApplyResources(Me.NextPages, "NextPages")
+        Me.NextPages.BackgroundImage = Nothing
+        Me.NextPages.Font = Nothing
         Me.NextPages.Name = "NextPages"
         '
         'Label6
         '
+        Me.Label6.AccessibleDescription = Nothing
+        Me.Label6.AccessibleName = Nothing
         resources.ApplyResources(Me.Label6, "Label6")
+        Me.Label6.Font = Nothing
         Me.Label6.Name = "Label6"
         '
         'ReadLogDays
         '
+        Me.ReadLogDays.AccessibleDescription = Nothing
+        Me.ReadLogDays.AccessibleName = Nothing
         resources.ApplyResources(Me.ReadLogDays, "ReadLogDays")
+        Me.ReadLogDays.BackgroundImage = Nothing
+        Me.ReadLogDays.Font = Nothing
         Me.ReadLogDays.Name = "ReadLogDays"
         '
         'Label7
         '
+        Me.Label7.AccessibleDescription = Nothing
+        Me.Label7.AccessibleName = Nothing
         resources.ApplyResources(Me.Label7, "Label7")
+        Me.Label7.Font = Nothing
         Me.Label7.Name = "Label7"
         '
         'StartupReadPages
         '
+        Me.StartupReadPages.AccessibleDescription = Nothing
+        Me.StartupReadPages.AccessibleName = Nothing
         resources.ApplyResources(Me.StartupReadPages, "StartupReadPages")
+        Me.StartupReadPages.BackgroundImage = Nothing
+        Me.StartupReadPages.Font = Nothing
         Me.StartupReadPages.Name = "StartupReadPages"
         '
         'Label8
         '
+        Me.Label8.AccessibleDescription = Nothing
+        Me.Label8.AccessibleName = Nothing
         resources.ApplyResources(Me.Label8, "Label8")
+        Me.Label8.Font = Nothing
         Me.Label8.Name = "Label8"
         '
         'Label9
         '
+        Me.Label9.AccessibleDescription = Nothing
+        Me.Label9.AccessibleName = Nothing
         resources.ApplyResources(Me.Label9, "Label9")
+        Me.Label9.Font = Nothing
         Me.Label9.Name = "Label9"
         '
         'StartupReaded
         '
+        Me.StartupReaded.AccessibleDescription = Nothing
+        Me.StartupReaded.AccessibleName = Nothing
         resources.ApplyResources(Me.StartupReaded, "StartupReaded")
+        Me.StartupReaded.BackgroundImage = Nothing
+        Me.StartupReaded.Font = Nothing
         Me.StartupReaded.Name = "StartupReaded"
         Me.StartupReaded.UseVisualStyleBackColor = True
         '
         'ReadLogUnit
         '
+        Me.ReadLogUnit.AccessibleDescription = Nothing
+        Me.ReadLogUnit.AccessibleName = Nothing
         resources.ApplyResources(Me.ReadLogUnit, "ReadLogUnit")
+        Me.ReadLogUnit.BackgroundImage = Nothing
+        Me.ReadLogUnit.Font = Nothing
         Me.ReadLogUnit.FormattingEnabled = True
         Me.ReadLogUnit.Items.AddRange(New Object() {resources.GetString("ReadLogUnit.Items"), resources.GetString("ReadLogUnit.Items1"), resources.GetString("ReadLogUnit.Items2")})
         Me.ReadLogUnit.Name = "ReadLogUnit"
         '
         'Label11
         '
+        Me.Label11.AccessibleDescription = Nothing
+        Me.Label11.AccessibleName = Nothing
         resources.ApplyResources(Me.Label11, "Label11")
+        Me.Label11.Font = Nothing
         Me.Label11.Name = "Label11"
         '
         'Label12
         '
+        Me.Label12.AccessibleDescription = Nothing
+        Me.Label12.AccessibleName = Nothing
         resources.ApplyResources(Me.Label12, "Label12")
+        Me.Label12.Font = Nothing
         Me.Label12.Name = "Label12"
         '
         'StatusText
         '
+        Me.StatusText.AccessibleDescription = Nothing
+        Me.StatusText.AccessibleName = Nothing
         resources.ApplyResources(Me.StatusText, "StatusText")
+        Me.StatusText.BackgroundImage = Nothing
+        Me.StatusText.Font = Nothing
         Me.StatusText.Name = "StatusText"
         '
         'PlaySnd
         '
+        Me.PlaySnd.AccessibleDescription = Nothing
+        Me.PlaySnd.AccessibleName = Nothing
         resources.ApplyResources(Me.PlaySnd, "PlaySnd")
+        Me.PlaySnd.BackgroundImage = Nothing
+        Me.PlaySnd.Font = Nothing
         Me.PlaySnd.Name = "PlaySnd"
         Me.PlaySnd.UseVisualStyleBackColor = True
         '
         'Label14
         '
+        Me.Label14.AccessibleDescription = Nothing
+        Me.Label14.AccessibleName = Nothing
         resources.ApplyResources(Me.Label14, "Label14")
+        Me.Label14.Font = Nothing
         Me.Label14.Name = "Label14"
         '
         'Label15
         '
-        Me.Label15.ForeColor = System.Drawing.SystemColors.ActiveCaption
+        Me.Label15.AccessibleDescription = Nothing
+        Me.Label15.AccessibleName = Nothing
         resources.ApplyResources(Me.Label15, "Label15")
+        Me.Label15.Font = Nothing
+        Me.Label15.ForeColor = System.Drawing.SystemColors.ActiveCaption
         Me.Label15.Name = "Label15"
         '
         'OneWayLv
         '
+        Me.OneWayLv.AccessibleDescription = Nothing
+        Me.OneWayLv.AccessibleName = Nothing
         resources.ApplyResources(Me.OneWayLv, "OneWayLv")
+        Me.OneWayLv.BackgroundImage = Nothing
+        Me.OneWayLv.Font = Nothing
         Me.OneWayLv.Name = "OneWayLv"
         Me.OneWayLv.UseVisualStyleBackColor = True
         '
         'Label16
         '
+        Me.Label16.AccessibleDescription = Nothing
+        Me.Label16.AccessibleName = Nothing
         resources.ApplyResources(Me.Label16, "Label16")
+        Me.Label16.Font = Nothing
         Me.Label16.Name = "Label16"
         '
         'GroupBox1
         '
+        Me.GroupBox1.AccessibleDescription = Nothing
+        Me.GroupBox1.AccessibleName = Nothing
+        resources.ApplyResources(Me.GroupBox1, "GroupBox1")
+        Me.GroupBox1.BackgroundImage = Nothing
         Me.GroupBox1.Controls.Add(Me.Button4)
         Me.GroupBox1.Controls.Add(Me.Label48)
         Me.GroupBox1.Controls.Add(Me.Label49)
@@ -386,458 +492,730 @@ Partial Class Setting
         Me.GroupBox1.Controls.Add(Me.btnUnread)
         Me.GroupBox1.Controls.Add(Me.lblUnRead)
         Me.GroupBox1.Controls.Add(Me.Label17)
-        resources.ApplyResources(Me.GroupBox1, "GroupBox1")
+        Me.GroupBox1.Font = Nothing
         Me.GroupBox1.Name = "GroupBox1"
         Me.GroupBox1.TabStop = False
         '
         'Button4
         '
+        Me.Button4.AccessibleDescription = Nothing
+        Me.Button4.AccessibleName = Nothing
         resources.ApplyResources(Me.Button4, "Button4")
+        Me.Button4.BackgroundImage = Nothing
+        Me.Button4.Font = Nothing
         Me.Button4.Name = "Button4"
         Me.Button4.UseVisualStyleBackColor = True
         '
         'Label48
         '
-        Me.Label48.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.Label48.AccessibleDescription = Nothing
+        Me.Label48.AccessibleName = Nothing
         resources.ApplyResources(Me.Label48, "Label48")
+        Me.Label48.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.Label48.Font = Nothing
         Me.Label48.Name = "Label48"
         '
         'Label49
         '
+        Me.Label49.AccessibleDescription = Nothing
+        Me.Label49.AccessibleName = Nothing
         resources.ApplyResources(Me.Label49, "Label49")
+        Me.Label49.Font = Nothing
         Me.Label49.Name = "Label49"
         '
         'Button2
         '
+        Me.Button2.AccessibleDescription = Nothing
+        Me.Button2.AccessibleName = Nothing
         resources.ApplyResources(Me.Button2, "Button2")
+        Me.Button2.BackgroundImage = Nothing
+        Me.Button2.Font = Nothing
         Me.Button2.Name = "Button2"
         Me.Button2.UseVisualStyleBackColor = True
         '
         'Label13
         '
-        Me.Label13.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.Label13.AccessibleDescription = Nothing
+        Me.Label13.AccessibleName = Nothing
         resources.ApplyResources(Me.Label13, "Label13")
+        Me.Label13.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.Label13.Font = Nothing
         Me.Label13.Name = "Label13"
         '
         'Label37
         '
+        Me.Label37.AccessibleDescription = Nothing
+        Me.Label37.AccessibleName = Nothing
         resources.ApplyResources(Me.Label37, "Label37")
+        Me.Label37.Font = Nothing
         Me.Label37.Name = "Label37"
         '
         'Button1
         '
+        Me.Button1.AccessibleDescription = Nothing
+        Me.Button1.AccessibleName = Nothing
         resources.ApplyResources(Me.Button1, "Button1")
+        Me.Button1.BackgroundImage = Nothing
+        Me.Button1.Font = Nothing
         Me.Button1.Name = "Button1"
         Me.Button1.UseVisualStyleBackColor = True
         '
         'Label18
         '
-        Me.Label18.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.Label18.AccessibleDescription = Nothing
+        Me.Label18.AccessibleName = Nothing
         resources.ApplyResources(Me.Label18, "Label18")
+        Me.Label18.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.Label18.Font = Nothing
         Me.Label18.Name = "Label18"
         '
         'Label19
         '
+        Me.Label19.AccessibleDescription = Nothing
+        Me.Label19.AccessibleName = Nothing
         resources.ApplyResources(Me.Label19, "Label19")
+        Me.Label19.Font = Nothing
         Me.Label19.Name = "Label19"
         '
         'btnAtFromTarget
         '
+        Me.btnAtFromTarget.AccessibleDescription = Nothing
+        Me.btnAtFromTarget.AccessibleName = Nothing
         resources.ApplyResources(Me.btnAtFromTarget, "btnAtFromTarget")
+        Me.btnAtFromTarget.BackgroundImage = Nothing
+        Me.btnAtFromTarget.Font = Nothing
         Me.btnAtFromTarget.Name = "btnAtFromTarget"
         Me.btnAtFromTarget.UseVisualStyleBackColor = True
         '
         'lblAtFromTarget
         '
-        Me.lblAtFromTarget.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblAtFromTarget.AccessibleDescription = Nothing
+        Me.lblAtFromTarget.AccessibleName = Nothing
         resources.ApplyResources(Me.lblAtFromTarget, "lblAtFromTarget")
+        Me.lblAtFromTarget.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblAtFromTarget.Font = Nothing
         Me.lblAtFromTarget.Name = "lblAtFromTarget"
         '
         'Label28
         '
+        Me.Label28.AccessibleDescription = Nothing
+        Me.Label28.AccessibleName = Nothing
         resources.ApplyResources(Me.Label28, "Label28")
+        Me.Label28.Font = Nothing
         Me.Label28.Name = "Label28"
         '
         'btnAtTarget
         '
+        Me.btnAtTarget.AccessibleDescription = Nothing
+        Me.btnAtTarget.AccessibleName = Nothing
         resources.ApplyResources(Me.btnAtTarget, "btnAtTarget")
+        Me.btnAtTarget.BackgroundImage = Nothing
+        Me.btnAtTarget.Font = Nothing
         Me.btnAtTarget.Name = "btnAtTarget"
         Me.btnAtTarget.UseVisualStyleBackColor = True
         '
         'lblAtTarget
         '
-        Me.lblAtTarget.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblAtTarget.AccessibleDescription = Nothing
+        Me.lblAtTarget.AccessibleName = Nothing
         resources.ApplyResources(Me.lblAtTarget, "lblAtTarget")
+        Me.lblAtTarget.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblAtTarget.Font = Nothing
         Me.lblAtTarget.Name = "lblAtTarget"
         '
         'Label30
         '
+        Me.Label30.AccessibleDescription = Nothing
+        Me.Label30.AccessibleName = Nothing
         resources.ApplyResources(Me.Label30, "Label30")
+        Me.Label30.Font = Nothing
         Me.Label30.Name = "Label30"
         '
         'btnTarget
         '
+        Me.btnTarget.AccessibleDescription = Nothing
+        Me.btnTarget.AccessibleName = Nothing
         resources.ApplyResources(Me.btnTarget, "btnTarget")
+        Me.btnTarget.BackgroundImage = Nothing
+        Me.btnTarget.Font = Nothing
         Me.btnTarget.Name = "btnTarget"
         Me.btnTarget.UseVisualStyleBackColor = True
         '
         'lblTarget
         '
-        Me.lblTarget.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblTarget.AccessibleDescription = Nothing
+        Me.lblTarget.AccessibleName = Nothing
         resources.ApplyResources(Me.lblTarget, "lblTarget")
+        Me.lblTarget.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblTarget.Font = Nothing
         Me.lblTarget.Name = "lblTarget"
         '
         'Label32
         '
+        Me.Label32.AccessibleDescription = Nothing
+        Me.Label32.AccessibleName = Nothing
         resources.ApplyResources(Me.Label32, "Label32")
+        Me.Label32.Font = Nothing
         Me.Label32.Name = "Label32"
         '
         'btnAtSelf
         '
+        Me.btnAtSelf.AccessibleDescription = Nothing
+        Me.btnAtSelf.AccessibleName = Nothing
         resources.ApplyResources(Me.btnAtSelf, "btnAtSelf")
+        Me.btnAtSelf.BackgroundImage = Nothing
+        Me.btnAtSelf.Font = Nothing
         Me.btnAtSelf.Name = "btnAtSelf"
         Me.btnAtSelf.UseVisualStyleBackColor = True
         '
         'lblAtSelf
         '
-        Me.lblAtSelf.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblAtSelf.AccessibleDescription = Nothing
+        Me.lblAtSelf.AccessibleName = Nothing
         resources.ApplyResources(Me.lblAtSelf, "lblAtSelf")
+        Me.lblAtSelf.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblAtSelf.Font = Nothing
         Me.lblAtSelf.Name = "lblAtSelf"
         '
         'Label34
         '
+        Me.Label34.AccessibleDescription = Nothing
+        Me.Label34.AccessibleName = Nothing
         resources.ApplyResources(Me.Label34, "Label34")
+        Me.Label34.Font = Nothing
         Me.Label34.Name = "Label34"
         '
         'btnSelf
         '
+        Me.btnSelf.AccessibleDescription = Nothing
+        Me.btnSelf.AccessibleName = Nothing
         resources.ApplyResources(Me.btnSelf, "btnSelf")
+        Me.btnSelf.BackgroundImage = Nothing
+        Me.btnSelf.Font = Nothing
         Me.btnSelf.Name = "btnSelf"
         Me.btnSelf.UseVisualStyleBackColor = True
         '
         'lblSelf
         '
-        Me.lblSelf.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblSelf.AccessibleDescription = Nothing
+        Me.lblSelf.AccessibleName = Nothing
         resources.ApplyResources(Me.lblSelf, "lblSelf")
+        Me.lblSelf.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblSelf.Font = Nothing
         Me.lblSelf.Name = "lblSelf"
         '
         'Label36
         '
+        Me.Label36.AccessibleDescription = Nothing
+        Me.Label36.AccessibleName = Nothing
         resources.ApplyResources(Me.Label36, "Label36")
+        Me.Label36.Font = Nothing
         Me.Label36.Name = "Label36"
         '
         'btnDetail
         '
+        Me.btnDetail.AccessibleDescription = Nothing
+        Me.btnDetail.AccessibleName = Nothing
         resources.ApplyResources(Me.btnDetail, "btnDetail")
+        Me.btnDetail.BackgroundImage = Nothing
+        Me.btnDetail.Font = Nothing
         Me.btnDetail.Name = "btnDetail"
         Me.btnDetail.UseVisualStyleBackColor = True
         '
         'lblDetail
         '
-        Me.lblDetail.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblDetail.AccessibleDescription = Nothing
+        Me.lblDetail.AccessibleName = Nothing
         resources.ApplyResources(Me.lblDetail, "lblDetail")
+        Me.lblDetail.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblDetail.Font = Nothing
         Me.lblDetail.Name = "lblDetail"
         '
         'Label26
         '
+        Me.Label26.AccessibleDescription = Nothing
+        Me.Label26.AccessibleName = Nothing
         resources.ApplyResources(Me.Label26, "Label26")
+        Me.Label26.Font = Nothing
         Me.Label26.Name = "Label26"
         '
         'btnOWL
         '
+        Me.btnOWL.AccessibleDescription = Nothing
+        Me.btnOWL.AccessibleName = Nothing
         resources.ApplyResources(Me.btnOWL, "btnOWL")
+        Me.btnOWL.BackgroundImage = Nothing
+        Me.btnOWL.Font = Nothing
         Me.btnOWL.Name = "btnOWL"
         Me.btnOWL.UseVisualStyleBackColor = True
         '
         'lblOWL
         '
-        Me.lblOWL.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblOWL.AccessibleDescription = Nothing
+        Me.lblOWL.AccessibleName = Nothing
         resources.ApplyResources(Me.lblOWL, "lblOWL")
+        Me.lblOWL.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblOWL.Font = Nothing
         Me.lblOWL.Name = "lblOWL"
         '
         'Label24
         '
+        Me.Label24.AccessibleDescription = Nothing
+        Me.Label24.AccessibleName = Nothing
         resources.ApplyResources(Me.Label24, "Label24")
+        Me.Label24.Font = Nothing
         Me.Label24.Name = "Label24"
         '
         'btnFav
         '
+        Me.btnFav.AccessibleDescription = Nothing
+        Me.btnFav.AccessibleName = Nothing
         resources.ApplyResources(Me.btnFav, "btnFav")
+        Me.btnFav.BackgroundImage = Nothing
+        Me.btnFav.Font = Nothing
         Me.btnFav.Name = "btnFav"
         Me.btnFav.UseVisualStyleBackColor = True
         '
         'lblFav
         '
-        Me.lblFav.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblFav.AccessibleDescription = Nothing
+        Me.lblFav.AccessibleName = Nothing
         resources.ApplyResources(Me.lblFav, "lblFav")
+        Me.lblFav.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblFav.Font = Nothing
         Me.lblFav.Name = "lblFav"
         '
         'Label22
         '
+        Me.Label22.AccessibleDescription = Nothing
+        Me.Label22.AccessibleName = Nothing
         resources.ApplyResources(Me.Label22, "Label22")
+        Me.Label22.Font = Nothing
         Me.Label22.Name = "Label22"
         '
         'btnReaded
         '
+        Me.btnReaded.AccessibleDescription = Nothing
+        Me.btnReaded.AccessibleName = Nothing
         resources.ApplyResources(Me.btnReaded, "btnReaded")
+        Me.btnReaded.BackgroundImage = Nothing
+        Me.btnReaded.Font = Nothing
         Me.btnReaded.Name = "btnReaded"
         Me.btnReaded.UseVisualStyleBackColor = True
         '
         'lblReaded
         '
-        Me.lblReaded.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblReaded.AccessibleDescription = Nothing
+        Me.lblReaded.AccessibleName = Nothing
         resources.ApplyResources(Me.lblReaded, "lblReaded")
+        Me.lblReaded.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblReaded.Font = Nothing
         Me.lblReaded.Name = "lblReaded"
         '
         'Label20
         '
+        Me.Label20.AccessibleDescription = Nothing
+        Me.Label20.AccessibleName = Nothing
         resources.ApplyResources(Me.Label20, "Label20")
+        Me.Label20.Font = Nothing
         Me.Label20.Name = "Label20"
         '
         'btnUnread
         '
+        Me.btnUnread.AccessibleDescription = Nothing
+        Me.btnUnread.AccessibleName = Nothing
         resources.ApplyResources(Me.btnUnread, "btnUnread")
+        Me.btnUnread.BackgroundImage = Nothing
+        Me.btnUnread.Font = Nothing
         Me.btnUnread.Name = "btnUnread"
         Me.btnUnread.UseVisualStyleBackColor = True
         '
         'lblUnRead
         '
-        Me.lblUnRead.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblUnRead.AccessibleDescription = Nothing
+        Me.lblUnRead.AccessibleName = Nothing
         resources.ApplyResources(Me.lblUnRead, "lblUnRead")
+        Me.lblUnRead.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblUnRead.Font = Nothing
         Me.lblUnRead.Name = "lblUnRead"
         '
         'Label17
         '
+        Me.Label17.AccessibleDescription = Nothing
+        Me.Label17.AccessibleName = Nothing
         resources.ApplyResources(Me.Label17, "Label17")
+        Me.Label17.Font = Nothing
         Me.Label17.Name = "Label17"
         '
         'cmbNameBalloon
         '
+        Me.cmbNameBalloon.AccessibleDescription = Nothing
+        Me.cmbNameBalloon.AccessibleName = Nothing
+        resources.ApplyResources(Me.cmbNameBalloon, "cmbNameBalloon")
+        Me.cmbNameBalloon.BackgroundImage = Nothing
         Me.cmbNameBalloon.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cmbNameBalloon.Font = Nothing
         Me.cmbNameBalloon.FormattingEnabled = True
         Me.cmbNameBalloon.Items.AddRange(New Object() {resources.GetString("cmbNameBalloon.Items"), resources.GetString("cmbNameBalloon.Items1"), resources.GetString("cmbNameBalloon.Items2")})
-        resources.ApplyResources(Me.cmbNameBalloon, "cmbNameBalloon")
         Me.cmbNameBalloon.Name = "cmbNameBalloon"
         '
         'Label10
         '
+        Me.Label10.AccessibleDescription = Nothing
+        Me.Label10.AccessibleName = Nothing
         resources.ApplyResources(Me.Label10, "Label10")
+        Me.Label10.Font = Nothing
         Me.Label10.Name = "Label10"
         '
         'CheckUseRecommendStatus
         '
+        Me.CheckUseRecommendStatus.AccessibleDescription = Nothing
+        Me.CheckUseRecommendStatus.AccessibleName = Nothing
         resources.ApplyResources(Me.CheckUseRecommendStatus, "CheckUseRecommendStatus")
+        Me.CheckUseRecommendStatus.BackgroundImage = Nothing
+        Me.CheckUseRecommendStatus.Font = Nothing
         Me.CheckUseRecommendStatus.Name = "CheckUseRecommendStatus"
         Me.CheckUseRecommendStatus.UseVisualStyleBackColor = True
         '
         'CheckSortOrderLock
         '
+        Me.CheckSortOrderLock.AccessibleDescription = Nothing
+        Me.CheckSortOrderLock.AccessibleName = Nothing
         resources.ApplyResources(Me.CheckSortOrderLock, "CheckSortOrderLock")
+        Me.CheckSortOrderLock.BackgroundImage = Nothing
+        Me.CheckSortOrderLock.Font = Nothing
         Me.CheckSortOrderLock.Name = "CheckSortOrderLock"
         Me.CheckSortOrderLock.UseVisualStyleBackColor = True
         '
         'Label21
         '
+        Me.Label21.AccessibleDescription = Nothing
+        Me.Label21.AccessibleName = Nothing
         resources.ApplyResources(Me.Label21, "Label21")
+        Me.Label21.Font = Nothing
         Me.Label21.Name = "Label21"
         '
         'ComboBox1
         '
+        Me.ComboBox1.AccessibleDescription = Nothing
+        Me.ComboBox1.AccessibleName = Nothing
         resources.ApplyResources(Me.ComboBox1, "ComboBox1")
+        Me.ComboBox1.BackgroundImage = Nothing
+        Me.ComboBox1.Font = Nothing
         Me.ComboBox1.FormattingEnabled = True
         Me.ComboBox1.Items.AddRange(New Object() {resources.GetString("ComboBox1.Items"), resources.GetString("ComboBox1.Items1"), resources.GetString("ComboBox1.Items2"), resources.GetString("ComboBox1.Items3"), resources.GetString("ComboBox1.Items4"), resources.GetString("ComboBox1.Items5"), resources.GetString("ComboBox1.Items6")})
         Me.ComboBox1.Name = "ComboBox1"
         '
         'Label23
         '
+        Me.Label23.AccessibleDescription = Nothing
+        Me.Label23.AccessibleName = Nothing
         resources.ApplyResources(Me.Label23, "Label23")
+        Me.Label23.Font = Nothing
         Me.Label23.Name = "Label23"
         '
         'CheckBox3
         '
+        Me.CheckBox3.AccessibleDescription = Nothing
+        Me.CheckBox3.AccessibleName = Nothing
         resources.ApplyResources(Me.CheckBox3, "CheckBox3")
+        Me.CheckBox3.BackgroundImage = Nothing
+        Me.CheckBox3.Font = Nothing
         Me.CheckBox3.Name = "CheckBox3"
         Me.CheckBox3.UseVisualStyleBackColor = True
         '
         'Label25
         '
+        Me.Label25.AccessibleDescription = Nothing
+        Me.Label25.AccessibleName = Nothing
         resources.ApplyResources(Me.Label25, "Label25")
+        Me.Label25.Font = Nothing
         Me.Label25.Name = "Label25"
         '
         'CheckPostCtrlEnter
         '
+        Me.CheckPostCtrlEnter.AccessibleDescription = Nothing
+        Me.CheckPostCtrlEnter.AccessibleName = Nothing
         resources.ApplyResources(Me.CheckPostCtrlEnter, "CheckPostCtrlEnter")
+        Me.CheckPostCtrlEnter.BackgroundImage = Nothing
+        Me.CheckPostCtrlEnter.Font = Nothing
         Me.CheckPostCtrlEnter.Name = "CheckPostCtrlEnter"
         Me.CheckPostCtrlEnter.UseVisualStyleBackColor = True
         '
         'Label27
         '
+        Me.Label27.AccessibleDescription = Nothing
+        Me.Label27.AccessibleName = Nothing
         resources.ApplyResources(Me.Label27, "Label27")
+        Me.Label27.Font = Nothing
         Me.Label27.Name = "Label27"
         '
         'Label31
         '
+        Me.Label31.AccessibleDescription = Nothing
+        Me.Label31.AccessibleName = Nothing
         resources.ApplyResources(Me.Label31, "Label31")
+        Me.Label31.Font = Nothing
         Me.Label31.Name = "Label31"
         '
         'Label33
         '
+        Me.Label33.AccessibleDescription = Nothing
+        Me.Label33.AccessibleName = Nothing
         resources.ApplyResources(Me.Label33, "Label33")
+        Me.Label33.Font = Nothing
         Me.Label33.Name = "Label33"
         '
         'Label35
         '
+        Me.Label35.AccessibleDescription = Nothing
+        Me.Label35.AccessibleName = Nothing
         resources.ApplyResources(Me.Label35, "Label35")
+        Me.Label35.Font = Nothing
         Me.Label35.Name = "Label35"
         '
         'StartupReadReply
         '
+        Me.StartupReadReply.AccessibleDescription = Nothing
+        Me.StartupReadReply.AccessibleName = Nothing
         resources.ApplyResources(Me.StartupReadReply, "StartupReadReply")
+        Me.StartupReadReply.BackgroundImage = Nothing
+        Me.StartupReadReply.Font = Nothing
         Me.StartupReadReply.Name = "StartupReadReply"
         '
         'StartupReadDM
         '
+        Me.StartupReadDM.AccessibleDescription = Nothing
+        Me.StartupReadDM.AccessibleName = Nothing
         resources.ApplyResources(Me.StartupReadDM, "StartupReadDM")
+        Me.StartupReadDM.BackgroundImage = Nothing
+        Me.StartupReadDM.Font = Nothing
         Me.StartupReadDM.Name = "StartupReadDM"
         '
         'TextBox3
         '
+        Me.TextBox3.AccessibleDescription = Nothing
+        Me.TextBox3.AccessibleName = Nothing
         resources.ApplyResources(Me.TextBox3, "TextBox3")
+        Me.TextBox3.BackgroundImage = Nothing
+        Me.TextBox3.Font = Nothing
         Me.TextBox3.Name = "TextBox3"
         '
         'IconSize
         '
+        Me.IconSize.AccessibleDescription = Nothing
+        Me.IconSize.AccessibleName = Nothing
+        resources.ApplyResources(Me.IconSize, "IconSize")
+        Me.IconSize.BackgroundImage = Nothing
         Me.IconSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.IconSize.Font = Nothing
         Me.IconSize.FormattingEnabled = True
         Me.IconSize.Items.AddRange(New Object() {resources.GetString("IconSize.Items"), resources.GetString("IconSize.Items1"), resources.GetString("IconSize.Items2"), resources.GetString("IconSize.Items3"), resources.GetString("IconSize.Items4")})
-        resources.ApplyResources(Me.IconSize, "IconSize")
         Me.IconSize.Name = "IconSize"
         '
         'Label38
         '
+        Me.Label38.AccessibleDescription = Nothing
+        Me.Label38.AccessibleName = Nothing
         resources.ApplyResources(Me.Label38, "Label38")
+        Me.Label38.Font = Nothing
         Me.Label38.Name = "Label38"
         '
         'UReadMng
         '
+        Me.UReadMng.AccessibleDescription = Nothing
+        Me.UReadMng.AccessibleName = Nothing
         resources.ApplyResources(Me.UReadMng, "UReadMng")
+        Me.UReadMng.BackgroundImage = Nothing
+        Me.UReadMng.Font = Nothing
         Me.UReadMng.Name = "UReadMng"
         Me.UReadMng.UseVisualStyleBackColor = True
         '
         'Label39
         '
+        Me.Label39.AccessibleDescription = Nothing
+        Me.Label39.AccessibleName = Nothing
         resources.ApplyResources(Me.Label39, "Label39")
+        Me.Label39.Font = Nothing
         Me.Label39.Name = "Label39"
         '
         'CheckBox6
         '
+        Me.CheckBox6.AccessibleDescription = Nothing
+        Me.CheckBox6.AccessibleName = Nothing
         resources.ApplyResources(Me.CheckBox6, "CheckBox6")
+        Me.CheckBox6.BackgroundImage = Nothing
+        Me.CheckBox6.Font = Nothing
         Me.CheckBox6.Name = "CheckBox6"
         Me.CheckBox6.UseVisualStyleBackColor = True
         '
         'Label40
         '
+        Me.Label40.AccessibleDescription = Nothing
+        Me.Label40.AccessibleName = Nothing
         resources.ApplyResources(Me.Label40, "Label40")
+        Me.Label40.Font = Nothing
         Me.Label40.Name = "Label40"
         '
         'CheckCloseToExit
         '
+        Me.CheckCloseToExit.AccessibleDescription = Nothing
+        Me.CheckCloseToExit.AccessibleName = Nothing
         resources.ApplyResources(Me.CheckCloseToExit, "CheckCloseToExit")
+        Me.CheckCloseToExit.BackgroundImage = Nothing
+        Me.CheckCloseToExit.Font = Nothing
         Me.CheckCloseToExit.Name = "CheckCloseToExit"
         Me.CheckCloseToExit.UseVisualStyleBackColor = True
         '
         'Label41
         '
+        Me.Label41.AccessibleDescription = Nothing
+        Me.Label41.AccessibleName = Nothing
         resources.ApplyResources(Me.Label41, "Label41")
+        Me.Label41.Font = Nothing
         Me.Label41.Name = "Label41"
         '
         'CheckMinimizeToTray
         '
+        Me.CheckMinimizeToTray.AccessibleDescription = Nothing
+        Me.CheckMinimizeToTray.AccessibleName = Nothing
         resources.ApplyResources(Me.CheckMinimizeToTray, "CheckMinimizeToTray")
+        Me.CheckMinimizeToTray.BackgroundImage = Nothing
+        Me.CheckMinimizeToTray.Font = Nothing
         Me.CheckMinimizeToTray.Name = "CheckMinimizeToTray"
         Me.CheckMinimizeToTray.UseVisualStyleBackColor = True
         '
         'Label42
         '
+        Me.Label42.AccessibleDescription = Nothing
+        Me.Label42.AccessibleName = Nothing
         resources.ApplyResources(Me.Label42, "Label42")
+        Me.Label42.Font = Nothing
         Me.Label42.Name = "Label42"
         '
         'CheckUseAPI
         '
+        Me.CheckUseAPI.AccessibleDescription = Nothing
+        Me.CheckUseAPI.AccessibleName = Nothing
         resources.ApplyResources(Me.CheckUseAPI, "CheckUseAPI")
+        Me.CheckUseAPI.BackgroundImage = Nothing
+        Me.CheckUseAPI.Font = Nothing
         Me.CheckUseAPI.Name = "CheckUseAPI"
         Me.CheckUseAPI.UseVisualStyleBackColor = True
         '
         'HubServerDomain
         '
+        Me.HubServerDomain.AccessibleDescription = Nothing
+        Me.HubServerDomain.AccessibleName = Nothing
         resources.ApplyResources(Me.HubServerDomain, "HubServerDomain")
+        Me.HubServerDomain.BackgroundImage = Nothing
+        Me.HubServerDomain.Font = Nothing
         Me.HubServerDomain.Name = "HubServerDomain"
         '
         'Label43
         '
+        Me.Label43.AccessibleDescription = Nothing
+        Me.Label43.AccessibleName = Nothing
         resources.ApplyResources(Me.Label43, "Label43")
+        Me.Label43.Font = Nothing
         Me.Label43.Name = "Label43"
         '
         'BrowserPathText
         '
+        Me.BrowserPathText.AccessibleDescription = Nothing
+        Me.BrowserPathText.AccessibleName = Nothing
         resources.ApplyResources(Me.BrowserPathText, "BrowserPathText")
+        Me.BrowserPathText.BackgroundImage = Nothing
+        Me.BrowserPathText.Font = Nothing
         Me.BrowserPathText.Name = "BrowserPathText"
         '
         'Label44
         '
+        Me.Label44.AccessibleDescription = Nothing
+        Me.Label44.AccessibleName = Nothing
         resources.ApplyResources(Me.Label44, "Label44")
+        Me.Label44.Font = Nothing
         Me.Label44.Name = "Label44"
         '
         'CheckboxReply
         '
+        Me.CheckboxReply.AccessibleDescription = Nothing
+        Me.CheckboxReply.AccessibleName = Nothing
         resources.ApplyResources(Me.CheckboxReply, "CheckboxReply")
+        Me.CheckboxReply.BackgroundImage = Nothing
+        Me.CheckboxReply.Font = Nothing
         Me.CheckboxReply.Name = "CheckboxReply"
         Me.CheckboxReply.UseVisualStyleBackColor = True
         '
         'CheckDispUsername
         '
+        Me.CheckDispUsername.AccessibleDescription = Nothing
+        Me.CheckDispUsername.AccessibleName = Nothing
         resources.ApplyResources(Me.CheckDispUsername, "CheckDispUsername")
+        Me.CheckDispUsername.BackgroundImage = Nothing
+        Me.CheckDispUsername.Font = Nothing
         Me.CheckDispUsername.Name = "CheckDispUsername"
         Me.CheckDispUsername.UseVisualStyleBackColor = True
         '
         'Label46
         '
+        Me.Label46.AccessibleDescription = Nothing
+        Me.Label46.AccessibleName = Nothing
         resources.ApplyResources(Me.Label46, "Label46")
+        Me.Label46.Font = Nothing
         Me.Label46.Name = "Label46"
         '
         'Label45
         '
+        Me.Label45.AccessibleDescription = Nothing
+        Me.Label45.AccessibleName = Nothing
         resources.ApplyResources(Me.Label45, "Label45")
+        Me.Label45.Font = Nothing
         Me.Label45.Name = "Label45"
         '
         'ComboDispTitle
         '
+        Me.ComboDispTitle.AccessibleDescription = Nothing
+        Me.ComboDispTitle.AccessibleName = Nothing
+        resources.ApplyResources(Me.ComboDispTitle, "ComboDispTitle")
+        Me.ComboDispTitle.BackgroundImage = Nothing
         Me.ComboDispTitle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboDispTitle.Font = Nothing
         Me.ComboDispTitle.FormattingEnabled = True
         Me.ComboDispTitle.Items.AddRange(New Object() {resources.GetString("ComboDispTitle.Items"), resources.GetString("ComboDispTitle.Items1"), resources.GetString("ComboDispTitle.Items2"), resources.GetString("ComboDispTitle.Items3"), resources.GetString("ComboDispTitle.Items4"), resources.GetString("ComboDispTitle.Items5"), resources.GetString("ComboDispTitle.Items6")})
-        resources.ApplyResources(Me.ComboDispTitle, "ComboDispTitle")
         Me.ComboDispTitle.Name = "ComboDispTitle"
         '
         'Label47
         '
-        Me.Label47.ForeColor = System.Drawing.SystemColors.ActiveCaption
+        Me.Label47.AccessibleDescription = Nothing
+        Me.Label47.AccessibleName = Nothing
         resources.ApplyResources(Me.Label47, "Label47")
+        Me.Label47.Font = Nothing
+        Me.Label47.ForeColor = System.Drawing.SystemColors.ActiveCaption
         Me.Label47.Name = "Label47"
         '
         'TabControl1
         '
+        Me.TabControl1.AccessibleDescription = Nothing
+        Me.TabControl1.AccessibleName = Nothing
+        resources.ApplyResources(Me.TabControl1, "TabControl1")
+        Me.TabControl1.BackgroundImage = Nothing
         Me.TabControl1.Controls.Add(Me.TabPage1)
         Me.TabControl1.Controls.Add(Me.TabPage2)
         Me.TabControl1.Controls.Add(Me.TabPage3)
         Me.TabControl1.Controls.Add(Me.TabPage4)
         Me.TabControl1.Controls.Add(Me.TabPage5)
         Me.TabControl1.Controls.Add(Me.TabPage6)
-        resources.ApplyResources(Me.TabControl1, "TabControl1")
+        Me.TabControl1.Font = Nothing
         Me.TabControl1.Name = "TabControl1"
         Me.TabControl1.SelectedIndex = 0
         '
         'TabPage1
         '
+        Me.TabPage1.AccessibleDescription = Nothing
+        Me.TabPage1.AccessibleName = Nothing
+        resources.ApplyResources(Me.TabPage1, "TabPage1")
+        Me.TabPage1.BackgroundImage = Nothing
         Me.TabPage1.Controls.Add(Me.Label54)
         Me.TabPage1.Controls.Add(Me.CheckStartupFollowers)
         Me.TabPage1.Controls.Add(Me.Label53)
@@ -872,61 +1250,97 @@ Partial Class Setting
         Me.TabPage1.Controls.Add(Me.Label35)
         Me.TabPage1.Controls.Add(Me.StartupReadReply)
         Me.TabPage1.Controls.Add(Me.StartupReadDM)
-        resources.ApplyResources(Me.TabPage1, "TabPage1")
+        Me.TabPage1.Font = Nothing
         Me.TabPage1.Name = "TabPage1"
         Me.TabPage1.UseVisualStyleBackColor = True
         '
         'Label54
         '
+        Me.Label54.AccessibleDescription = Nothing
+        Me.Label54.AccessibleName = Nothing
         resources.ApplyResources(Me.Label54, "Label54")
+        Me.Label54.Font = Nothing
         Me.Label54.Name = "Label54"
         '
         'CheckStartupFollowers
         '
+        Me.CheckStartupFollowers.AccessibleDescription = Nothing
+        Me.CheckStartupFollowers.AccessibleName = Nothing
         resources.ApplyResources(Me.CheckStartupFollowers, "CheckStartupFollowers")
+        Me.CheckStartupFollowers.BackgroundImage = Nothing
+        Me.CheckStartupFollowers.Font = Nothing
         Me.CheckStartupFollowers.Name = "CheckStartupFollowers"
         Me.CheckStartupFollowers.UseVisualStyleBackColor = True
         '
         'Label53
         '
+        Me.Label53.AccessibleDescription = Nothing
+        Me.Label53.AccessibleName = Nothing
         resources.ApplyResources(Me.Label53, "Label53")
+        Me.Label53.Font = Nothing
         Me.Label53.Name = "Label53"
         '
         'CheckStartupKey
         '
+        Me.CheckStartupKey.AccessibleDescription = Nothing
+        Me.CheckStartupKey.AccessibleName = Nothing
         resources.ApplyResources(Me.CheckStartupKey, "CheckStartupKey")
+        Me.CheckStartupKey.BackgroundImage = Nothing
+        Me.CheckStartupKey.Font = Nothing
         Me.CheckStartupKey.Name = "CheckStartupKey"
         Me.CheckStartupKey.UseVisualStyleBackColor = True
         '
         'Label51
         '
+        Me.Label51.AccessibleDescription = Nothing
+        Me.Label51.AccessibleName = Nothing
         resources.ApplyResources(Me.Label51, "Label51")
+        Me.Label51.Font = Nothing
         Me.Label51.Name = "Label51"
         '
         'CheckStartupVersion
         '
+        Me.CheckStartupVersion.AccessibleDescription = Nothing
+        Me.CheckStartupVersion.AccessibleName = Nothing
         resources.ApplyResources(Me.CheckStartupVersion, "CheckStartupVersion")
+        Me.CheckStartupVersion.BackgroundImage = Nothing
+        Me.CheckStartupVersion.Font = Nothing
         Me.CheckStartupVersion.Name = "CheckStartupVersion"
         Me.CheckStartupVersion.UseVisualStyleBackColor = True
         '
         'CheckPeriodAdjust
         '
+        Me.CheckPeriodAdjust.AccessibleDescription = Nothing
+        Me.CheckPeriodAdjust.AccessibleName = Nothing
         resources.ApplyResources(Me.CheckPeriodAdjust, "CheckPeriodAdjust")
+        Me.CheckPeriodAdjust.BackgroundImage = Nothing
+        Me.CheckPeriodAdjust.Font = Nothing
         Me.CheckPeriodAdjust.Name = "CheckPeriodAdjust"
         Me.CheckPeriodAdjust.UseVisualStyleBackColor = True
         '
         'MaxPost
         '
+        Me.MaxPost.AccessibleDescription = Nothing
+        Me.MaxPost.AccessibleName = Nothing
         resources.ApplyResources(Me.MaxPost, "MaxPost")
+        Me.MaxPost.BackgroundImage = Nothing
+        Me.MaxPost.Font = Nothing
         Me.MaxPost.Name = "MaxPost"
         '
         'Label52
         '
+        Me.Label52.AccessibleDescription = Nothing
+        Me.Label52.AccessibleName = Nothing
         resources.ApplyResources(Me.Label52, "Label52")
+        Me.Label52.Font = Nothing
         Me.Label52.Name = "Label52"
         '
         'TabPage2
         '
+        Me.TabPage2.AccessibleDescription = Nothing
+        Me.TabPage2.AccessibleName = Nothing
+        resources.ApplyResources(Me.TabPage2, "TabPage2")
+        Me.TabPage2.BackgroundImage = Nothing
         Me.TabPage2.Controls.Add(Me.CheckAutoConvertUrl)
         Me.TabPage2.Controls.Add(Me.Label29)
         Me.TabPage2.Controls.Add(Me.CheckAlwaysTop)
@@ -961,68 +1375,107 @@ Partial Class Setting
         Me.TabPage2.Controls.Add(Me.Label12)
         Me.TabPage2.Controls.Add(Me.StatusText)
         Me.TabPage2.Controls.Add(Me.CheckUseRecommendStatus)
-        resources.ApplyResources(Me.TabPage2, "TabPage2")
+        Me.TabPage2.Font = Nothing
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.UseVisualStyleBackColor = True
         '
         'CheckAutoConvertUrl
         '
+        Me.CheckAutoConvertUrl.AccessibleDescription = Nothing
+        Me.CheckAutoConvertUrl.AccessibleName = Nothing
         resources.ApplyResources(Me.CheckAutoConvertUrl, "CheckAutoConvertUrl")
+        Me.CheckAutoConvertUrl.BackgroundImage = Nothing
+        Me.CheckAutoConvertUrl.Font = Nothing
         Me.CheckAutoConvertUrl.Name = "CheckAutoConvertUrl"
         Me.CheckAutoConvertUrl.UseVisualStyleBackColor = True
         '
         'Label29
         '
+        Me.Label29.AccessibleDescription = Nothing
+        Me.Label29.AccessibleName = Nothing
         resources.ApplyResources(Me.Label29, "Label29")
+        Me.Label29.Font = Nothing
         Me.Label29.Name = "Label29"
         '
         'CheckAlwaysTop
         '
+        Me.CheckAlwaysTop.AccessibleDescription = Nothing
+        Me.CheckAlwaysTop.AccessibleName = Nothing
         resources.ApplyResources(Me.CheckAlwaysTop, "CheckAlwaysTop")
+        Me.CheckAlwaysTop.BackgroundImage = Nothing
+        Me.CheckAlwaysTop.Font = Nothing
         Me.CheckAlwaysTop.Name = "CheckAlwaysTop"
         Me.CheckAlwaysTop.UseVisualStyleBackColor = True
         '
         'Label58
         '
+        Me.Label58.AccessibleDescription = Nothing
+        Me.Label58.AccessibleName = Nothing
         resources.ApplyResources(Me.Label58, "Label58")
+        Me.Label58.Font = Nothing
         Me.Label58.Name = "Label58"
         '
         'Label57
         '
-        Me.Label57.ForeColor = System.Drawing.SystemColors.ActiveCaption
+        Me.Label57.AccessibleDescription = Nothing
+        Me.Label57.AccessibleName = Nothing
         resources.ApplyResources(Me.Label57, "Label57")
+        Me.Label57.Font = Nothing
+        Me.Label57.ForeColor = System.Drawing.SystemColors.ActiveCaption
         Me.Label57.Name = "Label57"
         '
         'Label56
         '
+        Me.Label56.AccessibleDescription = Nothing
+        Me.Label56.AccessibleName = Nothing
         resources.ApplyResources(Me.Label56, "Label56")
+        Me.Label56.Font = Nothing
         Me.Label56.Name = "Label56"
         '
         'CheckFavRestrict
         '
+        Me.CheckFavRestrict.AccessibleDescription = Nothing
+        Me.CheckFavRestrict.AccessibleName = Nothing
         resources.ApplyResources(Me.CheckFavRestrict, "CheckFavRestrict")
+        Me.CheckFavRestrict.BackgroundImage = Nothing
+        Me.CheckFavRestrict.Font = Nothing
         Me.CheckFavRestrict.Name = "CheckFavRestrict"
         Me.CheckFavRestrict.UseVisualStyleBackColor = True
         '
         'CheckTinyURL
         '
+        Me.CheckTinyURL.AccessibleDescription = Nothing
+        Me.CheckTinyURL.AccessibleName = Nothing
         resources.ApplyResources(Me.CheckTinyURL, "CheckTinyURL")
+        Me.CheckTinyURL.BackgroundImage = Nothing
+        Me.CheckTinyURL.Font = Nothing
         Me.CheckTinyURL.Name = "CheckTinyURL"
         Me.CheckTinyURL.UseVisualStyleBackColor = True
         '
         'Label50
         '
+        Me.Label50.AccessibleDescription = Nothing
+        Me.Label50.AccessibleName = Nothing
         resources.ApplyResources(Me.Label50, "Label50")
+        Me.Label50.Font = Nothing
         Me.Label50.Name = "Label50"
         '
         'Button3
         '
+        Me.Button3.AccessibleDescription = Nothing
+        Me.Button3.AccessibleName = Nothing
         resources.ApplyResources(Me.Button3, "Button3")
+        Me.Button3.BackgroundImage = Nothing
+        Me.Button3.Font = Nothing
         Me.Button3.Name = "Button3"
         Me.Button3.UseVisualStyleBackColor = True
         '
         'TabPage3
         '
+        Me.TabPage3.AccessibleDescription = Nothing
+        Me.TabPage3.AccessibleName = Nothing
+        resources.ApplyResources(Me.TabPage3, "TabPage3")
+        Me.TabPage3.BackgroundImage = Nothing
         Me.TabPage3.Controls.Add(Me.Label10)
         Me.TabPage3.Controls.Add(Me.ComboDispTitle)
         Me.TabPage3.Controls.Add(Me.Label47)
@@ -1039,26 +1492,38 @@ Partial Class Setting
         Me.TabPage3.Controls.Add(Me.IconSize)
         Me.TabPage3.Controls.Add(Me.CheckBox3)
         Me.TabPage3.Controls.Add(Me.TextBox3)
-        resources.ApplyResources(Me.TabPage3, "TabPage3")
+        Me.TabPage3.Font = Nothing
         Me.TabPage3.Name = "TabPage3"
         Me.TabPage3.UseVisualStyleBackColor = True
         '
         'TabPage4
         '
-        Me.TabPage4.Controls.Add(Me.GroupBox1)
+        Me.TabPage4.AccessibleDescription = Nothing
+        Me.TabPage4.AccessibleName = Nothing
         resources.ApplyResources(Me.TabPage4, "TabPage4")
+        Me.TabPage4.BackgroundImage = Nothing
+        Me.TabPage4.Controls.Add(Me.GroupBox1)
+        Me.TabPage4.Font = Nothing
         Me.TabPage4.Name = "TabPage4"
         Me.TabPage4.UseVisualStyleBackColor = True
         '
         'TabPage5
         '
-        Me.TabPage5.Controls.Add(Me.GroupBox2)
+        Me.TabPage5.AccessibleDescription = Nothing
+        Me.TabPage5.AccessibleName = Nothing
         resources.ApplyResources(Me.TabPage5, "TabPage5")
+        Me.TabPage5.BackgroundImage = Nothing
+        Me.TabPage5.Controls.Add(Me.GroupBox2)
+        Me.TabPage5.Font = Nothing
         Me.TabPage5.Name = "TabPage5"
         Me.TabPage5.UseVisualStyleBackColor = True
         '
         'GroupBox2
         '
+        Me.GroupBox2.AccessibleDescription = Nothing
+        Me.GroupBox2.AccessibleName = Nothing
+        resources.ApplyResources(Me.GroupBox2, "GroupBox2")
+        Me.GroupBox2.BackgroundImage = Nothing
         Me.GroupBox2.Controls.Add(Me.Label55)
         Me.GroupBox2.Controls.Add(Me.TextProxyPassword)
         Me.GroupBox2.Controls.Add(Me.LabelProxyPassword)
@@ -1071,128 +1536,198 @@ Partial Class Setting
         Me.GroupBox2.Controls.Add(Me.RadioProxySpecified)
         Me.GroupBox2.Controls.Add(Me.RadioProxyIE)
         Me.GroupBox2.Controls.Add(Me.RadioProxyNone)
-        resources.ApplyResources(Me.GroupBox2, "GroupBox2")
+        Me.GroupBox2.Font = Nothing
         Me.GroupBox2.Name = "GroupBox2"
         Me.GroupBox2.TabStop = False
         '
         'Label55
         '
+        Me.Label55.AccessibleDescription = Nothing
+        Me.Label55.AccessibleName = Nothing
         resources.ApplyResources(Me.Label55, "Label55")
+        Me.Label55.Font = Nothing
         Me.Label55.ForeColor = System.Drawing.SystemColors.ActiveCaption
         Me.Label55.Name = "Label55"
         '
         'TextProxyPassword
         '
+        Me.TextProxyPassword.AccessibleDescription = Nothing
+        Me.TextProxyPassword.AccessibleName = Nothing
         resources.ApplyResources(Me.TextProxyPassword, "TextProxyPassword")
+        Me.TextProxyPassword.BackgroundImage = Nothing
+        Me.TextProxyPassword.Font = Nothing
         Me.TextProxyPassword.Name = "TextProxyPassword"
         Me.TextProxyPassword.UseSystemPasswordChar = True
         '
         'LabelProxyPassword
         '
+        Me.LabelProxyPassword.AccessibleDescription = Nothing
+        Me.LabelProxyPassword.AccessibleName = Nothing
         resources.ApplyResources(Me.LabelProxyPassword, "LabelProxyPassword")
+        Me.LabelProxyPassword.Font = Nothing
         Me.LabelProxyPassword.Name = "LabelProxyPassword"
         '
         'TextProxyUser
         '
+        Me.TextProxyUser.AccessibleDescription = Nothing
+        Me.TextProxyUser.AccessibleName = Nothing
         resources.ApplyResources(Me.TextProxyUser, "TextProxyUser")
+        Me.TextProxyUser.BackgroundImage = Nothing
+        Me.TextProxyUser.Font = Nothing
         Me.TextProxyUser.Name = "TextProxyUser"
         '
         'LabelProxyUser
         '
+        Me.LabelProxyUser.AccessibleDescription = Nothing
+        Me.LabelProxyUser.AccessibleName = Nothing
         resources.ApplyResources(Me.LabelProxyUser, "LabelProxyUser")
+        Me.LabelProxyUser.Font = Nothing
         Me.LabelProxyUser.Name = "LabelProxyUser"
         '
         'TextProxyPort
         '
+        Me.TextProxyPort.AccessibleDescription = Nothing
+        Me.TextProxyPort.AccessibleName = Nothing
         resources.ApplyResources(Me.TextProxyPort, "TextProxyPort")
+        Me.TextProxyPort.BackgroundImage = Nothing
+        Me.TextProxyPort.Font = Nothing
         Me.TextProxyPort.Name = "TextProxyPort"
         '
         'LabelProxyPort
         '
+        Me.LabelProxyPort.AccessibleDescription = Nothing
+        Me.LabelProxyPort.AccessibleName = Nothing
         resources.ApplyResources(Me.LabelProxyPort, "LabelProxyPort")
+        Me.LabelProxyPort.Font = Nothing
         Me.LabelProxyPort.Name = "LabelProxyPort"
         '
         'TextProxyAddress
         '
+        Me.TextProxyAddress.AccessibleDescription = Nothing
+        Me.TextProxyAddress.AccessibleName = Nothing
         resources.ApplyResources(Me.TextProxyAddress, "TextProxyAddress")
+        Me.TextProxyAddress.BackgroundImage = Nothing
+        Me.TextProxyAddress.Font = Nothing
         Me.TextProxyAddress.Name = "TextProxyAddress"
         '
         'LabelProxyAddress
         '
+        Me.LabelProxyAddress.AccessibleDescription = Nothing
+        Me.LabelProxyAddress.AccessibleName = Nothing
         resources.ApplyResources(Me.LabelProxyAddress, "LabelProxyAddress")
+        Me.LabelProxyAddress.Font = Nothing
         Me.LabelProxyAddress.Name = "LabelProxyAddress"
         '
         'RadioProxySpecified
         '
+        Me.RadioProxySpecified.AccessibleDescription = Nothing
+        Me.RadioProxySpecified.AccessibleName = Nothing
         resources.ApplyResources(Me.RadioProxySpecified, "RadioProxySpecified")
+        Me.RadioProxySpecified.BackgroundImage = Nothing
+        Me.RadioProxySpecified.Font = Nothing
         Me.RadioProxySpecified.Name = "RadioProxySpecified"
         Me.RadioProxySpecified.UseVisualStyleBackColor = True
         '
         'RadioProxyIE
         '
+        Me.RadioProxyIE.AccessibleDescription = Nothing
+        Me.RadioProxyIE.AccessibleName = Nothing
         resources.ApplyResources(Me.RadioProxyIE, "RadioProxyIE")
+        Me.RadioProxyIE.BackgroundImage = Nothing
         Me.RadioProxyIE.Checked = True
+        Me.RadioProxyIE.Font = Nothing
         Me.RadioProxyIE.Name = "RadioProxyIE"
         Me.RadioProxyIE.TabStop = True
         Me.RadioProxyIE.UseVisualStyleBackColor = True
         '
         'RadioProxyNone
         '
+        Me.RadioProxyNone.AccessibleDescription = Nothing
+        Me.RadioProxyNone.AccessibleName = Nothing
         resources.ApplyResources(Me.RadioProxyNone, "RadioProxyNone")
+        Me.RadioProxyNone.BackgroundImage = Nothing
+        Me.RadioProxyNone.Font = Nothing
         Me.RadioProxyNone.Name = "RadioProxyNone"
         Me.RadioProxyNone.UseVisualStyleBackColor = True
         '
         'TabPage6
         '
+        Me.TabPage6.AccessibleDescription = Nothing
+        Me.TabPage6.AccessibleName = Nothing
+        resources.ApplyResources(Me.TabPage6, "TabPage6")
+        Me.TabPage6.BackgroundImage = Nothing
         Me.TabPage6.Controls.Add(Me.Label60)
         Me.TabPage6.Controls.Add(Me.ComboBoxOutputzUrlmode)
         Me.TabPage6.Controls.Add(Me.Label59)
         Me.TabPage6.Controls.Add(Me.TextBoxOutputzKey)
         Me.TabPage6.Controls.Add(Me.CheckOutputz)
-        resources.ApplyResources(Me.TabPage6, "TabPage6")
+        Me.TabPage6.Font = Nothing
         Me.TabPage6.Name = "TabPage6"
         Me.TabPage6.UseVisualStyleBackColor = True
         '
         'Label60
         '
+        Me.Label60.AccessibleDescription = Nothing
+        Me.Label60.AccessibleName = Nothing
         resources.ApplyResources(Me.Label60, "Label60")
+        Me.Label60.Font = Nothing
         Me.Label60.Name = "Label60"
         '
         'ComboBoxOutputzUrlmode
         '
+        Me.ComboBoxOutputzUrlmode.AccessibleDescription = Nothing
+        Me.ComboBoxOutputzUrlmode.AccessibleName = Nothing
+        resources.ApplyResources(Me.ComboBoxOutputzUrlmode, "ComboBoxOutputzUrlmode")
+        Me.ComboBoxOutputzUrlmode.BackgroundImage = Nothing
         Me.ComboBoxOutputzUrlmode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBoxOutputzUrlmode.Font = Nothing
         Me.ComboBoxOutputzUrlmode.FormattingEnabled = True
         Me.ComboBoxOutputzUrlmode.Items.AddRange(New Object() {resources.GetString("ComboBoxOutputzUrlmode.Items"), resources.GetString("ComboBoxOutputzUrlmode.Items1")})
-        resources.ApplyResources(Me.ComboBoxOutputzUrlmode, "ComboBoxOutputzUrlmode")
         Me.ComboBoxOutputzUrlmode.Name = "ComboBoxOutputzUrlmode"
         '
         'Label59
         '
+        Me.Label59.AccessibleDescription = Nothing
+        Me.Label59.AccessibleName = Nothing
         resources.ApplyResources(Me.Label59, "Label59")
+        Me.Label59.Font = Nothing
         Me.Label59.Name = "Label59"
         '
         'TextBoxOutputzKey
         '
+        Me.TextBoxOutputzKey.AccessibleDescription = Nothing
+        Me.TextBoxOutputzKey.AccessibleName = Nothing
         resources.ApplyResources(Me.TextBoxOutputzKey, "TextBoxOutputzKey")
+        Me.TextBoxOutputzKey.BackgroundImage = Nothing
+        Me.TextBoxOutputzKey.Font = Nothing
         Me.TextBoxOutputzKey.Name = "TextBoxOutputzKey"
         Me.TextBoxOutputzKey.UseSystemPasswordChar = True
         '
         'CheckOutputz
         '
+        Me.CheckOutputz.AccessibleDescription = Nothing
+        Me.CheckOutputz.AccessibleName = Nothing
         resources.ApplyResources(Me.CheckOutputz, "CheckOutputz")
+        Me.CheckOutputz.BackgroundImage = Nothing
+        Me.CheckOutputz.Font = Nothing
         Me.CheckOutputz.Name = "CheckOutputz"
         Me.CheckOutputz.UseVisualStyleBackColor = True
         '
         'Setting
         '
         Me.AcceptButton = Me.Save
+        Me.AccessibleDescription = Nothing
+        Me.AccessibleName = Nothing
         resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.BackgroundImage = Nothing
         Me.CancelButton = Me.Cancel
         Me.Controls.Add(Me.TabControl1)
         Me.Controls.Add(Me.Cancel)
         Me.Controls.Add(Me.Save)
+        Me.Font = Nothing
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
+        Me.Icon = Nothing
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "Setting"
