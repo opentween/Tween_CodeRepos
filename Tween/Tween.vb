@@ -421,7 +421,7 @@ Public Class TweenMain
 
         Select Case SettingDialog.OutputzUrlmode
             Case OutputzUrlmode.twittercom
-                _Outputz = New Outputz(SettingDialog.OutputzKey, "http://twitter.com", SettingDialog.Outputz)
+                _Outputz = New Outputz(SettingDialog.OutputzKey, "http://twitter.com/", SettingDialog.Outputz)
             Case OutputzUrlmode.twittercomWithUsername
                 _Outputz = New Outputz(SettingDialog.OutputzKey, "http://twitter.com/" + SettingDialog.UserID, SettingDialog.Outputz)
         End Select
