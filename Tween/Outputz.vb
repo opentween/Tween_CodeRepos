@@ -9,10 +9,10 @@ Public Class Outputz
     Private state As Boolean
 
 
-    Public Sub New(ByVal _key As String, ByVal _url As String)
+    Public Sub New(ByVal _key As String, ByVal _url As String, ByVal _state As Boolean)
         url = _url
         key = _key
-        Enabled = False
+        Enabled = _state
     End Sub
 
     Public Property url() As String
