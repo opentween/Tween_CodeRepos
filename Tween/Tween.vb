@@ -5307,8 +5307,6 @@ RETRY:
     End Sub
 
     Private Sub WedataMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles WedataMenuItem.Click
-        Dim sb As New StringBuilder
-        MsgBox(sb.Capacity.ToString)
         If clsTwSync IsNot Nothing Then
             clsTwSync.GetWedata()
         End If
