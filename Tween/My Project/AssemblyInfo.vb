@@ -1,7 +1,7 @@
 ﻿' Tween - Client of Twitter
-' Copyright © 2007-2008 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
-'           © 2008      Moz (@syo68k) <http://iddy.jp/profile/moz/>
-'           © 2008      takeshik (@takeshik) <http://www.takeshik.org/>
+' Copyright © 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
+'           © 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
+'           © 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
 ' All rights reserved.
 ' 
 ' This file is part of Tween.
@@ -35,7 +35,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("Client of Twitter. Free software(GPL3)" & vbcrlf & "<Contacts>" & vbcrlf & "Twitter:kiri_feather" & vbcrlf & "Mail:kiri.feather@gmail.com" & vbcrlf & "<Associator developer>" & vbcrlf & "Developer:Takeshi KIRIYA(http://www.takeshik.org/)" & vbcrlf & "Developer:Moz(http://iddy.jp/profile/moz/)" & vbcrlf & "Icons:Minami(http://www.pi-kun.com/)")> 
 <Assembly: AssemblyCompany("")> 
 <Assembly: AssemblyProduct("Tween")> 
-<Assembly: AssemblyCopyright("(C)kiri_feather 2007-2008 All Rights Reserved.")> 
+<Assembly: AssemblyCopyright("(C)kiri_feather 2007-2009 All Rights Reserved.")> 
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)>
