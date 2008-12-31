@@ -1,7 +1,7 @@
 ﻿' Tween - Client of Twitter
-' Copyright © 2007-2008 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
-'           © 2008      Moz (@syo68k) <http://iddy.jp/profile/moz/>
-'           © 2008      takeshik (@takeshik) <http://www.takeshik.org/>
+' Copyright © 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
+'           © 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
+'           © 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
 ' All rights reserved.
 ' 
 ' This file is part of Tween.
