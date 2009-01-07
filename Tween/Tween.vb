@@ -2989,6 +2989,10 @@ Public Class TweenMain
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
+        If Not _initial Then  '念のため
+            SaveConfigs()
+        End If
+
         Return True
     End Function
 
@@ -3085,6 +3089,8 @@ Public Class TweenMain
         End If
         _tabs(idx).filters.Clear()
         _tabs.RemoveAt(idx)
+
+        SaveConfigs()
     End Sub
 
     Private Sub ListTab_MouseMove(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListTab.MouseMove
@@ -3109,6 +3115,7 @@ Public Class TweenMain
                     Exit For
                 End If
             Next
+            SaveConfigs()
         Else
             _tabDrag = False
         End If
@@ -4580,6 +4587,7 @@ RETRY:
                     TabDialog.AddTab(ListTab.TabPages(i).Text)
                 End If
             Next
+            SaveConfigs()
         End If
     End Sub
 
@@ -4897,6 +4905,7 @@ RETRY:
         fDialog.Tabs = _tabs
         fDialog.CurrentTab = _rclickTabName
         fDialog.ShowDialog()
+        SaveConfigs()
         Me.TopMost = SettingDialog.AlwaysTop
         _tabs = fDialog.Tabs
         ReFilter()
