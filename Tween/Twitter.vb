@@ -1068,21 +1068,25 @@ Partial Public Class Twitter
 
         resMsg = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _ShowStatus + id + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2), String)
 
-        Dim rd As Xml.XmlTextReader = New Xml.XmlTextReader(New System.IO.StringReader(resMsg))
-
-        rd.Read()
-        While rd.EOF = False
-            If rd.IsStartElement("favorited") Then
-                If rd.ReadElementContentAsBoolean() = True Then
-                    Return ""  '正常にふぁぼれている
-                Else
-                    Return "NG(Restricted?)"  '正常応答なのにふぁぼれてないので制限っぽい
-                End If
-            Else
+        Try
+            Using rd As Xml.XmlTextReader = New Xml.XmlTextReader(New System.IO.StringReader(resMsg))
                 rd.Read()
-            End If
-        End While
-        rd.Close()
+                While rd.EOF = False
+                    If rd.IsStartElement("favorited") Then
+                        If rd.ReadElementContentAsBoolean() = True Then
+                            Return ""  '正常にふぁぼれている
+                        Else
+                            Return "NG(Restricted?)"  '正常応答なのにふぁぼれてないので制限っぽい
+                        End If
+                    Else
+                        rd.Read()
+                    End If
+                End While
+                rd.Close()
+            End Using
+        Catch ex As XmlException
+            '
+        End Try
 
         Return ""
     End Function
