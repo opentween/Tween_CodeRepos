@@ -1122,21 +1122,26 @@ Partial Public Class Twitter
                 Return resStatus
             End If
 
-            Using rd As Xml.XmlTextReader = New Xml.XmlTextReader(New System.IO.StringReader(resMsg))
-                Dim lc As Integer = 0
+            Try
+                Using rd As Xml.XmlTextReader = New Xml.XmlTextReader(New System.IO.StringReader(resMsg))
+                    Dim lc As Integer = 0
 
-                rd.Read()
-                While rd.EOF = False
-                    If rd.IsStartElement("screen_name") Then
-                        follower.Add(rd.ReadElementString("screen_name"))
-                        lc += 1
-                    Else
-                        rd.Read()
-                    End If
-                End While
-                If lc = 0 Then Exit Do
-            End Using
-
+                    rd.Read()
+                    While rd.EOF = False
+                        If rd.IsStartElement("screen_name") Then
+                            follower.Add(rd.ReadElementString("screen_name"))
+                            lc += 1
+                        Else
+                            rd.Read()
+                        End If
+                    End While
+                    If lc = 0 Then Exit Do
+                End Using
+            Catch ex As XmlException
+                follower.Clear()
+                follower.Add(_uid)  '途中で失敗したら片思い表示しない
+                Return "NG(XmlException)"
+            End Try
         Loop
 
         Return ""
