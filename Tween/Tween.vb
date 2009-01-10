@@ -345,7 +345,7 @@ Public Class TweenMain
         _brsBackColorYou = New SolidBrush(_clTarget)
         _brsBackColorAtYou = New SolidBrush(_clAtTarget)
         _brsBackColorAtTo = New SolidBrush(_clAtFromTarget)
-        _brsBackColorNone = New SolidBrush(Color.White)
+        _brsBackColorNone = New SolidBrush(Color.FromKnownColor(KnownColor.Window))
 
         ' StringFormatオブジェクトへの事前設定
         sf.Alignment = StringAlignment.Near
