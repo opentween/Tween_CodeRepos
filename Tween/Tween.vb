@@ -4371,8 +4371,26 @@ RETRY:
                 StatusText.SelectionStart = StatusText.Text.Length
                 e.Handled = True
                 e.SuppressKeyPress = True
+            ElseIf e.KeyCode = Keys.PageUp Then
+                If ListTab.SelectedIndex = 0 Then
+                    ListTab.SelectedIndex = ListTab.TabCount - 1
+                Else
+                    ListTab.SelectedIndex -= 1
+                End If
+                e.Handled = True
+                e.SuppressKeyPress = True
+                StatusText.Focus()
+            ElseIf e.KeyCode = Keys.PageDown Then
+                If ListTab.SelectedIndex = ListTab.TabCount - 1 Then
+                    ListTab.SelectedIndex = 0
+                Else
+                    ListTab.SelectedIndex += 1
+                End If
+                e.Handled = True
+                e.SuppressKeyPress = True
+                StatusText.Focus()
             End If
-        End If
+            End If
     End Sub
 
     Private Sub SaveConfigs()
