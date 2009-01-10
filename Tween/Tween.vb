@@ -4390,7 +4390,7 @@ RETRY:
                 e.SuppressKeyPress = True
                 StatusText.Focus()
             End If
-            End If
+        End If
     End Sub
 
     Private Sub SaveConfigs()
