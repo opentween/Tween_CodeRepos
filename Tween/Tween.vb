@@ -2588,8 +2588,7 @@ Public Class TweenMain
         End If
 
     End Sub
-
-    Private Sub RefreshStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RefreshStripMenuItem.Click
+    Private Sub doRefresh()
         NotifyIcon1.Icon = NIconRefresh(0)
         TimerRefreshIcon.Enabled = True
 
@@ -2603,7 +2602,10 @@ Public Class TweenMain
         Else
             GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
         End If
+    End Sub
 
+    Private Sub RefreshStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RefreshStripMenuItem.Click
+        doRefresh()
     End Sub
 
     Private Sub SettingStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SettingStripMenuItem.Click
@@ -4567,6 +4569,7 @@ RETRY:
     Private Sub PostBrowser_PreviewKeyDown(ByVal sender As System.Object, ByVal e As System.Windows.Forms.PreviewKeyDownEventArgs) Handles PostBrowser.PreviewKeyDown
         If e.KeyCode = Keys.F5 Then
             e.IsInputKey = True
+            doRefresh()
         End If
         If e.Modifiers = Keys.None AndAlso (e.KeyCode = Keys.Space OrElse e.KeyCode = Keys.ProcessKey) Then
             e.IsInputKey = True
