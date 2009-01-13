@@ -1594,12 +1594,11 @@ Public Class TweenMain
                                 TimerTimeline.Interval += 1000
                                 If TimerTimeline.Interval > SettingDialog.TimelinePeriodInt * 1000 Then TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
                             End If
+                            If rslt.newDM Then
+                                GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
+                            End If
                             If SettingDialog.CheckReply Then
                                 GetTimeline(WORKERTYPE.Reply, 1, 1)
-                            Else
-                                If rslt.newDM Then
-                                    GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
-                                End If
                             End If
                         End If
                     End If
