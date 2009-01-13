@@ -5604,12 +5604,29 @@ RETRY:
 
     Private Sub OpenURLMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OpenURLMenuItem.Click
         If PostBrowser.Document.Links.Count > 0 Then
+            Dim uri As Uri
             UrlDialog.ClearUrl()
 
             Dim openUrlStr As String = ""
 
             If PostBrowser.Document.Links.Count = 1 Then
-                openUrlStr = PostBrowser.Document.Links(0).GetAttribute("href")
+                Dim input As String = PostBrowser.Document.Links(0).GetAttribute("href")
+
+                Dim sb As StringBuilder = New StringBuilder(256)
+retry:
+                For Each c As Char In input
+                    If Convert.ToInt32(c) > 255 Then
+                        uri = New Uri(input)
+                        input = uri.AbsoluteUri
+                        sb.Length = 0
+                        GoTo retry
+                    ElseIf Convert.ToInt32(c) > 127 Then
+                        sb.Append("%" + Convert.ToInt16(c).ToString("X2"))
+                    Else
+                        sb.Append(c)
+                    End If
+                Next
+                openUrlStr = sb.ToString()
             Else
                 For Each linkElm As System.Windows.Forms.HtmlElement In PostBrowser.Document.Links
                     UrlDialog.AddUrl(linkElm.GetAttribute("href"))
