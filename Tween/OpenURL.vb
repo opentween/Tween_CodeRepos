@@ -48,25 +48,7 @@ Public Class OpenURL
     End Sub
 
     Public Sub AddUrl(ByVal strUrl As String)
-        Dim uri As Uri
-        Dim input As String = strUrl
-
-        Dim sb As StringBuilder = New StringBuilder(256)
-retry:
-        For Each c As Char In input
-            If Convert.ToInt32(c) > 255 Then
-                uri = New Uri(input)
-                input = uri.AbsoluteUri
-                sb.Length = 0
-                GoTo retry
-            ElseIf Convert.ToInt32(c) > 127 Then
-                sb.Append("%" + Convert.ToInt16(c).ToString("X2"))
-            Else
-                sb.Append(c)
-            End If
-
-        Next
-        UrlList.Items.Add(sb.ToString())
+        UrlList.Items.Add(urlEncodeMultibyteChar(strUrl))
     End Sub
 
     Public ReadOnly Property SelectedUrl() As String
