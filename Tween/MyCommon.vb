@@ -21,6 +21,8 @@
 ' the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
 ' Boston, MA 02110-1301, USA.
 
+Imports System.Text
+
 Public Module MyCommon
     Public Enum IconSizes
         IconNone = 0
@@ -98,6 +100,34 @@ Public Module MyCommon
             writer.WriteLine()
         End Using
     End Sub
+
+    ''' <summary>
+    ''' URLに含まれているマルチバイト文字列を%xx形式でエンコードします。
+    ''' <newpara>
+    ''' マルチバイト文字のコードはUTF-8またはUnicodeで自動的に判断します。
+    ''' </newpara>
+    ''' </summary>
+    ''' <param name = input>エンコード対象のURL</param>
+    ''' <returns>マルチバイト文字の部分をUTF-8/%xx形式でエンコードした文字列を返します。</returns>
+
+    Public Function urlEncodeMultibyteChar(ByVal input As String) As String
+        Dim uri As Uri
+        Dim sb As StringBuilder = New StringBuilder(256)
+retry:
+        For Each c As Char In input
+            If Convert.ToInt32(c) > 255 Then
+                uri = New Uri(input)
+                input = uri.AbsoluteUri
+                sb.Length = 0
+                GoTo retry
+            ElseIf Convert.ToInt32(c) > 127 Then
+                sb.Append("%" + Convert.ToInt16(c).ToString("X2"))
+            Else
+                sb.Append(c)
+            End If
+        Next
+        Return sb.ToString()
+    End Function
 
     Public _Outputz As Outputz
 End Module

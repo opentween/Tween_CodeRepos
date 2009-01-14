@@ -5610,23 +5610,7 @@ RETRY:
             Dim openUrlStr As String = ""
 
             If PostBrowser.Document.Links.Count = 1 Then
-                Dim input As String = PostBrowser.Document.Links(0).GetAttribute("href")
-
-                Dim sb As StringBuilder = New StringBuilder(256)
-retry:
-                For Each c As Char In input
-                    If Convert.ToInt32(c) > 255 Then
-                        uri = New Uri(input)
-                        input = uri.AbsoluteUri
-                        sb.Length = 0
-                        GoTo retry
-                    ElseIf Convert.ToInt32(c) > 127 Then
-                        sb.Append("%" + Convert.ToInt16(c).ToString("X2"))
-                    Else
-                        sb.Append(c)
-                    End If
-                Next
-                openUrlStr = sb.ToString()
+                openUrlStr = urlEncodeMultiByteChar(PostBrowser.Document.Links(0).GetAttribute("href"))
             Else
                 For Each linkElm As System.Windows.Forms.HtmlElement In PostBrowser.Document.Links
                     UrlDialog.AddUrl(linkElm.GetAttribute("href"))
@@ -5726,7 +5710,6 @@ retry:
             End If
         Next
 
-        slbl.EnsureCapacity(256)
         slbl.AppendFormat(My.Resources.SetStatusLabelText1, tur, tal, ur, al, urat, _postTimestamps.Count, _favTimestamps.Count, _tlCount)
         If SettingDialog.TimelinePeriodInt = 0 Then
             slbl.Append(My.Resources.SetStatusLabelText2)
