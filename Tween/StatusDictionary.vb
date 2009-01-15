@@ -257,7 +257,7 @@ End Class
 
 Public Class TabInformations
     '個別タブの情報をDictionaryで保持
-    Private _sorter As ListViewItemComparerClass = New ListViewItemComparerClass
+    Private _sorter As IdComparerClass
     Private _tabs As New Dictionary(Of String, TabClass)
     Private _statuses As Dictionary(Of Long, PostClass) = New Dictionary(Of Long, PostClass)
     Private _addedIds As List(Of Long)
@@ -271,6 +271,7 @@ Public Class TabInformations
     End Enum
 
     Private Sub New()
+        _sorter = New IdComparerClass(Me)
     End Sub
 
     Public Shared Function GetInstance() As TabInformations
@@ -335,7 +336,7 @@ Public Class TabInformations
         Next
     End Sub
 
-    Public ReadOnly Property Sorter() As ListViewItemComparerClass
+    Public ReadOnly Property Sorter() As IdComparerClass
         Get
             Return _sorter
         End Get
@@ -350,10 +351,24 @@ Public Class TabInformations
         End Set
     End Property
 
-    Public Sub ToggleSortOrder()
-        If _sorter.Order = Windows.Forms.SortOrder.Ascending Then
-            _sorter.Order = Windows.Forms.SortOrder.Descending
+    Public Property SortMode() As IdComparerClass.ComparerMode
+        Get
+            Return _sorter.Mode
+        End Get
+        Set(ByVal value As IdComparerClass.ComparerMode)
+            _sorter.Mode = value
+        End Set
+    End Property
+
+    Public Sub ToggleSortOrder(ByVal SortMode As IdComparerClass.ComparerMode)
+        If _sorter.Mode = SortMode Then
+            If _sorter.Order = Windows.Forms.SortOrder.Ascending Then
+                _sorter.Order = Windows.Forms.SortOrder.Descending
+            Else
+                _sorter.Order = Windows.Forms.SortOrder.Ascending
+            End If
         Else
+            _sorter.Mode = SortMode
             _sorter.Order = Windows.Forms.SortOrder.Ascending
         End If
         Me.SortPosts()
@@ -386,7 +401,8 @@ Public Class TabInformations
         '最古未読が設定されていて、既読の場合（1発言以上存在）
         If Tab.OldestUnreadId > -1 AndAlso _
            _statuses.ContainsKey(Tab.OldestUnreadId) AndAlso _
-           _statuses.Item(Tab.OldestUnreadId).IsRead Then     '次の未読探索
+           _statuses.Item(Tab.OldestUnreadId).IsRead AndAlso _
+           _sorter.Mode = IdComparerClass.ComparerMode.Id Then     '次の未読探索
             If Tab.UnreadCount = 0 Then
                 '未読数０→最古未読なし
                 Tab.OldestUnreadId = -1
@@ -631,7 +647,7 @@ Public Class TabClass
         _ids = New List(Of Long)
     End Sub
 
-    Public Sub Sort(ByVal Sorter As ListViewItemComparerClass)
+    Public Sub Sort(ByVal Sorter As IdComparerClass)
         _ids.Sort(Sorter)
     End Sub
 
@@ -1007,22 +1023,24 @@ Public Class FiltersClass
 End Class
 
 'ソート比較クラス：ID比較のみ
-Public Class ListViewItemComparerClass
+Public Class IdComparerClass
     Implements IComparer(Of Long)
 
-    '''' <summary>
-    '''' 比較する方法
-    '''' </summary>
-    'Public Enum ComparerMode
-    '    [String]
-    '    [Integer]
-    '    DateTime
-    '    None
-    'End Enum
+    ''' <summary>
+    ''' 比較する方法
+    ''' </summary>
+    Public Enum ComparerMode
+        Id
+        Data
+        Name
+        Nickname
+        Source
+    End Enum
 
     'Private _column As Integer
     Private _order As SortOrder
-    'Private _mode As ComparerMode
+    Private _mode As ComparerMode
+    Private _statuses As TabInformations
     'Private _columnModes() As ComparerMode
 
     '''' <summary>
@@ -1058,17 +1076,17 @@ Public Class ListViewItemComparerClass
         End Set
     End Property
 
-    '''' <summary>
-    '''' 並び替えの方法
-    '''' </summary>
-    'Public Property Mode() As ComparerMode
-    '    Get
-    '        Return _mode
-    '    End Get
-    '    Set(ByVal Value As ComparerMode)
-    '        _mode = Value
-    '    End Set
-    'End Property
+    ''' <summary>
+    ''' 並び替えの方法
+    ''' </summary>
+    Public Property Mode() As ComparerMode
+        Get
+            Return _mode
+        End Get
+        Set(ByVal Value As ComparerMode)
+            _mode = Value
+        End Set
+    End Property
 
     '''' <summary>
     '''' 列ごとの並び替えの方法
@@ -1080,17 +1098,25 @@ Public Class ListViewItemComparerClass
     'End Property
 
     ''' <summary>
-    ''' ListViewItemComparerクラスのコンストラクタ
+    ''' ListViewItemComparerクラスのコンストラクタ（引数付は未使用）
     ''' </summary>
     ''' <param name="col">並び替える列番号</param>
     ''' <param name="ord">昇順か降順か</param>
     ''' <param name="cmod">並び替えの方法</param>
-    Public Sub New(ByVal ord As SortOrder)
+    Public Sub New(ByVal ord As SortOrder, ByVal SortMode As ComparerMode)
         _order = ord
+        _mode = SortMode
     End Sub
 
-    Public Sub New()
+    'Public Sub New()
+    '    _order = SortOrder.Ascending
+    '    _mode = ComparerMode.Id
+    'End Sub
+
+    Public Sub New(ByVal TabInf As TabInformations)
         _order = SortOrder.Ascending
+        _mode = ComparerMode.Id
+        _statuses = TabInf
     End Sub
 
     'xがyより小さいときはマイナスの数、大きいときはプラスの数、
@@ -1099,13 +1125,24 @@ Public Class ListViewItemComparerClass
             As Integer Implements IComparer(Of Long).Compare
         Dim result As Integer = 0
 
-        If x < y Then
-            result = -1
-        ElseIf x = y Then
-            result = 0
-        Else
-            result = 1
-        End If
+        Select Case _mode
+            Case ComparerMode.Data
+                result = String.Compare(_statuses.Item(x).Data, _statuses.Item(y).Data)
+            Case ComparerMode.Id
+                If x < y Then
+                    result = -1
+                ElseIf x = y Then
+                    result = 0
+                Else
+                    result = 1
+                End If
+            Case ComparerMode.Name
+                result = String.Compare(_statuses.Item(x).Name, _statuses.Item(y).Name)
+            Case ComparerMode.Nickname
+                result = String.Compare(_statuses.Item(x).Nickname, _statuses.Item(y).Nickname)
+            Case ComparerMode.Source
+                result = String.Compare(_statuses.Item(x).Source, _statuses.Item(y).Source)
+        End Select
         '降順の時は結果を+-逆にする
         If _order = SortOrder.Descending Then
             result = -result
