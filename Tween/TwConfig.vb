@@ -688,7 +688,7 @@ Public NotInheritable Class ListSection
         End Set
     End Property
 
-    <ConfigurationProperty("colorreaded", DefaultValue:="ControlText")> _
+    <ConfigurationProperty("colorreaded", DefaultValue:="Gray")> _
     Public Property ColorReaded() As Color
         Get
             Return DirectCast(Me("colorreaded"), Color)
@@ -788,7 +788,7 @@ Public NotInheritable Class ListSection
         End Set
     End Property
 
-    <ConfigurationProperty("width1", DefaultValue:=30)> _
+    <ConfigurationProperty("width1", DefaultValue:=48)> _
     Public Property Width1() As Integer
         Get
             Return CInt(Me("width1"))
@@ -835,6 +835,36 @@ Public NotInheritable Class ListSection
         End Get
         Set(ByVal value As Integer)
             Me("width5") = value
+        End Set
+    End Property
+
+    <ConfigurationProperty("width6", DefaultValue:=16)> _
+    Public Property Width6() As Integer
+        Get
+            Return CInt(Me("width6"))
+        End Get
+        Set(ByVal value As Integer)
+            Me("width6") = value
+        End Set
+    End Property
+
+    <ConfigurationProperty("width7", DefaultValue:=32)> _
+    Public Property Width7() As Integer
+        Get
+            Return CInt(Me("width7"))
+        End Get
+        Set(ByVal value As Integer)
+            Me("width7") = value
+        End Set
+    End Property
+
+    <ConfigurationProperty("width8", DefaultValue:=50)> _
+    Public Property Width8() As Integer
+        Get
+            Return CInt(Me("width8"))
+        End Get
+        Set(ByVal value As Integer)
+            Me("width8") = value
         End Set
     End Property
 
@@ -905,6 +935,36 @@ Public NotInheritable Class ListSection
         End Get
         Set(ByVal value As Integer)
             Me("displayindex5") = value
+        End Set
+    End Property
+
+    <ConfigurationProperty("displayindex6", DefaultValue:=5)> _
+    Public Property DisplayIndex6() As Integer
+        Get
+            Return CInt(Me("displayindex6"))
+        End Get
+        Set(ByVal value As Integer)
+            Me("displayindex6") = value
+        End Set
+    End Property
+
+    <ConfigurationProperty("displayindex7", DefaultValue:=6)> _
+    Public Property DisplayIndex7() As Integer
+        Get
+            Return CInt(Me("displayindex7"))
+        End Get
+        Set(ByVal value As Integer)
+            Me("displayindex7") = value
+        End Set
+    End Property
+
+    <ConfigurationProperty("displayindex8", DefaultValue:=7)> _
+    Public Property DisplayIndex8() As Integer
+        Get
+            Return CInt(Me("displayindex8"))
+        End Get
+        Set(ByVal value As Integer)
+            Me("displayindex8") = value
         End Set
     End Property
 

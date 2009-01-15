@@ -27,7 +27,7 @@ Imports System.Text
 Imports System.Text.RegularExpressions
 
 Partial Public Class Twitter
-    Public links As New Collections.Specialized.StringCollection
+    Public links As New List(Of Long)
 
     Private _authKey As String              'StatusUpdate、発言削除で使用
     Private _authKeyDM As String              'DM送信、DM削除で使用
@@ -45,6 +45,10 @@ Partial Public Class Twitter
     'Private _lastName As String
     Private _nextThreshold As Integer
     Private _nextPages As Integer
+    Private _iconSz As Integer
+
+    '発言保持クラス
+    Private _statuses As TabInformations
 
     Private _infoTwitter As String = ""
 
@@ -56,6 +60,7 @@ Partial Public Class Twitter
     Private _getIcon As Boolean
     Private _tinyUrlResolve As Boolean
     Private _dmCount As Integer
+    Private _getDm As Boolean
     Private _restrictFavCheck As Boolean
     Private _ShortUrlService As New List(Of String)
 
@@ -118,8 +123,6 @@ Partial Public Class Twitter
     Private Const tbTagJpnFrom As String = "tagjpnfrom"
     Private Const tbTagEngFrom As String = "tagengfrom"
 
-    Public savePost As String
-
     Public Structure MyListItem
         Public Nick As String
         Public Data As String
@@ -158,6 +161,9 @@ Partial Public Class Twitter
         _proxyPort = ProxyPort
         _proxyUser = ProxyUser
         _proxyPassword = ProxyPassword
+
+        '発言保持クラス
+        _statuses = TabInformations.GetInstance()
 
         _ShortUrlService.AddRange(New String() { _
             "http://tinyurl.com/", _
@@ -202,12 +208,17 @@ Partial Public Class Twitter
         Return ""
     End Function
 
-    Public Function GetTimeline(ByVal tLine As List(Of MyListItem), ByVal page As Integer, ByVal initial As Boolean, ByRef endPage As Integer, ByVal gType As GetTypes, ByVal imgKeys As Collections.Specialized.StringCollection, ByVal imgs As ImageList, ByRef getDM As Boolean) As String
+    Public Function GetTimeline(ByVal page As Integer, _
+                                ByVal read As Boolean, _
+                                ByRef endPage As Integer, _
+                                ByVal gType As GetTypes, _
+                                ByVal imgs As Dictionary(Of String, Image), _
+                                ByVal imgsS As ImageList, _
+                                ByRef getDM As Boolean) As String
         If _endingFlag Then Return ""
 
         Dim retMsg As String = ""
         Dim resStatus As String = ""
-        Dim moreRead As Boolean = True
 
         If _signed = False Then
             retMsg = SignIn()
@@ -231,6 +242,11 @@ Partial Public Class Twitter
             retMsg = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _replyPath + pageQuery, resStatus), String)
         End If
 
+        If retMsg.Length = 0 Then
+            _signed = False
+            Return resStatus
+        End If
+
         ' tr 要素の class 属性を消去
         Do
             Dim idx As Integer = retMsg.IndexOf("<tr class=""", StringComparison.Ordinal)
@@ -240,15 +256,6 @@ Partial Public Class Twitter
 
         If _endingFlag Then Return ""
 
-        If retMsg.Length = 0 Then
-            _signed = False
-            Return resStatus
-        End If
-
-        Dim pos1 As Integer
-        Dim pos2 As Integer
-
-
         '各メッセージに分割可能か？
         Dim strSepTmp As String
         If gType = GetTypes.GET_TIMELINE Then
@@ -256,6 +263,9 @@ Partial Public Class Twitter
         Else
             strSepTmp = _splitPost
         End If
+
+        Dim pos1 As Integer
+        Dim pos2 As Integer
 
         pos1 = retMsg.IndexOf(strSepTmp, StringComparison.Ordinal)
         If pos1 = -1 Then
@@ -266,14 +276,10 @@ Partial Public Class Twitter
 
         Dim strSep() As String = {strSepTmp}
         Dim posts() As String = retMsg.Split(strSep, StringSplitOptions.RemoveEmptyEntries)
-        Dim strPost As String = ""
         Dim intCnt As Integer = 0
-        Dim listCnt As Integer = tLine.Count
-        Dim orgData As String = ""
-        Dim tmpDate As DateTime = Now
+        Dim listCnt As Integer = links.Count
 
-        For Each strPost In posts
-            savePost = strPost
+        For Each strPost As String In posts
             intCnt += 1
 
             If intCnt = 1 Then
@@ -316,13 +322,13 @@ Partial Public Class Twitter
                 End If
             Else
 
-                Dim lItem As New MyListItem
+                Dim post As New PostClass
 
                 Try
                     'Get ID
                     pos1 = 0
                     pos2 = strPost.IndexOf(_statusIdTo, 0, StringComparison.Ordinal)
-                    lItem.Id = HttpUtility.HtmlDecode(strPost.Substring(0, pos2))
+                    post.Id = Long.Parse(HttpUtility.HtmlDecode(strPost.Substring(0, pos2)))
                 Catch ex As Exception
                     _signed = False
                     TraceOut("TM-ID:" + strPost)
@@ -332,7 +338,7 @@ Partial Public Class Twitter
                 Try
                     pos1 = strPost.IndexOf(_parseName, pos2, StringComparison.Ordinal)
                     pos2 = strPost.IndexOf(_parseNameTo, pos1, StringComparison.Ordinal)
-                    lItem.Name = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseName.Length, pos2 - pos1 - _parseName.Length))
+                    post.Name = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseName.Length, pos2 - pos1 - _parseName.Length))
                 Catch ex As Exception
                     _signed = False
                     TraceOut("TM-Name:" + strPost)
@@ -341,12 +347,12 @@ Partial Public Class Twitter
                 'Get Nick
                 '''バレンタイン対応
                 If strPost.IndexOf("twitter.com/images/heart.png", pos2, StringComparison.Ordinal) > -1 Then
-                    lItem.Nick = lItem.Name
+                    post.Nickname = post.Name
                 Else
                     Try
                         pos1 = strPost.IndexOf(_parseNick, pos2, StringComparison.Ordinal)
                         pos2 = strPost.IndexOf(_parseNickTo, pos1 + _parseNick.Length, StringComparison.Ordinal)
-                        lItem.Nick = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseNick.Length, pos2 - pos1 - _parseNick.Length))
+                        post.Nickname = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseNick.Length, pos2 - pos1 - _parseNick.Length))
                     Catch ex As Exception
                         _signed = False
                         TraceOut("TM-Nick:" + strPost)
@@ -355,8 +361,8 @@ Partial Public Class Twitter
                 End If
 
                 '二重取得回避
-                If links.Contains(lItem.Id) = False Then
-                    orgData = ""
+                If Not links.Contains(post.Id) Then
+                    Dim orgData As String = ""
                     'バレンタイン
                     If strPost.IndexOf("<form action=""/status/update"" id=""heartForm", 0, StringComparison.Ordinal) > -1 Then
                         Try
@@ -375,7 +381,7 @@ Partial Public Class Twitter
                     Try
                         pos1 = strPost.IndexOf(_parseImg, pos2, StringComparison.Ordinal)
                         pos2 = strPost.IndexOf(_parseImgTo, pos1 + _parseImg.Length, StringComparison.Ordinal)
-                        lItem.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length))
+                        post.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length))
                     Catch ex As Exception
                         _signed = False
                         TraceOut("TM-Img:" + strPost)
@@ -384,7 +390,7 @@ Partial Public Class Twitter
 
                     'Protect
                     If strPost.IndexOf(_isProtect, pos2, StringComparison.Ordinal) > -1 Then
-                        lItem.Protect = True
+                        post.IsProtect = True
                     End If
 
                     'Get Message
@@ -393,26 +399,23 @@ Partial Public Class Twitter
                         'Valentine対応その２
                         Try
                             If strPost.IndexOf("<div id=""doyouheart", pos2, StringComparison.Ordinal) > -1 Then
+                                'バレンタイン
                                 orgData += " <3 you! Do you <3 "
                                 pos1 = strPost.IndexOf("<a href", pos2, StringComparison.Ordinal)
                                 pos2 = strPost.IndexOf("?", pos1, StringComparison.Ordinal)
                                 orgData += strPost.Substring(pos1, pos2 - pos1 + 1)
                             Else
-                                'pos1 = strPost.IndexOf("."" />", pos2)
                                 pos1 = strPost.IndexOf(_parseProtectMsg1, pos2, StringComparison.Ordinal)
                                 If pos1 = -1 Then
-                                    'If orgData <> "You" Then
-                                    '    orgData += lItem.Name + " <3 's "
-                                    'Else
+                                    'バレンタイン
                                     orgData += " <3 's "
-                                    'End If
                                     pos1 = strPost.IndexOf("<a href", pos2, StringComparison.Ordinal)
                                     If pos1 > -1 Then
                                         pos2 = strPost.IndexOf("!", pos1, StringComparison.Ordinal)
                                         orgData += strPost.Substring(pos1, pos2 - pos1 + 1)
                                     End If
                                 Else
-                                    'pos2 = strPost.IndexOf("<span class=""meta entry-meta"">", pos1)
+                                    'プロテクトメッセージ
                                     pos2 = strPost.IndexOf(_parseProtectMsg2, pos1, StringComparison.Ordinal)
                                     orgData = strPost.Substring(pos1 + _parseProtectMsg1.Length, pos2 - pos1 - _parseProtectMsg1.Length).Trim()
                                 End If
@@ -423,6 +426,7 @@ Partial Public Class Twitter
                             Return "GetTimeline -> Err: Can't get Valentine body2."
                         End Try
                     Else
+                        '通常メッセージ
                         Try
                             pos2 = strPost.IndexOf(_parseMsg2, pos1, StringComparison.Ordinal)
                             orgData = strPost.Substring(pos1 + _parseMsg1.Length, pos2 - pos1 - _parseMsg1.Length).Trim()
@@ -431,119 +435,75 @@ Partial Public Class Twitter
                             TraceOut("TM-Body:" + strPost)
                             Return "GetTimeline -> Err: Can't get body."
                         End Try
-                        orgData = Regex.Replace(orgData, "<a href=""https://twitter\.com/" + lItem.Name + "/status/[0-9]+"">\.\.\.</a>$", "")
+                        '原文リンク削除
+                        orgData = Regex.Replace(orgData, "<a href=""https://twitter\.com/" + post.Name + "/status/[0-9]+"">\.\.\.</a>$", "")
+                        'ハート変換
                         orgData = orgData.Replace("&lt;3", "♡")
                     End If
 
-                    Dim posl1 As Integer
-                    Dim posl2 As Integer = 0
-                    Dim posl3 As Integer
+                    '短縮URL解決処理（orgData書き換え）
+                    orgData = Me.ShortUrlResolve(orgData)
 
-                    If _tinyUrlResolve Then
-                        For Each svc As String In _ShortUrlService
-                            posl1 = 0
-                            posl2 = 0
-                            posl3 = 0
-                            Do While True
-                                If orgData.IndexOf("<a href=""" + svc, posl2, StringComparison.Ordinal) > -1 Then
-                                    Dim urlStr As String = ""
-                                    Try
-                                        posl1 = orgData.IndexOf("<a href=""" + svc, posl2, StringComparison.Ordinal)
-                                        posl1 = orgData.IndexOf(svc, posl1, StringComparison.Ordinal)
-                                        posl2 = orgData.IndexOf("""", posl1, StringComparison.Ordinal)
-                                        urlStr = orgData.Substring(posl1, posl2 - posl1)
-                                        Dim Response As String = ""
-                                        Dim retUrlStr As String = ""
-                                        retUrlStr = DirectCast(_mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
-                                        If retUrlStr.Length > 0 Then
-                                            Dim uri As Uri = New Uri(retUrlStr)
-                                            If Not uri.AbsolutePath = "/" Then
-                                                Dim sb As StringBuilder = New StringBuilder(uri.Scheme + uri.SchemeDelimiter + uri.Host + "/", 256)
-                                                For Each c As Char In retUrlStr.Substring(sb.Length)
-                                                    If Convert.ToInt32(c) > 127 Then
-                                                        sb.Append("%" + Convert.ToInt16(c).ToString("X2"))
-                                                    Else
-                                                        sb.Append(c)
-                                                    End If
-                                                Next
-                                                orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + sb.ToString())
-                                            Else
-                                                orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
-                                            End If
-                                        End If
-                                    Catch ex As Exception
-                                        '_signed = False
-                                        'Return "GetTimeline -> Err: Can't get tinyurl."
-                                    End Try
-                                Else
-                                    Exit Do
-                                End If
-                            Loop
-                        Next
+                    '表示用にhtml整形
+                    post.OriginalData = Me.AdjustHtml(orgData)
 
-                    End If
-
-                    lItem.OrgData = orgData
-                    lItem.OrgData = lItem.OrgData.Replace("<a href=""/", "<a href=""https://twitter.com/")
-                    lItem.OrgData = lItem.OrgData.Replace("<a href=", "<a target=""_self"" href=")
-                    lItem.OrgData = lItem.OrgData.Replace(vbLf, "<br>")
-
+                    '単純テキストの取り出し（リンクタグ除去）
                     Try
-                        If orgData.IndexOf(_parseLink1, StringComparison.Ordinal) = -1 Then
-                            lItem.Data = HttpUtility.HtmlDecode(orgData)
-                        Else
-                            lItem.Data = ""
-
-                            posl3 = 0
-                            Do While True
-
-                                posl1 = orgData.IndexOf(_parseLink1, posl3, StringComparison.Ordinal)
-                                If posl1 = -1 Then Exit Do
-
-                                If (posl3 + _parseLink3.Length <> posl1) Or posl3 = 0 Then
-                                    If posl3 <> 0 Then
-                                        lItem.Data += HttpUtility.HtmlDecode(orgData.Substring(posl3 + _parseLink3.Length, posl1 - posl3 - _parseLink3.Length))
-                                    Else
-                                        lItem.Data += HttpUtility.HtmlDecode(orgData.Substring(0, posl1))
-                                    End If
-                                End If
-                                posl2 = orgData.IndexOf(_parseLink2, posl1, StringComparison.Ordinal)
-                                posl3 = orgData.IndexOf(_parseLink3, posl2, StringComparison.Ordinal)
-                                lItem.Data += HttpUtility.HtmlDecode(orgData.Substring(posl2 + _parseLink2.Length, posl3 - posl2 - _parseLink2.Length))
-                            Loop
-
-                            lItem.Data += HttpUtility.HtmlDecode(orgData.Substring(posl3 + _parseLink3.Length))
-                        End If
+                        post.Data = GetPlainText(orgData)
                     Catch ex As Exception
                         _signed = False
                         TraceOut("TM-Link:" + strPost)
                         Return "GetTimeline -> Err: Can't parse links."
                     End Try
 
+                    ' Imageタグ除去（ハロウィン）
+                    Dim ImgTag As New Regex("<img src=.*?/>", RegexOptions.IgnoreCase)
+                    If ImgTag.IsMatch(post.Data) Then post.Data = ImgTag.Replace(post.Data, "<img>")
+
                     'Get Date
-                    pos1 = strPost.IndexOf(_parseDate, pos2, StringComparison.Ordinal)
-                    If pos1 > -1 Then
-                        Try
-                            pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length, StringComparison.Ordinal)
-                            lItem.PDate = DateTime.ParseExact(strPost.Substring(pos1 + _parseDate.Length, pos2 - pos1 - _parseDate.Length), "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz", System.Globalization.DateTimeFormatInfo.InvariantInfo, Globalization.DateTimeStyles.None)
-                            tmpDate = lItem.PDate
-                        Catch ex As Exception
-                            _signed = False
-                            TraceOut("TM-Date:" + strPost)
-                            Return "GetTimeline -> Err: Can't get date."
-                        End Try
-                    Else
-                        lItem.PDate = tmpDate
+                    Try
+                        pos1 = strPost.IndexOf(_parseDate, pos2, StringComparison.Ordinal)
+                        pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length, StringComparison.Ordinal)
+                        post.PDate = DateTime.ParseExact(strPost.Substring(pos1 + _parseDate.Length, pos2 - pos1 - _parseDate.Length), "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz", System.Globalization.DateTimeFormatInfo.InvariantInfo, Globalization.DateTimeStyles.None)
+                    Catch ex As Exception
+                        _signed = False
+                        TraceOut("TM-Date:" + strPost)
+                        Return "GetTimeline -> Err: Can't get date."
+                    End Try
+
+                    'from Sourceの取得
+                    Try
+                        pos1 = strPost.IndexOf("<span>from <a href=", pos2, StringComparison.Ordinal)
+                        If pos1 > -1 Then
+                            pos1 = strPost.IndexOf(""">", pos1 + 19, StringComparison.Ordinal)
+                            pos2 = strPost.IndexOf("</a>", pos1 + 2, StringComparison.Ordinal)
+                            post.Source = HttpUtility.HtmlDecode(strPost.Substring(pos1 + 2, pos2 - pos1 - 2))
+                        Else
+                            post.Source = "Web"
+                        End If
+                    Catch ex As Exception
+                        _signed = False
+                        TraceOut("TM-Src:" + strPost)
+                        Return "GetTimeline -> Err: Can't get src."
+                    End Try
+
+                    'Get Reply(in_reply_to_user/id)
+                    Dim rg As New Regex("<a href=""https:\/\/twitter\.com\/(?<name>[a-zA-Z0-9_]+)\/status\/(?<id>[0-9]+)"">(?:in reply to |u8fd4u4fe1: )")
+                    Dim m As Match = rg.Match(strPost)
+                    If m.Success Then
+                        post.InReplyToUser = m.Result("${name}")
+                        post.InReplyToId = Long.Parse(m.Result("${id}"))
+                        post.IsReply = post.InReplyToUser.Equals(_uid, StringComparison.OrdinalIgnoreCase)
                     End If
 
-                    'Get Reply
-                    If strPost.IndexOf(_isReplyEng + _uid + _isReplyTo, StringComparison.Ordinal) > 0 Or strPost.IndexOf(_isReplyJpn + _uid + _isReplyTo, StringComparison.Ordinal) > 0 Then
-                        lItem.Reply = True
-                    ElseIf Regex.IsMatch(lItem.Data, "@" + _uid + "([^a-zA-Z0-9_]|$)", RegexOptions.IgnoreCase) Then
-                        lItem.Reply = True
-                    Else
-                        lItem.Reply = False
-                    End If
+                    '@先リスト作成
+                    rg = New Regex("@<a href=""\/(?<1>[a-zA-Z0-9_]+)""")
+                    m = rg.Match(orgData)
+                    While m.Success
+                        post.ReplyToList.Add(m.Groups(1).Value.ToLower())
+                        m = m.NextMatch
+                    End While
+                    If Not post.IsReply Then post.IsReply = post.ReplyToList.Contains(_uid.ToLower())
 
                     'Get Fav
                     pos1 = strPost.IndexOf(_parseStar, pos2, StringComparison.Ordinal)
@@ -551,9 +511,9 @@ Partial Public Class Twitter
                         Try
                             pos2 = strPost.IndexOf(_parseStarTo, pos1 + _parseStar.Length, StringComparison.Ordinal)
                             If strPost.Substring(pos1 + _parseStar.Length, pos2 - pos1 - _parseStar.Length) = _parseStarEmpty Then
-                                lItem.Fav = False
+                                post.IsFav = False
                             Else
-                                lItem.Fav = True
+                                post.IsFav = True
                             End If
                         Catch ex As Exception
                             _signed = False
@@ -561,21 +521,23 @@ Partial Public Class Twitter
                             Return "GetTimeline -> Err: Can't get fav status."
                         End Try
                     Else
-                        lItem.Fav = False
+                        post.IsFav = False
                     End If
 
-                    If imgKeys.Contains(lItem.ImageUrl) = False Then
-                        If GetIconImage(lItem.ImageUrl, imgKeys, imgs) = False Then lItem.ImageUrl = ""
-                    End If
+                    post.ImageIndex = GetIconImage(post.ImageUrl, imgs, imgsS)
 
                     If _endingFlag Then Return ""
 
-                    links.Add(lItem.Id)
-                    tLine.Add(lItem)
+                    links.Add(post.Id)
+
+                    post.IsMe = post.Name.Equals(_uid, StringComparison.OrdinalIgnoreCase)
+                    post.IsOwl = Not follower.Contains(post.Name.ToLower())
+                    post.IsRead = read
+
+                    _statuses.AddPost(post)
                 End If
 
                 'テスト実装：DMカウント取得
-                getDM = False
                 If intCnt = posts.Length And gType = GetTypes.GET_TIMELINE And page = 1 Then
                     pos1 = strPost.IndexOf(_parseDMcountFrom, pos2, StringComparison.Ordinal)
                     If pos1 > -1 Then
@@ -584,28 +546,17 @@ Partial Public Class Twitter
                             Dim dmCnt As Integer = Integer.Parse(strPost.Substring(pos1 + _parseDMcountFrom.Length, pos2 - pos1 - _parseDMcountFrom.Length))
                             If dmCnt > _dmCount Then
                                 _dmCount = dmCnt
-                                getDM = True
+                                _getDm = True
                             End If
                         Catch ex As Exception
                         End Try
                     End If
                 End If
+                getDM = _getDm
             End If
         Next
 
-        Dim getCnt As Integer
-        getCnt = tLine.Count - listCnt
-        If getCnt > 0 Then
-            '新規取得有
-            If initial Then
-                '起動時
-                If moreRead Then
-                    endPage = page + 1
-                End If
-            End If
-        End If
-        '通常時
-        If ((page = 1 And getCnt >= _nextThreshold) Or page > 1) And initial = False Then
+        If page = 1 AndAlso (links.Count - listCnt) >= _nextThreshold Then
             '新着が閾値の件数以上なら、次のページも念のため読み込み
             endPage = _nextPages + 1
         End If
@@ -613,13 +564,19 @@ Partial Public Class Twitter
         Return ""
     End Function
 
-    Public Function GetDirectMessage(ByVal tLine As List(Of MyListItem), ByVal page As Integer, ByRef endPage As Integer, ByVal gType As GetTypes, ByVal imgKeys As Collections.Specialized.StringCollection, ByVal imgs As ImageList) As String
+    Public Function GetDirectMessage(ByVal page As Integer, _
+                                    ByVal read As Boolean, _
+                                    ByVal endPage As Integer, _
+                                    ByVal gType As GetTypes, _
+                                    ByVal imgs As Dictionary(Of String, Image), _
+                                    ByVal imgsS As ImageList) As String
         If _endingFlag Then Return ""
 
         Dim retMsg As String = ""
         Dim resStatus As String = ""
 
-        endPage = page
+        _getDm = False
+        'endPage = page
 
         If _signed = False Then
             retMsg = SignIn()
@@ -631,14 +588,17 @@ Partial Public Class Twitter
         If _endingFlag Then Return ""
 
         'リクエストメッセージを作成する
-        Dim pageQuery As String
-
-        pageQuery = _pageQry + page.ToString
+        Dim pageQuery As String = _pageQry + page.ToString
 
         If gType = GetTypes.GET_DMRCV Then
             retMsg = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _DMPathRcv + pageQuery, resStatus), String)
         Else
             retMsg = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _DMPathSnt + pageQuery, resStatus), String)
+        End If
+
+        If retMsg.Length = 0 Then
+            _signed = False
+            Return resStatus
         End If
 
         ' tr 要素の class 属性を消去
@@ -647,11 +607,6 @@ Partial Public Class Twitter
             If idx = -1 Then Exit Do
             retMsg = retMsg.Remove(idx + 4, retMsg.IndexOf("""", idx + 11 + 1, StringComparison.Ordinal) - idx - 2) ' 11 = "<tr class=""".Length
         Loop
-
-        If retMsg.Length = 0 Then
-            _signed = False
-            Return resStatus
-        End If
 
         If _endingFlag Then Return ""
 
@@ -664,7 +619,7 @@ Partial Public Class Twitter
         Dim pos1 As Integer
         Dim pos2 As Integer
 
-        ''Followerの抽出
+        ''Followerの抽出（Webのあて先リストがおかしいのでコメントアウト）
         'If page = 1 And gType = GetTypes.GET_DMRCV Then
         '    pos1 = retMsg.IndexOf(_followerList)
         '    If pos1 = -1 Then
@@ -694,31 +649,27 @@ Partial Public Class Twitter
         '各メッセージに分割可能か？
         pos1 = retMsg.IndexOf(_splitDM, StringComparison.Ordinal)
         If pos1 = -1 Then
-            '0件
+            '0件（メッセージなし。エラーの場合もありうるが判別できないので正常として戻す）
             Return ""
         End If
 
         Dim strSep() As String = {_splitDM}
         Dim posts() As String = retMsg.Split(strSep, StringSplitOptions.RemoveEmptyEntries)
-        Dim strPost As String = ""
-        Dim intCnt As Integer = 0
-        Dim listCnt As Integer = tLine.Count
-        Dim orgData As String = ""
-        Dim tmpDate As DateTime = Now
+        Dim intCnt As Integer = 0   'カウンタ
+        Dim listCnt As Integer = links.Count
 
-        For Each strPost In posts
-            savePost = strPost
+        For Each strPost As String In posts
             intCnt += 1
 
-            If intCnt > 1 Then
-                Dim lItem As New MyListItem
-                Dim flg As Boolean = False
+            If intCnt > 1 Then  '1件目はヘッダなので無視
+                'Dim lItem As New MyListItem
+                Dim post As New PostClass()
 
                 'Get ID
                 Try
                     pos1 = 0
                     pos2 = strPost.IndexOf("""", 0, StringComparison.Ordinal)
-                    lItem.Id = HttpUtility.HtmlDecode(strPost.Substring(0, pos2))
+                    post.Id = Long.Parse(HttpUtility.HtmlDecode(strPost.Substring(0, pos2)))
                 Catch ex As Exception
                     _signed = False
                     TraceOut("DM-ID:" + strPost)
@@ -729,7 +680,7 @@ Partial Public Class Twitter
                 Try
                     pos1 = strPost.IndexOf(_parseName, pos2, StringComparison.Ordinal)
                     pos2 = strPost.IndexOf(_parseNameTo, pos1, StringComparison.Ordinal)
-                    lItem.Name = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseName.Length, pos2 - pos1 - _parseName.Length))
+                    post.Name = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseName.Length, pos2 - pos1 - _parseName.Length))
                 Catch ex As Exception
                     _signed = False
                     TraceOut("DM-Name:" + strPost)
@@ -740,23 +691,19 @@ Partial Public Class Twitter
                 Try
                     pos1 = strPost.IndexOf(_parseNick, pos2, StringComparison.Ordinal)
                     pos2 = strPost.IndexOf(_parseNickTo, pos1 + _parseNick.Length, StringComparison.Ordinal)
-                    lItem.Nick = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseNick.Length, pos2 - pos1 - _parseNick.Length))
+                    post.Nickname = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseNick.Length, pos2 - pos1 - _parseNick.Length))
                 Catch ex As Exception
                     _signed = False
                     TraceOut("DM-Nick:" + strPost)
                     Return "GetDirectMessage -> Err: Can't get Nick."
                 End Try
 
-                If links.Contains(lItem.Id) Then
-                    flg = True
-                End If
-
-                If flg = False Then
+                If Not links.Contains(post.Id) Then
                     'Get ImagePath
                     Try
                         pos1 = strPost.IndexOf(_parseImg, pos2, StringComparison.Ordinal)
                         pos2 = strPost.IndexOf(_parseImgTo, pos1 + _parseImg.Length, StringComparison.Ordinal)
-                        lItem.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length))
+                        post.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length))
                     Catch ex As Exception
                         _signed = False
                         TraceOut("DM-Img:" + strPost)
@@ -766,12 +713,14 @@ Partial Public Class Twitter
                     'Get Protect 
                     Try
                         pos1 = strPost.IndexOf(_isProtect, pos2, StringComparison.Ordinal)
-                        If pos1 > -1 Then lItem.Protect = True
+                        If pos1 > -1 Then post.IsProtect = True
                     Catch ex As Exception
                         _signed = False
                         TraceOut("DM-Protect:" + strPost)
                         Return "GetDirectMessage -> Err: Can't get Protect"
                     End Try
+
+                    Dim orgData As String = ""
 
                     'Get Message
                     Try
@@ -784,7 +733,7 @@ Partial Public Class Twitter
                             pos2 = strPost.IndexOf(_parseDM2, pos1, StringComparison.Ordinal)
                             orgData = strPost.Substring(pos1 + _parseDM11.Length, pos2 - pos1 - _parseDM11.Length).Trim()
                         End If
-                        orgData = Regex.Replace(orgData, "<a href=""https://twitter\.com/" + lItem.Name + "/status/[0-9]+"">\.\.\.</a>$", "")
+                        orgData = Regex.Replace(orgData, "<a href=""https://twitter\.com/" + post.Name + "/status/[0-9]+"">\.\.\.</a>$", "")
                         orgData = orgData.Replace("&lt;3", "♡")
                     Catch ex As Exception
                         _signed = False
@@ -792,81 +741,15 @@ Partial Public Class Twitter
                         Return "GetDirectMessage -> Err: Can't get body"
                     End Try
 
-                    Dim posl1 As Integer
-                    Dim posl2 As Integer = 0
-                    Dim posl3 As Integer
+                    '短縮URL解決処理（orgData書き換え）
+                    orgData = ShortUrlResolve(orgData)
 
-                    If _tinyUrlResolve Then
-                        For Each svc As String In _ShortUrlService
-                            posl1 = 0
-                            posl2 = 0
-                            posl3 = 0
-                            Do While True
-                                If orgData.IndexOf("<a href=""" + svc, posl2, StringComparison.Ordinal) > -1 Then
-                                    Dim urlStr As String = ""
-                                    Try
-                                        posl1 = orgData.IndexOf("<a href=""" + svc, posl2, StringComparison.Ordinal)
-                                        posl1 = orgData.IndexOf(svc, posl1, StringComparison.Ordinal)
-                                        posl2 = orgData.IndexOf("""", posl1, StringComparison.Ordinal)
-                                        urlStr = orgData.Substring(posl1, posl2 - posl1)
-                                        Dim Response As String = ""
-                                        Dim retUrlStr As String = ""
-                                        retUrlStr = DirectCast(_mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
-                                        If retUrlStr.Length > 0 Then
-                                            Dim uri As Uri = New Uri(retUrlStr)
-                                            Dim sb As StringBuilder = New StringBuilder(uri.Scheme + uri.SchemeDelimiter + uri.Host + uri.AbsolutePath, 256)
-                                            For Each c As Char In retUrlStr.Substring(sb.Length)
-                                                If Convert.ToInt32(c) > 127 Then
-                                                    sb.Append("%" + Convert.ToInt16(c).ToString("X2"))
-                                                Else
-                                                    sb.Append(c)
-                                                End If
-                                            Next
-                                            orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + sb.ToString())
-                                        End If
-                                    Catch ex As Exception
-                                        '_signed = False
-                                        'Return "GetTimeline -> Err: Can't get tinyurl."
-                                    End Try
-                                Else
-                                    Exit Do
-                                End If
-                            Loop
-                        Next
-                    End If
+                    '表示用にhtml整形
+                    post.OriginalData = Me.AdjustHtml(orgData)
 
-                    lItem.OrgData = orgData
-                    lItem.OrgData = lItem.OrgData.Replace("<a href=""/", "<a href=""https://twitter.com/")
-                    lItem.OrgData = lItem.OrgData.Replace("<a href=", "<a target=""_self"" href=")
-                    lItem.OrgData = lItem.OrgData.Replace(vbLf, "<br>")
-
+                    '単純テキストの取り出し（リンクタグ除去）
                     Try
-                        If orgData.IndexOf(_parseLink1, StringComparison.Ordinal) = -1 Then
-                            lItem.Data = HttpUtility.HtmlDecode(orgData)
-                        Else
-                            lItem.Data = ""
-
-                            posl3 = 0
-                            Do While True
-
-                                posl1 = orgData.IndexOf(_parseLink1, posl3, StringComparison.Ordinal)
-                                If posl1 = -1 Then Exit Do
-
-                                If (posl3 + _parseLink3.Length <> posl1) Or posl3 = 0 Then
-                                    If posl3 <> 0 Then
-                                        lItem.Data += HttpUtility.HtmlDecode(orgData.Substring(posl3 + _parseLink3.Length, posl1 - posl3 - _parseLink3.Length))
-                                    Else
-                                        lItem.Data += HttpUtility.HtmlDecode(orgData.Substring(0, posl1))
-                                    End If
-                                End If
-                                posl2 = orgData.IndexOf(_parseLink2, posl1, StringComparison.Ordinal)
-                                posl3 = orgData.IndexOf(_parseLink3, posl2, StringComparison.Ordinal)
-                                lItem.Data += HttpUtility.HtmlDecode(orgData.Substring(posl2 + _parseLink2.Length, posl3 - posl2 - _parseLink2.Length))
-                            Loop
-
-
-                            lItem.Data += HttpUtility.HtmlDecode(orgData.Substring(posl3 + _parseLink3.Length))
-                        End If
+                        post.Data = GetPlainText(orgData)
                     Catch ex As Exception
                         _signed = False
                         TraceOut("DM-Link:" + strPost)
@@ -874,20 +757,15 @@ Partial Public Class Twitter
                     End Try
 
                     'Get Date
-                    pos1 = strPost.IndexOf(_parseDate, pos2, StringComparison.Ordinal)
-                    If pos1 > -1 Then
-                        Try
-                            pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length, StringComparison.Ordinal)
-                            lItem.PDate = DateTime.ParseExact(strPost.Substring(pos1 + _parseDate.Length, pos2 - pos1 - _parseDate.Length), "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz", System.Globalization.DateTimeFormatInfo.InvariantInfo, Globalization.DateTimeStyles.None)
-                            tmpDate = lItem.PDate
-                        Catch ex As Exception
-                            _signed = False
-                            TraceOut("DM-Date:" + strPost)
-                            Return "GetTimeline -> Err: Can't get date."
-                        End Try
-                    Else
-                        lItem.PDate = tmpDate
-                    End If
+                    Try
+                        pos1 = strPost.IndexOf(_parseDate, pos2, StringComparison.Ordinal)
+                        pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length, StringComparison.Ordinal)
+                        post.PDate = DateTime.ParseExact(strPost.Substring(pos1 + _parseDate.Length, pos2 - pos1 - _parseDate.Length), "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz", System.Globalization.DateTimeFormatInfo.InvariantInfo, Globalization.DateTimeStyles.None)
+                    Catch ex As Exception
+                        _signed = False
+                        TraceOut("DM-Date:" + strPost)
+                        Return "GetTimeline -> Err: Can't get date."
+                    End Try
 
 
                     'Get Fav
@@ -898,47 +776,137 @@ Partial Public Class Twitter
                     'Else
                     '    lItem.Fav = True
                     'End If
-                    lItem.Fav = False
+                    post.IsFav = False
 
                     'Imageの取得
-                    If imgKeys.Contains(lItem.ImageUrl) = False Then
-                        If GetIconImage(lItem.ImageUrl, imgKeys, imgs) = False Then lItem.ImageUrl = ""
-                    End If
+                    post.ImageIndex = GetIconImage(post.ImageUrl, imgs, imgsS)
 
                     If _endingFlag Then Return ""
 
-                    links.Add(lItem.Id)
-                    tLine.Add(lItem)
+                    links.Add(post.Id)
+                    'listCnt += 1
+
+                    '受信ＤＭかの判定で使用
+                    If gType = GetTypes.GET_DMRCV Then
+                        post.IsOwl = False
+                    Else
+                        post.IsOwl = True
+                    End If
+
+                    post.IsRead = read
+                    post.IsDm = True
+
+                    _statuses.AddPost(post)
                 End If
             End If
         Next
 
-        Dim getCnt As Integer
-
-        getCnt = tLine.Count - listCnt
-        If getCnt = 20 Then
-            endPage += 1
-        End If
-
         Return ""
     End Function
 
-    Private Function GetIconImage(ByVal pathUrl As String, ByVal imgKeys As Collections.Specialized.StringCollection, ByVal imgs As ImageList) As Boolean
-        If _endingFlag Then Exit Function
-        If _getIcon = False Then Exit Function
+    Private Function ShortUrlResolve(ByVal orgData As String) As String
+        If _tinyUrlResolve Then
+            For Each svc As String In _ShortUrlService
+                Dim posl1 As Integer
+                Dim posl2 As Integer = 0
+
+                Do While True
+                    If orgData.IndexOf("<a href=""" + svc, posl2, StringComparison.Ordinal) > -1 Then
+                        Dim urlStr As String = ""
+                        Try
+                            posl1 = orgData.IndexOf("<a href=""" + svc, posl2, StringComparison.Ordinal)
+                            posl1 = orgData.IndexOf(svc, posl1, StringComparison.Ordinal)
+                            posl2 = orgData.IndexOf("""", posl1, StringComparison.Ordinal)
+                            urlStr = orgData.Substring(posl1, posl2 - posl1)
+                            Dim Response As String = ""
+                            Dim retUrlStr As String = ""
+                            retUrlStr = DirectCast(_mySock.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
+                            If retUrlStr.Length > 0 Then
+                                If Not retUrlStr.StartsWith("http") Then Exit Do
+                                Dim uri As Uri = New Uri(retUrlStr)
+                                Dim sb As StringBuilder = New StringBuilder(uri.Scheme + uri.SchemeDelimiter + uri.Host + uri.AbsolutePath, 256)
+                                For Each c As Char In retUrlStr.Substring(sb.Length)
+                                    If Convert.ToInt32(c) > 127 Then
+                                        sb.Append("%" + Convert.ToInt16(c).ToString("X2"))
+                                    Else
+                                        sb.Append(c)
+                                    End If
+                                Next
+                                orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + sb.ToString())
+                            End If
+                        Catch ex As Exception
+                            '_signed = False
+                            'Return "GetTimeline -> Err: Can't get tinyurl."
+                        End Try
+                    Else
+                        Exit Do
+                    End If
+                Loop
+            Next
+        End If
+        Return orgData
+    End Function
+
+    Private Function GetPlainText(ByVal orgData As String) As String
+        Dim retStr As String
+
+        '単純テキストの取り出し（リンクタグ除去）
+        If orgData.IndexOf(_parseLink1, StringComparison.Ordinal) = -1 Then
+            retStr = HttpUtility.HtmlDecode(orgData)
+        Else
+            Dim posl1 As Integer
+            Dim posl2 As Integer
+            Dim posl3 As Integer = 0
+
+            retStr = ""
+
+            posl3 = 0
+            Do While True
+                posl1 = orgData.IndexOf(_parseLink1, posl3, StringComparison.Ordinal)
+                If posl1 = -1 Then Exit Do
+
+                If (posl3 + _parseLink3.Length <> posl1) Or posl3 = 0 Then
+                    If posl3 <> 0 Then
+                        retStr += HttpUtility.HtmlDecode(orgData.Substring(posl3 + _parseLink3.Length, posl1 - posl3 - _parseLink3.Length))
+                    Else
+                        retStr += HttpUtility.HtmlDecode(orgData.Substring(0, posl1))
+                    End If
+                End If
+                posl2 = orgData.IndexOf(_parseLink2, posl1, StringComparison.Ordinal)
+                posl3 = orgData.IndexOf(_parseLink3, posl2, StringComparison.Ordinal)
+                retStr += HttpUtility.HtmlDecode(orgData.Substring(posl2 + _parseLink2.Length, posl3 - posl2 - _parseLink2.Length))
+            Loop
+            retStr += HttpUtility.HtmlDecode(orgData.Substring(posl3 + _parseLink3.Length))
+        End If
+
+        Return retStr
+    End Function
+
+    Private Function AdjustHtml(ByVal orgData As String) As String
+        Dim retStr As String = orgData
+        retStr = retStr.Replace("<a href=""/", "<a href=""https://twitter.com/")
+        retStr = retStr.Replace("<a href=", "<a target=""_self"" href=")
+        retStr = retStr.Replace(vbLf, "<br>")
+        Return retStr
+    End Function
+
+    Private Function GetIconImage(ByVal pathUrl As String, ByVal imgs As Dictionary(Of String, Image), ByVal imgsS As ImageList) As Integer
+        If _endingFlag OrElse Not _getIcon Then Return -1
+        If imgsS.Images.ContainsKey(pathUrl) Then Return imgsS.Images.IndexOfKey(pathUrl)
 
         Dim resStatus As String = ""
-        Dim img As Image = Nothing
+        Dim img As Image = DirectCast(_mySock.GetWebResponse(pathUrl, resStatus, MySocket.REQ_TYPE.ReqGETBinary), System.Drawing.Image)
+        If img Is Nothing Then Return -1
 
-        img = TryCast(_mySock.GetWebResponse(pathUrl, resStatus, MySocket.REQ_TYPE.ReqGETBinary), System.Drawing.Image)
+        imgs.Add(pathUrl, img)  '詳細表示用ディクショナリに追加
 
-        If img IsNot Nothing Then
-            imgKeys.Add(pathUrl)
-            imgs.Images.Add(pathUrl, img)
-            Return True
-        Else
-            Return False
-        End If
+        Dim bmp2 As New Bitmap(_iconSz, _iconSz)
+        Using g As Graphics = Graphics.FromImage(bmp2)
+            g.InterpolationMode = Drawing2D.InterpolationMode.High
+            g.DrawImage(img, 0, 0, _iconSz, _iconSz)
+        End Using
+        imgsS.Images.Add(pathUrl, bmp2)
+        Return imgsS.Images.IndexOfKey(pathUrl)
     End Function
 
     Private Function GetAuthKey(ByVal resMsg As String) As Integer
@@ -975,7 +943,7 @@ Partial Public Class Twitter
         Return 0
     End Function
 
-    Public Function PostStatus(ByVal postStr As String, ByVal reply_to As Integer) As String
+    Public Function PostStatus(ByVal postStr As String, ByVal reply_to As Long) As String
 
         If _endingFlag Then Return ""
 
@@ -1033,30 +1001,30 @@ Partial Public Class Twitter
         Return ""
     End Function
 
-	' Contributed by shuyoko <http://twitter.com/shuyoko> BEGIN:
-    Public Function GetBlackFavId(ByVal id As String, ByRef blackid As String) As String
+    ' Contributed by shuyoko <http://twitter.com/shuyoko> BEGIN:
+    Public Function GetBlackFavId(ByVal id As Long, ByRef blackid As Long) As String
         Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim resStatus As String = ""
-        Dim resMsg As String = DirectCast(_mySock.GetWebResponse("http://blavotter.hocha.org/blackfav/getblack.php?format=simple&id=" + id, resStatus, MySocket.REQ_TYPE.ReqGET), String)
+        Dim resMsg As String = DirectCast(_mySock.GetWebResponse("http://blavotter.hocha.org/blackfav/getblack.php?format=simple&id=" + id.ToString(), resStatus, MySocket.REQ_TYPE.ReqGET), String)
 
         If resStatus.StartsWith("OK") = False Then
             Return resStatus
         End If
 
-        blackid = resMsg
+        blackid = Long.Parse(resMsg)
 
         Return ""
 
     End Function
     ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
 
-    Public Function PostFavAdd(ByVal id As String) As String
+    Public Function PostFavAdd(ByVal id As Long) As String
         If _endingFlag Then Return ""
 
         'データ部分の生成
         Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim resStatus As String = ""
-        Dim resMsg As String = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _postFavAddPath + id, resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2, dataStr), String)
+        Dim resMsg As String = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _postFavAddPath + id.ToString(), resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2, dataStr), String)
 
         If resMsg.StartsWith("$") = False And resMsg <> " " Then
             Return resStatus
@@ -1066,7 +1034,7 @@ Partial Public Class Twitter
 
         'http://twitter.com/statuses/show/id.xml APIを発行して本文を取得
 
-        resMsg = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _ShowStatus + id + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2), String)
+        resMsg = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _ShowStatus + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2), String)
 
         Try
             Using rd As Xml.XmlTextReader = New Xml.XmlTextReader(New System.IO.StringReader(resMsg))
@@ -1091,13 +1059,13 @@ Partial Public Class Twitter
         Return ""
     End Function
 
-    Public Function PostFavRemove(ByVal id As String) As String
+    Public Function PostFavRemove(ByVal id As Long) As String
         If _endingFlag Then Return ""
 
         'データ部分の生成
         Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim resStatus As String = ""
-        Dim resMsg As String = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _postFavRemovePath + id, resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2, dataStr), String)
+        Dim resMsg As String = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _postFavRemovePath + id.ToString(), resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2, dataStr), String)
 
         If resMsg.StartsWith("$") = False And resMsg <> " " Then
             Return resStatus
@@ -1112,13 +1080,13 @@ Partial Public Class Twitter
         Dim i As Integer = 0
 
         follower.Clear()
-        follower.Add(_uid)
+        follower.Add(_uid.ToLower())
         Do While True
             i += 1
             resMsg = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _GetFollowers + _pageQry + i.ToString, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
             If resStatus.StartsWith("OK") = False Then
                 follower.Clear()
-                follower.Add(_uid)  '途中で失敗したら片思い表示しない
+                follower.Add(_uid.ToLower())  '途中で失敗したら片思い表示しない
                 Return resStatus
             End If
 
@@ -1223,7 +1191,7 @@ Partial Public Class Twitter
         Dim resStatus As String = ""
         Dim resMsg As String = ""
 
-        resMsg = DirectCast(_mySock.GetWebResponse(wedataUrl, resStatus, timeOut:=5 * 1000), String) 'タイムアウト時間を5秒に設定
+        resMsg = DirectCast(_mySock.GetWebResponse(wedataUrl, resStatus, timeout:=10 * 1000), String) 'タイムアウト時間を10秒に設定
         If resMsg.Length = 0 Then Exit Sub
 
         Dim rs As New System.IO.StringReader(resMsg)
@@ -1444,27 +1412,18 @@ Partial Public Class Twitter
             _restrictFavCheck = value
         End Set
     End Property
+
+    Public WriteOnly Property IconSize() As Integer
+        Set(ByVal value As Integer)
+            _iconSz = value
+        End Set
+    End Property
+
     Public Sub CreateNewSocket()
         _mySock = Nothing
         _mySock = New MySocket("UTF-8", Username, Password, _proxyType, _proxyAddress, _proxyPort, _proxyUser, _proxyPassword)
         _signed = False
     End Sub
-
-    Public Function GetReplyStatusID(ByVal id As Integer) As Integer
-        Dim resStatus As String = ""
-        Dim resMsg As String = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _ShowStatus + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2), String)
-        Dim xdoc As Xml.XmlDocument = New Xml.XmlDocument()
-        Try
-            xdoc.LoadXml(resMsg)
-            If xdoc.SelectSingleNode("/status/in_reply_to_status_id").InnerXml <> "" Then
-                Return Integer.Parse(xdoc.SelectSingleNode("/status/in_reply_to_status_id").ChildNodes(0).Value)
-            Else
-                Return -1
-            End If
-        Catch ex As Xml.XmlException
-            Return -2
-        End Try
-    End Function
 
     Public Function MakeShortUrl(ByVal ConverterType As UrlConverter, ByVal SrcUrl As String) As String
         Dim ret As String = ""

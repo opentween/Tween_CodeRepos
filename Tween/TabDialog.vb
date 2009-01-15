@@ -21,13 +21,12 @@
 ' the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
 ' Boston, MA 02110-1301, USA.
 
-Imports System.Windows.Forms
-
 Public Class FilterDialog
 
-    Private _tabs As List(Of TabStructure)
     Private _mode As EDITMODE
     Private _directAdd As Boolean
+    Private _sts As TabInformations
+    Private _cur As String
 
     Private Enum EDITMODE
         AddNew
@@ -38,65 +37,11 @@ Public Class FilterDialog
     Private Sub SetFilters(ByVal tabName As String)
         If ComboTabs.Items.Count = 0 Then Exit Sub
 
-        'ComboTabs.SelectedIndex = 0
-        'For i As Integer = 0 To ComboTabs.Items.Count - 1
-        '    If ComboTabs.Items(i) = tabName Then
-        '        ComboTabs.SelectedIndex = i
-        '        Exit For
-        '    End If
-        'Next
-        tabName = DirectCast(ComboTabs.SelectedItem, String)
-
         ListFilters.Items.Clear()
-        Dim fs As New System.Text.StringBuilder(512)
-        For Each ts As TabStructure In _tabs
-            If ts.tabName = tabName Then
-                For Each ft As FilterClass In ts.filters
-                    fs.Length = 0
-                    If ft.SearchBoth Then
-                        If ft.IDFilter <> "" Then
-                            fs.AppendFormat(My.Resources.SetFiltersText1, ft.IDFilter)
-                        Else
-                            fs.Append(My.Resources.SetFiltersText2)
-                        End If
-                    End If
-                    If ft.BodyFilter.Count > 0 Then
-                        fs.Append(My.Resources.SetFiltersText3)
-                        For Each bf As String In ft.BodyFilter
-                            fs.Append(bf)
-                            fs.Append(" ")
-                        Next
-                        fs.Length -= 1
-                        fs.Append(My.Resources.SetFiltersText4)
-                    End If
-                    fs.Append("(")
-                    If ft.SearchBoth Then
-                        fs.Append(My.Resources.SetFiltersText5)
-                    Else
-                        fs.Append(My.Resources.SetFiltersText6)
-                    End If
-                    If ft.UseRegex Then
-                        fs.Append(My.Resources.SetFiltersText7)
-                    End If
-                    If ft.SearchURL Then
-                        fs.Append(My.Resources.SetFiltersText8)
-                    End If
-                    If ft.moveFrom Then
-                        fs.Append(My.Resources.SetFiltersText9)
-                    ElseIf ft.SetMark Then
-                        fs.Append(My.Resources.SetFiltersText10)
-                    Else
-                        fs.Append(My.Resources.SetFiltersText11)
-                    End If
-                    fs.Append(")")
-                    ListFilters.Items.Add(fs.ToString())
-                Next
-                Exit For
-            End If
+        For Each fc As FiltersClass In _sts.Tabs(tabName).Filters
+            ListFilters.Items.Add(fc.Summary)
         Next
-        If ListFilters.Items.Count > 0 Then
-            ListFilters.SelectedIndex = 0
-        End If
+        If ListFilters.Items.Count > 0 Then ListFilters.SelectedIndex = 0
 
         ComboTabs.Enabled = True
         ListFilters.Enabled = True
@@ -111,40 +56,12 @@ Public Class FilterDialog
         ButtonClose.Enabled = True
     End Sub
 
-    Public Property Tabs() As List(Of TabStructure)
-        Get
-            Return _tabs
-        End Get
-        Set(ByVal value As List(Of TabStructure))
-            _directAdd = False
-            _tabs = value
-            ComboTabs.Items.Clear()
-            Dim tnm As String = ""
-            For Each ts As TabStructure In _tabs
-                If ts.tabName <> "Recent" And ts.tabName <> "Reply" And ts.tabName <> "Direct" Then
-                    If tnm = "" Then tnm = ts.tabName
-                    ComboTabs.Items.Add(ts.tabName)
-                End If
-            Next
-            Me.CurrentTab = tnm
-        End Set
-    End Property
-
-    Public Property CurrentTab() As String
-        Get
-            Return DirectCast(ComboTabs.SelectedItem, String)
-        End Get
-        Set(ByVal value As String)
-            For i As Integer = 0 To ComboTabs.Items.Count - 1
-                If ComboTabs.Items(i) Is value Then
-                    ComboTabs.SelectedIndex = i
-                    Exit For
-                End If
-            Next
-        End Set
-    End Property
+    Public Sub SetCurrent(ByVal TabName As String)
+        _cur = TabName
+    End Sub
 
     Public Sub AddNewFilter(ByVal id As String, ByVal msg As String)
+        '元フォームから直接呼ばれる
         ButtonNew.Enabled = False
         ButtonEdit.Enabled = False
         ButtonDelete.Enabled = False
@@ -241,13 +158,8 @@ Public Class FilterDialog
         Dim i As Integer = ListFilters.SelectedIndex
 
         ListFilters.Items.RemoveAt(i)
-        For Each ts As TabStructure In _tabs
-            If ts.tabName Is ComboTabs.SelectedItem Then
-                ts.filters.RemoveAt(i)
-                ts.modified = True
-                Exit For
-            End If
-        Next
+        _sts.Tabs(ComboTabs.SelectedItem.ToString()).Filters.RemoveAt(i)
+        _sts.Tabs(ComboTabs.SelectedItem.ToString()).FilterModified = True
     End Sub
 
     Private Sub ButtonCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonCancel.Click
@@ -268,65 +180,61 @@ Public Class FilterDialog
     End Sub
 
     Private Sub ShowDetail()
-        For Each ts As TabStructure In _tabs
-            If ts.tabName Is ComboTabs.SelectedItem Then
-                If ListFilters.SelectedIndex > -1 Then
-                    Dim fc As FilterClass = ts.filters(ListFilters.SelectedIndex)
-                    If fc.SearchBoth Then
-                        RadioAND.Checked = True
-                        RadioPLUS.Checked = False
-                        UID.Enabled = True
-                        MSG1.Enabled = True
-                        MSG2.Enabled = False
-                        UID.Text = fc.IDFilter
-                        UID.SelectAll()
-                        MSG1.Text = ""
-                        MSG2.Text = ""
-                        For Each bf As String In fc.BodyFilter
-                            MSG1.Text += bf + " "
-                        Next
-                        MSG1.Text = MSG1.Text.Trim
-                        MSG1.SelectAll()
-                    Else
-                        RadioPLUS.Checked = True
-                        RadioAND.Checked = False
-                        UID.Enabled = False
-                        MSG1.Enabled = False
-                        MSG2.Enabled = True
-                        UID.Text = ""
-                        MSG1.Text = ""
-                        MSG2.Text = ""
-                        For Each bf As String In fc.BodyFilter
-                            MSG2.Text += bf + " "
-                        Next
-                        MSG2.Text = MSG2.Text.Trim
-                        MSG2.SelectAll()
-                    End If
-                    CheckRegex.Checked = fc.UseRegex
-                    CheckURL.Checked = fc.SearchURL
-                    If fc.moveFrom Then
-                        OptMove.Checked = True
-                    ElseIf fc.SetMark Then
-                        OptMark.Checked = True
-                    Else
-                        OptNone.Checked = True
-                    End If
-                Else
-                    RadioAND.Checked = True
-                    RadioPLUS.Checked = False
-                    UID.Enabled = True
-                    MSG1.Enabled = True
-                    MSG2.Enabled = False
-                    UID.Text = ""
-                    MSG1.Text = ""
-                    MSG2.Text = ""
-                    CheckRegex.Checked = False
-                    CheckURL.Checked = False
-                    OptNone.Checked = True
-                End If
-                Exit For
+
+        If ListFilters.SelectedIndex > -1 Then
+            Dim fc As FiltersClass = _sts.Tabs(ComboTabs.SelectedItem.ToString()).Filters(ListFilters.SelectedIndex)
+            If fc.SearchBoth Then
+                RadioAND.Checked = True
+                RadioPLUS.Checked = False
+                UID.Enabled = True
+                MSG1.Enabled = True
+                MSG2.Enabled = False
+                UID.Text = fc.NameFilter
+                UID.SelectAll()
+                MSG1.Text = ""
+                MSG2.Text = ""
+                For Each bf As String In fc.BodyFilter
+                    MSG1.Text += bf + " "
+                Next
+                MSG1.Text = MSG1.Text.Trim
+                MSG1.SelectAll()
+            Else
+                RadioPLUS.Checked = True
+                RadioAND.Checked = False
+                UID.Enabled = False
+                MSG1.Enabled = False
+                MSG2.Enabled = True
+                UID.Text = ""
+                MSG1.Text = ""
+                MSG2.Text = ""
+                For Each bf As String In fc.BodyFilter
+                    MSG2.Text += bf + " "
+                Next
+                MSG2.Text = MSG2.Text.Trim
+                MSG2.SelectAll()
             End If
-        Next
+            CheckRegex.Checked = fc.UseRegex
+            CheckURL.Checked = fc.SearchURL
+            If fc.moveFrom Then
+                OptMove.Checked = True
+            ElseIf fc.SetMark Then
+                OptMark.Checked = True
+            Else
+                OptNone.Checked = True
+            End If
+        Else
+            RadioAND.Checked = True
+            RadioPLUS.Checked = False
+            UID.Enabled = True
+            MSG1.Enabled = True
+            MSG2.Enabled = False
+            UID.Text = ""
+            MSG1.Text = ""
+            MSG2.Text = ""
+            CheckRegex.Checked = False
+            CheckURL.Checked = False
+            OptNone.Checked = True
+        End If
     End Sub
 
     Private Sub RadioAND_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RadioAND.CheckedChanged
@@ -337,13 +245,15 @@ Public Class FilterDialog
     End Sub
 
     Private Sub ButtonOK_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonOK.Click
+        'チェック
         If RadioAND.Checked Then
-            MSG1.Text = MSG1.Text.Replace("　", " ")
-            If UID.Text.Trim = "" And MSG1.Text.Trim = "" Then
+            MSG1.Text = MSG1.Text.Replace("　", " ").Trim()
+            UID.Text = UID.Text.Trim()
+            If UID.Text = "" AndAlso MSG1.Text = "" Then
                 MessageBox.Show(My.Resources.ButtonOK_ClickText1, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 Exit Sub
             End If
-            If CheckRegex.Checked And MSG1.Text <> "" Then
+            If CheckRegex.Checked AndAlso MSG1.Text <> "" Then
                 Try
                     Dim rgx As New System.Text.RegularExpressions.Regex(MSG1.Text)
                 Catch ex As Exception
@@ -352,7 +262,7 @@ Public Class FilterDialog
                 End Try
             End If
         Else
-            MSG2.Text = MSG2.Text.Replace("　", " ")
+            MSG2.Text = MSG2.Text.Replace("　", " ").Trim()
             If MSG2.Text.Trim = "" Then
                 MessageBox.Show(My.Resources.ButtonOK_ClickText1, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 Exit Sub
@@ -367,80 +277,40 @@ Public Class FilterDialog
             End If
         End If
         Dim i As Integer = ListFilters.SelectedIndex
-        For Each ts As TabStructure In _tabs
-            If ts.tabName Is ComboTabs.SelectedItem Then
-                Dim ft As FilterClass
-                Dim ftOrg As FilterClass = Nothing
+        Dim ft As FiltersClass
 
-                If _mode = EDITMODE.AddNew Then
-                    ft = New FilterClass
-                Else
-                    ft = ts.filters(i)
-                    ftOrg = New FilterClass
-                    For Each bs As String In ts.filters(i).BodyFilter
-                        ftOrg.BodyFilter.Add(bs)
-                    Next
-                    ftOrg.IDFilter = ft.IDFilter
-                    ftOrg.moveFrom = ft.moveFrom
-                    ftOrg.SearchBoth = ft.SearchBoth
-                    ftOrg.SearchURL = ft.SearchURL
-                    ftOrg.SetMark = ft.SetMark
-                    ftOrg.UseRegex = ft.UseRegex
-                    ft.BodyFilter.Clear()
-                End If
+        If _mode = EDITMODE.AddNew Then
+            ft = New FiltersClass()
+        Else
+            ft = _sts.Tabs(ComboTabs.SelectedItem.ToString()).Filters(i)
+            ft.BodyFilter.Clear()
+        End If
 
-                ft.moveFrom = OptMove.Checked
-                ft.SetMark = OptMark.Checked
+        ft.moveFrom = OptMove.Checked
+        ft.SetMark = OptMark.Checked
 
-                If RadioAND.Checked Then
-                    ft.IDFilter = UID.Text
-                    ft.SearchBoth = True
-                    Dim bf() As String = MSG1.Text.Trim.Split(Chr(32))
-                    For Each bfs As String In bf
-                        If bfs <> "" Then ft.BodyFilter.Add(bfs.Trim)
-                    Next
-                Else
-                    ft.IDFilter = ""
-                    ft.SearchBoth = False
-                    Dim bf() As String = MSG2.Text.Trim.Split(Chr(32))
-                    For Each bfs As String In bf
-                        If bfs <> "" Then ft.BodyFilter.Add(bfs.Trim)
-                    Next
-                End If
-                ft.UseRegex = CheckRegex.Checked
-                ft.SearchURL = CheckURL.Checked
+        If RadioAND.Checked Then
+            ft.NameFilter = UID.Text
+            ft.SearchBoth = True
+            Dim bf() As String = MSG1.Text.Trim.Split(Chr(32))
+            For Each bfs As String In bf
+                If bfs <> "" Then ft.BodyFilter.Add(bfs.Trim)
+            Next
+        Else
+            ft.NameFilter = ""
+            ft.SearchBoth = False
+            Dim bf() As String = MSG2.Text.Trim.Split(Chr(32))
+            For Each bfs As String In bf
+                If bfs <> "" Then ft.BodyFilter.Add(bfs.Trim)
+            Next
+        End If
+        ft.UseRegex = CheckRegex.Checked
+        ft.SearchURL = CheckURL.Checked
 
-                If _mode = EDITMODE.AddNew Then
-                    ts.filters.Add(ft)
-                    ts.modified = True
-                Else
-                    If ts.modified = False Then
-                        If ft.BodyFilter.Count = ftOrg.BodyFilter.Count Then
-                            For cnt As Integer = 0 To ft.BodyFilter.Count - 1
-                                If ft.BodyFilter(cnt) <> ftOrg.BodyFilter(cnt) Then
-                                    ts.modified = True
-                                    Exit For
-                                End If
-                            Next
-                            If ts.modified = False Then
-                                If ft.IDFilter <> ftOrg.IDFilter Or _
-                                   ft.moveFrom <> ftOrg.moveFrom Or _
-                                   ft.SearchBoth <> ftOrg.SearchBoth Or _
-                                   ft.SearchURL <> ftOrg.SearchURL Or _
-                                   ft.SetMark <> ftOrg.SetMark Or _
-                                   ft.UseRegex <> ftOrg.UseRegex Then
-                                    ts.modified = True
-                                End If
-                            End If
-                        Else
-                            ts.modified = True
-                        End If
-                    End If
-                End If
+        If _mode = EDITMODE.AddNew Then
+            _sts.Tabs(ComboTabs.SelectedItem.ToString()).Filters.Add(ft)
+        End If
 
-                Exit For
-            End If
-        Next
         SetFilters(ComboTabs.SelectedItem.ToString)
         If _mode = EDITMODE.AddNew Then
             ListFilters.SelectedIndex = ListFilters.Items.Count - 1
@@ -454,6 +324,8 @@ Public Class FilterDialog
         ButtonEdit.Enabled = True
         ButtonDelete.Enabled = True
         ButtonClose.Enabled = True
+
+        _sts.Tabs(ComboTabs.SelectedItem.ToString()).FilterModified = True
 
         If _directAdd Then
             Me.Close()
@@ -470,6 +342,10 @@ Public Class FilterDialog
 
     Private Sub ComboTabs_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ComboTabs.SelectedIndexChanged
         SetFilters(ComboTabs.SelectedItem.ToString)
+    End Sub
+
+    Private Sub FilterDialog_FormClosed(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
+        _directAdd = False
     End Sub
 
     Private Sub FilterDialog_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyDown
@@ -500,5 +376,26 @@ Public Class FilterDialog
             Exit Sub
         End If
         ButtonEdit_Click(sender, e)
+    End Sub
+
+    Private Sub FilterDialog_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
+        _sts = TabInformations.GetInstance()
+        ComboTabs.Items.Clear()
+        For Each key As String In _sts.Tabs.Keys
+            If key <> "Recent" AndAlso key <> "Reply" AndAlso key <> "Direct" Then
+                ComboTabs.Items.Add(key)
+            End If
+        Next
+        '選択タブ変更
+        If ComboTabs.Items.Count > 0 Then
+            If _cur.Length > 0 Then
+                For i As Integer = 0 To ComboTabs.Items.Count - 1
+                    If _cur = ComboTabs.Items(i).ToString() Then
+                        ComboTabs.SelectedIndex = i
+                        Exit For
+                    End If
+                Next
+            End If
+        End If
     End Sub
 End Class

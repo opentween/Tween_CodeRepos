@@ -856,6 +856,7 @@ Partial Class TweenMain
         '
         'GetTimelineWorker
         '
+        Me.GetTimelineWorker.WorkerReportsProgress = True
         Me.GetTimelineWorker.WorkerSupportsCancellation = True
         '
         'TimerDM
@@ -874,6 +875,7 @@ Partial Class TweenMain
         '
         'PostWorker
         '
+        Me.PostWorker.WorkerReportsProgress = True
         Me.PostWorker.WorkerSupportsCancellation = True
         '
         'OpenFileDialog1

@@ -46,16 +46,20 @@ Public Class TweenMain
     Private _mySpDis As Integer         '区切り位置
     Private _mySpDis2 As Integer        '発言欄区切り位置
     Private _iconSz As Integer            'アイコンサイズ（現在は16、24、48の3種類。将来直接数字指定可能とする 注：24x24の場合に26と指定しているのはMSゴシック系フォントのための仕様）
-    Private _iconCol As Boolean           '1列表示の時True（48サイズのとき）
+    'Private _iconCol As Boolean           '1列表示の時True（48サイズのとき）
 
     '雑多なフラグ類
     Private _initial As Boolean         'True:起動時処理中
     Private _endingFlag As Boolean        '終了フラグ
-    Private listViewItemSorter As ListViewItemComparer      'リストソート用カスタムクラス
+    'Private listViewItemSorter As ListViewItemComparer      'リストソート用カスタムクラス
     Private _tabDrag As Boolean           'タブドラッグ中フラグ（DoDragDropを実行するかの判定用）
     Private _rclickTabName As String      '右クリックしたタブの名前（Tabコントロール機能不足対応）
-    Private _curTabText As String = "Recent"
-    Private ReadOnly _syncObject As New Object()    'ロック用  
+    Private ReadOnly _syncObject As New Object()    'ロック用
+    Private Const detailHtmlFormat1 As String = "<html><head><style type=""text/css""><!-- p {font-family: """
+    Private Const detailHtmlFormat2 As String = """, sans-serif; font-size: "
+    Private Const detailHtmlFormat3 As String = "pt;} --></style></head><body style=""margin:0px""><p>"
+    Private Const detailHtmlFormat4 As String = "</p></body></html>"
+    Private detailHtmlFormat As String
 
     '設定ファイル関連
     Private _config As Configuration    'アプリケーション構成ファイルクラス
@@ -65,12 +69,12 @@ Public Class TweenMain
     Private SettingDialog As New Setting()       '設定画面インスタンス
     Private TabDialog As New TabsDialog()        'タブ選択ダイアログインスタンス
     Private SearchDialog As New SearchWord()     '検索画面インスタンス
-    Private _tabs As New List(Of TabStructure)() '要素TabStructureクラスのジェネリックリストインスタンス（タブ情報用）
+    'Private _tabs As New List(Of TabStructure)() '要素TabStructureクラスのジェネリックリストインスタンス（タブ情報用）
     Private fDialog As New FilterDialog() 'フィルター編集画面
     Private UrlDialog As New OpenURL()
 
     '表示フォント、色、アイコン
-    Private _fntUnread As Font            '未読用フォント
+    'Private _fntUnread As Font            '未読用フォント
     Private _clUnread As Color            '未読用文字色
     Private _fntReaded As Font            '既読用フォント
     Private _clReaded As Color            '既読用文字色
@@ -82,7 +86,8 @@ Public Class TweenMain
     Private _clTarget As Color            '選択発言者の他の発言用背景色
     Private _clAtTarget As Color          '選択発言中の返信先用背景色
     Private _clAtFromTarget As Color      '選択発言者への返信発言用背景色
-    Private TIconList As ImageList        '発言詳細部用アイコン画像リスト
+    'Private TIconList As ImageList        '発言詳細部用アイコン画像リスト
+    Private TIconDic As Dictionary(Of String, Image)        '発言詳細部用アイコン画像リスト
     Private TIconSmallList As ImageList   'リスト表示用アイコン画像リスト
     Private NIconAt As Icon               'At.ico             タスクトレイアイコン：通常時
     Private NIconAtRed As Icon            'AtRed.ico          タスクトレイアイコン：通信エラー時
@@ -91,7 +96,7 @@ Public Class TweenMain
     Private TabIcon As Icon               'Tab.ico            未読のあるタブ用アイコン
     Private MainIcon As Icon              'Main.ico           画面左上のアイコン
 
-    Private _anchorItem As ListViewItem   '関連発言移動開始時のリストアイテム
+    Private _anchorPost As PostClass
     Private _anchorFlag As Boolean        'True:関連発言移動中（関連移動以外のオペレーションをするとFalseへ。Trueだとリスト背景色をアンカー発言選択中として描画）
 
     Private _history As New List(Of String)()   '発言履歴
@@ -100,7 +105,7 @@ Public Class TweenMain
     Private Const _replyHtml As String = "@<a target=""_self"" href=""https://twitter.com/"
 
     '発言投稿時のAPI引数（発言編集時に設定。手書きreplyでは設定されない）
-    Private _reply_to_id As Integer     ' リプライ先のステータスID 0の場合はリプライではない 注：複数あてのものはリプライではない
+    Private _reply_to_id As Long     ' リプライ先のステータスID 0の場合はリプライではない 注：複数あてのものはリプライではない
     Private _reply_to_name As String    ' リプライ先ステータスの書き込み者の名前
 
     '時速表示用
@@ -122,12 +127,20 @@ Public Class TweenMain
     Private _brsBackColorAtYou As SolidBrush
     Private _brsBackColorAtTo As SolidBrush
     Private _brsBackColorNone As SolidBrush
+    Private _brsDeactiveSelection As New SolidBrush(Color.FromKnownColor(KnownColor.ButtonFace))
     Private sf As New StringFormat()
-    Private _columnIdx As Integer   'ListviewのDisplayIndex退避用（DrawItemで使用）
-    Private _columnChangeFlag As Boolean
+    'Private _columnIdx As Integer   'ListviewのDisplayIndex退避用（DrawItemで使用）
+    'Private _columnChangeFlag As Boolean
 
     '''''''''''''''''''''''''''''''''''''''''''''''''''''
-    'Private _statuses As New TabInformations()
+    Private _statuses As TabInformations
+    Private _itemCache() As ListViewItem
+    Private _itemCacheIndex As Integer
+    Private _postCache() As PostClass
+    Private _curTab As TabPage
+    Private _curItemIndex As Integer
+    Private _curList As DetailsListView
+    Private _curPost As PostClass
     '''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 #If DEBUG Then
@@ -165,15 +178,17 @@ Public Class TweenMain
     'Backgroundworkerの処理結果通知用引数構造体
     Private Structure GetWorkerResult
         Public retMsg As String                     '処理結果詳細メッセージ。エラー時に値がセットされる
-        Public TLine As List(Of Twitter.MyListItem) '取得した発言。Twitter.MyListItem構造体を要素としたジェネリックリスト
+        Public notifyPosts As List(Of PostClass) '取得した発言。Twitter.MyListItem構造体を要素としたジェネリックリスト
         Public page As Integer                      '取得対象ページ番号
         Public endPage As Integer                   '取得終了ページ番号（継続可能ならインクリメントされて返る。pageと比較して継続判定）
         Public type As WORKERTYPE                   '処理種別
-        Public imgs As ImageList                    '新規取得したアイコンイメージ
+        Public imgs As Dictionary(Of String, Image)                    '新規取得したアイコンイメージ
         Public tName As String                      'Fav追加・削除時のタブ名
-        Public ids As List(Of String)               'Fav追加・削除時のID
-        Public sIds As List(Of String)                  'Fav追加・削除成功分のID
+        Public ids As List(Of Long)               'Fav追加・削除時のID
+        Public sIds As List(Of Long)                  'Fav追加・削除成功分のID
         Public newDM As Boolean
+        Public soundFile As String
+        Public addCount As Integer
     End Structure
 
     'Backgroundworkerへ処理内容を通知するための引数用構造体
@@ -182,8 +197,8 @@ Public Class TweenMain
         Public endPage As Integer                   '処理終了ページ番号（起動時の読み込みページ数。通常時はpageと同じ値をセット）
         Public type As WORKERTYPE                   '処理種別
         Public status As String                     '発言POST時の発言内容
-        Public ids As List(Of String)               'Fav追加・削除時のID
-        Public sIds As List(Of String)              'Fav追加・削除成功分のID
+        Public ids As List(Of Long)               'Fav追加・削除時のItemIndex
+        Public sIds As List(Of Long)              'Fav追加・削除成功分のItemIndex
         Public tName As String                      'Fav追加・削除時のタブ名
     End Structure
 
@@ -194,6 +209,12 @@ Public Class TweenMain
         PrevSearch
     End Enum
 
+    Private Sub TweenMain_Activated(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Activated
+        If UserPicture.Image IsNot Nothing Then
+            UserPicture.Invalidate(False)
+        End If
+    End Sub
+
     Private Sub TweenMain_Disposed(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Disposed
         '後始末
         SettingDialog.Dispose()
@@ -201,7 +222,12 @@ Public Class TweenMain
         SearchDialog.Dispose()
         fDialog.Dispose()
         UrlDialog.Dispose()
-        If TIconList IsNot Nothing Then TIconList.Dispose()
+        If TIconDic IsNot Nothing AndAlso TIconDic.Keys.Count > 0 Then
+            For Each key As String In TIconDic.Keys
+                TIconDic(key).Dispose()
+            Next
+            TIconDic.Clear()
+        End If
         If TIconSmallList IsNot Nothing Then TIconSmallList.Dispose()
         If NIconAt IsNot Nothing Then NIconAt.Dispose()
         If NIconAtRed IsNot Nothing Then NIconAtRed.Dispose()
@@ -224,6 +250,7 @@ Public Class TweenMain
         If _brsBackColorAtYou IsNot Nothing Then _brsBackColorAtYou.Dispose()
         If _brsBackColorAtTo IsNot Nothing Then _brsBackColorAtTo.Dispose()
         If _brsBackColorNone IsNot Nothing Then _brsBackColorNone.Dispose()
+        If _brsDeactiveSelection IsNot Nothing Then _brsDeactiveSelection.Dispose()
         sf.Dispose()
     End Sub
 
@@ -283,6 +310,9 @@ Public Class TweenMain
             MainIcon = My.Resources.MIcon
         End Try
 
+        '発言保持クラス
+        _statuses = TabInformations.GetInstance()
+
         'アイコン設定
         Me.Icon = MainIcon              'メインフォーム（TweenMain）
         NotifyIcon1.Icon = NIconAt      'タスクトレイ
@@ -303,7 +333,7 @@ Public Class TweenMain
         _reply_to_id = 0
         _reply_to_name = Nothing
 
-        _columnChangeFlag = True
+        '_columnChangeFlag = True
 
         '<<<<<<<<<設定関連>>>>>>>>>
         '設定読み出し
@@ -324,7 +354,7 @@ Public Class TweenMain
         NewPostPopMenuItem.Checked = _section.NewAllPop     '全新着通知
 
         'フォント＆文字色＆背景色保持
-        _fntUnread = _section.FontUnread                '未読フォント
+        '_fntUnread = _section.FontUnread                '未読フォント
         _clUnread = _section.ColorUnread                '未読文字色
         _fntReaded = _section.FontReaded                '既読フォント
         _clReaded = _section.ColorReaded                '既読文字色
@@ -346,6 +376,7 @@ Public Class TweenMain
         _brsBackColorAtYou = New SolidBrush(_clAtTarget)
         _brsBackColorAtTo = New SolidBrush(_clAtFromTarget)
         _brsBackColorNone = New SolidBrush(Color.FromKnownColor(KnownColor.Window))
+        detailHtmlFormat = detailHtmlFormat1 + _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3
 
         ' StringFormatオブジェクトへの事前設定
         sf.Alignment = StringAlignment.Near
@@ -378,7 +409,7 @@ Public Class TweenMain
         '片思い表示。Trueなら片思い表示する
         SettingDialog.OneWayLove = _section.OneWayLove
         'フォント＆文字色＆背景色
-        SettingDialog.FontUnread = _fntUnread
+        'SettingDialog.FontUnread = _fntUnread
         SettingDialog.ColorUnread = _clUnread
         SettingDialog.FontReaded = _fntReaded
         SettingDialog.ColorReaded = _clReaded
@@ -444,7 +475,7 @@ Public Class TweenMain
             End If
             '新しい設定を反映
             'フォント＆文字色＆背景色保持
-            _fntUnread = SettingDialog.FontUnread
+            '_fntUnread = SettingDialog.FontUnread
             _clUnread = SettingDialog.ColorUnread
             _fntReaded = SettingDialog.FontReaded
             _clReaded = SettingDialog.ColorReaded
@@ -474,6 +505,7 @@ Public Class TweenMain
             _brsBackColorYou = New SolidBrush(_clTarget)
             _brsBackColorAtYou = New SolidBrush(_clAtTarget)
             _brsBackColorAtTo = New SolidBrush(_clAtFromTarget)
+            detailHtmlFormat = detailHtmlFormat1 + _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3
             '他の設定項目は、随時設定画面で保持している値を読み出して使用
         End If
 
@@ -517,9 +549,9 @@ Public Class TweenMain
         lblLen.Text = "140"
 
         '発言詳細部のアイコンリスト作成
-        TIconList = New ImageList
-        TIconList.ImageSize = New Size(48, 48)
-        TIconList.ColorDepth = ColorDepth.Depth32Bit
+        TIconDic = New Dictionary(Of String, Image)
+        'TIconList.ImageSize = New Size(48, 48)
+        'TIconList.ColorDepth = ColorDepth.Depth32Bit
 
         'Twitter用通信クラス初期化
         clsTw = New Twitter(_username, _password, SettingDialog.ProxyType, SettingDialog.ProxyAddress, SettingDialog.ProxyPort, SettingDialog.ProxyUser, SettingDialog.ProxyPassword)
@@ -532,10 +564,10 @@ Public Class TweenMain
         clsTw.NextPages = SettingDialog.NextPagesInt    '閾値オーバー時の読み込みページ数（未使用）
 
         ''''''''''''''''''''''''''''''''''''''''
-        '_statuses.SortOrder = DirectCast(_section.SortOrder, System.Windows.Forms.SortOrder)
+        _statuses.SortOrder = DirectCast(_section.SortOrder, System.Windows.Forms.SortOrder)
         ''''''''''''''''''''''''''''''''''''''''
 
-        _iconCol = False
+        '_iconCol = False
         Select Case SettingDialog.IconSz
             Case IconSizes.IconNone
                 _iconSz = 0
@@ -546,13 +578,14 @@ Public Class TweenMain
             Case IconSizes.Icon48
                 _iconSz = 48
             Case IconSizes.Icon48_2
-                _iconSz = 48
-                _iconCol = True
+                _iconSz = 48    '廃止予定
+                '_iconCol = True
         End Select
         If _iconSz = 0 Then
             clsTw.GetIcon = False
         Else
             clsTw.GetIcon = True
+            clsTw.IconSize = _iconSz
         End If
         clsTwPost.UseAPI = SettingDialog.UseAPI
         clsTw.HubServer = SettingDialog.HubServer
@@ -575,15 +608,15 @@ Public Class TweenMain
         '<<<<<<<<タブ関連>>>>>>>
         'Recentタブ
         'Timeline.SmallImageList = TIconSmallList
-        listViewItemSorter = New ListViewItemComparer
-        listViewItemSorter.ColumnModes = New ListViewItemComparer.ComparerMode() _
-                {ListViewItemComparer.ComparerMode.None, _
-                 ListViewItemComparer.ComparerMode.String, _
-                 ListViewItemComparer.ComparerMode.String, _
-                 ListViewItemComparer.ComparerMode.DateTime, _
-                 ListViewItemComparer.ComparerMode.String}
-        listViewItemSorter.Column = _section.SortColumn
-        listViewItemSorter.Order = DirectCast(_section.SortOrder, System.Windows.Forms.SortOrder)
+        'listViewItemSorter = New ListViewItemComparer
+        'listViewItemSorter.ColumnModes = New ListViewItemComparer.ComparerMode() _
+        '        {ListViewItemComparer.ComparerMode.None, _
+        '         ListViewItemComparer.ComparerMode.String, _
+        '         ListViewItemComparer.ComparerMode.String, _
+        '         ListViewItemComparer.ComparerMode.DateTime, _
+        '         ListViewItemComparer.ComparerMode.String}
+        'listViewItemSorter.Column = _section.SortColumn
+        'listViewItemSorter.Order = DirectCast(_section.SortOrder, System.Windows.Forms.SortOrder)
 
         ''Replyタブ
         If _section.ListElement.Item("Reply") Is Nothing Then
@@ -597,80 +630,36 @@ Public Class TweenMain
 
         For idx As Integer = 0 To _section.ListElement.Count - 1
             Dim name As String = _section.ListElement(idx).Name
-            ''''''''''''''''''''''''''''''''''''''''
-            'Dim tb As New TabClass
-            'tb.Notify = _section.ListElement(idx).Notify
-            'tb.SoundFile = _section.ListElement(idx).SoundFile
-            'tb.UnreadManage = _section.ListElement(idx).UnreadManage
-            ''''''''''''''''''''''''''''''''''''''''
-            Dim myTab As New TabStructure()
-            myTab.tabPage = New TabPage()
-            myTab.listCustom = New DetailsListView()
-            myTab.colHd1 = New ColumnHeader()
-            If Not _iconCol Then
-                myTab.colHd2 = New ColumnHeader()
-                myTab.colHd3 = New ColumnHeader()
-                myTab.colHd4 = New ColumnHeader()
-                myTab.colHd5 = New ColumnHeader()
-            End If
-            myTab.notify = _section.ListElement(idx).Notify
-            myTab.unreadManage = _section.ListElement(idx).UnreadManage
-            myTab.soundFile = _section.ListElement(idx).SoundFile
+            Dim tb As New TabClass
+            tb.Notify = _section.ListElement(idx).Notify
+            tb.SoundFile = _section.ListElement(idx).SoundFile
+            tb.UnreadManage = _section.ListElement(idx).UnreadManage
+            If Not AddNewTab(name, True) Then Throw New Exception("タブ作成エラー") 'GUI部品作成
             For Each flt As Tween.SelectedUser In _section.SelectedUser
                 If flt.TabName = name Then
-                    Dim fcls As New FilterClass()
                     Dim bflt() As String = flt.BodyFilter.Split(Chr(32))
-                    '''''''''''''''''''''''''''''''''''''''''
-                    'Dim body As New List(Of String)
-                    '''''''''''''''''''''''''''''''''''''''''
+                    Dim body As New List(Of String)
                     For Each tmpFlt As String In bflt
-                        If tmpFlt.Trim <> "" Then fcls.BodyFilter.Add(tmpFlt.Trim)
-                        '''''''''''''''''''''''''''''''''''''''''
-                        'If tmpFlt.Trim <> "" Then body.Add(tmpFlt.Trim)
-                        '''''''''''''''''''''''''''''''''''''''''
+                        If tmpFlt.Trim <> "" Then body.Add(tmpFlt.Trim)
                     Next
-                    fcls.IDFilter = flt.IdFilter
-                    fcls.SearchBoth = flt.SearchBoth
-                    fcls.SearchURL = flt.UrlSearch
-                    fcls.UseRegex = flt.RegexEnable
-                    fcls.moveFrom = flt.MoveFrom
-                    fcls.SetMark = flt.SetMark
-                    myTab.filters.Add(fcls)
-                    ''''''''''''''''''''''''''''''''''''''''
-                    'Dim filter As New FiltersClass(flt.IdFilter, _
-                    '                                body, _
-                    '                                flt.SearchBoth, _
-                    '                                flt.MoveFrom, _
-                    '                                flt.SetMark, _
-                    '                                flt.UrlSearch, _
-                    '                                flt.RegexEnable)
-                    'tb.Filters.Add(filter)
-
-                    ''''''''''''''''''''''''''''''''''''''''
+                    tb.Filters.Add(New FiltersClass(flt.IdFilter, _
+                                                    body, _
+                                                    flt.SearchBoth, _
+                                                    flt.MoveFrom, _
+                                                    flt.SetMark, _
+                                                    flt.UrlSearch, _
+                                                    flt.RegexEnable))
                 End If
             Next
-            myTab.tabName = name
-            _tabs.Add(myTab)
-            ''''''''''''''''''''''''''''''''''''''''
-            '_statuses.AddTab(name, tb)
-            ''''''''''''''''''''''''''''''''''''''''
+            _statuses.AddTab(name, tb)
         Next
-
-        AddCustomTabs()
 
         'バージョンチェック（引数：起動時チェックの場合はTrue･･･チェック結果のメッセージを表示しない）
         If SettingDialog.StartupVersion Then
             CheckNewVersion(True)
         End If
 
-        Dim nw As Boolean = True
-        Try
-            nw = My.Computer.Network.IsAvailable
-        Catch ex As Exception
-            nw = True
-        End Try
-
-        If nw Then
+        If IsNetworkAvailable() Then
             GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
         Else
             TimerRefreshIcon.Enabled = False
@@ -684,13 +673,15 @@ Public Class TweenMain
             RefreshStripMenuItem.Enabled = False
         End If
 
-        SetMainWindowTitle()
-        SetNotifyIconText()
-
         AddHandler My.Computer.Network.NetworkAvailabilityChanged, AddressOf Network_NetworkAvailabilityChanged
         If SettingDialog.MinimizeToTray = False OrElse Me.WindowState <> FormWindowState.Minimized Then
             Me.Visible = True
         End If
+        _curTab = ListTab.SelectedTab
+        _curItemIndex = -1
+        _curList = DirectCast(_curTab.Controls(0), DetailsListView)
+        SetMainWindowTitle()
+        SetNotifyIconText()
     End Sub
 
     Private Sub Network_NetworkAvailabilityChanged(ByVal sender As Object, ByVal e As Devices.NetworkAvailableEventArgs)
@@ -737,14 +728,8 @@ Public Class TweenMain
     End Sub
 
     Private Sub TimerTimeline_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerTimeline.Tick
-        Dim nw As Boolean = True
-        Try
-            nw = My.Computer.Network.IsAvailable
-        Catch ex As Exception
-            nw = True
-        End Try
 
-        If Not nw Then Exit Sub
+        If Not IsNetworkAvailable() Then Exit Sub
 
         GetTimeline(WORKERTYPE.Timeline, 1, 1)
     End Sub
@@ -752,485 +737,287 @@ Public Class TweenMain
     Private Sub TimerDM_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerDM.Tick
         GC.Collect()
 
-        Dim nw As Boolean = True
-        Try
-            nw = My.Computer.Network.IsAvailable
-        Catch ex As Exception
-            nw = True
-        End Try
-        If Not nw Then Exit Sub
+        If Not IsNetworkAvailable() Then Exit Sub
 
         GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
     End Sub
 
-    Private Sub RefreshTimeline(ByVal tlList As List(Of Twitter.MyListItem), Optional ByVal OldItems As Boolean = False)
-        Dim lItem As Twitter.MyListItem
-        Dim cnt As Integer = 0
-        Dim RepCnt As Integer = 0
-        Dim _pop As String = ""
+    Private Sub RefreshTimeline(ByVal notifyPosts As List(Of PostClass), ByVal soundFile As String, ByVal addCount As Integer, ByVal Dm As Boolean)
         Dim topItem As ListViewItem
-        Dim firstDate As String = ""
-        Dim endDate As String = ""
-        Dim readed As Boolean = SettingDialog.Readed
-        Dim myList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim _readed As Boolean
-        Dim _fav As Boolean
-        Dim _onewaylove As Boolean
-        Dim nm As String
-        Dim snd As String = ""
-        Dim Protect As String = ""
-        Dim ImgTag As New Regex("<img src=.*?/>", RegexOptions.IgnoreCase)   'ハロウィン
 
-        TimerColorize.Stop()
-
-        Dim _item As ListViewItem
-
-        If myList.Items.Count > 0 Then
+        'スクロール制御
+        If _curList.Items.Count > 0 Then
             If ListLockMenuItem.Checked Then
-                topItem = myList.TopItem
+                topItem = _curList.TopItem
             Else
-                If listViewItemSorter.Column = 3 Then
-                    If listViewItemSorter.Order = SortOrder.Ascending Then
-                        '日時昇順
-                        _item = myList.GetItemAt(0, myList.ClientSize.Height - 1)
-                        If _item Is Nothing Then _item = myList.Items(myList.Items.Count - 1)
-                        If _item.Index = myList.Items.Count - 1 Then
-                            topItem = Nothing
-                        Else
-                            topItem = myList.TopItem
-                        End If
+                Dim _item As ListViewItem
+                If _statuses.SortOrder = SortOrder.Ascending Then
+                    '日時昇順
+                    _item = _curList.GetItemAt(0, _curList.ClientSize.Height - 1)   '一番下
+                    If _item Is Nothing Then _item = _curList.Items(_curList.Items.Count - 1)
+                    If _item.Index = _curList.Items.Count - 1 Then
+                        topItem = Nothing   'スクロールする
                     Else
-                        '日時降順
-                        _item = myList.GetItemAt(0, 25)
-                        If _item Is Nothing Then _item = myList.Items(0)
-                        If _item.Index = 0 Then
-                            topItem = Nothing
-                        Else
-                            topItem = myList.TopItem
-                        End If
+                        topItem = _curList.TopItem
                     End If
                 Else
-                    topItem = myList.TopItem
+                    '日時降順
+                    _item = _curList.GetItemAt(0, 25)     '一番上
+                    If _item Is Nothing Then _item = _curList.Items(0)
+                    If _item.Index = 0 Then
+                        topItem = Nothing   'スクロールする
+                    Else
+                        topItem = _curList.TopItem
+                    End If
                 End If
 
             End If
         Else
             topItem = Nothing
         End If
-
-        myList.BeginUpdate()
-
-        If tlList.Count > 0 Then
-            firstDate = tlList(0).PDate.ToString("yy-MM-dd HH:mm:ss")
-        End If
-
-        For cnt = 0 To tlList.Count - 1
-            '_reply = False
-            _onewaylove = False
-            _fav = False
-            lItem = tlList(cnt)
-            If follower.Count > 1 Then
-                If follower.Contains(lItem.Name) = False Then
-                    _onewaylove = True
-                End If
+        ''''''''''''''''''''''''''''''''''''''''''
+        For Each tab As TabPage In ListTab.TabPages
+            Dim lst As DetailsListView = DirectCast(tab.Controls(0), DetailsListView)
+            Dim tabInfo As TabClass = _statuses.Tabs(tab.Text)
+            If Dm AndAlso tab.Text = "Direct" OrElse Not Dm Then
+                If lst.VirtualListSize <> tabInfo.AllCount Then lst.VirtualListSize = tabInfo.AllCount 'リスト件数更新
+                If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
             End If
-            If lItem.Fav Then
-                _fav = True
-            End If
-            _readed = True
-            If lItem.Protect = True Then
-                Protect = "Ю"
-            Else
-                Protect = ""
-            End If
-            ' Imageタグ除去（ハロウィン）
-            If ImgTag.IsMatch(lItem.Data) Then
-                lItem.Data = ImgTag.Replace(lItem.Data, "<img>")
-            End If
-            Dim sItem() As String = {Protect, _
-                                     lItem.Nick, _
-                                     lItem.Data, _
-                                     lItem.PDate.ToString("yy-MM-dd HH:mm:ss"), _
-                                     lItem.Name, _
-                                     lItem.Id, _
-                                     lItem.ImageUrl, _
-                                     lItem.OrgData, _
-                                     _readed.ToString, _
-                                     _fav.ToString, _
-                                     _onewaylove.ToString, _
-                                     lItem.Reply.ToString}
-            Dim lvItem As New ListViewItem(sItem)
-            lvItem.ToolTipText = lItem.Data
-            If (Not _initial OrElse (_initial AndAlso Not readed)) AndAlso SettingDialog.UnreadManage Then
-                _readed = False
-            End If
-            If _onewaylove AndAlso SettingDialog.OneWayLove Then
-                lvItem.ForeColor = _clOWL
-            End If
-            If _fav Then
-                lvItem.ForeColor = _clFav
-            End If
-            lvItem.ImageKey = lItem.ImageUrl
-
-            Dim mv As Boolean = False
-            Dim nf As Boolean = False
-            Dim mk As Boolean = False
-            For Each ts As TabStructure In _tabs
-                Dim hit As Boolean = False
-                For Each ft As FilterClass In ts.filters
-                    Dim bHit As Boolean = True
-                    Dim tBody As String
-                    If ft.SearchURL Then
-                        tBody = lItem.OrgData
-                    Else
-                        tBody = lItem.Data
-                    End If
-                    If ft.SearchBoth Then
-                        If ft.IDFilter = "" OrElse lItem.Name.Equals(ft.IDFilter, StringComparison.OrdinalIgnoreCase) Then
-                            For Each fs As String In ft.BodyFilter
-                                If ft.UseRegex Then
-                                    If Not Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) Then bHit = False
-                                Else
-                                    If Not tBody.ToLower.Contains(fs.ToLower) Then bHit = False
-                                End If
-                                If Not bHit Then Exit For
-                            Next
-                        Else
-                            bHit = False
-                        End If
-                    Else
-                        For Each fs As String In ft.BodyFilter
-                            If ft.UseRegex Then
-                                If Not (Regex.IsMatch(lItem.Name, fs, RegexOptions.IgnoreCase) OrElse _
-                                        Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase)) Then bHit = False
-                            Else
-                                If Not (lItem.Name.ToLower().Contains(fs.ToLower()) OrElse _
-                                        tBody.ToLower().Contains(fs.ToLower())) Then bHit = False
-                            End If
-                            If Not bHit Then Exit For
-                        Next
-                    End If
-                    If bHit Then
-                        hit = True
-                        If ft.SetMark Then mk = True
-                        If ft.moveFrom Then mv = True
-                    End If
-                    If hit AndAlso mv AndAlso mk Then Exit For
-                Next
-                If hit Then
-                    ts.allCount += 1
-                    Dim lvItem2 As ListViewItem = DirectCast(lvItem.Clone, System.Windows.Forms.ListViewItem)
-                    If Not _readed AndAlso ts.unreadManage Then
-                        lvItem2.Font = _fntUnread
-                        lvItem2.ForeColor = _clUnread
-                        lvItem2.SubItems(8).Text = "False"
-                        ts.unreadCount += 1
-                    Else
-                        lvItem2.Font = _fntReaded
-                        lvItem2.ForeColor = _clReaded
-                        lvItem2.SubItems(8).Text = "True"
-                    End If
-                    If _onewaylove AndAlso SettingDialog.OneWayLove Then
-                        lvItem2.ForeColor = _clOWL
-                    End If
-                    If _fav Then
-                        lvItem2.ForeColor = _clFav
-                    End If
-
-                    If lvItem2.SubItems(8).Text = "False" Then
-                        If ts.oldestUnreadItem IsNot Nothing Then
-                            If lvItem2.SubItems(5).Text < ts.oldestUnreadItem.SubItems(5).Text Then ts.oldestUnreadItem = lvItem2
-                        Else
-                            ts.oldestUnreadItem = lvItem2
-                        End If
-                    End If
-                    ts.listCustom.Items.Add(lvItem2)
-                    If ts.notify Then nf = True
-                    If snd = "" Then snd = ts.soundFile
-                End If
-            Next
-
-            If lItem.Reply Then
-                Dim lvItem2 As ListViewItem = DirectCast(lvItem.Clone, System.Windows.Forms.ListViewItem)
-                Dim myTs As TabStructure = GetTSbyName("Reply")
-                myTs.allCount += 1
-                If Not _readed AndAlso myTs.unreadManage Then
-                    lvItem2.Font = _fntUnread
-                    lvItem2.ForeColor = _clUnread
-                    lvItem2.SubItems(8).Text = "False"
-                    myTs.unreadCount += 1
-                Else
-                    lvItem2.Font = _fntReaded
-                    lvItem2.ForeColor = _clReaded
-                    lvItem2.SubItems(8).Text = "True"
-                End If
-                If _onewaylove AndAlso SettingDialog.OneWayLove Then
-                    lvItem2.ForeColor = _clOWL
-                End If
-                If _fav Then
-                    lvItem2.ForeColor = _clFav
-                End If
-                If lvItem2.SubItems(8).Text = "False" Then
-                    If myTs.oldestUnreadItem IsNot Nothing Then
-                        If lvItem2.SubItems(5).Text < myTs.oldestUnreadItem.SubItems(5).Text Then myTs.oldestUnreadItem = lvItem2
-                    Else
-                        myTs.oldestUnreadItem = lvItem2
-                    End If
-                End If
-                myTs.listCustom.Items.Add(lvItem2)
-                If myTs.notify Then nf = True
-                If myTs.soundFile <> "" Then snd = myTs.soundFile '優先度高
-                RepCnt += 1
-            End If
-
-            If Not mv Then
-                Dim myTs As TabStructure = GetTSbyName("Recent")
-                myTs.allCount += 1
-                If Not _readed AndAlso myTs.unreadManage Then
-                    lvItem.Font = _fntUnread
-                    lvItem.ForeColor = _clUnread
-                    lvItem.SubItems(8).Text = "False"
-                    myTs.unreadCount += 1
-                    If myTs.oldestUnreadItem IsNot Nothing Then
-                        If lvItem.SubItems(5).Text < myTs.oldestUnreadItem.SubItems(5).Text Then myTs.oldestUnreadItem = lvItem
-                    Else
-                        myTs.oldestUnreadItem = lvItem
-                    End If
-                Else
-                    lvItem.Font = _fntReaded
-                    lvItem.ForeColor = _clReaded
-                    lvItem.SubItems(8).Text = "True"
-                End If
-                If _onewaylove AndAlso SettingDialog.OneWayLove Then
-                    lvItem.ForeColor = _clOWL
-                End If
-                If _fav Then
-                    lvItem.ForeColor = _clFav
-                End If
-                If mk Then lvItem.SubItems(0).Text += "♪"
-                myTs.listCustom.Items.Add(lvItem)
-                If myTs.notify Then nf = True
-                If snd = "" Then snd = myTs.soundFile
-            End If
-
-
-            nm = ""
-            Select Case SettingDialog.NameBalloon
-                Case NameBalloonEnum.None
-                    nm = ""
-                Case NameBalloonEnum.UserID
-                    nm = lItem.Name
-                Case NameBalloonEnum.NickName
-                    nm = lItem.Nick
-            End Select
-            Dim pmsg As String = nm + " : " + lItem.Data
-            If NewPostPopMenuItem.Checked And nf Then
-                If _pop = "" Then
-                    _pop = pmsg
-                Else
-                    _pop += vbCrLf + pmsg
-                End If
-            End If
-
         Next
-
-        endDate = lItem.PDate.ToString("yy-MM-dd HH:mm:ss")
-
-
-        myList.EndUpdate()
-
-        If cnt > 0 Then
-            TimerColorize.Start()
-            If topItem IsNot Nothing Then
-                If myList.Items.Count > 0 AndAlso topItem.Index > -1 Then
-                    myList.EnsureVisible(myList.Items.Count - 1)
-                    myList.EnsureVisible(topItem.Index)
-                End If
-            Else
-
-                If listViewItemSorter.Column = 3 AndAlso listViewItemSorter.Order = SortOrder.Ascending AndAlso myList.Items.Count > 0 Then
-                    myList.EnsureVisible(myList.Items.Count - 1)
-                End If
+        'スクロール制御
+        If topItem IsNot Nothing Then
+            If _curList.Items.Count > 0 AndAlso topItem.Index > -1 Then
+                _curList.EnsureVisible(_curList.Items.Count - 1)
+                _curList.EnsureVisible(topItem.Index)
             End If
-            '新着バルーン通知
-            If Not _initial AndAlso _pop <> "" Then
-                If SettingDialog.DispUsername Then NotifyIcon1.BalloonTipTitle = _username + " - " Else NotifyIcon1.BalloonTipTitle = ""
-                If RepCnt > 0 AndAlso GetTSbyName("Reply").notify Then
-                    NotifyIcon1.BalloonTipIcon = ToolTipIcon.Warning
-                    NotifyIcon1.BalloonTipTitle += "Tween [Reply!] " + My.Resources.RefreshTimelineText1 + " " + cnt.ToString() + My.Resources.RefreshTimelineText2
-                Else
-                    NotifyIcon1.BalloonTipIcon = ToolTipIcon.Info
-                    NotifyIcon1.BalloonTipTitle += "Tween " + My.Resources.RefreshTimelineText1 + " " + cnt.ToString() + My.Resources.RefreshTimelineText2
-                End If
-                NotifyIcon1.BalloonTipText = _pop
-                NotifyIcon1.ShowBalloonTip(500)
-            End If
-            'サウンド再生
-            If Not _initial AndAlso SettingDialog.PlaySound AndAlso snd <> "" Then
-                Try
-                    My.Computer.Audio.Play(My.Application.Info.DirectoryPath.ToString() + "\" + snd, AudioPlayMode.Background)
-                Catch ex As Exception
-
-                End Try
-            End If
-            '*** 暫定 ***
-            If OldItems Then
-                StatusLabel.Text = My.Resources.RefreshTimelineText3 + " [" + firstDate + "] ～ [" + endDate + "]"
-            End If
-            If _initial And Not OldItems Then
-                StatusLabel.Text = My.Resources.RefreshTimelineText4 + " [" + firstDate + "] ～ [" + endDate + "]"
+        Else
+            If _statuses.SortOrder = SortOrder.Ascending AndAlso _curList.Items.Count > 0 Then
+                _curList.EnsureVisible(_curList.Items.Count - 1)
             End If
         End If
 
-        If SettingDialog.UnreadManage Then
-            For Each ts As TabStructure In _tabs
-                If ts.unreadManage AndAlso ts.unreadCount > 0 AndAlso ts.tabPage.ImageIndex = -1 Then
-                    ts.tabPage.ImageIndex = 0
-                End If
+        '新着通知
+        If NewPostPopMenuItem.Checked AndAlso notifyPosts.Count > 0 AndAlso Not _initial Then
+            Dim sb As New StringBuilder
+            Dim reply As Boolean = False
+            For Each post As PostClass In notifyPosts
+                If post.IsReply Then reply = True
+                If sb.Length > 0 Then sb.Append(System.Environment.NewLine)
+                Select Case SettingDialog.NameBalloon
+                    Case NameBalloonEnum.UserID
+                        sb.Append(post.Name).Append(" : ")
+                    Case NameBalloonEnum.NickName
+                        sb.Append(post.Nickname).Append(" : ")
+                End Select
+                sb.Append(post.Data)
             Next
+            If SettingDialog.DispUsername Then NotifyIcon1.BalloonTipTitle = _username + " - " Else NotifyIcon1.BalloonTipTitle = ""
+            If Dm Then
+                NotifyIcon1.BalloonTipIcon = ToolTipIcon.Warning
+                NotifyIcon1.BalloonTipTitle += "Tween [DM] " + My.Resources.RefreshDirectMessageText1 + " " + addCount.ToString() + My.Resources.RefreshDirectMessageText2
+            ElseIf reply Then
+                NotifyIcon1.BalloonTipIcon = ToolTipIcon.Warning
+                NotifyIcon1.BalloonTipTitle += "Tween [Reply!] " + My.Resources.RefreshTimelineText1 + " " + addCount.ToString() + My.Resources.RefreshTimelineText2
+            Else
+                NotifyIcon1.BalloonTipIcon = ToolTipIcon.Info
+                NotifyIcon1.BalloonTipTitle += "Tween " + My.Resources.RefreshTimelineText1 + " " + addCount.ToString() + My.Resources.RefreshTimelineText2
+            End If
+            NotifyIcon1.BalloonTipText = sb.ToString()
+            NotifyIcon1.ShowBalloonTip(500)
+        End If
+
+        '★★★リストリフレッシュ必要か？要検証★★★
+
+        'サウンド再生
+        If Not _initial AndAlso SettingDialog.PlaySound AndAlso soundFile <> "" Then
+            Try
+                My.Computer.Audio.Play(My.Application.Info.DirectoryPath.ToString() + "\" + soundFile, AudioPlayMode.Background)
+            Catch ex As Exception
+
+            End Try
         End If
 
         SetMainWindowTitle()
-
-        tlList.Clear()
+        If Not StatusLabelUrl.Text.StartsWith("http") Then SetStatusLabel()
+        'TimerColorize.Stop()
+        'TimerColorize.Start()
     End Sub
 
     Private Sub Mylist_Scrolled(ByVal sender As Object, ByVal e As System.EventArgs)
-        TimerColorize.Stop()
-        TimerColorize.Start()
+        'TimerColorize.Stop()
+        'TimerColorize.Start()
     End Sub
 
     Private Sub MyList_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
+        If _curList.SelectedIndices.Count <> 1 Then Exit Sub
+        'If _curList.SelectedIndices.Count = 0 Then Exit Sub
+
+        _curItemIndex = _curList.SelectedIndices(0)
+        _curPost = GetCurTabPost(_curItemIndex)
+        _statuses.SetRead(True, _curTab.Text, _curItemIndex)
+        'MyList.RedrawItems(MyList.SelectedIndices(0), MyList.SelectedIndices(0), False)   'RetrieveVirtualItemが発生することを期待
+        'キャッシュの書き換え
+        ChangeCacheStyleRead(True, _curItemIndex, _curTab)   '既読へ（フォント、文字色）
+
+        'ColorizeList(-1)    '全キャッシュ更新（背景色）
+        'DispSelectedPost()
         TimerColorize.Stop()
-        TimerColorize.Interval = 100
-
-        Dim MyList As DetailsListView = DirectCast(sender, DetailsListView)
-        MyList.Update()
-        If MyList.SelectedItems.Count <> 1 Then Exit Sub
-
-        Dim _item As ListViewItem = MyList.SelectedItems(0)
-        If _item.SubItems(8).Text = "False" Then
-            '最古未読ID再設定
-            For Each ts As TabStructure In _tabs
-                'タブ特定
-                If ts.listCustom.Equals(MyList) Then
-                    ItemReaded(ts, _item)
-                    Exit For
-                End If
-            Next
-
-        End If
-
         TimerColorize.Start()
 
     End Sub
 
-    Private Sub ColorizeList(ByRef DispDetail As Boolean)
-        Dim myList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim name As String
-        Dim at As New List(Of String)
-        Dim dTxt As String
+    Private Sub ChangeCacheStyleRead(ByVal Read As Boolean, ByVal Index As Integer, ByVal Tab As TabPage)
+        'Read:True=既読 False=未読
 
-        Dim _item As ListViewItem = Nothing
-        'Dim dTxt As String
 
-        If myList.SelectedItems.Count > 0 OrElse _anchorFlag Then
-            If _anchorFlag Then
-                _item = _anchorItem
-            Else
-                _item = myList.SelectedItems(0)
-            End If
-            dTxt = "<html><head><style type=""text/css"">p {font-family: """ + _fntDetail.Name + """, sans-serif; font-size: " + _fntDetail.Size.ToString + "pt;} --></style></head><body style=""margin:0px""><p>" + _item.SubItems(7).Text + "</p></body></html>"
-            If DispDetail Then
-                TimerColorize.Start()
-            End If
 
-            Dim pos1 As Integer
-            Dim pos2 As Integer
 
-            name = _item.SubItems(4).Text
-            Do While True
-                pos1 = dTxt.IndexOf(_replyHtml, pos2, StringComparison.Ordinal)
-                If pos1 = -1 Then Exit Do
-                pos2 = dTxt.IndexOf(""">", pos1 + _replyHtml.Length, StringComparison.Ordinal)
-                If pos2 > -1 Then
-                    at.Add(dTxt.Substring(pos1 + _replyHtml.Length, pos2 - pos1 - _replyHtml.Length))
-                End If
-            Loop
+        '未読管理していなかったら既読として扱う
+        If Not _statuses.Tabs(_curTab.Text).UnreadManage OrElse _
+           Not SettingDialog.UnreadManage Then Read = True
+
+        '対象の特定
+        Dim itm As ListViewItem
+        Dim post As PostClass
+        If Tab.Equals(_curTab) AndAlso _itemCache IsNot Nothing AndAlso Index >= _itemCacheIndex AndAlso Index < _itemCacheIndex + _itemCache.Length Then
+            itm = _itemCache(Index - _itemCacheIndex)
+            post = _postCache(Index - _itemCacheIndex)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         Else
-            name = ""
+            itm = DirectCast(Tab.Controls(0), DetailsListView).Items(Index)
+            post = _statuses.Item(Tab.Text, Index)
         End If
 
-        If _item Is Nothing Then
-            at.Clear()
-            Exit Sub
-        End If
-
-        'myList.BeginUpdate()
-        Dim litem As ListViewItem = myList.GetItemAt(0, 0)
-        Dim fromIndex As Integer
-        If litem Is Nothing Then
-            fromIndex = 0
-        Else
-            fromIndex = litem.Index
-        End If
-        Dim toIndex As Integer
-        Dim litem2 As ListViewItem = myList.GetItemAt(0, myList.ClientSize.Height - 1)
-        If litem2 Is Nothing Then
-            toIndex = myList.Items.Count - 1
-        Else
-            toIndex = litem2.Index
-        End If
-
-        For cnt As Integer = fromIndex To toIndex
-            Dim cl As Color
-            If myList.Items(cnt).SubItems(4).Text.Equals(name, StringComparison.CurrentCultureIgnoreCase) Then
-                '発言者
-                If String.Equals(name, _username, StringComparison.CurrentCultureIgnoreCase) Then
-                    '自分=発言者
-                    cl = _clSelf
-                Else
-                    '発言者
-                    cl = _clTarget
-                End If
-            Else
-                'その他の人
-                If Not myList.Items(cnt).SubItems(4).Text.Equals(_username, StringComparison.CurrentCultureIgnoreCase) Then
-                    '自分以外
-                    If myList.Items(cnt).SubItems(11).Text = "False" Then
-                        '通常発言
-                        If at.Contains(myList.Items(cnt).SubItems(4).Text) Then
-                            '返信先
-                            cl = _clAtFromTarget
-                        Else
-                            If Not Regex.IsMatch(myList.Items(cnt).SubItems(2).Text, "@" + name + "([^a-zA-Z0-9_]|$)") OrElse name = "" Then
-                                'その他
-                                cl = System.Drawing.SystemColors.Window
-                            Else
-                                'その人への返信
-                                cl = _clAtTarget
-                            End If
-                        End If
-                    Else
-                        '自分宛返信
-                        cl = _clAtSelf
-                    End If
-                Else
-                    '自分
-                    cl = _clSelf
-                End If
-            End If
-
-            If myList.Items(cnt).BackColor <> cl Then
-                myList.ChangeItemBackColor(cnt, cl)
-            End If
-
-        Next
-        at.Clear()
-
-        'myList.EndUpdate()
+        ChangeItemStyleRead(Read, itm, post)
     End Sub
+
+
+
+    Private Sub ChangeItemStyleRead(ByVal Read As Boolean, ByVal Item As ListViewItem, ByVal Post As PostClass)
+        'Dim fnt As Font
+        Dim cl As Color
+        'フォント
+        If Read Then
+            'fnt = _fntReaded
+            Item.SubItems(5).Text = ""
+        Else
+            'fnt = _fntUnread
+            Item.SubItems(5).Text = "★"
+        End If
+        '文字色
+        If Post.IsFav Then
+            cl = _clFav
+        ElseIf Post.IsOwl AndAlso SettingDialog.OneWayLove Then
+            cl = _clOWL
+        Else
+            If Read Then
+                cl = _clReaded
+
+
+
+
+
+
+
+
+
+
+
+
+            Else
+                cl = _clUnread
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            End If
+        End If
+        Item.ForeColor = cl
+    End Sub
+
+    Private Function ColorizeList(ByVal Index As Integer) As Color
+        'Index:更新対象のListviewItem.Index。Colorを返す。
+        '-1は全キャッシュ。Colorは返さない（ダミーを戻す）
+        Dim _post As PostClass
+        If _anchorFlag Then
+            _post = _anchorPost
+        Else
+            _post = _curPost
+        End If
+
+        If _post Is Nothing Then Return System.Drawing.SystemColors.Window '未選択
+
+        If Index = -1 Then
+            If _itemCache Is Nothing Then Return System.Drawing.SystemColors.Window
+            For cnt As Integer = 0 To _itemCache.Length - 1
+                _itemCache(cnt).BackColor = JudgeColor(_post, _postCache(cnt))
+            Next
+            Return Color.Black  'ダミーの戻り
+        Else
+            Return JudgeColor(_post, GetCurTabPost(Index))
+        End If
+    End Function
+
+    Private Function JudgeColor(ByVal BasePost As PostClass, ByVal TargetPost As PostClass) As Color
+        Dim cl As Color
+        If TargetPost.IsMe Then
+            '自分=発言者
+            cl = _clSelf
+        ElseIf TargetPost.Name.Equals(BasePost.Name, StringComparison.OrdinalIgnoreCase) Then
+            '発言者
+            cl = _clTarget
+        ElseIf TargetPost.IsReply Then
+            '自分宛返信
+            cl = _clAtSelf
+        ElseIf BasePost.ReplyToList.Contains(TargetPost.Name.ToLower()) Then
+            '返信先
+            cl = _clAtFromTarget
+        ElseIf TargetPost.ReplyToList.Contains(BasePost.Name.ToLower()) Then
+            'その人への返信
+            cl = _clAtTarget
+        Else
+            'その他
+            cl = System.Drawing.SystemColors.Window
+        End If
+        Return cl
+    End Function
 
     Private Sub PostButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PostButton.Click
         If StatusText.Text.Trim.Length = 0 Then Exit Sub
@@ -1254,44 +1041,23 @@ Public Class TweenMain
             args.status = StatusText.Text.Trim() + " " + SettingDialog.Status.Trim()
         End If
 
-        'Dim regex As New Regex("([^A-Za-z0-9@_:;\-]|^)(get|g|fav|follow|f|on|off|stop|quit|leave|l|whois|w|nudge|n|stats|invite|track|untrack|tracks|tracking|d)([^A-Za-z0-9_:\-]|$)", RegexOptions.IgnoreCase)
         Dim regex As New Regex("^[+\-\[\]\s\\.,*/(){}^~|='&%$#""<>?]*(get|g|fav|follow|f|on|off|stop|quit|leave|l|whois|w|nudge|n|stats|invite|track|untrack|tracks|tracking|\*)([+\-\[\]\s\\.,*/(){}^~|='&%$#""<>?]+|$)", RegexOptions.IgnoreCase)
         Dim regex2 As New Regex("https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+")
-        'Dim regex3 As New Regex("^\S*\*[^A-Za-z0-9]")
-        'Dim regex3 As New Regex("^\s*\*[^A-Za-z0-9]")
-        'Dim regex4 As New Regex("\*\S*\s\S+\s")
-        'Dim mc As Match = regex.Match(args.status)
         Dim mc2 As Match = regex2.Match(args.status)
 
         If regex.IsMatch(args.status) AndAlso args.status.EndsWith(" .") = False Then args.status += " ."
         If mc2.Success Then args.status = regex2.Replace(args.status, "$& ")
 
-        StatusLabel.Text = "Posting..."
-        StatusText.Enabled = False
-        PostButton.Enabled = False
-        ReplyStripMenuItem.Enabled = False
-        DMStripMenuItem.Enabled = False
-        NotifyIcon1.Icon = NIconRefresh(0)
-        TimerRefreshIcon.Enabled = True
-        If SettingDialog.UseAPI Then
-            Do While PostWorker.IsBusy
-                Threading.Thread.Sleep(1)
-                Application.DoEvents()
-            Loop
-            PostWorker.RunWorkerAsync(args)
-            '''Else
-            '''    Do While GetTimelineWorker.IsBusy
-            '''        Threading.Thread.Sleep(1)
-            '''        Application.DoEvents()
-            '''    Loop
-            '''    GetTimelineWorker.RunWorkerAsync(args)
-        End If
+        Do While PostWorker.IsBusy
+            Threading.Thread.Sleep(1)
+            Application.DoEvents()
+        Loop
+        PostWorker.RunWorkerAsync(args)
 
         ListTab.SelectedTab.Controls(0).Focus()
     End Sub
 
     Private Sub EndToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles EndToolStripMenuItem.Click
-        'Application.Exit()
         _endingFlag = True
         Me.Close()
     End Sub
@@ -1336,586 +1102,447 @@ Public Class TweenMain
         Threading.Thread.CurrentThread.Priority = Threading.ThreadPriority.BelowNormal
 
         Dim ret As String = ""
-        Dim tlList As New List(Of Twitter.MyListItem)()
         Dim rslt As New GetWorkerResult()
-        Dim imgs As New ImageList()
-        Dim getDM As Boolean = False
-        imgs.ImageSize = New Size(48, 48)
-        imgs.ColorDepth = ColorDepth.Depth32Bit
+
+        Dim read As Boolean = Not SettingDialog.UnreadManage
+        If _initial AndAlso SettingDialog.UnreadManage Then read = SettingDialog.Readed
 
         Dim args As GetWorkerArg = DirectCast(e.Argument, GetWorkerArg)
-        '        Try
-        If args.type = WORKERTYPE.PostMessage Then CheckReplyTo(args.status)
-        For i As Integer = 0 To 1
-            Select Case args.type
-                Case WORKERTYPE.Timeline
-                    ret = clsTw.GetTimeline(tlList, args.page, _initial, args.endPage, Twitter.GetTypes.GET_TIMELINE, TIconList.Images.Keys, imgs, getDM)
-                Case WORKERTYPE.Reply
-                    ret = clsTw.GetTimeline(tlList, args.page, _initial, args.endPage, Twitter.GetTypes.GET_REPLY, TIconList.Images.Keys, imgs, getDM)
-                Case WORKERTYPE.DirectMessegeRcv
-                    ret = clsTw.GetDirectMessage(tlList, args.page, args.endPage, Twitter.GetTypes.GET_DMRCV, TIconList.Images.Keys, imgs)
-                    If _initial AndAlso SettingDialog.StartupFollowers Then
-                        ret = clsTw.GetFollowers()
-                    End If
-                Case WORKERTYPE.DirectMessegeSnt
-                    ret = clsTw.GetDirectMessage(tlList, args.page, args.endPage, Twitter.GetTypes.GET_DMSNT, TIconList.Images.Keys, imgs)
-                Case WORKERTYPE.PostMessage
-                    ret = clsTw.PostStatus(args.status, _reply_to_id)
-                Case WORKERTYPE.FavAdd
-                    ret = clsTw.PostFavAdd(args.ids(args.page))
-                    If ret = "" Then
-                        _favTimestamps.Add(Now)
-                    End If
-                    Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
-                    For _i As Integer = _favTimestamps.Count - 1 To 0 Step -1
-                        If _favTimestamps(_i).CompareTo(oneHour) < 0 Then
-                            _favTimestamps.RemoveAt(_i)
+
+
+        GetTimelineWorker.ReportProgress(0, "")   'Notifyアイコンアニメーション開始
+
+        Select Case args.type
+            Case WORKERTYPE.Timeline
+                _statuses.BeginUpdate(TabInformations.EDITMODE.Post)
+                If _initial Then
+                    Do
+                        GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
+                        ret = clsTw.GetTimeline(args.page, read, args.endPage, Twitter.GetTypes.GET_TIMELINE, TIconDic, TIconSmallList, rslt.newDM)
+                        args.page += 1
+                    Loop While ret.Length = 0 AndAlso _
+                                args.page <= SettingDialog.ReadPages AndAlso _
+                                Not GetTimelineWorker.CancellationPending AndAlso _
+                                args.page Mod 10 > 0
+                Else
+                    Do
+                        GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
+                        ret = clsTw.GetTimeline(args.page, read, args.endPage, Twitter.GetTypes.GET_TIMELINE, TIconDic, TIconSmallList, rslt.newDM)
+                        args.page += 1
+                    Loop While ret.Length = 0 AndAlso _
+                                args.page <= args.endPage AndAlso _
+                                Not GetTimelineWorker.CancellationPending
+                End If
+                rslt.notifyPosts = New List(Of PostClass)
+                rslt.soundFile = ""
+                rslt.addCount = _statuses.EndUpdate(rslt.soundFile, rslt.notifyPosts)
+            Case WORKERTYPE.Reply
+                _statuses.BeginUpdate(TabInformations.EDITMODE.Post)
+                Do
+                    GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
+                    ret = clsTw.GetTimeline(args.page, read, args.endPage, Twitter.GetTypes.GET_REPLY, TIconDic, TIconSmallList, rslt.newDM)
+                    args.page += 1
+                Loop While _initial AndAlso _
+                            ret.Length = 0 AndAlso _
+                            args.page <= SettingDialog.ReadPagesReply AndAlso _
+                            Not GetTimelineWorker.CancellationPending AndAlso _
+                            args.page Mod 10 > 0
+                rslt.notifyPosts = New List(Of PostClass)
+                rslt.soundFile = ""
+                rslt.addCount = _statuses.EndUpdate(rslt.soundFile, rslt.notifyPosts)
+            Case WORKERTYPE.DirectMessegeRcv
+                _statuses.BeginUpdate(TabInformations.EDITMODE.Dm)
+                Do
+                    GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
+                    ret = clsTw.GetDirectMessage(args.page, read, args.endPage, Twitter.GetTypes.GET_DMRCV, TIconDic, TIconSmallList)
+                    args.page += 1
+                Loop While _initial AndAlso _
+                            ret.Length = 0 AndAlso _
+                            args.page <= SettingDialog.ReadPagesDM AndAlso _
+                            Not GetTimelineWorker.CancellationPending AndAlso _
+                            args.page Mod 10 > 0
+                rslt.notifyPosts = New List(Of PostClass)
+                rslt.soundFile = ""
+                rslt.addCount = _statuses.EndUpdate(rslt.soundFile, rslt.notifyPosts)
+                If _initial AndAlso SettingDialog.StartupFollowers Then
+                    GetTimelineWorker.ReportProgress(50, My.Resources.UpdateFollowersMenuItem1_ClickText1)
+                    ret = clsTw.GetFollowers()
+                End If
+            Case WORKERTYPE.DirectMessegeSnt
+                _statuses.BeginUpdate(TabInformations.EDITMODE.Dm)
+                Do
+                    GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
+                    ret = clsTw.GetDirectMessage(args.page, read, args.endPage, Twitter.GetTypes.GET_DMSNT, TIconDic, TIconSmallList)
+                    args.page += 1
+                Loop While _initial AndAlso _
+                            ret.Length = 0 AndAlso _
+                            args.page <= SettingDialog.ReadPagesDM AndAlso _
+                            Not GetTimelineWorker.CancellationPending AndAlso _
+                            args.page Mod 10 > 0
+                rslt.notifyPosts = New List(Of PostClass)
+                rslt.soundFile = ""
+                rslt.addCount = _statuses.EndUpdate(rslt.soundFile, rslt.notifyPosts)
+            Case WORKERTYPE.FavAdd
+                For i As Integer = 0 To args.ids.Count - 1
+                    Dim post As PostClass = _statuses.Item(args.ids(i))
+                    args.page = i + 1
+                    GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
+                    If Not post.IsFav Then
+                        ret = clsTw.PostFavAdd(post.Id)
+                        If ret.Length = 0 Then
+                            args.sIds.Add(post.Id)
+                            post.IsFav = True    'リスト再描画必要
+                            _favTimestamps.Add(Now)
                         End If
-                    Next
-                Case WORKERTYPE.FavRemove
-                    ret = clsTw.PostFavRemove(args.ids(args.page))
-                ' Contributed by shuyoko <http://twitter.com/shuyoko> BEGIN:
-                Case WORKERTYPE.BlackFavAdd
-                    Dim blackid As String = ""
-                    ret = clsTw.GetBlackFavId(args.ids(args.page), blackid)
-                    If (ret = "") Then
-                        ret = clsTw.PostFavAdd(blackid)
                     End If
+                Next
+                rslt.sIds = args.sIds
+            Case WORKERTYPE.FavRemove
+                For i As Integer = 0 To args.ids.Count - 1
+                    Dim post As PostClass = _statuses.Item(args.ids(i))
+                    args.page = i + 1
+                    GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
+                    If post.IsFav Then
+                        ret = clsTw.PostFavRemove(post.Id)
+                        If ret.Length = 0 Then
+                            args.sIds.Add(post.Id)
+                            post.IsFav = False    'リスト再描画必要
+                        End If
+                    End If
+                Next
+                rslt.sIds = args.sIds
+                ' Contributed by shuyoko <http://twitter.com/shuyoko> BEGIN:
+            Case WORKERTYPE.BlackFavAdd
+                For i As Integer = 0 To args.ids.Count - 1
+                    Dim post As PostClass = _statuses.Item(args.ids(i))
+                    Dim blackid As Long = 0
+                    args.page = i + 1
+                    GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
+                    If Not post.IsFav Then
+                        ret = clsTw.GetBlackFavId(post.Id, blackid)
+                        If ret.Length = 0 Then
+                            ret = clsTw.PostFavAdd(blackid)
+                            If ret.Length = 0 Then
+                                args.sIds.Add(post.Id)
+                                post.IsFav = True    'リスト再描画必要
+                                _favTimestamps.Add(Now)
+                            End If
+                        End If
+                    End If
+                Next
+                rslt.sIds = args.sIds
                 ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
-                Case WORKERTYPE.CreateNewSocket
-                    clsTw.CreateNewSocket()
-            End Select
-            If args.type = WORKERTYPE.PostMessage Then
-                _reply_to_id = 0
-                _reply_to_name = Nothing
-            End If
-            If GetTimelineWorker.CancellationPending Then
-                e.Cancel = True
-                Exit Sub
-            End If
-            If ret = "" OrElse (ret <> "" AndAlso (args.type = WORKERTYPE.PostMessage OrElse args.type = WORKERTYPE.FavAdd OrElse args.type = WORKERTYPE.FavRemove OrElse args.type = WORKERTYPE.BlackFavAdd)) Then Exit For
-            Threading.Thread.Sleep(500)
-        Next
+            Case WORKERTYPE.CreateNewSocket
+                clsTw.CreateNewSocket()
+        End Select
 
-        If args.type = WORKERTYPE.FavAdd OrElse args.type = WORKERTYPE.FavRemove OrElse args.type = WORKERTYPE.BlackFavAdd Then
-            rslt.ids = args.ids
-            rslt.sIds = args.sIds
-            If ret = "" Then rslt.sIds.Add(args.ids(args.page))
-            args.page += 1
-        End If
-        rslt.retMsg = ret
-        rslt.TLine = tlList
-        rslt.page = args.page
-        rslt.endPage = args.endPage
-        rslt.type = args.type
-        rslt.imgs = imgs
-        rslt.tName = args.tName
-        rslt.newDM = getDM
-
+        'キャンセル要求
         If GetTimelineWorker.CancellationPending Then
             e.Cancel = True
             Exit Sub
         End If
 
-        e.Result = rslt
-        'Catch ex As Exception
-        '    If _endingFlag Then
-        '        e.Cancel = True
-        '        Exit Sub
-        '    End If
-        '    My.Application.Log.DefaultFileLogWriter.Location = Logging.LogFileLocation.ExecutableDirectory
-        '    My.Application.Log.DefaultFileLogWriter.MaxFileSize = 102400
-        '    My.Application.Log.DefaultFileLogWriter.AutoFlush = True
-        '    My.Application.Log.DefaultFileLogWriter.Append = False
-        '    'My.Application.Log.WriteException(ex, _
-        '    '    Diagnostics.TraceEventType.Critical, _
-        '    '    "Source=" + ex.Source + " StackTrace=" + ex.StackTrace + " InnerException=" + IIf(ex.InnerException Is Nothing, "", ex.InnerException.Message))
-        '    My.Application.Log.WriteException(ex, _
-        '        Diagnostics.TraceEventType.Critical, _
-        '        ex.StackTrace + vbCrLf + Now.ToString + vbCrLf + args.type.ToString + vbCrLf + clsTw.savePost)
-        '    rslt.retMsg = "Tween 例外発生(GetTimelineWorker_DoWork)"
-        '    rslt.TLine = tlList
-        '    rslt.page = args.page
-        '    rslt.endPage = args.endPage
-        '    rslt.type = args.type
+        '時速表示用
+        If args.type = WORKERTYPE.FavAdd OrElse args.type = WORKERTYPE.BlackFavAdd Then
+            Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
+            For i As Integer = _favTimestamps.Count - 1 To 0 Step -1
+                If _favTimestamps(i).CompareTo(oneHour) < 0 Then
+                    _favTimestamps.RemoveAt(i)
+                End If
+            Next
+        End If
+        If args.type = WORKERTYPE.Timeline AndAlso Not _initial Then
+            _tlTimestamps.Add(Now, rslt.addCount)
+            Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
+            Dim keys As New List(Of Date)
+            _tlCount = 0
+            For Each key As Date In _tlTimestamps.Keys
+                If key.CompareTo(oneHour) < 0 Then
+                    keys.Add(key)
+                Else
+                    _tlCount += _tlTimestamps(key)
+                End If
+            Next
+            For Each key As Date In keys
+                _tlTimestamps.Remove(key)
+            Next
+            keys.Clear()
+        End If
 
-        '    e.Result = rslt
-        'End Try
+        '終了ステータス
+        GetTimelineWorker.ReportProgress(100, MakeStatusMessage(args, True))   'ステータス書き換え、Notifyアイコンアニメーション開始
+
+        rslt.retMsg = ret
+        rslt.type = args.type
+        rslt.tName = args.tName
+        If args.type = WORKERTYPE.DirectMessegeRcv OrElse _
+           args.type = WORKERTYPE.DirectMessegeSnt OrElse _
+           args.type = WORKERTYPE.Reply OrElse _
+           args.type = WORKERTYPE.Timeline Then
+            rslt.page = args.page - 1   '値が正しいか後でチェック。10ページ毎の継続確認
+        End If
+
+        e.Result = rslt
+
     End Sub
 
-    Private Function dmy() As Boolean
-        Return False
+    Private Function MakeStatusMessage(ByVal AsyncArg As GetWorkerArg, ByVal Finish As Boolean) As String
+        Dim smsg As String = ""
+        If Not Finish Then
+            '継続中メッセージ
+            Select Case AsyncArg.type
+                Case TweenMain.WORKERTYPE.Timeline
+                    smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText5 + AsyncArg.page.ToString() + My.Resources.GetTimelineWorker_RunWorkerCompletedText6
+                Case TweenMain.WORKERTYPE.Reply
+                    smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText4 + AsyncArg.page.ToString() + My.Resources.GetTimelineWorker_RunWorkerCompletedText6
+                Case TweenMain.WORKERTYPE.DirectMessegeRcv
+                    smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText8 + AsyncArg.page.ToString() + My.Resources.GetTimelineWorker_RunWorkerCompletedText6
+                Case TweenMain.WORKERTYPE.DirectMessegeSnt
+                    smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText12 + AsyncArg.page.ToString() + My.Resources.GetTimelineWorker_RunWorkerCompletedText6
+                Case WORKERTYPE.FavAdd
+                    smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText15 + AsyncArg.page.ToString() + "/" + AsyncArg.ids.Count.ToString() + _
+                                        My.Resources.GetTimelineWorker_RunWorkerCompletedText16 + (AsyncArg.page - AsyncArg.sIds.Count - 1).ToString()
+                Case WORKERTYPE.FavRemove
+                    smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText17 + AsyncArg.page.ToString() + "/" + AsyncArg.ids.Count.ToString() + _
+                                        My.Resources.GetTimelineWorker_RunWorkerCompletedText18 + (AsyncArg.page - AsyncArg.sIds.Count - 1).ToString()
+                Case WORKERTYPE.BlackFavAdd
+                    smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText15_black + AsyncArg.page.ToString() + "/" + AsyncArg.ids.Count.ToString() + _
+                                        My.Resources.GetTimelineWorker_RunWorkerCompletedText16 + (AsyncArg.page - AsyncArg.sIds.Count - 1).ToString()
+                Case WORKERTYPE.CreateNewSocket
+            End Select
+        Else
+            '完了メッセージ
+            Select Case AsyncArg.type
+                Case TweenMain.WORKERTYPE.Timeline
+                    smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText1
+                Case TweenMain.WORKERTYPE.Reply
+                    smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText9
+                Case TweenMain.WORKERTYPE.DirectMessegeRcv
+                    smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText11
+                Case TweenMain.WORKERTYPE.DirectMessegeSnt
+                    smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText13
+                Case WORKERTYPE.FavAdd
+                    '進捗メッセージ残す
+                Case WORKERTYPE.FavRemove
+                    '進捗メッセージ残す
+                Case WORKERTYPE.BlackFavAdd
+                    '進捗メッセージ残す
+                Case WORKERTYPE.CreateNewSocket
+                    '不要
+            End Select
+        End If
+        Return smsg
     End Function
 
     Private Sub GetTimelineWorker_RunWorkerCompleted(ByVal sender As System.Object, ByVal e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles GetTimelineWorker.RunWorkerCompleted
 
-        If _endingFlag OrElse e.Cancelled Then
-            Exit Sub
-        End If
+        If _endingFlag OrElse e.Cancelled Then Exit Sub 'キャンセル
 
-        Dim nw As Boolean = True
-        Try
-            nw = My.Computer.Network.IsAvailable
-        Catch ex As Exception
-            nw = True
-        End Try
-
-        If e.Error IsNot Nothing Then
-            If nw Then
-                NotifyIcon1.Icon = NIconAtRed
-            End If
-            Throw e.Error
-            Exit Sub
-        End If
-
-        TimerRefreshIcon.Enabled = False
+        Dim nw As Boolean = IsNetworkAvailable()
         If nw Then
             NotifyIcon1.Icon = NIconAt
+            'タイマー再始動
+            If SettingDialog.TimelinePeriodInt > 0 AndAlso Not TimerTimeline.Enabled Then TimerTimeline.Enabled = True
+            If SettingDialog.DMPeriodInt > 0 AndAlso Not TimerDM.Enabled Then TimerDM.Enabled = True
         Else
             NotifyIcon1.Icon = NIconAtSmoke
         End If
 
+        If e.Error IsNot Nothing Then
+            If nw Then NotifyIcon1.Icon = NIconAtRed
+            Throw e.Error
+            Exit Sub
+        End If
+
+
         Dim rslt As GetWorkerResult = DirectCast(e.Result, GetWorkerResult)
         Dim args As New GetWorkerArg()
 
-
-        If rslt.retMsg <> "" Then
-            '''''エラー通知方法の変更も設定できるように！
-            If nw Then
-                NotifyIcon1.Icon = NIconAtRed
-            End If
-            'NotifyIcon1.BalloonTipIcon = ToolTipIcon.Warning
-            'Select Case rslt.type
-            '    Case WORKERTYPE.Timeline
-            '        NotifyIcon1.BalloonTipTitle = "Tween エラー(Recent)"
-            '    Case WORKERTYPE.Reply
-            '        NotifyIcon1.BalloonTipTitle = "Tween エラー(Replies)"
-            '    Case WORKERTYPE.DirectMessege
-            '        NotifyIcon1.BalloonTipTitle = "Tween エラー(DirectMessage)"
-            'End Select
-            'NotifyIcon1.BalloonTipText = StatusLabel.Text + IIf(_initial, vbCrLf + "初期読み込みを中断します。", "")
-            'NotifyIcon1.ShowBalloonTip(500)
-            'If rslt.retMsg.StartsWith("Tween 例外発生") Then
-            '    MessageBox.Show("エラーが発生しました。申し訳ありません。ログをexeファイルのある場所にTween.logとして作ったので、kiri.feather@gmail.comまで送っていただけると助かります。ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。", "エラー発生", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            'End If
-        End If
-
-        If _iconSz <> 0 Then
-            For i As Integer = 0 To rslt.imgs.Images.Count - 1
-                'Dim img2 As New Bitmap(_iconSz, _iconSz)
-                'Dim g As Graphics = Graphics.FromImage(img2)
-                'g.InterpolationMode = Drawing2D.InterpolationMode.Default
-                'g.DrawImage(rslt.imgs.Images(rslt.imgs.Images.Keys(i)), 0, 0, _iconSz, _iconSz)
-                'TIconSmallList.Images.Add(rslt.imgs.Images.Keys(i), img2)
-                Dim strKey As String = rslt.imgs.Images.Keys(i)
-                Try
-                    TIconSmallList.Images.Add(strKey, rslt.imgs.Images(strKey).GetThumbnailImage(_iconSz, _iconSz, New Image.GetThumbnailImageAbort(AddressOf dmy), IntPtr.Zero))
-                    TIconList.Images.Add(strKey, DirectCast(rslt.imgs.Images(strKey).Clone, System.Drawing.Image))
-                Finally
-                    rslt.imgs.Images(strKey).Dispose()
-                End Try
-            Next
-            rslt.imgs.Images.Clear()
-            rslt.imgs.Dispose()
+        'エラー
+        If rslt.retMsg.Length > 0 Then
+            If nw Then NotifyIcon1.Icon = NIconAtRed
+            StatusLabel.Text = rslt.retMsg
+            _initial = False    '起動時モード終了
         End If
 
         Select Case rslt.type
             Case WORKERTYPE.CreateNewSocket
                 Exit Sub
             Case WORKERTYPE.Timeline
-                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText1
-                Dim statusCount As Integer = rslt.TLine.Count
-                If rslt.TLine.Count > 0 Then
-                    RefreshTimeline(rslt.TLine)
-                End If
-                TimerTimeline.Enabled = False
-                If rslt.retMsg <> "" Then
-                    If nw Then
-                        If SettingDialog.TimelinePeriodInt > 0 Then TimerTimeline.Enabled = True
-                    End If
-                    StatusLabel.Text = rslt.retMsg
-                Else
-                    If Not nw Then Exit Sub
-                    If SettingDialog.TimelinePeriodInt > 0 AndAlso _
-                       Not SettingDialog.CheckReply Then
-                        TimerTimeline.Enabled = True
-                    End If
-                    If _initial Then
-                        If rslt.page + 1 <= rslt.endPage AndAlso SettingDialog.ReadPages >= rslt.page + 1 Then
-                            If rslt.page Mod 10 = 0 Then
-                                Dim flashRslt As Integer = Win32Api.FlashWindow(Me.Handle.ToInt32, 1)
-                                If MessageBox.Show((rslt.page * 20).ToString + My.Resources.GetTimelineWorker_RunWorkerCompletedText2, _
-                                                   My.Resources.GetTimelineWorker_RunWorkerCompletedText3, _
-                                                   MessageBoxButtons.YesNo, _
-                                                   MessageBoxIcon.Question) = Windows.Forms.DialogResult.No Then
-                                    If SettingDialog.CheckReply Then
-                                        GetTimeline(WORKERTYPE.Reply, 1, 1)
-                                        Exit Sub
-                                    Else
-                                        _initial = False
-                                    End If
+                '通知メッセージ、リスト反映
+                RefreshTimeline(rslt.notifyPosts, rslt.soundFile, rslt.addCount, False)
+                If _initial Then
+                    '起動時
+                    If SettingDialog.ReadPages >= rslt.page + 1 Then
+                        If rslt.page Mod 10 = 0 Then
+                            If NextPageMessage(rslt.page) = Windows.Forms.DialogResult.No Then
+                                If SettingDialog.ReadPagesReply > 0 Then
+                                    GetTimeline(WORKERTYPE.Reply, 1, 1)
+                                Else
+                                    _initial = False
                                 End If
+                                Exit Sub  '抜ける
                             End If
-                            GetTimeline(WORKERTYPE.Timeline, rslt.page + 1, rslt.endPage)
-                            Exit Sub
                         End If
-                        '_initial = False
+                        GetTimeline(WORKERTYPE.Timeline, rslt.page + 1, rslt.endPage)   '続きを読む
+                    Else
                         If SettingDialog.CheckReply Then
                             GetTimeline(WORKERTYPE.Reply, 1, 1)
                         Else
                             _initial = False
                         End If
-                    Else
-                        _tlTimestamps.Add(Now, statusCount)
-                        Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
-                        Dim keys As New List(Of Date)()
-                        _tlCount = 0
-                        For Each key As Date In _tlTimestamps.Keys
-                            If key.CompareTo(oneHour) < 0 Then
-                                keys.Add(key)
-                            Else
-                                _tlCount += _tlTimestamps(key)
-                            End If
-                        Next
-                        For Each key As Date In keys
-                            _tlTimestamps.Remove(key)
-                        Next
-                        keys.Clear()
-                        If rslt.page + 1 <= rslt.endPage Then
-                            If statusCount = 20 AndAlso rslt.page = 1 AndAlso SettingDialog.PeriodAdjust AndAlso SettingDialog.TimelinePeriodInt > 0 Then
-                                Dim itv As Integer = TimerTimeline.Interval
-                                itv -= 5000
-                                If itv < 15000 Then itv = 15000
-                                TimerTimeline.Interval = itv
-                            End If
-                            GetTimeline(WORKERTYPE.Timeline, rslt.page + 1, rslt.endPage)
+                    End If
+                Else
+                    '通常時
+                    '自動調整
+                    If SettingDialog.PeriodAdjust AndAlso SettingDialog.TimelinePeriodInt > 0 Then
+                        If rslt.addCount >= 20 Then
+                            Dim itv As Integer = TimerTimeline.Interval
+                            itv -= 5000
+                            If itv < 15000 Then itv = 15000
+                            TimerTimeline.Interval = itv
                         Else
-                            If rslt.page = 1 AndAlso statusCount < 17 AndAlso SettingDialog.PeriodAdjust AndAlso SettingDialog.TimelinePeriodInt > 0 Then
-                                TimerTimeline.Interval += 1000
-                                If TimerTimeline.Interval > SettingDialog.TimelinePeriodInt * 1000 Then TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
-                            End If
-                            If rslt.newDM Then
-                                GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
-                            End If
-                            If SettingDialog.CheckReply Then
-                                GetTimeline(WORKERTYPE.Reply, 1, 1)
-                            End If
+                            TimerTimeline.Interval += 1000
+                            If TimerTimeline.Interval > SettingDialog.TimelinePeriodInt * 1000 Then TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
                         End If
+                    End If
+                    If SettingDialog.CheckReply Then
+                        GetTimeline(WORKERTYPE.Reply, 1, 1)
+                    ElseIf rslt.newDM Then
+                        GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
                     End If
                 End If
             Case WORKERTYPE.Reply
-                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText9
-                If rslt.TLine.Count > 0 Then
-                    RefreshTimeline(rslt.TLine)
-                End If
-                TimerTimeline.Enabled = False
-                If nw Then
-                    If SettingDialog.TimelinePeriodInt > 0 Then TimerTimeline.Enabled = True
-                End If
-                If rslt.retMsg <> "" Then
-                    StatusLabel.Text = rslt.retMsg
-                    _initial = False
-                Else
-                    If Not nw Then Exit Sub
-                    If _initial Then
-                        If rslt.page + 1 <= rslt.endPage AndAlso SettingDialog.ReadPagesReply >= rslt.page + 1 Then
-                            If rslt.page Mod 10 = 0 Then
-                                Dim flashRslt As Integer = Win32Api.FlashWindow(Me.Handle.ToInt32, 1)
-                                If MessageBox.Show((rslt.page * 20).ToString + My.Resources.GetTimelineWorker_RunWorkerCompletedText2, _
-                                                   My.Resources.GetTimelineWorker_RunWorkerCompletedText3, _
-                                                   MessageBoxButtons.YesNo, _
-                                                   MessageBoxIcon.Question) = Windows.Forms.DialogResult.No Then
-                                    StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText10
-                                    Exit Sub
-                                End If
+                '通知メッセージ、リスト反映
+                RefreshTimeline(rslt.notifyPosts, rslt.soundFile, rslt.addCount, False)
+                If _initial Then
+                    If SettingDialog.ReadPagesReply >= rslt.page + 1 Then
+                        If rslt.page Mod 10 = 0 Then
+                            If NextPageMessage(rslt.page) = Windows.Forms.DialogResult.No Then
+                                _initial = False
+                                Exit Sub  '抜ける
                             End If
-                            GetTimeline(WORKERTYPE.Reply, rslt.page + 1, rslt.endPage)
-                            Exit Sub
                         End If
-                        _initial = False
+                        GetTimeline(WORKERTYPE.Reply, rslt.page + 1, rslt.endPage)
                     Else
-                        If rslt.newDM Then
-                            GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
-                        End If
+                        _initial = False
                     End If
+                ElseIf rslt.newDM Then
+                    GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
                 End If
             Case WORKERTYPE.DirectMessegeRcv
-                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText11
-                If rslt.TLine.Count > 0 Then
-                    RefreshDirectMessage(rslt.TLine, True)
-                End If
-                TimerDM.Enabled = False
-                If rslt.retMsg <> "" Then
-                    StatusLabel.Text = rslt.retMsg
-                    If _initial Then TimerDM.Interval = 30000
-                    If nw Then
-                        If SettingDialog.DMPeriodInt > 0 OrElse _initial Then TimerDM.Enabled = True
-                    End If
-                    Exit Sub
-                End If
-                If Not nw Then Exit Sub
-
-                If SettingDialog.DMPeriodInt > 0 Then
-                    TimerDM.Interval = SettingDialog.DMPeriodInt * 1000
-                Else
-                    TimerDM.Interval = 600000
-                End If
-                If (rslt.page < rslt.endPage AndAlso Not _initial) OrElse _
-                   (rslt.page + 1 < SettingDialog.ReadPagesDM AndAlso _initial) Then
-                    GetTimeline(WORKERTYPE.DirectMessegeRcv, rslt.endPage, rslt.endPage)
-                    Exit Sub
-                End If
-                GetTimeline(WORKERTYPE.DirectMessegeSnt, 1, 1)
-            Case WORKERTYPE.DirectMessegeSnt
-                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText13
-                If rslt.TLine.Count > 0 Then
-                    RefreshDirectMessage(rslt.TLine, False)
-                End If
-                TimerDM.Enabled = False
-                If rslt.retMsg <> "" Then
-                    StatusLabel.Text = rslt.retMsg
-                    If _initial Then TimerDM.Interval = 30000
-                    If nw Then
-                        If SettingDialog.DMPeriodInt > 0 OrElse _initial Then TimerDM.Enabled = True
-                    End If
-                    Exit Sub
-                End If
-                If Not nw Then Exit Sub
-                If (rslt.page < rslt.endPage AndAlso Not _initial) OrElse _
-                   (rslt.page + 1 < SettingDialog.ReadPagesDM AndAlso _initial) Then
-                    GetTimeline(WORKERTYPE.DirectMessegeSnt, rslt.endPage, rslt.endPage)
-                    Exit Sub
-                End If
-
-                If SettingDialog.DMPeriodInt > 0 Then
-                    TimerDM.Interval = SettingDialog.DMPeriodInt * 1000
-                Else
-                    TimerDM.Interval = 600000
-                End If
-                If SettingDialog.DMPeriodInt > 0 Then TimerDM.Enabled = True
-
+                RefreshTimeline(rslt.notifyPosts, rslt.soundFile, rslt.addCount, True)
                 If _initial Then
-                    If SettingDialog.ReadPages > 0 Then
-                        StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText5
-                        GetTimeline(WORKERTYPE.Timeline, 1, 1)
-                        Exit Sub
+                    If SettingDialog.ReadPagesDM >= rslt.page + 1 Then
+                        If rslt.page Mod 10 = 0 Then
+                            If NextPageMessage(rslt.page) = Windows.Forms.DialogResult.No Then
+                                GetTimeline(WORKERTYPE.DirectMessegeSnt, 1, 1)
+                                Exit Sub  '抜ける
+                            End If
+                        End If
+                        GetTimeline(WORKERTYPE.DirectMessegeRcv, rslt.page + 1, rslt.endPage)
+                    Else
+                        GetTimeline(WORKERTYPE.DirectMessegeSnt, 1, 1)
                     End If
-                    If SettingDialog.ReadPagesReply > 0 Then
-                        StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText4
-                        GetTimeline(WORKERTYPE.Reply, 1, 1)
-                        Exit Sub
-                    End If
-                    StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText10
-                    _initial = False
+                Else
+                    GetTimeline(WORKERTYPE.DirectMessegeSnt, 1, 1)
                 End If
-                '''Case WORKERTYPE.PostMessage
-                '''    StatusText.Enabled = True
-                '''    PostButton.Enabled = True
-                '''    ReplyStripMenuItem.Enabled = True
-                '''    DMStripMenuItem.Enabled = True
-
-                '''    If rslt.retMsg.Length > 0 Then
-                '''        StatusLabel.Text = rslt.retMsg
-                '''        TimerRefreshIcon.Enabled = False
-                '''        NotifyIcon1.Icon = NIconAtRed
-                '''    Else
-                '''        StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText14
-                '''        _history.Add("")
-                '''        _hisIdx = _history.Count - 1
-                '''        SetMainWindowTitle()
-                '''    End If
-
-                '''    args.page = 1
-                '''    args.endPage = 1
-                '''    args.type = WORKERTYPE.Timeline
-                '''    If Not GetTimelineWorker.IsBusy Then
-                '''        'TimerTimeline.Enabled = False
-                '''        StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText5
-                '''        NotifyIcon1.Icon = NIconRefresh(0)
-                '''        _refreshIconCnt = 0
-                '''        TimerRefreshIcon.Enabled = True
-                '''        Do While GetTimelineWorker.IsBusy
-                '''            Threading.Thread.Sleep(1)
-                '''            Application.DoEvents()
-                '''        Loop
-                '''        GetTimelineWorker.RunWorkerAsync(args)
-                '''    End If
+            Case WORKERTYPE.DirectMessegeSnt
+                RefreshTimeline(rslt.notifyPosts, rslt.soundFile, rslt.addCount, True)
+                If _initial Then
+                    If SettingDialog.ReadPagesDM >= rslt.page + 1 Then
+                        If rslt.page Mod 10 = 0 Then
+                            If NextPageMessage(rslt.page) = Windows.Forms.DialogResult.No Then
+                                If SettingDialog.ReadPages > 0 Then
+                                    GetTimeline(WORKERTYPE.Timeline, 1, 1)
+                                ElseIf SettingDialog.ReadPagesReply > 0 Then
+                                    GetTimeline(WORKERTYPE.Reply, 1, 1)
+                                Else
+                                    _initial = False
+                                End If
+                                Exit Sub   '抜ける
+                            End If
+                        End If
+                        GetTimeline(WORKERTYPE.DirectMessegeSnt, rslt.page + 1, rslt.endPage)
+                    Else
+                        If SettingDialog.ReadPages > 0 Then
+                            GetTimeline(WORKERTYPE.Timeline, 1, 1)
+                        ElseIf SettingDialog.ReadPagesReply > 0 Then
+                            GetTimeline(WORKERTYPE.Reply, 1, 1)
+                        Else
+                            _initial = False
+                        End If
+                    End If
+                End If
                 ' Contributed by shuyoko <http://twitter.com/shuyoko> BEGIN:
-            Case WORKERTYPE.BlackFavAdd
-                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText15_black + rslt.page.ToString + "/" + rslt.ids.Count.ToString + _
-                                    My.Resources.GetTimelineWorker_RunWorkerCompletedText16 + (rslt.page - rslt.sIds.Count).ToString
-                If rslt.page < rslt.ids.Count Then
-                    args.page = rslt.page
-                    args.ids = rslt.ids
-                    args.sIds = rslt.sIds
-                    args.tName = rslt.tName
-                    args.type = WORKERTYPE.BlackFavAdd
-                    NotifyIcon1.Icon = NIconRefresh(0)
-                    TimerRefreshIcon.Enabled = True
-                    Do While GetTimelineWorker.IsBusy
-                        Threading.Thread.Sleep(1)
-                        Application.DoEvents()
-                    Loop
-                    GetTimelineWorker.RunWorkerAsync(args)
-                End If
-            ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
-            Case WORKERTYPE.FavAdd
-                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText15 + rslt.page.ToString + "/" + rslt.ids.Count.ToString + _
-                                    My.Resources.GetTimelineWorker_RunWorkerCompletedText16 + (rslt.page - rslt.sIds.Count).ToString
-                If rslt.page < rslt.ids.Count Then
-                    args.page = rslt.page
-                    args.ids = rslt.ids
-                    args.sIds = rslt.sIds
-                    args.tName = rslt.tName
-                    args.type = WORKERTYPE.FavAdd
-                    NotifyIcon1.Icon = NIconRefresh(0)
-                    TimerRefreshIcon.Enabled = True
-                    Do While GetTimelineWorker.IsBusy
-                        Threading.Thread.Sleep(1)
-                        Application.DoEvents()
-                    Loop
-                    GetTimelineWorker.RunWorkerAsync(args)
-                Else
-                    For Each tp As TabPage In ListTab.TabPages
-                        If tp.Text = rslt.tName Then
-                            Dim MyList As DetailsListView = DirectCast(tp.Controls(0), DetailsListView)
-                            For Each itm As ListViewItem In MyList.Items
-                                If rslt.sIds.Contains(itm.SubItems(5).Text) Then
-                                    itm.ForeColor = _clFav
-                                    itm.SubItems(9).Text = "True"
-                                    For idx As Integer = 0 To ListTab.TabCount - 1
-                                        If ListTab.TabPages(idx).Text <> rslt.tName AndAlso ListTab.TabPages(idx).Text <> "Direct" Then
-                                            Dim MyList2 As DetailsListView = DirectCast(ListTab.TabPages(idx).Controls(0), DetailsListView)
-                                            For cnt3 As Integer = 0 To MyList2.Items.Count - 1
-                                                If itm.SubItems(5).Text = MyList2.Items(cnt3).SubItems(5).Text Then
-                                                    MyList2.Items(cnt3).ForeColor = _clFav
-                                                    MyList2.Items(cnt3).SubItems(9).Text = "True"
-                                                    Exit For
-                                                End If
-                                            Next
-                                        End If
-                                    Next
-                                End If
-                            Next
-                            Exit For
+                ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
+            Case WORKERTYPE.FavAdd, WORKERTYPE.BlackFavAdd
+                _curList.BeginUpdate()
+                For i As Integer = 0 To rslt.sIds.Count - 1
+                    If _curTab.Text.Equals(rslt.tName) Then
+                        Dim idx As Integer = _statuses.Tabs(rslt.tName).GetIndex(rslt.sIds(i))
+                        If _itemCache IsNot Nothing AndAlso _
+                           idx >= _itemCacheIndex AndAlso idx < _itemCacheIndex + _itemCache.Length Then
+                            _itemCache(idx - _itemCacheIndex).ForeColor = _clFav
                         End If
-                    Next
-                    If DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView).SelectedItems.Count = 1 Then
-                        Dim itm As ListViewItem = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView).SelectedItems(0)
-                        If itm.SubItems(9).Text = "True" Then
-                            NameLabel.ForeColor = _clFav
-                        ElseIf itm.SubItems(10).Text = "True" Then
-                            NameLabel.ForeColor = _clOWL
-                        Else
-                            NameLabel.ForeColor = _clReaded
-                        End If
+                        If idx = _curItemIndex Then NameLabel.ForeColor = _clFav
                     End If
-                End If
+                Next
+                _curList.EndUpdate()
             Case WORKERTYPE.FavRemove
-                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText17 + rslt.page.ToString + "/" + rslt.ids.Count.ToString + _
-                                    My.Resources.GetTimelineWorker_RunWorkerCompletedText18 + (rslt.page - rslt.sIds.Count).ToString
-                If rslt.page < rslt.ids.Count Then
-                    args.page = rslt.page
-                    args.ids = rslt.ids
-                    args.sIds = rslt.sIds
-                    args.tName = rslt.tName
-                    args.type = WORKERTYPE.FavRemove
-                    NotifyIcon1.Icon = NIconRefresh(0)
-                    TimerRefreshIcon.Enabled = True
-                    Do While GetTimelineWorker.IsBusy
-                        Threading.Thread.Sleep(1)
-                        Application.DoEvents()
-                    Loop
-                    GetTimelineWorker.RunWorkerAsync(args)
-                Else
-                    Dim _cl As Color
-                    Dim flw As Boolean = False
-                    For Each tp As TabPage In ListTab.TabPages
-                        If tp.Text = rslt.tName Then
-                            Dim MyList As DetailsListView = DirectCast(tp.Controls(0), DetailsListView)
-                            For Each itm As ListViewItem In MyList.Items
-                                If rslt.sIds.Contains(itm.SubItems(5).Text) Then
-                                    itm.SubItems(9).Text = "False"
-                                    flw = False
-                                    If follower.Contains(itm.SubItems(4).Text) Then
-                                        flw = True
-                                        itm.SubItems(10).Text = "False"
-                                    End If
-                                    If SettingDialog.UnreadManage AndAlso GetTSbyName(rslt.tName).unreadManage AndAlso itm.SubItems(8).Text = "False" Then
-                                        _cl = _clUnread
-                                    Else
-                                        _cl = _clReaded
-                                    End If
-                                    If Not flw AndAlso SettingDialog.OneWayLove Then
-                                        _cl = _clOWL
-                                    End If
-                                    itm.ForeColor = _cl
-                                    For idx As Integer = 0 To ListTab.TabCount - 1
-                                        If ListTab.TabPages(idx).Text <> rslt.tName AndAlso ListTab.TabPages(idx).Text <> "Direct" Then
-                                            Dim MyList2 As DetailsListView = DirectCast(ListTab.TabPages(idx).Controls(0), DetailsListView)
-                                            Dim _cl2 As Color
-                                            If SettingDialog.UnreadManage AndAlso _
-                                               GetTSbyName(ListTab.TabPages(idx).Text).unreadManage AndAlso _
-                                               itm.SubItems(8).Text = "False" Then
-                                                _cl2 = _clUnread
-                                            Else
-                                                _cl2 = _clReaded
-                                            End If
-                                            If Not flw And SettingDialog.OneWayLove Then
-                                                _cl2 = _clOWL
-                                            End If
-                                            For cnt3 As Integer = 0 To MyList2.Items.Count - 1
-                                                If itm.SubItems(5).Text = MyList2.Items(cnt3).SubItems(5).Text Then
-                                                    MyList2.Items(cnt3).ForeColor = _cl2
-                                                    MyList2.Items(cnt3).SubItems(9).Text = "False"
-                                                    Exit For
-                                                End If
-                                            Next
-                                        End If
-                                    Next
-                                End If
-                            Next
-                            Exit For
-                        End If
-                    Next
-                    If DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView).SelectedItems.Count = 1 Then
-                        Dim itm As ListViewItem = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView).SelectedItems(0)
-                        If itm.SubItems(9).Text = "True" Then
-                            NameLabel.ForeColor = _clFav
-                        ElseIf itm.SubItems(10).Text = "True" Then
-                            NameLabel.ForeColor = _clOWL
-                        Else
-                            NameLabel.ForeColor = _clReaded
-                        End If
+                _curList.BeginUpdate()
+                For i As Integer = 0 To rslt.sIds.Count - 1
+                    If _curTab.Text.Equals(rslt.tName) Then
+                        Dim post As PostClass = _statuses.Item(rslt.sIds(i))
+                        Dim idx As Integer = _statuses.Tabs(rslt.tName).GetIndex(rslt.sIds(i))
+                        ChangeCacheStyleRead(post.IsRead, idx, _curTab)
                     End If
-                End If
+                Next
+                _curList.EndUpdate()
         End Select
 
     End Sub
 
     Private Sub GetTimeline(ByVal WorkerType As WORKERTYPE, ByVal fromPage As Integer, ByVal toPage As Integer)
+        If Not IsNetworkAvailable() Then Exit Sub
+        'タイマー停止
+        Select Case WorkerType
+            Case TweenMain.WORKERTYPE.Timeline, TweenMain.WORKERTYPE.Reply
+                TimerTimeline.Enabled = False
+            Case TweenMain.WORKERTYPE.DirectMessegeRcv, TweenMain.WORKERTYPE.DirectMessegeSnt
+                TimerDM.Enabled = False
+        End Select
+        '非同期実行引数設定
         Dim args As New GetWorkerArg
         args.page = fromPage
         args.endPage = toPage
         args.type = WorkerType
-        Select Case WorkerType
-            Case TweenMain.WORKERTYPE.Timeline
-                If Not _initial Then StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText5 + args.page.ToString() + My.Resources.GetTimelineWorker_RunWorkerCompletedText6
-            Case TweenMain.WORKERTYPE.Reply
-                If Not _initial Then StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText4
-            Case TweenMain.WORKERTYPE.DirectMessegeRcv
-                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText8
-            Case TweenMain.WORKERTYPE.DirectMessegeSnt
-                StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText12
-        End Select
-        NotifyIcon1.Icon = NIconRefresh(0)
-        TimerRefreshIcon.Enabled = True
+        '不要かな？一旦コメントアウト
+        ''ステータス設定
+        'Select Case WorkerType
+        '    Case TweenMain.WORKERTYPE.Timeline
+        '        If Not _initial Then StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText5 + args.page.ToString() + My.Resources.GetTimelineWorker_RunWorkerCompletedText6
+        '    Case TweenMain.WORKERTYPE.Reply
+        '        If Not _initial Then StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText4
+        '    Case TweenMain.WORKERTYPE.DirectMessegeRcv
+        '        StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText8
+        '    Case TweenMain.WORKERTYPE.DirectMessegeSnt
+        '        StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText12
+        'End Select
         Do While GetTimelineWorker.IsBusy
             Threading.Thread.Sleep(1)
             Application.DoEvents()
         Loop
         GetTimelineWorker.RunWorkerAsync(args)
     End Sub
+
+    Private Function NextPageMessage(ByVal page As Integer) As DialogResult
+        Dim flashRslt As Integer = Win32Api.FlashWindow(Me.Handle.ToInt32, 1)
+        Return MessageBox.Show((page * 20).ToString + My.Resources.GetTimelineWorker_RunWorkerCompletedText2, _
+                           My.Resources.GetTimelineWorker_RunWorkerCompletedText3, _
+                           MessageBoxButtons.YesNo, _
+                           MessageBoxIcon.Question)
+    End Function
 
     Private Sub NotifyIcon1_MouseClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles NotifyIcon1.MouseClick
         If e.Button = Windows.Forms.MouseButtons.Left Then
@@ -1932,33 +1559,25 @@ Public Class TweenMain
     End Sub
 
     Private Sub FavAddToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FavAddToolStripMenuItem.Click
+        If _curTab.Text = "Direct" OrElse _curList.SelectedIndices.Count = 0 Then Exit Sub
 
-        Dim cnt As Integer = 0
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-
-        If ListTab.SelectedTab.Text = "Direct" OrElse MyList.SelectedItems.Count = 0 Then Exit Sub
-
-        If MyList.SelectedItems.Count > 1 Then
+        '複数fav確認msg
+        If _curList.SelectedIndices.Count > 1 Then
             If MessageBox.Show(My.Resources.FavAddToolStripMenuItem_ClickText1, My.Resources.FavAddToolStripMenuItem_ClickText2, _
                                MessageBoxButtons.OKCancel, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then
                 Exit Sub
             End If
         End If
 
-        NotifyIcon1.Icon = NIconRefresh(0)
-        TimerRefreshIcon.Enabled = True
-        StatusLabel.Text = My.Resources.FavAddToolStripMenuItem_ClickText3
-
-        Dim args As New GetWorkerArg()
-        args.ids = New List(Of String)()
-        args.sIds = New List(Of String)()
-        args.tName = ListTab.SelectedTab.Text
-        For cnt = 0 To MyList.SelectedItems.Count - 1
-            If MyList.SelectedItems(cnt).SubItems(9).Text = "False" Then
-                args.ids.Add(MyList.SelectedItems(cnt).SubItems(5).Text)
-            End If
-        Next
+        Dim args As New GetWorkerArg
+        args.ids = New List(Of Long)
+        args.sIds = New List(Of Long)
+        args.tName = _curTab.Text
         args.type = WORKERTYPE.FavAdd
+        For Each idx As Integer In _curList.SelectedIndices
+            Dim post As PostClass = GetCurTabPost(idx)
+            If Not post.IsFav Then args.ids.Add(post.Id)
+        Next
         If args.ids.Count = 0 Then
             StatusLabel.Text = My.Resources.FavAddToolStripMenuItem_ClickText4
             Exit Sub
@@ -1974,32 +1593,24 @@ Public Class TweenMain
     End Sub
 
     Private Sub FavRemoveToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FavRemoveToolStripMenuItem.Click
-        Dim cnt As Integer = 0
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
+        If _curTab.Text = "Direct" OrElse _curList.SelectedIndices.Count = 0 Then Exit Sub
 
-        If ListTab.SelectedTab.Text = "Direct" OrElse MyList.SelectedItems.Count = 0 Then Exit Sub
-
-        If MyList.SelectedItems.Count > 1 Then
+        If _curList.SelectedIndices.Count > 1 Then
             If MessageBox.Show(My.Resources.FavRemoveToolStripMenuItem_ClickText1, My.Resources.FavRemoveToolStripMenuItem_ClickText2, _
                                MessageBoxButtons.OKCancel, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then
                 Exit Sub
             End If
         End If
 
-        StatusLabel.Text = My.Resources.FavRemoveToolStripMenuItem_ClickText3
-        NotifyIcon1.Icon = NIconRefresh(0)
-        TimerRefreshIcon.Enabled = True
-
         Dim args As New GetWorkerArg()
-        args.ids = New List(Of String)()
-        args.sIds = New List(Of String)()
-        args.tName = ListTab.SelectedTab.Text
-        For cnt = 0 To MyList.SelectedItems.Count - 1
-            If MyList.SelectedItems(cnt).SubItems(9).Text = "True" Then
-                args.ids.Add(MyList.SelectedItems(cnt).SubItems(5).Text)
-            End If
-        Next
+        args.ids = New List(Of Long)()
+        args.sIds = New List(Of Long)()
+        args.tName = _curTab.Text
         args.type = WORKERTYPE.FavRemove
+        For Each idx As Integer In _curList.SelectedIndices
+            Dim post As PostClass = GetCurTabPost(idx)
+            If post.IsFav Then args.ids.Add(post.Id)
+        Next
         If args.ids.Count = 0 Then
             StatusLabel.Text = My.Resources.FavRemoveToolStripMenuItem_ClickText4
             Exit Sub
@@ -2014,35 +1625,29 @@ Public Class TweenMain
 
     End Sub
 
+    Private Function GetCurTabPost(ByVal Index As Integer) As PostClass
+        If _postCache IsNot Nothing AndAlso Index >= _itemCacheIndex AndAlso Index < _itemCacheIndex + _postCache.Length Then
+            Return _postCache(Index - _itemCacheIndex)
+        Else
+            Return _statuses.Item(_curTab.Text, Index)
+        End If
+    End Function
+
+
     Private Sub MoveToHomeToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MoveToHomeToolStripMenuItem.Click
-        Do While ExecWorker.IsBusy
-            Threading.Thread.Sleep(1)
-            Application.DoEvents()
-        Loop
-
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-
-        '後でタブ追加して独自読み込みにする
-        If MyList.SelectedItems.Count > 0 Then
-            ExecWorker.RunWorkerAsync("http://twitter.com/" + MyList.SelectedItems(0).SubItems(4).Text)
+        If _curList.SelectedIndices.Count > 0 Then
+            OpenUriAsync("http://twitter.com/" + GetCurTabPost(_curList.SelectedIndices(0)).Name)
         End If
     End Sub
 
     Private Sub MoveToFavToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MoveToFavToolStripMenuItem.Click
-        Do While ExecWorker.IsBusy
-            Threading.Thread.Sleep(1)
-            Application.DoEvents()
-        Loop
-
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-
-        '後でタブ追加して独自読み込みにする
-        If MyList.SelectedItems.Count > 0 Then
-            ExecWorker.RunWorkerAsync("http://twitter.com/" + MyList.SelectedItems(0).SubItems(4).Text + "/favorites")
+        If _curList.SelectedIndices.Count > 0 Then
+            OpenUriAsync("http://twitter.com/" + GetCurTabPost(_curList.SelectedIndices(0)).Name + "/favorites")
         End If
     End Sub
 
     Private Sub Tween_ClientSizeChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.ClientSizeChanged
+        'ショートカットから最小化状態で起動した際の対応
         Static initialize As Boolean = False
 
         If Me.WindowState <> FormWindowState.Minimized Then
@@ -2072,17 +1677,10 @@ Public Class TweenMain
 
     Private Sub MyList_ColumnClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.ColumnClickEventArgs)
         If SettingDialog.SortOrderLock Then Exit Sub
-
-        If Not _iconCol Then
-            listViewItemSorter.Column = e.Column
-        Else
-            listViewItemSorter.Column = 3
-        End If
-
-        For Each _tab As TabPage In ListTab.TabPages
-            Dim MyList As DetailsListView = DirectCast(_tab.Controls(0), DetailsListView)
-            MyList.Sort()
-        Next
+        _statuses.ToggleSortOrder()
+        _itemCache = Nothing
+        _postCache = Nothing
+        _curList.Refresh()
     End Sub
 
     Private Sub Tween_LocationChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.LocationChanged
@@ -2091,160 +1689,14 @@ Public Class TweenMain
         End If
     End Sub
 
-    Private Sub RefreshDirectMessage(ByVal tlList As List(Of Twitter.MyListItem), ByVal IsReceive As Boolean)
-        Dim lItem As Twitter.MyListItem
-        Dim cnt As Integer = 0
-        Dim newCnt As Integer = 0
-        Dim _pop As String = ""
-        Dim topItem As ListViewItem
-        Dim dmFont As Boolean = False
-        Dim _readed As Boolean
-        Dim _fav As Boolean
-        Dim _onewaylove As Boolean
-        Dim nm As String = ""
-        Dim Protect As String
-
-        Dim _item As ListViewItem
-        Dim ts As TabStructure = GetTSbyName("Direct")
-
-        If ts.listCustom.Items.Count > 0 Then
-            If ListLockMenuItem.Checked Then
-                topItem = ts.listCustom.TopItem
-            Else
-                If listViewItemSorter.Column = 3 Then
-                    If listViewItemSorter.Order = SortOrder.Ascending Then
-                        '日時昇順
-                        _item = ts.listCustom.GetItemAt(0, ts.listCustom.ClientSize.Height - 1)
-                        If _item Is Nothing Then _item = ts.listCustom.Items(ts.listCustom.Items.Count - 1)
-                        If _item.Index = ts.listCustom.Items.Count - 1 Then
-                            topItem = Nothing
-                        Else
-                            topItem = ts.listCustom.TopItem
-                        End If
-                    Else
-                        '日時降順
-                        _item = ts.listCustom.GetItemAt(0, 25)
-                        If _item Is Nothing Then _item = ts.listCustom.Items(0)
-                        If _item.Index = 0 Then
-                            topItem = Nothing
-                        Else
-                            topItem = ts.listCustom.TopItem
-                        End If
-                    End If
-                Else
-                    topItem = ts.listCustom.TopItem
-                End If
-
-            End If
-        Else
-            topItem = Nothing
-        End If
-
-        'DirectMsg.SuspendLayout()
-        ts.listCustom.BeginUpdate()
-
-        For cnt = 0 To tlList.Count - 1
-            _readed = True
-            _fav = False
-            _onewaylove = Not IsReceive
-            lItem = tlList(cnt)
-            If lItem.Protect = True Then
-                Protect = "Ю"
-            Else
-                Protect = ""
-            End If
-            Dim sItem() As String = {Protect, lItem.Nick, lItem.Data, lItem.PDate.ToString("yy-MM-dd HH:mm:ss"), lItem.Name, lItem.Id, lItem.ImageUrl, lItem.OrgData, _readed.ToString, _fav.ToString, _onewaylove.ToString, "False"}
-            Dim lvItem As New ListViewItem(sItem)
-            lvItem.Font = _fntReaded
-            lvItem.ForeColor = _clReaded
-            If Not IsReceive Then
-                lvItem.ForeColor = _clOWL
-            End If
-            lvItem.ToolTipText = lItem.Data
-            lvItem.ImageKey = lItem.ImageUrl
-            ts.allCount += 1
-            If SettingDialog.UnreadManage AndAlso Not _initial AndAlso ts.unreadManage Then
-                lvItem.Font = _fntUnread
-                lvItem.ForeColor = _clUnread
-                If Not IsReceive Then
-                    lvItem.ForeColor = _clOWL
-                End If
-                lvItem.SubItems(8).Text = "False"
-                _readed = False
-                If dmFont = False Then
-                    dmFont = True
-                    ts.tabPage.ImageIndex = 0
-                End If
-                ts.unreadCount += 1
-                If ts.oldestUnreadItem IsNot Nothing Then
-                    If lvItem.SubItems(5).Text < ts.oldestUnreadItem.SubItems(5).Text Then ts.oldestUnreadItem = lvItem
-                Else
-                    ts.oldestUnreadItem = lvItem
-                End If
-            End If
-            ts.listCustom.Items.Add(lvItem)
-
-            newCnt += 1
-            Select Case SettingDialog.NameBalloon
-                Case NameBalloonEnum.None
-                    nm = ""
-                Case NameBalloonEnum.UserID
-                    nm = lItem.Name
-                Case NameBalloonEnum.NickName
-                    nm = lItem.Nick
-            End Select
-            If newCnt = 1 Then
-                _pop = nm + " : " + lItem.Data
-            Else
-                _pop += vbCrLf + nm + " : " + lItem.Data
-            End If
-        Next
-
-        If newCnt > 0 Then
-            If topItem IsNot Nothing Then
-                If ts.listCustom.Items.Count > 0 AndAlso topItem.Index > -1 Then
-                    ts.listCustom.EnsureVisible(ts.listCustom.Items.Count - 1)
-                    ts.listCustom.EnsureVisible(topItem.Index)
-                End If
-            Else
-                If listViewItemSorter.Column = 3 AndAlso listViewItemSorter.Order = SortOrder.Ascending AndAlso ts.listCustom.Items.Count > 0 Then
-                    ts.listCustom.EnsureVisible(ts.listCustom.Items.Count - 1)
-                End If
-            End If
-            If Not _initial AndAlso NewPostPopMenuItem.Checked AndAlso ts.notify Then
-                NotifyIcon1.BalloonTipIcon = ToolTipIcon.Warning
-                If SettingDialog.DispUsername Then NotifyIcon1.BalloonTipTitle = _username + " - " Else NotifyIcon1.BalloonTipTitle = ""
-                NotifyIcon1.BalloonTipTitle += "Tween [DM] " + My.Resources.RefreshDirectMessageText1 + " " + newCnt.ToString() + My.Resources.RefreshDirectMessageText2
-                NotifyIcon1.BalloonTipText = _pop
-                NotifyIcon1.ShowBalloonTip(500)
-            End If
-
-        End If
-        If Not _initial AndAlso SettingDialog.PlaySound AndAlso ts.soundFile <> "" Then
-            Try
-                My.Computer.Audio.Play(My.Application.Info.DirectoryPath.ToString() + "\" + ts.soundFile, AudioPlayMode.Background)
-            Catch ex As Exception
-
-            End Try
-        End If
-        'DirectMsg.ResumeLayout(True)
-        ts.listCustom.EndUpdate()
-
-        If SettingDialog.UnreadManage Then
-            If ts.unreadManage AndAlso ts.unreadCount > 0 AndAlso ts.tabPage.ImageIndex = -1 Then
-                ts.tabPage.ImageIndex = 0
-            End If
-        End If
-
-        SetMainWindowTitle()
-    End Sub
-
     Private Sub ContextMenuStrip2_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuStrip2.Opening
         If ListTab.SelectedTab.Text = "Direct" Then
             FavAddToolStripMenuItem.Enabled = False
             FavRemoveToolStripMenuItem.Enabled = False
             StatusOpenMenuItem.Enabled = False
             FavorareMenuItem.Enabled = False
+            BlackFavAddToolStripMenuItem.Enabled = False
+            'BlackFavRemoveToolStripMenuItem.Enabled = False
         Else
             Dim nw As Boolean = True
             Try
@@ -2257,6 +1709,8 @@ Public Class TweenMain
                 FavRemoveToolStripMenuItem.Enabled = True
                 StatusOpenMenuItem.Enabled = True
                 FavorareMenuItem.Enabled = True
+                BlackFavAddToolStripMenuItem.Enabled = True
+                'BlackFavRemoveToolStripMenuItem.Enabled = True
             End If
         End If
     End Sub
@@ -2270,346 +1724,94 @@ Public Class TweenMain
     End Sub
 
     Private Sub DeleteStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DeleteStripMenuItem.Click
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim myPost As Boolean = False
-
-        If ListTab.SelectedTab.Text <> "Direct" Then
-            For Each item As ListViewItem In MyList.SelectedItems
-                If item.SubItems(4).Text.Equals(_username, StringComparison.CurrentCultureIgnoreCase) Then
+        If _curTab.Text <> "Direct" Then
+            Dim myPost As Boolean = False
+            For Each idx As Integer In _curList.SelectedIndices
+                If GetCurTabPost(idx).IsMe Then
                     myPost = True
                     Exit For
                 End If
             Next
-
             If Not myPost Then Exit Sub
         End If
-        Dim tmp As String = String.Format(My.Resources.DeleteStripMenuItem_ClickText1, vbCrLf)
+
+        Dim tmp As String = String.Format(My.Resources.DeleteStripMenuItem_ClickText1, Environment.NewLine)
 
         If MessageBox.Show(tmp, My.Resources.DeleteStripMenuItem_ClickText2, _
               MessageBoxButtons.OKCancel, _
               MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then Exit Sub
 
-        NotifyIcon1.Icon = NIconRefresh(0)
-        TimerRefreshIcon.Enabled = True
+        Me.Cursor = Cursors.WaitCursor
 
-        If ListTab.SelectedTab.Text <> "Direct" Then
-            Dim cnt As Integer = 0
-            Dim cnt2 As Integer = 0
-            'Dim cnt3 As Integer = 0
+        Dim rslt As Boolean = True
+        For Each idx As Integer In _curList.SelectedIndices
+            Dim Id As Long = GetCurTabPost(idx).Id
             Dim rtn As String = ""
-            Dim msg As String = ""
-            'Dim idx As Integer = 0
-
-            For cnt = 0 To MyList.SelectedItems.Count - 1
-                If MyList.SelectedItems(cnt2).SubItems(4).Text.Equals(_username, StringComparison.CurrentCultureIgnoreCase) Then    'IgnoreCase
-                    rtn = clsTwSync.RemoveStatus(MyList.SelectedItems(cnt2).SubItems(5).Text)
-                    If rtn.Length > 0 Then
-                        'エラー
-                        msg = rtn + vbCrLf
-                        msg += MyList.SelectedItems(cnt2).SubItems(1).Text + ":"
-                        If MyList.SelectedItems(cnt2).SubItems(2).Text.Length > 5 Then
-                            msg += MyList.SelectedItems(cnt2).SubItems(2).Text.Substring(0, 5) + "..." + vbCrLf
-                        Else
-                            msg += MyList.SelectedItems(cnt2).SubItems(2).Text + vbCrLf
-                        End If
-                        cnt2 += 1
-                    Else
-                        '削除成功→リストから削除（全タブチェック）
-                        For Each ts As TabStructure In _tabs
-                            If Not ts.listCustom.Equals(MyList) AndAlso ts.tabPage.Text <> "Direct" Then
-                                For Each itm As ListViewItem In ts.listCustom.Items
-                                    If MyList.SelectedItems(cnt2).SubItems(5).Text = itm.SubItems(5).Text Then
-                                        If ts.oldestUnreadItem IsNot Nothing AndAlso ts.oldestUnreadItem.Equals(itm) Then ts.oldestUnreadItem = Nothing
-                                        If itm.SubItems(8).Text = "False" Then ts.unreadCount -= 1
-                                        ts.allCount -= 1
-                                        ts.listCustom.Items.Remove(itm)
-                                        Exit For
-                                    End If
-                                Next
-                            End If
-                        Next
-                        For Each ts As TabStructure In _tabs
-                            If ts.listCustom.Equals(MyList) Then
-                                If ts.oldestUnreadItem IsNot Nothing AndAlso ts.oldestUnreadItem.Equals(MyList.SelectedItems(cnt2)) Then ts.oldestUnreadItem = Nothing
-                                If MyList.SelectedItems(cnt2).SubItems(8).Text = "False" Then ts.unreadCount -= 1
-                                ts.allCount -= 1
-                                Exit For
-                            End If
-                        Next
-                        MyList.Items.Remove(MyList.SelectedItems(cnt2))
-                    End If
-                Else
-                    cnt2 += 1
-                End If
-            Next
-
-            If msg <> "" Then
-                'StatusLabel.Text = "削除失敗 " + msg
-                StatusLabel.Text = My.Resources.DeleteStripMenuItem_ClickText3
+            If _curTab.Text = "Direct" Then
+                rtn = clsTwSync.RemoveDirectMessage(Id.ToString())
             Else
-                StatusLabel.Text = My.Resources.DeleteStripMenuItem_ClickText4
+                rtn = clsTwSync.RemoveStatus(Id.ToString())
             End If
-        ElseIf ListTab.SelectedTab.Text = "Direct" Then
-            Dim cnt As Integer = 0
-            Dim cnt2 As Integer = 0
-            Dim rtn As String = ""
-            Dim msg As String = ""
-
-            For cnt = 0 To MyList.SelectedItems.Count - 1
-                rtn = clsTwSync.RemoveDirectMessage(MyList.SelectedItems(cnt2).SubItems(5).Text)
-                If rtn.Length > 0 Then
-                    msg = rtn + vbCrLf
-                    msg += MyList.SelectedItems(cnt2).SubItems(1).Text + ":"
-                    If MyList.SelectedItems(cnt2).SubItems(2).Text.Length > 5 Then
-
-                        msg += MyList.SelectedItems(cnt2).SubItems(2).Text.Substring(0, 5) + "..." + vbCrLf
-                    Else
-                        msg += MyList.SelectedItems(cnt2).SubItems(2).Text + vbCrLf
-                    End If
-                    cnt2 += 1
-                Else
-                    For Each ts As TabStructure In _tabs
-                        If ts.listCustom.Equals(MyList) Then
-                            If ts.oldestUnreadItem IsNot Nothing AndAlso ts.oldestUnreadItem.Equals(MyList.SelectedItems(cnt2)) Then ts.oldestUnreadItem = Nothing
-                            If MyList.SelectedItems(cnt2).SubItems(8).Text = "False" Then ts.unreadCount -= 1
-                            ts.allCount -= 1
-                            Exit For
-                        End If
-                    Next
-                    MyList.Items.Remove(MyList.SelectedItems(cnt2))
-                End If
-            Next
-
-            If msg <> "" Then
-                'StatusLabel.Text = "削除失敗 " + msg
-                StatusLabel.Text = My.Resources.DeleteStripMenuItem_ClickText3
+            If rtn.Length > 0 Then
+                'エラー
+                rslt = False
             Else
-                StatusLabel.Text = My.Resources.DeleteStripMenuItem_ClickText4
+                _statuses.RemovePost(Id)
             End If
+        Next
+
+        If Not rslt Then
+            StatusLabel.Text = My.Resources.DeleteStripMenuItem_ClickText3  '失敗
+        Else
+            StatusLabel.Text = My.Resources.DeleteStripMenuItem_ClickText4  '成功
         End If
 
-        TimerRefreshIcon.Enabled = False
-        NotifyIcon1.Icon = NIconAt
+        _itemCache = Nothing    'キャッシュ破棄
+        _postCache = Nothing
+        For Each tb As TabPage In ListTab.TabPages
+            DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
+            If _statuses.Tabs(tb.Text).UnreadCount = 0 AndAlso tb.ImageIndex = 0 Then tb.ImageIndex = -1
+        Next
+
+        Me.Cursor = Cursors.Default
     End Sub
 
     Private Sub ReadedStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ReadedStripMenuItem.Click
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-
-        '現在のタブのIndexを保持
-        Dim ts As TabStructure = GetTSbyName(ListTab.SelectedTab.Text)
-
-        If ts.unreadManage = False Or SettingDialog.UnreadManage = False Then Exit Sub
-
-        If MyList.SelectedItems.Count > 0 Then
-            For Each lItem As ListViewItem In MyList.SelectedItems
-                ItemReaded(ts, lItem)
-            Next
-        End If
-
-    End Sub
-
-    Private Sub ItemReaded(ByVal ts As TabStructure, ByVal lItem As ListViewItem)
-        If Not ts.unreadManage OrElse Not SettingDialog.UnreadManage Then Exit Sub
-
-        If lItem.SubItems(8).Text = "False" Then
-            lItem.SubItems(8).Text = "True"
-            Dim fcl As Color = _clReaded
-            If lItem.SubItems(10).Text = "True" AndAlso SettingDialog.OneWayLove Then fcl = _clOWL
-            If lItem.SubItems(9).Text = "True" Then fcl = _clFav
-            ts.listCustom.ChangeItemStyles(lItem.Index, lItem.BackColor, fcl, _fntReaded)
-            ts.unreadCount -= 1
-            If ts.oldestUnreadItem IsNot Nothing AndAlso ts.oldestUnreadItem.Equals(lItem) OrElse _
-               ts.oldestUnreadItem Is Nothing AndAlso ts.unreadCount > 0 Then
-                '次の未読アイテム探索
-                Dim stp As Integer = 1
-                Dim frmi As Integer = 0
-                Dim toi As Integer = 0
-                '日時ソート（＝ID順）の場合
-                If listViewItemSorter.Column = 3 Then
-                    If listViewItemSorter.Order = SortOrder.Ascending Then
-                        '昇順
-                        If ts.oldestUnreadItem Is Nothing OrElse ts.oldestUnreadItem.Index < 0 Then
-                            frmi = 0
-                        Else
-                            frmi = ts.oldestUnreadItem.Index
-                        End If
-                        toi = ts.listCustom.Items.Count - 1
-                    Else
-                        '降順
-                        stp = -1
-                        If ts.oldestUnreadItem Is Nothing OrElse ts.oldestUnreadItem.Index < 0 Then
-                            frmi = ts.listCustom.Items.Count - 1
-                        Else
-                            frmi = ts.oldestUnreadItem.Index
-                        End If
-                    End If
-                Else
-                    '日時以外が基準の場合は頭から探索
-                    frmi = 0
-                    toi = ts.listCustom.Items.Count - 1
-                End If
-                ts.oldestUnreadItem = Nothing
-                For i As Integer = frmi To toi Step stp
-                    If ts.listCustom.Items(i).SubItems(8).Text = "False" Then
-                        ts.oldestUnreadItem = ts.listCustom.Items(i)
-                        Exit For
-                    End If
-                Next
-            End If
-            If ts.tabName <> "Direct" Then
-                '全タブの未読状態を合わせる
-                For Each ts2 As TabStructure In _tabs
-                    If Not ts2.listCustom.Equals(ts.listCustom) AndAlso ts2.tabName <> "Direct" AndAlso ts2.unreadCount > 0 AndAlso ts2.unreadManage Then
-                        '最古未読アイテムから探索
-                        Dim stp As Integer = 1
-                        Dim frmi As Integer = 0
-                        Dim toi As Integer = 0
-                        '日時ソート（＝ID順）の場合
-                        If listViewItemSorter.Column = 3 Then
-                            If listViewItemSorter.Order = SortOrder.Ascending Then
-                                '昇順
-                                If ts2.oldestUnreadItem Is Nothing OrElse ts2.oldestUnreadItem.Index < 0 Then
-                                    frmi = 0
-                                Else
-                                    frmi = ts2.oldestUnreadItem.Index
-                                End If
-                                toi = ts2.listCustom.Items.Count - 1
-                            Else
-                                '降順
-                                If ts2.oldestUnreadItem Is Nothing OrElse ts2.oldestUnreadItem.Index < 0 Then
-                                    frmi = ts2.listCustom.Items.Count - 1
-                                Else
-                                    frmi = ts2.oldestUnreadItem.Index
-                                End If
-                                stp = -1
-                            End If
-                        Else
-                            '日時以外が基準の場合は頭から探索
-                            frmi = 0
-                            toi = ts2.listCustom.Items.Count - 1
-                        End If
-                        For i As Integer = frmi To toi Step stp
-                            If ts2.listCustom.Items(i).SubItems(5).Text = lItem.SubItems(5).Text Then
-                                If ts2.listCustom.Items(i).SubItems(8).Text = "False" Then
-                                    ts2.unreadCount -= 1
-                                    ts2.listCustom.Items(i).SubItems(8).Text = "True"
-                                    ts2.listCustom.ChangeItemStyles(i, ts2.listCustom.Items(i).BackColor, fcl, _fntReaded)
-                                    If i = frmi Then
-                                        ts2.oldestUnreadItem = Nothing
-                                        If ts2.unreadCount > 0 Then
-                                            Dim stp2 As Integer = stp
-                                            Dim frmi2 As Integer = frmi
-                                            Dim toi2 As Integer = toi
-                                            For i2 As Integer = frmi2 To toi2 Step stp2
-                                                If ts2.listCustom.Items(i2).SubItems(8).Text = "False" Then
-                                                    ts2.oldestUnreadItem = ts2.listCustom.Items(i2)
-                                                    Exit For
-                                                End If
-                                            Next
-                                        End If
-                                    End If
-                                End If
-                                Exit For
-                            End If
-                        Next
-                        If ts2.unreadCount = 0 AndAlso ts2.tabPage.ImageIndex = 0 Then
-                            ts2.tabPage.ImageIndex = -1
-                        End If
-                    End If
-                Next
-            End If
-        End If
-        If ts.unreadCount = 0 AndAlso ts.tabPage.ImageIndex = 0 Then
-            ts.tabPage.ImageIndex = -1
-        End If
-
+        _curList.BeginUpdate()
+        For Each idx As Integer In _curList.SelectedIndices
+            _statuses.SetRead(True, _curTab.Text, idx)
+            ChangeCacheStyleRead(True, idx, _curTab)
+        Next
+        _curList.EndUpdate()
+        For Each tb As TabPage In ListTab.TabPages
+            If _statuses.Tabs(tb.Text).UnreadCount = 0 AndAlso tb.ImageIndex = 0 Then tb.ImageIndex = -1
+        Next
     End Sub
 
     Private Sub UnreadStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UnreadStripMenuItem.Click
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim ts As TabStructure = GetTSbyName(ListTab.SelectedTab.Text)
-
-        If Not ts.unreadManage OrElse Not SettingDialog.UnreadManage Then Exit Sub
-
-        If MyList.SelectedItems.Count > 0 Then
-            For Each lItem As ListViewItem In MyList.SelectedItems
-                If lItem.SubItems(8).Text = "True" Then
-                    lItem.SubItems(8).Text = "False"
-                    'lItem.Font = _fntUnread
-                    Dim fcl As Color = _clUnread
-                    If lItem.SubItems(10).Text = "True" AndAlso SettingDialog.OneWayLove Then fcl = _clOWL
-                    If lItem.SubItems(9).Text = "True" Then fcl = _clFav
-                    'lItem.ForeColor = fcl
-                    MyList.ChangeItemStyles(lItem.Index, lItem.BackColor, fcl, _fntUnread)
-                    ts.unreadCount += 1
-                    If ts.oldestUnreadItem Is Nothing Then
-                        ts.oldestUnreadItem = lItem
-                    Else
-                        If ts.oldestUnreadItem.SubItems(5).Text > lItem.SubItems(5).Text Then
-                            ts.oldestUnreadItem = lItem
-                        End If
-                    End If
-                    If ts.tabName <> "Direct" Then
-                        '全タブの未読状態を合わせる
-                        For Each tst As TabStructure In _tabs
-                            If Not tst.listCustom.Equals(MyList) AndAlso tst.tabName <> "Direct" AndAlso tst.unreadManage Then
-                                For Each itm As ListViewItem In tst.listCustom.Items
-                                    If itm.SubItems(5).Text = lItem.SubItems(5).Text Then
-                                        itm.SubItems(8).Text = "False"
-                                        'itm.Font = _fntUnread
-                                        'itm.ForeColor = fcl
-                                        tst.listCustom.ChangeItemStyles(itm.Index, itm.BackColor, fcl, _fntUnread)
-                                        tst.unreadCount += 1
-                                        If tst.tabPage.ImageIndex = -1 Then
-                                            tst.tabPage.ImageIndex = 0
-                                        End If
-                                        If tst.oldestUnreadItem Is Nothing Then
-                                            tst.oldestUnreadItem = itm
-                                        Else
-                                            If tst.oldestUnreadItem.SubItems(5).Text > itm.SubItems(5).Text Then
-                                                tst.oldestUnreadItem = itm
-                                            End If
-                                        End If
-                                        Exit For
-                                    End If
-                                Next
-                                If tst.unreadCount > 0 AndAlso tst.tabPage.ImageIndex = -1 Then
-                                    tst.tabPage.ImageIndex = 0
-                                End If
-                            End If
-                        Next
-                    End If
-                End If
-            Next
-        End If
-        If ts.unreadCount > 0 AndAlso ts.tabPage.ImageIndex = -1 Then
-            ts.tabPage.ImageIndex = 0
-        End If
-
-    End Sub
-    Private Sub doRefresh()
-        NotifyIcon1.Icon = NIconRefresh(0)
-        TimerRefreshIcon.Enabled = True
-
-        If ListTab.SelectedTab.Text <> "Direct" Then
-            If ListTab.SelectedTab.Text <> "Reply" Then
-                'TimerTimeline.Enabled = False
-                GetTimeline(WORKERTYPE.Timeline, 1, 1)
-            Else
-                GetTimeline(WORKERTYPE.Reply, 1, 1)
-            End If
-        Else
-            GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
-        End If
+        _curList.BeginUpdate()
+        For Each idx As Integer In _curList.SelectedIndices
+            _statuses.SetRead(False, _curTab.Text, idx)
+            ChangeCacheStyleRead(False, idx, _curTab)
+        Next
+        _curList.EndUpdate()
+        For Each tb As TabPage In ListTab.TabPages
+            If _statuses.Tabs(tb.Text).UnreadCount > 0 AndAlso tb.ImageIndex = -1 Then tb.ImageIndex = 0
+        Next
     End Sub
 
     Private Sub RefreshStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RefreshStripMenuItem.Click
-        doRefresh()
+        Select Case _curTab.Text
+            Case "Reply"
+                GetTimeline(WORKERTYPE.Reply, 1, 1)
+            Case "Direct"
+                GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
+            Case Else
+                GetTimeline(WORKERTYPE.Timeline, 1, 1)
+        End Select
     End Sub
 
     Private Sub SettingStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SettingStripMenuItem.Click
-        TimerColorize.Stop()
-
         If SettingDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
             SyncLock _syncObject
                 _username = SettingDialog.UserID
@@ -2690,20 +1892,7 @@ Public Class TweenMain
                     ReadedStripMenuItem.Enabled = True
                     UnreadStripMenuItem.Enabled = True
                 End If
-                If SettingDialog.OneWayLove Then
-                    For Each ts As TabStructure In _tabs
-                        If ts.tabName <> "Direct" Then
-                            For Each myItem As ListViewItem In ts.listCustom.Items
-                                If follower.Contains(myItem.SubItems(4).Text) Then
-                                    myItem.SubItems(10).Text = "False"
-                                Else
-                                    myItem.SubItems(10).Text = "True"
-                                End If
-                            Next
-                        End If
-                    Next
-                End If
-                _fntUnread = SettingDialog.FontUnread
+                '_fntUnread = SettingDialog.FontUnread
                 _clUnread = SettingDialog.ColorUnread
                 _fntReaded = SettingDialog.FontReaded
                 _clReaded = SettingDialog.ColorReaded
@@ -2733,22 +1922,23 @@ Public Class TweenMain
                 _brsBackColorYou = New SolidBrush(_clTarget)
                 _brsBackColorAtYou = New SolidBrush(_clAtTarget)
                 _brsBackColorAtTo = New SolidBrush(_clAtFromTarget)
-                For Each ts As TabStructure In _tabs
-                    For Each myItem As ListViewItem In ts.listCustom.Items
-                        If SettingDialog.UnreadManage = False OrElse ts.unreadManage = False Then
-                            Dim fcl As Color = _clReaded
-                            If myItem.SubItems(10).Text = "True" AndAlso SettingDialog.OneWayLove Then fcl = _clOWL
-                            If myItem.SubItems(9).Text = "True" Then fcl = _clFav
-                            ts.listCustom.ChangeItemStyles(myItem.Index, myItem.BackColor, fcl, _fntReaded)
-                            ts.oldestUnreadItem = Nothing
-                            ts.unreadCount = 0
-                        End If
-                    Next
+                detailHtmlFormat = detailHtmlFormat1 + _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3
+                _statuses.SetUnreadManage(SettingDialog.UnreadManage)
+                For Each tb As TabPage In ListTab.TabPages
+                    If _statuses.Tabs(tb.Text).UnreadCount = 0 Then
+                        tb.ImageIndex = -1
+                    Else
+                        tb.ImageIndex = 0
+                    End If
+                    DirectCast(tb.Controls(0), DetailsListView).Font = _fntReaded
                 Next
-                TimerColorize.Start()
 
                 SetMainWindowTitle()
                 SetNotifyIconText()
+
+                _itemCache = Nothing
+                _postCache = Nothing
+                _curList.Refresh()
             End SyncLock
         End If
 
@@ -2759,17 +1949,46 @@ Public Class TweenMain
     Private Sub PostBrowser_Navigating(ByVal sender As System.Object, ByVal e As System.Windows.Forms.WebBrowserNavigatingEventArgs) Handles PostBrowser.Navigating
         If e.Url.AbsoluteUri <> "about:blank" Then
             e.Cancel = True
-            Do While ExecWorker.IsBusy
-                Threading.Thread.Sleep(1)
-                Application.DoEvents()
-            Loop
-            ExecWorker.RunWorkerAsync(e.Url.AbsoluteUri)
+            OpenUriAsync(e.Url.AbsoluteUri)
         End If
 
     End Sub
 
-    Private Sub AddCustomTabs()
-        Dim cnt As Integer = 0
+    Private Function AddNewTab(ByVal tabName As String, ByVal startup As Boolean) As Boolean
+        '重複チェック
+        For Each tb As TabPage In ListTab.TabPages
+            If tb.Text = tabName Then Return False
+        Next
+
+        '新規タブ名チェック
+        If tabName = My.Resources.AddNewTabText1 Then Return False
+
+        'Dim myTab As New TabStructure()
+
+        Dim _tabPage As TabPage = New TabPage
+        Dim _listCustom As DetailsListView = New DetailsListView
+        Dim _colHd1 As ColumnHeader = New ColumnHeader()  'アイコン
+        Dim _colHd2 As ColumnHeader = New ColumnHeader()   'ニックネーム
+        Dim _colHd3 As ColumnHeader = New ColumnHeader()   '本文
+        Dim _colHd4 As ColumnHeader = New ColumnHeader()   '日付
+        Dim _colHd5 As ColumnHeader = New ColumnHeader()   'ユーザID
+        Dim _colHd6 As ColumnHeader = New ColumnHeader()   '未読
+        Dim _colHd7 As ColumnHeader = New ColumnHeader()   'マーク＆プロテクト
+        Dim _colHd8 As ColumnHeader = New ColumnHeader()   'ソース
+        'If Not _iconCol Then
+        '_colHd2 = New ColumnHeader()
+        '_colHd3 = New ColumnHeader()
+        '_colHd4 = New ColumnHeader()
+        '_colHd5 = New ColumnHeader()
+        '_colHd6 = New ColumnHeader()
+        '_colHd7 = New ColumnHeader()
+        '_colHd8 = New ColumnHeader()
+        '_colHd9 = New ColumnHeader()
+        'End If
+
+        If Not startup Then _section.ListElement.Add(New ListElement(tabName))
+
+        Dim cnt As Integer = ListTab.TabPages.Count
 
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -2777,211 +1996,121 @@ Public Class TweenMain
         Me.ListTab.SuspendLayout()
         Me.SuspendLayout()
 
-        For Each myTab As TabStructure In _tabs
-            cnt += 1
-            myTab.tabPage.SuspendLayout()
+        _tabPage.SuspendLayout()
 
-            Me.ListTab.Controls.Add(myTab.tabPage)
+        Me.ListTab.Controls.Add(_tabPage)
 
-            myTab.tabPage.Controls.Add(myTab.listCustom)
-            myTab.tabPage.Location = New System.Drawing.Point(4, 4)
-            myTab.tabPage.Name = "CTab" + cnt.ToString
-            myTab.tabPage.Size = New System.Drawing.Size(380, 260)
-            myTab.tabPage.TabIndex = 2 + cnt
-            myTab.tabPage.Text = myTab.tabName
-            myTab.tabPage.UseVisualStyleBackColor = True
+        _tabPage.Controls.Add(_listCustom)
+        _tabPage.Location = New Point(4, 4)
+        _tabPage.Name = "CTab" + cnt.ToString()
+        _tabPage.Size = New Size(380, 260)
+        _tabPage.TabIndex = 2 + cnt
+        _tabPage.Text = tabName
+        _tabPage.UseVisualStyleBackColor = True
 
-            myTab.listCustom.AllowColumnReorder = True
-            If Not _iconCol Then
-                myTab.listCustom.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {myTab.colHd1, myTab.colHd2, myTab.colHd3, myTab.colHd4, myTab.colHd5})
-            Else
-                myTab.listCustom.Columns.Add(myTab.colHd1)
-            End If
+        _listCustom.AllowColumnReorder = True
+        'If Not _iconCol Then
+        _listCustom.Columns.AddRange(New ColumnHeader() {_colHd1, _colHd2, _colHd3, _colHd4, _colHd5, _colHd6, _colHd7, _colHd8})
+        'Else
+        '_listCustom.Columns.Add(_colHd1)
+        'End If
+        _listCustom.ContextMenuStrip = Me.ContextMenuStrip2
+        _listCustom.Dock = DockStyle.Fill
+        _listCustom.FullRowSelect = True
+        _listCustom.HideSelection = False
+        _listCustom.Location = New Point(0, 0)
+        _listCustom.Margin = New Padding(0)
+        _listCustom.Name = "CList" + Environment.TickCount.ToString()
+        _listCustom.ShowItemToolTips = True
+        _listCustom.Size = New Size(380, 260)
+        _listCustom.TabIndex = 4                                   'これ大丈夫？
+        _listCustom.UseCompatibleStateImageBehavior = False
+        _listCustom.View = View.Details
+        _listCustom.OwnerDraw = True
+        _listCustom.VirtualMode = True
+        _listCustom.Font = _fntReaded
 
-            myTab.listCustom.ContextMenuStrip = Me.ContextMenuStrip2
-            myTab.listCustom.Dock = System.Windows.Forms.DockStyle.Fill
-            myTab.listCustom.FullRowSelect = True
-            myTab.listCustom.HideSelection = False
-            myTab.listCustom.Location = New System.Drawing.Point(0, 0)
-            myTab.listCustom.Margin = New System.Windows.Forms.Padding(0)
-            myTab.listCustom.Name = "CList" + Environment.TickCount.ToString()
-            myTab.listCustom.ShowItemToolTips = True
-            myTab.listCustom.Size = New System.Drawing.Size(380, 260)
-            myTab.listCustom.TabIndex = 4                                   'これ大丈夫？
-            myTab.listCustom.UseCompatibleStateImageBehavior = False
-            myTab.listCustom.View = System.Windows.Forms.View.Details
-            myTab.listCustom.OwnerDraw = True
+        AddHandler _listCustom.SelectedIndexChanged, AddressOf MyList_SelectedIndexChanged
+        AddHandler _listCustom.MouseDoubleClick, AddressOf MyList_MouseDoubleClick
+        AddHandler _listCustom.ColumnClick, AddressOf MyList_ColumnClick
+        AddHandler _listCustom.DrawColumnHeader, AddressOf MyList_DrawColumnHeader
+        AddHandler _listCustom.DrawItem, AddressOf MyList_DrawItem
+        AddHandler _listCustom.Scrolled, AddressOf Mylist_Scrolled
+        AddHandler _listCustom.MouseClick, AddressOf MyList_MouseClick
+        AddHandler _listCustom.ColumnReordered, AddressOf MyList_ColumnReordered
+        AddHandler _listCustom.ColumnWidthChanging, AddressOf MyList_CoumnWidthChanging
+        AddHandler _listCustom.CacheVirtualItems, AddressOf MyList_CacheVirtualItems
+        AddHandler _listCustom.RetrieveVirtualItem, AddressOf MyList_RetrieveVirtualItem
+        AddHandler _listCustom.DrawSubItem, AddressOf MyList_DrawSubItem
 
-            AddHandler myTab.listCustom.SelectedIndexChanged, AddressOf MyList_SelectedIndexChanged
-            AddHandler myTab.listCustom.MouseDoubleClick, AddressOf MyList_MouseDoubleClick
-            AddHandler myTab.listCustom.ColumnClick, AddressOf MyList_ColumnClick
-            AddHandler myTab.listCustom.DrawColumnHeader, AddressOf MyList_DrawColumnHeader
-            AddHandler myTab.listCustom.DrawItem, AddressOf MyList_DrawItem
-            AddHandler myTab.listCustom.Scrolled, AddressOf Mylist_Scrolled
-            AddHandler myTab.listCustom.MouseClick, AddressOf MyList_MouseClick
-            AddHandler myTab.listCustom.ColumnReordered, AddressOf MyList_ColumnReordered
-            AddHandler myTab.listCustom.ColumnWidthChanging, AddressOf MyList_CoumnWidthChanging
+        _colHd1.Text = ""
+        _colHd1.Width = 48
+        'If Not _iconCol Then
+        _colHd2.Text = My.Resources.AddNewTabText2
+        _colHd2.Width = 80
+        _colHd3.Text = My.Resources.AddNewTabText3
+        _colHd3.Width = 300
+        _colHd4.Text = My.Resources.AddNewTabText4
+        _colHd4.Width = 50
+        _colHd5.Text = My.Resources.AddNewTabText5
+        _colHd5.Width = 50
+        _colHd6.Text = ""
+        _colHd6.Width = 16
+        _colHd7.Text = ""
+        _colHd7.Width = 16
+        _colHd8.Text = "Source"
+        _colHd8.Width = 50
+        'End If
 
-            myTab.colHd1.Text = ""
-            myTab.colHd1.Width = 26
-            If Not _iconCol Then
-                myTab.colHd2.Text = My.Resources.AddCustomTabsText1
-                myTab.colHd2.Width = 80
-                myTab.colHd3.Text = My.Resources.AddCustomTabsText2
-                myTab.colHd3.Width = 300
-                myTab.colHd4.Text = My.Resources.AddCustomTabsText3
-                myTab.colHd4.Width = 50
-                myTab.colHd5.Text = My.Resources.AddCustomTabsText4
-                myTab.colHd5.Width = 50
-            End If
+        If tabName <> "Recent" AndAlso _
+           tabName <> "Reply" AndAlso _
+           tabName <> "Direct" Then
+            TabDialog.AddTab(tabName)
+        End If
 
-            If myTab.tabName <> "Recent" AndAlso _
-               myTab.tabName <> "Reply" AndAlso _
-               myTab.tabName <> "Direct" Then
-                TabDialog.AddTab(myTab.tabName)
-            End If
-
-            myTab.listCustom.SmallImageList = TIconSmallList
-            myTab.listCustom.ListViewItemSorter = listViewItemSorter
-            myTab.listCustom.Columns(0).Width = _section.Width1
-            myTab.listCustom.Columns(0).DisplayIndex = _section.DisplayIndex1
-            If Not _iconCol Then
-                myTab.listCustom.Columns(1).Width = _section.Width2
-                myTab.listCustom.Columns(2).Width = _section.Width3
-                myTab.listCustom.Columns(3).Width = _section.Width4
-                myTab.listCustom.Columns(4).Width = _section.Width5
-                myTab.listCustom.Columns(1).DisplayIndex = _section.DisplayIndex2
-                myTab.listCustom.Columns(2).DisplayIndex = _section.DisplayIndex3
-                myTab.listCustom.Columns(3).DisplayIndex = _section.DisplayIndex4
-                myTab.listCustom.Columns(4).DisplayIndex = _section.DisplayIndex5
-            End If
-            _columnIdx = myTab.colHd1.DisplayIndex
-            myTab.tabPage.ResumeLayout(False)
+        _listCustom.SmallImageList = TIconSmallList
+        '_listCustom.ListViewItemSorter = listViewItemSorter
+        If Not startup Then
+            _listCustom.Columns(0).Width = _curList.Columns(0).Width
+            _listCustom.Columns(0).DisplayIndex = _curList.Columns(0).DisplayIndex
+            'If Not _iconCol Then
+            _listCustom.Columns(1).Width = _curList.Columns(1).Width
+            _listCustom.Columns(2).Width = _curList.Columns(2).Width
+            _listCustom.Columns(3).Width = _curList.Columns(3).Width
+            _listCustom.Columns(4).Width = _curList.Columns(4).Width
+            _listCustom.Columns(5).Width = _curList.Columns(5).Width
+            _listCustom.Columns(6).Width = _curList.Columns(6).Width
+            _listCustom.Columns(7).Width = _curList.Columns(7).Width
+            _listCustom.Columns(1).DisplayIndex = _curList.Columns(1).DisplayIndex
+            _listCustom.Columns(2).DisplayIndex = _curList.Columns(2).DisplayIndex
+            _listCustom.Columns(3).DisplayIndex = _curList.Columns(3).DisplayIndex
+            _listCustom.Columns(4).DisplayIndex = _curList.Columns(4).DisplayIndex
+            _listCustom.Columns(5).DisplayIndex = _curList.Columns(5).DisplayIndex
+            _listCustom.Columns(6).DisplayIndex = _curList.Columns(6).DisplayIndex
+            _listCustom.Columns(7).DisplayIndex = _curList.Columns(7).DisplayIndex
             'End If
-        Next
-
-        Me.SplitContainer1.Panel1.ResumeLayout(False)
-        Me.SplitContainer1.Panel2.ResumeLayout(False)
-        Me.SplitContainer1.ResumeLayout(False)
-        Me.ListTab.ResumeLayout(False)
-        'Me.TabPage1.ResumeLayout(False)
-        Me.ResumeLayout(False)
-        Me.PerformLayout()
-    End Sub
-
-    Private Function AddNewTab(ByVal tabName As String) As Boolean
-        For Each myT As TabStructure In _tabs
-            If myT.tabName = tabName Then
-                Return False
-            End If
-        Next
-
-        If tabName = My.Resources.AddNewTabText1 OrElse _
-           tabName = "Recent" OrElse _
-           tabName = "Reply" OrElse _
-           tabName = "Direct" Then Return False
-
-        Dim myTab As New TabStructure()
-
-        myTab.tabPage = New TabPage()
-        myTab.listCustom = New DetailsListView()
-        myTab.colHd1 = New ColumnHeader()
-        If Not _iconCol Then
-            myTab.colHd2 = New ColumnHeader()
-            myTab.colHd3 = New ColumnHeader()
-            myTab.colHd4 = New ColumnHeader()
-            myTab.colHd5 = New ColumnHeader()
-        End If
-        myTab.tabName = tabName
-        myTab.filters.Clear()
-        myTab.notify = True
-        myTab.soundFile = ""
-        myTab.unreadManage = True
-        _tabs.Add(myTab)
-
-        _section.ListElement.Add(New ListElement(tabName))
-
-        Dim cnt As Integer = _tabs.Count
-
-        Me.SplitContainer1.Panel1.SuspendLayout()
-        Me.SplitContainer1.Panel2.SuspendLayout()
-        Me.SplitContainer1.SuspendLayout()
-        Me.ListTab.SuspendLayout()
-        Me.SuspendLayout()
-
-        myTab.tabPage.SuspendLayout()
-
-        Me.ListTab.Controls.Add(myTab.tabPage)
-
-        myTab.tabPage.Controls.Add(myTab.listCustom)
-        myTab.tabPage.Location = New Point(4, 4)
-        myTab.tabPage.Name = "CTab" + cnt.ToString()
-        myTab.tabPage.Size = New Size(380, 260)
-        myTab.tabPage.TabIndex = 2 + cnt
-        myTab.tabPage.Text = myTab.tabName
-        myTab.tabPage.UseVisualStyleBackColor = True
-
-        myTab.listCustom.AllowColumnReorder = True
-        If Not _iconCol Then
-            myTab.listCustom.Columns.AddRange(New ColumnHeader() {myTab.colHd1, myTab.colHd2, myTab.colHd3, myTab.colHd4, myTab.colHd5})
         Else
-            myTab.listCustom.Columns.Add(myTab.colHd1)
-        End If
-        myTab.listCustom.ContextMenuStrip = Me.ContextMenuStrip2
-        myTab.listCustom.Dock = DockStyle.Fill
-        myTab.listCustom.FullRowSelect = True
-        myTab.listCustom.HideSelection = False
-        myTab.listCustom.Location = New Point(0, 0)
-        myTab.listCustom.Margin = New Padding(0)
-        myTab.listCustom.Name = "CList" + Environment.TickCount.ToString()
-        myTab.listCustom.ShowItemToolTips = True
-        myTab.listCustom.Size = New Size(380, 260)
-        myTab.listCustom.TabIndex = 4                                   'これ大丈夫？
-        myTab.listCustom.UseCompatibleStateImageBehavior = False
-        myTab.listCustom.View = View.Details
-        myTab.listCustom.OwnerDraw = True
-
-        AddHandler myTab.listCustom.SelectedIndexChanged, AddressOf MyList_SelectedIndexChanged
-        AddHandler myTab.listCustom.MouseDoubleClick, AddressOf MyList_MouseDoubleClick
-        AddHandler myTab.listCustom.ColumnClick, AddressOf MyList_ColumnClick
-        AddHandler myTab.listCustom.DrawColumnHeader, AddressOf MyList_DrawColumnHeader
-        AddHandler myTab.listCustom.DrawItem, AddressOf MyList_DrawItem
-        AddHandler myTab.listCustom.Scrolled, AddressOf Mylist_Scrolled
-        AddHandler myTab.listCustom.MouseClick, AddressOf MyList_MouseClick
-        AddHandler myTab.listCustom.ColumnReordered, AddressOf MyList_ColumnReordered
-        AddHandler myTab.listCustom.ColumnWidthChanging, AddressOf MyList_CoumnWidthChanging
-
-        myTab.colHd1.Text = ""
-        myTab.colHd1.Width = 26
-        If Not _iconCol Then
-            myTab.colHd2.Text = My.Resources.AddNewTabText2
-            myTab.colHd2.Width = 80
-            myTab.colHd3.Text = My.Resources.AddNewTabText3
-            myTab.colHd3.Width = 300
-            myTab.colHd4.Text = My.Resources.AddNewTabText4
-            myTab.colHd4.Width = 50
-            myTab.colHd5.Text = My.Resources.AddNewTabText5
-            myTab.colHd5.Width = 50
+            _listCustom.Columns(0).Width = _section.Width1
+            'If Not _iconCol Then
+            _listCustom.Columns(1).Width = _section.Width2
+            _listCustom.Columns(2).Width = _section.Width3
+            _listCustom.Columns(3).Width = _section.Width4
+            _listCustom.Columns(4).Width = _section.Width5
+            _listCustom.Columns(5).Width = _section.Width6
+            _listCustom.Columns(6).Width = _section.Width7
+            _listCustom.Columns(7).Width = _section.Width8
+            _listCustom.Columns(0).DisplayIndex = _section.DisplayIndex1
+            _listCustom.Columns(1).DisplayIndex = _section.DisplayIndex2
+            _listCustom.Columns(2).DisplayIndex = _section.DisplayIndex3
+            _listCustom.Columns(3).DisplayIndex = _section.DisplayIndex4
+            _listCustom.Columns(4).DisplayIndex = _section.DisplayIndex5
+            _listCustom.Columns(5).DisplayIndex = _section.DisplayIndex6
+            _listCustom.Columns(6).DisplayIndex = _section.DisplayIndex7
+            _listCustom.Columns(7).DisplayIndex = _section.DisplayIndex8
+            'End If
         End If
 
-        TabDialog.AddTab(myTab.tabName)
-
-        myTab.listCustom.SmallImageList = TIconSmallList
-        myTab.listCustom.ListViewItemSorter = listViewItemSorter
-        myTab.listCustom.Columns(0).Width = _tabs(0).listCustom.Columns(0).Width
-        myTab.listCustom.Columns(0).DisplayIndex = _tabs(0).listCustom.Columns(0).DisplayIndex
-        If Not _iconCol Then
-            myTab.listCustom.Columns(1).Width = _tabs(0).listCustom.Columns(1).Width
-            myTab.listCustom.Columns(2).Width = _tabs(0).listCustom.Columns(2).Width
-            myTab.listCustom.Columns(3).Width = _tabs(0).listCustom.Columns(3).Width
-            myTab.listCustom.Columns(4).Width = _tabs(0).listCustom.Columns(4).Width
-            myTab.listCustom.Columns(1).DisplayIndex = _tabs(0).listCustom.Columns(1).DisplayIndex
-            myTab.listCustom.Columns(2).DisplayIndex = _tabs(0).listCustom.Columns(2).DisplayIndex
-            myTab.listCustom.Columns(3).DisplayIndex = _tabs(0).listCustom.Columns(3).DisplayIndex
-            myTab.listCustom.Columns(4).DisplayIndex = _tabs(0).listCustom.Columns(4).DisplayIndex
-        End If
-
-        myTab.tabPage.ResumeLayout(False)
+        _tabPage.ResumeLayout(False)
 
         Me.SplitContainer1.Panel1.ResumeLayout(False)
         Me.SplitContainer1.Panel2.ResumeLayout(False)
@@ -2990,7 +2119,7 @@ Public Class TweenMain
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
-        If Not _initial Then  '念のため
+        If Not startup Then  '念のため
             SaveConfigs()
         End If
 
@@ -2999,41 +2128,21 @@ Public Class TweenMain
 
     Private Sub RemoveSpecifiedTab(ByVal TabName As String)
         Dim idx As Integer = 0
+        For idx = 0 To ListTab.TabPages.Count - 1
+            If ListTab.TabPages(idx).Text = TabName Then Exit For
+        Next
 
         If TabName = "Recent" OrElse _
            TabName = "Reply" OrElse _
            TabName = "Direct" Then Exit Sub
 
-        Dim tmp As String = String.Format(My.Resources.RemoveSpecifiedTabText1, vbCrLf)
+        Dim tmp As String = String.Format(My.Resources.RemoveSpecifiedTabText1, Environment.NewLine)
         If MessageBox.Show(tmp, My.Resources.RemoveSpecifiedTabText2, _
                          MessageBoxButtons.OKCancel, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then
             Exit Sub
         End If
 
-        SetListProperty()
-
-        'タブ配列のIndexを取得
-        For idx = 0 To _tabs.Count - 1
-            If _tabs(idx).tabName = TabName Then Exit For
-        Next
-
-        '削除するタブに含まれる発言をRecentへ追加
-        For Each itm As ListViewItem In _tabs(idx).listCustom.Items
-            Dim otherEx As Boolean = False
-            Dim pid As String = itm.SubItems(5).Text        'ID
-            For Each titm As ListViewItem In _tabs(0).listCustom.Items
-                If titm.SubItems(5).Text = pid Then
-                    otherEx = True
-                    Exit For
-                End If
-            Next
-            If Not otherEx Then
-                _tabs(0).listCustom.Items.Add(DirectCast(itm.Clone, System.Windows.Forms.ListViewItem))
-            End If
-        Next
-
-        'configから削除（多分不要）
-        _section.ListElement.Remove(TabName)
+        SetListProperty()   '他のタブに列幅等を反映
 
         'オブジェクトインスタンスの削除
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -3042,62 +2151,66 @@ Public Class TweenMain
         Me.ListTab.SuspendLayout()
         Me.SuspendLayout()
 
-        _tabs(idx).tabPage.SuspendLayout()
+        Dim _tabPage As TabPage = ListTab.TabPages(idx)
+        Dim _listCustom As DetailsListView = DirectCast(_tabPage.Controls(0), DetailsListView)
 
-        Me.ListTab.Controls.Remove(_tabs(idx).tabPage)
+        _tabPage.SuspendLayout()
 
-        _tabs(idx).oldestUnreadItem = Nothing
-        _tabs(idx).tabPage.Controls.Remove(_tabs(idx).listCustom)
+        Me.ListTab.Controls.Remove(_tabPage)
+        _tabPage.Controls.Remove(_listCustom)
+        _listCustom.Columns.Clear()
+        _listCustom.ContextMenuStrip = Nothing
 
-        _tabs(idx).listCustom.Columns.Clear()
+        RemoveHandler _listCustom.SelectedIndexChanged, AddressOf MyList_SelectedIndexChanged
+        RemoveHandler _listCustom.MouseDoubleClick, AddressOf MyList_MouseDoubleClick
+        RemoveHandler _listCustom.ColumnClick, AddressOf MyList_ColumnClick
+        RemoveHandler _listCustom.DrawColumnHeader, AddressOf MyList_DrawColumnHeader
+        RemoveHandler _listCustom.DrawItem, AddressOf MyList_DrawItem
+        RemoveHandler _listCustom.Scrolled, AddressOf Mylist_Scrolled
+        RemoveHandler _listCustom.MouseClick, AddressOf MyList_MouseClick
+        RemoveHandler _listCustom.ColumnReordered, AddressOf MyList_ColumnReordered
+        RemoveHandler _listCustom.ColumnWidthChanging, AddressOf MyList_CoumnWidthChanging
+        RemoveHandler _listCustom.CacheVirtualItems, AddressOf MyList_CacheVirtualItems
+        RemoveHandler _listCustom.RetrieveVirtualItem, AddressOf MyList_RetrieveVirtualItem
+        RemoveHandler _listCustom.DrawSubItem, AddressOf MyList_DrawSubItem
 
-        _tabs(idx).listCustom.ContextMenuStrip = Nothing
+        TabDialog.RemoveTab(TabName)
 
-        RemoveHandler _tabs(idx).listCustom.SelectedIndexChanged, AddressOf MyList_SelectedIndexChanged
-        RemoveHandler _tabs(idx).listCustom.MouseDoubleClick, AddressOf MyList_MouseDoubleClick
-        RemoveHandler _tabs(idx).listCustom.ColumnClick, AddressOf MyList_ColumnClick
-        RemoveHandler _tabs(idx).listCustom.DrawColumnHeader, AddressOf MyList_DrawColumnHeader
-        RemoveHandler _tabs(idx).listCustom.DrawItem, AddressOf MyList_DrawItem
-        RemoveHandler _tabs(idx).listCustom.Scrolled, AddressOf Mylist_Scrolled
-        RemoveHandler _tabs(idx).listCustom.MouseClick, AddressOf MyList_MouseClick
-        RemoveHandler _tabs(idx).listCustom.ColumnReordered, AddressOf MyList_ColumnReordered
-        RemoveHandler _tabs(idx).listCustom.ColumnWidthChanging, AddressOf MyList_CoumnWidthChanging
+        _listCustom.SmallImageList = Nothing
+        _listCustom.ListViewItemSorter = Nothing
 
-        TabDialog.RemoveTab(_tabs(idx).tabName)
+        'キャッシュのクリア
+        If _curTab.Equals(_tabPage) Then
+            _curTab = Nothing
+            _curItemIndex = -1
+            _curList = Nothing
+            _curPost = Nothing
+        End If
+        _itemCache = Nothing
+        _itemCacheIndex = -1
+        _postCache = Nothing
 
-        _tabs(idx).listCustom.SmallImageList = Nothing
-        '_tabs(idx).sorter = Nothing
-        _tabs(idx).listCustom.ListViewItemSorter = Nothing
-
-        _tabs(idx).tabPage.ResumeLayout(False)
+        _tabPage.ResumeLayout(False)
 
         Me.SplitContainer1.Panel1.ResumeLayout(False)
         Me.SplitContainer1.Panel2.ResumeLayout(False)
         Me.SplitContainer1.ResumeLayout(False)
         Me.ListTab.ResumeLayout(False)
-        'Me.TabPage1.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
-        _tabs(idx).tabPage.Dispose()
-        _tabs(idx).listCustom.Dispose()
-        _tabs(idx).colHd1.Dispose()
-        If Not _iconCol Then
-            _tabs(idx).colHd2.Dispose()
-            _tabs(idx).colHd3.Dispose()
-            _tabs(idx).colHd4.Dispose()
-            _tabs(idx).colHd5.Dispose()
-        End If
-        _tabs(idx).filters.Clear()
-        _tabs.RemoveAt(idx)
+        _tabPage.Dispose()
+        _listCustom.Dispose()
+        _statuses.RemoveTab(TabName)
 
         SaveConfigs()
     End Sub
 
     Private Sub ListTab_MouseMove(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListTab.MouseMove
+        'タブのD&D
         Dim cpos As New Point(e.X, e.Y)
 
-        If e.Button = Windows.Forms.MouseButtons.Left And _tabDrag Then
+        If e.Button = Windows.Forms.MouseButtons.Left AndAlso _tabDrag Then
             Dim tn As String = ""
             For i As Integer = 0 To ListTab.TabPages.Count - 1
                 Dim rect As Rectangle = ListTab.GetTabRect(i)
@@ -3110,9 +2223,9 @@ Public Class TweenMain
 
             If tn = "" Then Exit Sub
 
-            For Each ts As TabStructure In _tabs
-                If ts.tabName = tn Then
-                    ListTab.DoDragDrop(ts, DragDropEffects.All)
+            For Each tb As TabPage In ListTab.TabPages
+                If tb.Text = tn Then
+                    ListTab.DoDragDrop(tb, DragDropEffects.All)
                     Exit For
                 End If
             Next
@@ -3132,46 +2245,30 @@ Public Class TweenMain
     End Sub
 
     Private Sub ListTab_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ListTab.SelectedIndexChanged
-        TimerColorize.Stop()
-
-        SetListProperty()
-
-        '新しく表示されたリストを再描画
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        MyList.Update()
-        TimerColorize.Start()
-        '新しいタブ名を保管
-        _curTabText = ListTab.SelectedTab.Text
+        '_curList.Refresh()
+        DispSelectedPost()
+        SetMainWindowTitle()
+        SetStatusLabel()
     End Sub
 
     Private Sub SetListProperty()
-        '直前のリスト特定
-        Dim MyList As DetailsListView = Nothing
-        For Each myTab As TabPage In ListTab.TabPages
-            If myTab.Text = _curTabText Then
-                MyList = DirectCast(myTab.Controls(0), DetailsListView)
-                Exit For
-            End If
-        Next
-
         '削除などで見つからない場合は処理せず
-        If MyList Is Nothing Then Exit Sub
+        If _curList Is Nothing Then Exit Sub
 
         '列幅、列並びを他のタブに設定
-        For Each _tab As TabPage In ListTab.TabPages
-            If _tab.Text <> _curTabText Then
-                Dim lst As DetailsListView = DirectCast(_tab.Controls(0), DetailsListView)
+        For Each tb As TabPage In ListTab.TabPages
+            If Not tb.Equals(_curTab) Then
+                Dim lst As DetailsListView = DirectCast(tb.Controls(0), DetailsListView)
                 For i As Integer = 0 To lst.Columns.Count - 1
-                    lst.Columns(i).DisplayIndex = MyList.Columns(i).DisplayIndex
-                    lst.Columns(i).Width = MyList.Columns(i).Width
+                    lst.Columns(i).DisplayIndex = _curList.Columns(i).DisplayIndex
+                    lst.Columns(i).Width = _curList.Columns(i).Width
                 Next
             End If
         Next
     End Sub
 
     Private Sub PostBrowser_StatusTextChanged(ByVal sender As Object, ByVal e As EventArgs) Handles PostBrowser.StatusTextChanged
-        'tinyURLに対応する？
-        If PostBrowser.StatusText.StartsWith("http") Then
+        If PostBrowser.StatusText.StartsWith("http") OrElse PostBrowser.StatusText.StartsWith("ftp") Then
             StatusLabelUrl.Text = PostBrowser.StatusText
             ToolStripMenuItem4.Enabled = True
         Else
@@ -3197,6 +2294,7 @@ Public Class TweenMain
     End Sub
 
     Private Sub StatusText_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles StatusText.KeyUp
+        'スペースキーで未読ジャンプ
         If Not e.Alt AndAlso Not e.Control AndAlso Not e.Shift Then
             If e.KeyCode = Keys.Space OrElse e.KeyCode = Keys.ProcessKey Then
                 If StatusText.Text = " " OrElse StatusText.Text = "　" Then
@@ -3209,6 +2307,7 @@ Public Class TweenMain
     End Sub
 
     Private Sub StatusText_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusText.TextChanged
+        '文字数カウント
         Dim pLen As Integer = 140 - StatusText.Text.Length
         lblLen.Text = pLen.ToString()
         If pLen < 0 Then
@@ -3218,234 +2317,183 @@ Public Class TweenMain
         End If
     End Sub
 
+    Private Sub MyList_CacheVirtualItems(ByVal sender As System.Object, ByVal e As System.Windows.Forms.CacheVirtualItemsEventArgs)
+        If Not (_itemCache Is Nothing) AndAlso e.StartIndex >= _itemCacheIndex AndAlso e.EndIndex <= _itemCacheIndex + _itemCache.Length Then
+            'If the newly requested cache is a subset of the old cache, 
+            'no need to rebuild everything, so do nothing.
+            Return
+        End If
+
+        'Now we need to rebuild the cache.
+        CreateCache(e.StartIndex, e.EndIndex)
+    End Sub
+
+    Private Sub MyList_RetrieveVirtualItem(ByVal sender As System.Object, ByVal e As System.Windows.Forms.RetrieveVirtualItemEventArgs)
+        If _itemCache IsNot Nothing AndAlso e.ItemIndex >= _itemCacheIndex AndAlso e.ItemIndex < _itemCacheIndex + _itemCache.Length AndAlso _curList.Equals(sender) Then
+            'A cache hit, so get the ListViewItem from the cache instead of making a new one.
+            e.Item = _itemCache(e.ItemIndex - _itemCacheIndex)
+        Else
+            'A cache miss, so create a new ListViewItem and pass it back.
+            Dim tb As TabPage = DirectCast(DirectCast(sender, Tween.TweenCustomControl.DetailsListView).Parent, TabPage)
+            e.Item = CreateItem(tb, _
+                                _statuses.Item(tb.Text, e.ItemIndex), _
+                                e.ItemIndex)
+        End If
+    End Sub
+
+    Private Sub CreateCache(ByVal StartIndex As Integer, ByVal EndIndex As Integer)
+        Dim length As Integer = 0
+        If StartIndex > -1 Then
+            'キャッシュ要求（要求範囲±30を作成）
+            StartIndex -= 30
+            If StartIndex < 0 Then StartIndex = 0
+            EndIndex += 30
+            If EndIndex >= _curList.VirtualListSize Then EndIndex = _curList.VirtualListSize - 1
+            length = EndIndex - StartIndex + 1  'indexes are inclusive
+            _itemCacheIndex = StartIndex
+        Else
+            'リフレッシュ
+            StartIndex = _itemCacheIndex
+            length = _itemCache.Length
+            EndIndex = StartIndex + length - 1
+        End If
+
+        'Diagnostics.Debug.WriteLine("Cache " + _itemCacheIndex.ToString + "-" + length.ToString)
+
+        _itemCache = New ListViewItem(length - 1) {}
+        _postCache = New PostClass(length - 1) {}
+        For i As Integer = 0 To length - 1
+            _postCache(i) = _statuses.Item(_curTab.Text, StartIndex + i)
+            _itemCache(i) = CreateItem(_curTab, _postCache(i), StartIndex + i)
+        Next i
+    End Sub
+
+    Private Function CreateItem(ByVal Tab As TabPage, ByVal Post As PostClass, ByVal Index As Integer) As ListViewItem
+        Dim mk As String = ""
+        If Post.IsMark Then mk = "♪"
+        If Post.IsProtect Then mk += "Ю"
+        Dim sitem() As String = {"", Post.Nickname, Post.Data, Post.PDate.ToString(), Post.Name, "", mk, Post.Source}
+        Dim itm As ListViewItem = New ListViewItem(sitem, Post.ImageIndex)
+        Dim read As Boolean = Post.IsRead
+        '未読管理していなかったら既読として扱う
+        If Not _statuses.Tabs(Tab.Text).UnreadManage OrElse _
+           Not SettingDialog.UnreadManage Then read = True
+        ChangeItemStyleRead(read, itm, Post)
+        If Tab.Equals(_curTab) Then itm.BackColor = ColorizeList(Index)
+        Return itm
+    End Function
+
     Private Sub MyList_DrawColumnHeader(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DrawListViewColumnHeaderEventArgs)
         e.DrawDefault = True
     End Sub
 
     Private Sub MyList_DrawItem(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DrawListViewItemEventArgs)
-#If DEBUG Then
-        Dim iStart As Integer = System.Environment.TickCount
-#End If
         Static iSize As Integer = _iconSz
-
         If iSize = 48 OrElse _
            iSize = 26 Then
-            If e.State = 0 Then Exit Sub
-
-            'アイコンカラム位置取得
-            Dim rct As Rectangle = Nothing
-            'Dim MyList As DetailsListView = DirectCast(e.Item.ListView, Tween.TweenCustomControl.DetailsListView)
-
-            If Not _iconCol Then
-                'Dim cnt As Integer
-                Static x As Integer = 0
-                Static wd As Integer = 0
-                Static wd2 As Integer = 0
-                'Dim idx As Integer = _columnIdx     '手抜き
-
-                'For cnt = 0 To 4
-                '   If e.Item.ListView.Columns(cnt).Text = "" Then
-                '       idx = MyList.Columns(cnt).DisplayIndex
-                '       wd2 = MyList.Columns(cnt).Width - 2
-                '   Exit For
-                '   End If
-                'Next
-                If _columnChangeFlag = True Then
-                    Dim MyList As DetailsListView = DirectCast(e.Item.ListView, Tween.TweenCustomControl.DetailsListView)
-                    wd2 = MyList.Columns(_columnIdx).Width - 2
-                    x = e.Item.Bounds.X
-                    For cnt As Integer = 0 To 4
-                        If MyList.Columns(cnt).DisplayIndex < _columnIdx Then
-                            x += MyList.Columns(cnt).Width
-                        End If
-                    Next
-                    If wd2 > iSize Then
-                        wd = iSize
-                    Else
-                        wd = wd2
-                    End If
-                    rct = New Rectangle(x, e.Item.SubItems(_columnIdx).Bounds.Y + 1, wd, iSize)
-                    iSize = iSize
-
-                End If
-
-                If e.Item.Selected Then
-                    e.Graphics.FillRectangle(_brsHighLight, e.Bounds)
-                    'If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
-                    If e.Item.ImageKey <> "" Then e.Graphics.DrawImageUnscaledAndClipped(TIconSmallList.Images(e.Item.ImageKey), rct)
-                    'If e.Item.ImageKey <> "" Then e.Graphics.DrawImageUnscaled(TIconSmallList.Images(e.Item.ImageKey), rct)
-                    'End If
-                    For i As Integer = 0 To 4
-                        If i = 0 Then
-                            If wd2 - iSize > 0 Then
-                                Dim sRct As New Rectangle(x + 1 + iSize, e.Item.SubItems(i).Bounds.Y, wd2 - iSize, e.Item.SubItems(i).Bounds.Height - 3)
-                                e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, _brsHighLightText, sRct, sf)
-                            End If
-                        Else
-                            Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 3)
-                            e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, _brsHighLightText, sRct, sf)
-                        End If
-                    Next
-                Else
-                    'e.DrawBackground()
-                    Dim brs2 As SolidBrush = Nothing
-                    Select Case e.Item.BackColor
-                        Case _clSelf
-                            brs2 = _brsBackColorMine
-                        Case _clAtSelf
-                            brs2 = _brsBackColorAt
-                        Case _clTarget
-                            brs2 = _brsBackColorYou
-                        Case _clAtTarget
-                            brs2 = _brsBackColorAtYou
-                        Case _clAtFromTarget
-                            brs2 = _brsBackColorAtTo
-                        Case Else
-                            brs2 = _brsBackColorNone
-                    End Select
-                    e.Graphics.FillRectangle(brs2, e.Bounds)
-
-                    'If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
-                    If e.Item.ImageKey <> "" Then e.Graphics.DrawImageUnscaledAndClipped(TIconSmallList.Images(e.Item.ImageKey), rct)
-                    'If e.Item.ImageKey <> "" Then e.Graphics.DrawImageUnscaled(TIconSmallList.Images(e.Item.ImageKey), rct)
-                    'End If
-
-                    Dim brs As SolidBrush = Nothing
-                    Select Case e.Item.ForeColor
-                        Case _clUnread
-                            brs = _brsForeColorUnread
-                        Case _clReaded
-                            brs = _brsForeColorReaded
-                        Case _clFav
-                            brs = _brsForeColorFav
-                        Case _clOWL
-                            brs = _brsForeColorOWL
-                    End Select
-                    For i As Integer = 0 To 4
-                        If i = 0 Then
-                            If wd2 - iSize > 0 Then
-                                Dim sRct As New Rectangle(x + 1 + iSize, e.Item.SubItems(i).Bounds.Y, wd2 - iSize, e.Item.SubItems(i).Bounds.Height - 3)
-                                e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
-                            End If
-                        Else
-                            Dim sRct As New Rectangle(e.Item.SubItems(i).Bounds.X + 1, e.Item.SubItems(i).Bounds.Y, e.Item.SubItems(i).Bounds.Width - 2, e.Item.SubItems(i).Bounds.Height - 3)
-                            e.Graphics.DrawString(e.Item.SubItems(i).Text, e.Item.Font, brs, sRct, sf)
-                        End If
-                    Next
-                End If
-            Else
-                Dim wd As Integer
-                Dim wd2 As Integer
-                Dim x As Integer
-                wd2 = e.Item.Bounds.Width - 2
-                If wd2 > iSize Then wd = iSize
-                x = e.Item.Bounds.X
-                rct = New Rectangle(e.Item.Bounds.X, e.Item.Bounds.Y + 1, wd, iSize)
-
-                If e.Item.Selected = True Then
-                    e.Graphics.FillRectangle(_brsHighLight, e.Bounds)
-                    'If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
-                    If e.Item.ImageKey <> "" Then e.Graphics.DrawImageUnscaledAndClipped(TIconSmallList.Images(e.Item.ImageKey), rct)
-                    'End If
-                    If wd2 - iSize - 5 > 0 Then
-                        Dim sRct As New Rectangle(x + 5 + iSize, e.Item.Bounds.Y, wd2 - iSize - 5, e.Item.Font.Height)
-                        Dim sRct2 As New Rectangle(x + 5 + iSize, e.Item.Bounds.Y + e.Item.Font.Height, wd2 - iSize - 5, iSize - e.Item.Font.Height)
-                        Using fnt As New Font(e.Item.Font, FontStyle.Bold)
-                            e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text, fnt, _brsHighLightText, sRct, sf)
-                            e.Graphics.DrawString(e.Item.SubItems(2).Text, e.Item.Font, _brsHighLightText, sRct2, sf)
-                        End Using
-                    End If
-                Else
-                    'e.DrawBackground()
-                    Dim brs2 As SolidBrush = Nothing
-                    Select Case e.Item.BackColor
-                        Case _clSelf
-                            brs2 = _brsBackColorMine
-                        Case _clAtSelf
-                            brs2 = _brsBackColorAt
-                        Case _clTarget
-                            brs2 = _brsBackColorYou
-                        Case _clAtTarget
-                            brs2 = _brsBackColorAtYou
-                        Case _clAtFromTarget
-                            brs2 = _brsBackColorAtTo
-                        Case Else
-                            brs2 = _brsBackColorNone
-                    End Select
-                    e.Graphics.FillRectangle(brs2, e.Bounds)
-
-                    'If MyList.SmallImageList.Images.ContainsKey(e.Item.ImageKey) Then
-                    If e.Item.ImageKey <> "" Then e.Graphics.DrawImageUnscaledAndClipped(TIconSmallList.Images(e.Item.ImageKey), rct)
-                    'End If
-                    Dim brs As SolidBrush = Nothing
-                    Select Case e.Item.ForeColor
-                        Case _clUnread
-                            brs = _brsForeColorUnread
-                        Case _clReaded
-                            brs = _brsForeColorReaded
-                        Case _clFav
-                            brs = _brsForeColorFav
-                        Case _clOWL
-                            brs = _brsForeColorOWL
-                    End Select
-                    If wd2 - iSize - 5 > 0 Then
-                        Dim sRct As New Rectangle(x + 5 + iSize, e.Item.Bounds.Y, wd2 - iSize - 5, e.Item.Font.Height)
-                        Dim sRct2 As New Rectangle(x + 5 + iSize, e.Item.Bounds.Y + e.Item.Font.Height, wd2 - iSize - 5, iSize - e.Item.Font.Height)
-                        Using fnt As New Font(e.Item.Font, FontStyle.Bold)
-                            e.Graphics.DrawString(e.Item.SubItems(1).Text + "(" + e.Item.SubItems(4).Text + ") " + e.Item.SubItems(0).Text + " " + e.Item.SubItems(3).Text, fnt, brs, sRct, sf)
-                            e.Graphics.DrawString(e.Item.SubItems(2).Text, e.Item.Font, brs, sRct2, sf)
-                        End Using
-                    End If
-                End If
-            End If
-            e.DrawFocusRectangle()
+            'アイコンサイズ26,48はオーナードロー（DrawSubItem発生させる）
+            e.DrawDefault = False
         Else
+            'アイコンサイズ16,なしはデフォルト描画
             e.DrawDefault = True
         End If
+    End Sub
 
-#If DEBUG Then
-        _drawcount += 1
-        _drawtime += System.Environment.TickCount - iStart
-        System.Diagnostics.Debug.WriteLine("呼び出し回数" & _drawcount.ToString() & "total処理時間：" & _drawtime.ToString() & "ミリ秒")
-#End If
+    Private Sub MyList_DrawSubItem(ByVal sender As Object, ByVal e As DrawListViewSubItemEventArgs)
+        If e.ItemState = 0 Then Exit Sub
+        'If e.ColumnIndex = 0 Then System.Diagnostics.Debug.WriteLine(e.ItemIndex.ToString + "-" + e.ColumnIndex.ToString + ":" + _
+        'e.ItemState.ToString())
+        If e.ColumnIndex > 0 Then
+            'e.DrawDefault = True
+            'アイコン以外の列
+            If Not e.Item.Selected Then     'e.ItemStateでうまく判定できない？？？
+                '選択されていない行
+                '背景色
+                Dim brs2 As SolidBrush = Nothing
+                Select Case e.Item.BackColor
+                    Case _clSelf
+                        brs2 = _brsBackColorMine
+                    Case _clAtSelf
+                        brs2 = _brsBackColorAt
+                    Case _clTarget
+                        brs2 = _brsBackColorYou
+                    Case _clAtTarget
+                        brs2 = _brsBackColorAtYou
+                    Case _clAtFromTarget
+                        brs2 = _brsBackColorAtTo
+                    Case Else
+                        brs2 = _brsBackColorNone
+                End Select
+                e.Graphics.FillRectangle(brs2, e.Bounds)
+                '文字色
+                Dim brs As SolidBrush = Nothing
+                Select Case e.Item.ForeColor
+                    Case _clUnread
+                        brs = _brsForeColorUnread
+                    Case _clReaded
+                        brs = _brsForeColorReaded
+                    Case _clFav
+                        brs = _brsForeColorFav
+                    Case _clOWL
+                        brs = _brsForeColorOWL
+                    Case Else
+                        brs = New SolidBrush(e.Item.ForeColor)
+                End Select
+                e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, brs, e.Bounds, sf)
+            Else
+                '選択中の行
+                If DirectCast(sender, Windows.Forms.Control).Focused Then
+                    e.Graphics.FillRectangle(_brsHighLight, e.Bounds)
+                    e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, _brsHighLightText, e.Bounds, sf)
+                Else
+                    e.Graphics.FillRectangle(_brsDeactiveSelection, e.Bounds)
+                    e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, _brsForeColorUnread, e.Bounds, sf)
+                End If
+            End If
+            If e.ColumnIndex = 2 AndAlso (e.ItemState And ListViewItemStates.Focused) = ListViewItemStates.Focused Then e.DrawFocusRectangle(e.Item.GetBounds(ItemBoundsPortion.Entire))
+        Else
+            'アイコン列はデフォルト描画
+            e.DrawDefault = True
+        End If
+        'e.DrawDefault = True
     End Sub
 
     Private Sub DoTabSearch(ByVal _word As String, _
                             ByVal CaseSensitive As Boolean, _
                             ByVal UseRegex As Boolean, _
                             ByVal SType As SEARCHTYPE)
-        Dim myList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
+        'Dim myList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
         Dim cidx As Integer = 0
         Dim fnd As Boolean = False
         Dim toIdx As Integer
         Dim stp As Integer = 1
 
-        If myList.Items.Count = 0 Then
+        If _curList.VirtualListSize = 0 Then
             MessageBox.Show(My.Resources.DoTabSearchText2, My.Resources.DoTabSearchText3, MessageBoxButtons.OK, MessageBoxIcon.Information)
         End If
 
-        If myList.SelectedItems.Count > 0 Then
-            cidx = myList.SelectedItems(0).Index
+        If _curList.SelectedIndices.Count > 0 Then
+            cidx = _curList.SelectedIndices(0)
         End If
-        toIdx = myList.Items.Count - 1
+        toIdx = _curList.VirtualListSize - 1
 
         Select Case SType
             Case SEARCHTYPE.DialogSearch    'ダイアログからの検索
-                If myList.SelectedItems.Count > 0 Then
-                    cidx = myList.SelectedItems(0).Index
+                If _curList.SelectedIndices.Count > 0 Then
+                    cidx = _curList.SelectedIndices(0)
                 Else
                     cidx = 0
                 End If
             Case SEARCHTYPE.NextSearch      '次を検索
-                If myList.SelectedItems.Count > 0 Then
-                    cidx = myList.SelectedItems(0).Index + 1
+                If _curList.SelectedIndices.Count > 0 Then
+                    cidx = _curList.SelectedIndices(0) + 1
                     If cidx > toIdx Then cidx = toIdx
                 Else
                     cidx = 0
                 End If
             Case SEARCHTYPE.PrevSearch      '前を検索
-                If myList.SelectedItems.Count > 0 Then
-                    cidx = myList.SelectedItems(0).Index - 1
+                If _curList.SelectedIndices.Count > 0 Then
+                    cidx = _curList.SelectedIndices(0) - 1
                     If cidx < 0 Then cidx = 0
                 Else
                     cidx = toIdx
@@ -3462,21 +2510,18 @@ Public Class TweenMain
         End If
 RETRY:
         If UseRegex Then
-            ' 正規表現検索（CaseSensitive）
+            ' 正規表現検索
             Dim _search As Regex
             Try
                 _search = New Regex(_word)
                 For idx As Integer = cidx To toIdx Step stp
-                    If _search.IsMatch(myList.Items(idx).SubItems(1).Text, regOpt) _
-                        OrElse _search.IsMatch(myList.Items(idx).SubItems(2).Text, regOpt) _
-                        OrElse _search.IsMatch(myList.Items(idx).SubItems(4).Text, regOpt) _
+                    Dim post As PostClass = _statuses.Item(_curTab.Text, idx)
+                    If _search.IsMatch(post.Nickname, regOpt) _
+                        OrElse _search.IsMatch(post.Data, regOpt) _
+                        OrElse _search.IsMatch(post.Name, regOpt) _
                     Then
-                        For Each itm As ListViewItem In myList.SelectedItems
-                            itm.Selected = False
-                        Next
-                        myList.Items(idx).Selected = True
-                        myList.Items(idx).Focused = True
-                        myList.EnsureVisible(idx)
+                        SelectOneItem(_curList, idx)
+                        _curList.EnsureVisible(idx)
                         Exit Sub
                     End If
                 Next
@@ -3485,18 +2530,15 @@ RETRY:
                 Exit Sub
             End Try
         Else
-            ' 通常検索（CaseSensitive）
+            ' 通常検索
             For idx As Integer = cidx To toIdx Step stp
-                If myList.Items(idx).SubItems(1).Text.IndexOf(_word, fndOpt) > -1 _
-                    OrElse myList.Items(idx).SubItems(2).Text.IndexOf(_word, fndOpt) > -1 _
-                    OrElse myList.Items(idx).SubItems(4).Text.IndexOf(_word, fndOpt) > -1 _
+                Dim post As PostClass = _statuses.Item(_curTab.Text, idx)
+                If post.Nickname.IndexOf(_word, fndOpt) > -1 _
+                    OrElse post.Data.IndexOf(_word, fndOpt) > -1 _
+                    OrElse post.Name.IndexOf(_word, fndOpt) > -1 _
                 Then
-                    For Each itm As ListViewItem In myList.SelectedItems
-                        itm.Selected = False
-                    Next
-                    myList.Items(idx).Selected = True
-                    myList.Items(idx).Focused = True
-                    myList.EnsureVisible(idx)
+                    SelectOneItem(_curList, idx)
+                    _curList.EnsureVisible(idx)
                     Exit Sub
                 End If
             Next
@@ -3509,7 +2551,7 @@ RETRY:
                     cidx = 0
                 Case SEARCHTYPE.PrevSearch
                     toIdx = cidx
-                    cidx = myList.Items.Count - 1
+                    cidx = _curList.Items.Count - 1
             End Select
             fnd = True
             GoTo RETRY
@@ -3519,6 +2561,7 @@ RETRY:
     End Sub
 
     Private Sub MenuItemSubSearch_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemSubSearch.Click
+        '検索メニュー
         SearchDialog.Owner = Me
         If SearchDialog.ShowDialog() = Windows.Forms.DialogResult.Cancel Then
             Me.TopMost = SettingDialog.AlwaysTop
@@ -3535,6 +2578,7 @@ RETRY:
     End Sub
 
     Private Sub MenuItemSearchNext_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemSearchNext.Click
+        '次を検索
         If SearchDialog.SWord = "" Then
             If SearchDialog.ShowDialog() = Windows.Forms.DialogResult.Cancel Then
                 Me.TopMost = SettingDialog.AlwaysTop
@@ -3556,6 +2600,7 @@ RETRY:
     End Sub
 
     Private Sub MenuItemSearchPrev_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemSearchPrev.Click
+        '前を検索
         If SearchDialog.SWord = "" Then
             If SearchDialog.ShowDialog() = Windows.Forms.DialogResult.Cancel Then
                 Me.TopMost = SettingDialog.AlwaysTop
@@ -3577,147 +2622,60 @@ RETRY:
     End Sub
 
     Private Sub JumpUnreadMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles JumpUnreadMenuItem.Click
-        Dim myList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim _itnm As String = ListTab.SelectedTab.Text
-        Dim _ntnm As String = _itnm
-        Dim cidx As Integer = 0
-        Dim fnd As Boolean = True
-        Dim toIdx As Integer
-        Dim stp As Integer = 1
-
-        myList.Focus()
+        Dim tb As TabClass = _statuses.Tabs(_curTab.Text)
+        Dim lst As DetailsListView = _curList
+        Dim idx As Integer = 0
 RETRY:
-        If _itnm = _ntnm AndAlso Not fnd Then
-            '全て既読の場合、一番頭のタブの最新発言を選択
-            ListTab.SelectedIndex = 0
-            Dim ts As TabStructure = GetTSbyName(ListTab.SelectedTab.Text)     '一番最初のタブ
-            If ts.listCustom.Items.Count > 0 Then
-                '選択済みのものがあったら、選択状態クリア
-                For Each itm As ListViewItem In ts.listCustom.SelectedItems
-                    itm.Selected = False
-                Next
-                If listViewItemSorter.Column = 3 Then
-                    If listViewItemSorter.Order = SortOrder.Ascending Then
-                        ts.listCustom.Items(ts.listCustom.Items.Count - 1).Selected = True
-                        ts.listCustom.Items(ts.listCustom.Items.Count - 1).Focused = True
-                        ts.listCustom.EnsureVisible(ts.listCustom.Items.Count - 1)
-                    Else
-                        ts.listCustom.Items(0).Selected = True
-                        ts.listCustom.Items(0).Focused = True
-                        ts.listCustom.EnsureVisible(0)
-                    End If
-                Else
-                    ts.listCustom.Items(ts.listCustom.Items.Count - 1).Selected = True
-                    ts.listCustom.Items(ts.listCustom.Items.Count - 1).Focused = True
-                    ts.listCustom.EnsureVisible(ts.listCustom.Items.Count - 1)
-                End If
-            End If
-            Exit Sub
-        End If
-        fnd = False
-
-        For Each ts As TabStructure In _tabs
-            If ts.listCustom.Equals(myList) Then
-                If ts.unreadCount = 0 Then Exit For
-                If listViewItemSorter.Column = 3 Then
-                    If listViewItemSorter.Order = SortOrder.Ascending Then
-                        If ts.oldestUnreadItem Is Nothing Then
-                            cidx = 0
-                        Else
-                            cidx = ts.oldestUnreadItem.Index
-                        End If
-                        toIdx = myList.Items.Count - 1
-                        stp = 1
-                    Else
-                        If ts.oldestUnreadItem Is Nothing Then
-                            cidx = myList.Items.Count - 1
-                        Else
-                            cidx = ts.oldestUnreadItem.Index
-                        End If
-                        toIdx = 0
-                        stp = -1
-                    End If
-                Else
-                    cidx = 0
-                    toIdx = myList.Items.Count - 1
-                    stp = 1
-                End If
-
-                For idx As Integer = cidx To toIdx Step stp
-                    If myList.Items(idx).SubItems(8).Text = "False" Then
-                        If ListTab.SelectedTab.Text <> _ntnm Then
-                            For i As Integer = 0 To ListTab.TabPages.Count - 1
-                                If ListTab.TabPages(i).Text = _ntnm Then
-                                    ListTab.SelectedIndex = i
-                                    Exit For
-                                End If
-                            Next
-                        End If
-                        For Each itm As ListViewItem In myList.SelectedItems
-                            itm.Selected = False
-                        Next
-                        myList.Items(idx).Selected = True
-                        myList.Items(idx).Focused = True
-
-                        Dim _item As ListViewItem
-                        Dim idx1 As Integer
-                        Dim idx2 As Integer
-                        _item = myList.GetItemAt(0, 25)
-                        If _item Is Nothing Then _item = myList.Items(0)
-                        idx1 = _item.Index
-                        _item = myList.GetItemAt(0, myList.ClientSize.Height - 1)
-                        If _item Is Nothing Then _item = myList.Items(myList.Items.Count - 1)
-                        idx2 = _item.Index
-                        If idx <= idx1 OrElse idx >= idx2 Then
-                            MoveTop()
-                        End If
-                        Exit Sub
-                    End If
-                Next
-                Exit For
-            End If
-        Next
-
-        If Not fnd Then
-            For i As Integer = 0 To ListTab.TabPages.Count - 1
-                If ListTab.TabPages(i).Text = _ntnm Then
-                    If i = ListTab.TabPages.Count - 1 Then
-                        i = 0
-                    Else
-                        i += 1
-                    End If
-                    myList = DirectCast(ListTab.TabPages(i).Controls(0), DetailsListView)
-                    _ntnm = ListTab.TabPages(i).Text
+        If tb.OldestUnreadId > -1 AndAlso tb.Contains(tb.OldestUnreadId) AndAlso tb.UnreadCount > 0 Then
+            '未読アイテムへ
+            idx = tb.GetIndex(tb.OldestUnreadId)
+        Else
+RETRY2:
+            Dim tidx As Integer = ListTab.TabPages.IndexOf(ListTab.SelectedTab)
+            For i As Integer = tidx To ListTab.TabPages.Count - 1
+                tb = _statuses.Tabs(ListTab.TabPages(i).Text)   'tb書き換え
+                If tb.UnreadCount > 0 Then
+                    ListTab.SelectedIndex = i
+                    lst = DirectCast(ListTab.TabPages(i).Controls(0), DetailsListView)
+                    _statuses.SetNextUnreadId(-1, tb)   '頭から未読探索
                     GoTo RETRY
                 End If
             Next
+            If tidx > 0 Then
+                '最終タブなら、先頭タブから再探索
+                ListTab.SelectedIndex = 0
+                GoTo RETRY2
+            End If
+            '未読なし
+            ListTab.SelectedIndex = 0
+            lst = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
+            idx = 0
+            If _statuses.SortOrder = SortOrder.Ascending Then idx = lst.VirtualListSize - 1
         End If
+
+        If lst.VirtualListSize > 0 AndAlso idx > -1 Then
+            SelectOneItem(lst, idx)
+            If lst.Items(idx).Position.Y > lst.ClientSize.Height - _iconSz - 10 Then
+                MoveTop()
+            Else
+                lst.EnsureVisible(idx)
+            End If
+        End If
+        lst.Focus()
+        lst.Update()
     End Sub
 
     Private Sub StatusOpenMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusOpenMenuItem.Click
-        Do While ExecWorker.IsBusy
-            Threading.Thread.Sleep(1)
-            Application.DoEvents()
-        Loop
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-
-        '後でタブ追加して独自読み込みにする
-        If MyList.SelectedItems.Count > 0 Then
-            ExecWorker.RunWorkerAsync("http://twitter.com/" + MyList.SelectedItems(0).SubItems(4).Text + "/statuses/" + MyList.SelectedItems(0).SubItems(5).Text)
+        If _curList.SelectedIndices.Count > 0 Then
+            Dim post As PostClass = _statuses.Item(_curTab.Text, _curList.SelectedIndices(0))
+            OpenUriAsync("http://twitter.com/" + post.Name + "/statuses/" + post.Id.ToString)
         End If
     End Sub
 
     Private Sub FavorareMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles FavorareMenuItem.Click
-        Do While ExecWorker.IsBusy
-            Threading.Thread.Sleep(1)
-            Application.DoEvents()
-        Loop
-
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-
-        '後でタブ追加して独自読み込みにする
-        If MyList.SelectedItems.Count > 0 Then
-            ExecWorker.RunWorkerAsync("http://favotter.matope.com/user.php?user=" + MyList.SelectedItems(0).SubItems(4).Text)
+        If _curList.SelectedIndices.Count > 0 Then
+            Dim post As PostClass = _statuses.Item(_curTab.Text, _curList.SelectedIndices(0))
+            OpenUriAsync("http://favotter.matope.com/user.php?user=" + post.Name)
         End If
     End Sub
 
@@ -3733,17 +2691,17 @@ RETRY:
 
         If _iconSz = 0 Then Exit Sub
 
-        If _iconSz <> 48 Then
-            For Each key As String In TIconList.Images.Keys
-                Using img2 As New Bitmap(sz, sz)
-                    Using g As Graphics = Graphics.FromImage(img2)
-                        g.InterpolationMode = Drawing2D.InterpolationMode.Default
-                        g.DrawImage(TIconList.Images(key), 0, 0, sz, sz)
-                        TIconSmallList.Images.Add(key, img2)
-                    End Using
-                End Using
-            Next
-        End If
+        'If _iconSz <> 48 Then
+        '    For Each key As String In TIconList.Images.Keys
+        '        Using img2 As New Bitmap(sz, sz)
+        '            Using g As Graphics = Graphics.FromImage(img2)
+        '                g.InterpolationMode = Drawing2D.InterpolationMode.Default
+        '                g.DrawImage(TIconList.Images(key), 0, 0, sz, sz)
+        '                TIconSmallList.Images.Add(key, img2)
+        '            End Using
+        '        End Using
+        '    Next
+        'End If
     End Sub
 
     Private Sub VerUpMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VerUpMenuItem.Click
@@ -3818,7 +2776,9 @@ RETRY:
         TimerColorize.Stop()
         TimerColorize.Enabled = False
         TimerColorize.Interval = 100
-        ColorizeList(False)
+        'If _itemCache IsNot Nothing Then CreateCache(-1, 0)
+        ColorizeList(-1)
+        If _itemCacheIndex > -1 Then _curList.RedrawItems(_itemCacheIndex, _itemCacheIndex + _itemCache.Length - 1, False)
         DispSelectedPost()
         '件数関連の場合、タイトル即時書き換え
         If SettingDialog.DispLatestPost <> DispTitleEnum.None AndAlso _
@@ -3827,26 +2787,29 @@ RETRY:
             SetMainWindowTitle()
         End If
         If Not StatusLabelUrl.Text.StartsWith("http") Then SetStatusLabel()
+        For Each tb As TabPage In ListTab.TabPages
+            If _statuses.Tabs(tb.Text).UnreadCount = 0 AndAlso tb.ImageIndex = 0 Then tb.ImageIndex = -1
+        Next
     End Sub
 
     Private Sub DispSelectedPost()
-        Dim _item As ListViewItem
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim dTxt As String
 
-        If MyList.SelectedItems.Count = 0 Then Exit Sub
+        If _curList.SelectedIndices.Count = 0 Then Exit Sub
 
-        _item = MyList.SelectedItems(0)
-        dTxt = "<html><head><style type=""text/css"">p {font-family: """ + _fntDetail.Name + """, sans-serif; font-size: " + _fntDetail.Size.ToString + "pt;} --></style></head><body style=""margin:0px""><p>" + _item.SubItems(7).Text + "</p></body></html>"
-        NameLabel.Text = _item.SubItems(1).Text + "/" + _item.SubItems(4).Text
-        If UserPicture.Image IsNot Nothing Then UserPicture.Image.Dispose()
-        UserPicture.Image = TIconList.Images(_item.SubItems(6).Text)
-        NameLabel.Text = _item.SubItems(1).Text + "/" + _item.SubItems(4).Text
+        Dim dTxt As String = detailHtmlFormat + _curPost.OriginalData + detailHtmlFormat4
+        NameLabel.Text = _curPost.Name + "/" + _curPost.Nickname
+        'If UserPicture.Image IsNot Nothing Then UserPicture.Image.Dispose()
+        If _curPost.ImageIndex > -1 Then
+            UserPicture.Image = TIconDic(_curPost.ImageUrl)
+        Else
+            UserPicture.Image = Nothing
+        End If
+        'UserPicture.Refresh()
 
         NameLabel.ForeColor = System.Drawing.SystemColors.ControlText
-        DateTimeLabel.Text = _item.SubItems(3).Text.ToString()
-        If _item.SubItems(10).Text = "True" AndAlso (SettingDialog.OneWayLove OrElse ListTab.SelectedTab.Text = "Direct") Then NameLabel.ForeColor = _clOWL
-        If _item.SubItems(9).Text = "True" Then NameLabel.ForeColor = _clFav
+        DateTimeLabel.Text = _curPost.PDate.ToString()
+        If _curPost.IsOwl AndAlso (SettingDialog.OneWayLove OrElse _curTab.Text = "Direct") Then NameLabel.ForeColor = _clOWL
+        If _curPost.IsFav Then NameLabel.ForeColor = _clFav
 
         If PostBrowser.DocumentText <> dTxt Then
             PostBrowser.Visible = False
@@ -3856,30 +2819,15 @@ RETRY:
     End Sub
 
     Private Sub MatomeMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MatomeMenuItem.Click
-        Do While ExecWorker.IsBusy
-            Threading.Thread.Sleep(1)
-            Application.DoEvents()
-        Loop
-
-        ExecWorker.RunWorkerAsync("http://www5.atwiki.jp/tween/")
+        OpenUriAsync("http://www5.atwiki.jp/tween/")
     End Sub
 
     Private Sub OfficialMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OfficialMenuItem.Click
-        Do While ExecWorker.IsBusy
-            Threading.Thread.Sleep(1)
-            Application.DoEvents()
-        Loop
-
-        ExecWorker.RunWorkerAsync("http://d.hatena.ne.jp/Kiri_Feather/20071121")
+        OpenUriAsync("http://d.hatena.ne.jp/Kiri_Feather/20071121")
     End Sub
 
     Private Sub DLPageMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DLPageMenuItem.Click
-        Do While ExecWorker.IsBusy
-            Threading.Thread.Sleep(1)
-            Application.DoEvents()
-        Loop
-
-        ExecWorker.RunWorkerAsync("http://tween.sourceforge.jp/index.html")
+        OpenUriAsync("http://www.asahi-net.or.jp/~ne5h-ykmz/index.html")
     End Sub
 
     Private Sub ListTab_KeyDown(ByVal sender As System.Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles ListTab.KeyDown
@@ -3888,13 +2836,13 @@ RETRY:
             If e.KeyCode = Keys.N OrElse e.KeyCode = Keys.Right Then
                 e.Handled = True
                 e.SuppressKeyPress = True
-                GoNextRelPost()
+                GoRelPost(True)
                 Exit Sub
             End If
             If e.KeyCode = Keys.P OrElse e.KeyCode = Keys.Left Then
                 e.Handled = True
                 e.SuppressKeyPress = True
-                GoPreviousRelPost()
+                GoRelPost(False)
                 Exit Sub
             End If
             If e.KeyCode = Keys.OemPeriod Then
@@ -3917,12 +2865,12 @@ RETRY:
             If e.KeyCode = Keys.L Then
                 e.Handled = True
                 e.SuppressKeyPress = True
-                GoNextPost()
+                GoPost(True)
             End If
             If e.KeyCode = Keys.H Then
                 e.Handled = True
                 e.SuppressKeyPress = True
-                GoPreviousPost()
+                GoPost(False)
             End If
             If e.KeyCode = Keys.Z Or e.KeyCode = Keys.Oemcomma Then
                 e.Handled = True
@@ -3934,14 +2882,12 @@ RETRY:
         If e.Control AndAlso Not e.Alt AndAlso Not e.Shift Then
             ' CTRLキーが押されている場合
             If e.KeyCode = Keys.Home OrElse e.KeyCode = Keys.End Then
-                'ColorizeList(False)
                 TimerColorize.Stop()
                 TimerColorize.Start()
             End If
             If e.KeyCode = Keys.A Then
-                Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-                For Each lItem As ListViewItem In MyList.Items
-                    lItem.Selected = True
+                For i As Integer = 0 To _curList.VirtualListSize - 1
+                    _curList.SelectedIndices.Add(i)
                 Next
             End If
         End If
@@ -3977,12 +2923,12 @@ RETRY:
             If e.KeyCode = Keys.N OrElse e.KeyCode = Keys.Right Then
                 e.Handled = True
                 e.SuppressKeyPress = True
-                GoNextFav()
+                GoFav(True)
             End If
             If e.KeyCode = Keys.P OrElse e.KeyCode = Keys.Left Then
                 e.Handled = True
                 e.SuppressKeyPress = True
-                GoPreviousFav()
+                GoFav(False)
             End If
 
         End If
@@ -3999,344 +2945,246 @@ RETRY:
             End If
         End If
         If e.KeyCode = Keys.C Then
-            Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
             Dim clstr As String = ""
             If e.Control AndAlso Not e.Alt AndAlso Not e.Shift Then
                 e.Handled = True
                 e.SuppressKeyPress = True
-                For Each itm As ListViewItem In MyList.SelectedItems
-                    If clstr <> "" Then clstr += vbCrLf
-                    clstr += itm.SubItems(4).Text + ":" + itm.SubItems(2).Text + " [http://twitter.com/" + itm.SubItems(4).Text + "/statuses/" + itm.SubItems(5).Text + "]"
-                Next
+                CopyStot()
             End If
             If e.Control AndAlso e.Shift AndAlso Not e.Alt Then
                 e.Handled = True
                 e.SuppressKeyPress = True
-                For Each itm As ListViewItem In MyList.SelectedItems
-                    If clstr <> "" Then clstr += vbCrLf
-                    clstr += "http://twitter.com/" + itm.SubItems(4).Text + "/statuses/" + itm.SubItems(5).Text
-                Next
-            End If
-            If clstr <> "" Then
-                Dim i As Integer = 0
-RETRY:
-                Try
-                    Clipboard.Clear()
-                    Clipboard.SetText(clstr)
-                Catch ex As Exception
-                    i += 1
-                    If i < 3 Then
-                        System.Threading.Thread.Sleep(500)
-                        My.Application.DoEvents()
-                        GoTo RETRY
-                    End If
-                End Try
+                CopyIdUri()
             End If
         End If
     End Sub
 
-    Private Sub GoNextFav()
-        TimerColorize.Stop()
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        If MyList.SelectedItems.Count = 0 Then Exit Sub
+    Private Sub CopyStot()
+        Dim clstr As String = ""
+        Dim sb As New StringBuilder()
+        For Each idx As Integer In _curList.SelectedIndices
+            Dim post As PostClass = _statuses.Item(_curTab.Text, idx)
+            sb.AppendFormat("{0}:{1} [http://twitter.com/{0}/statuses/{2}]{3}", post.Name, post.Data, post.Id, Environment.NewLine)
 
-        Dim fIdx As Integer = MyList.SelectedItems(0).Index + 1
-        If fIdx > MyList.Items.Count - 1 Then Exit Sub
 
-        For idx As Integer = fIdx To MyList.Items.Count - 1
-            If MyList.Items(idx).SubItems(9).Text = "True" Then
-                For Each itm As ListViewItem In MyList.SelectedItems
-                    itm.Selected = False
-                Next
-                MyList.Items(idx).Selected = True
-                MyList.Items(idx).Focused = True
-                MyList.EnsureVisible(idx)
-                MyList.Update()
-                TimerColorize.Start()
-                Exit For
-            End If
+
+
+
+
+
+
+
+
+
+
+
+
         Next
-    End Sub
-
-    Private Sub GoPreviousFav()
-        TimerColorize.Stop()
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        If MyList.SelectedItems.Count = 0 Then Exit Sub
-
-        Dim fIdx As Integer = MyList.SelectedItems(0).Index - 1
-        If fIdx < 0 Then Exit Sub
-
-        For idx As Integer = fIdx To 0 Step -1
-            If MyList.Items(idx).SubItems(9).Text = "True" Then
-                For Each itm As ListViewItem In MyList.SelectedItems
-                    itm.Selected = False
-                Next
-                MyList.Items(idx).Selected = True
-                MyList.Items(idx).Focused = True
-                MyList.EnsureVisible(idx)
-                MyList.Update()
-                TimerColorize.Start()
-                Exit For
-            End If
-        Next
-    End Sub
-
-    Private Sub GoNextPost()
-        TimerColorize.Stop()
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        If MyList.SelectedItems.Count = 0 Then Exit Sub
-
-        Dim user As String = MyList.SelectedItems(0).SubItems(4).Text
-        Dim fIdx As Integer = MyList.SelectedItems(0).Index + 1
-        If fIdx > MyList.Items.Count - 1 Then Exit Sub
-
-        For idx As Integer = fIdx To MyList.Items.Count - 1
-            If MyList.Items(idx).SubItems(4).Text = user Then
-                For Each itm As ListViewItem In MyList.SelectedItems
-                    itm.Selected = False
-                Next
-                MyList.Items(idx).Selected = True
-                MyList.Items(idx).Focused = True
-                MyList.EnsureVisible(idx)
-                MyList.Update()
-                TimerColorize.Start()
-                Exit For
-            End If
-        Next
-    End Sub
-
-    Private Sub GoPreviousPost()
-        TimerColorize.Stop()
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        If MyList.SelectedItems.Count = 0 Then Exit Sub
-
-        Dim user As String = MyList.SelectedItems(0).SubItems(4).Text
-        Dim fIdx As Integer = MyList.SelectedItems(0).Index - 1
-        If fIdx < 0 Then Exit Sub
-
-        For idx As Integer = fIdx To 0 Step -1
-            If MyList.Items(idx).SubItems(4).Text = user Then
-                For Each itm As ListViewItem In MyList.SelectedItems
-                    itm.Selected = False
-                Next
-                MyList.Items(idx).Selected = True
-                MyList.Items(idx).Focused = True
-                MyList.EnsureVisible(idx)
-                MyList.Update()
-                TimerColorize.Start()
-                Exit For
-            End If
-        Next
-    End Sub
-
-    Private Sub GoNextRelPost()
-        TimerColorize.Stop()
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        If MyList.SelectedItems.Count = 0 Then Exit Sub
-
-        Dim fIdx As Integer = MyList.SelectedItems(0).Index + 1
-        If fIdx > MyList.Items.Count - 1 Then Exit Sub
-
-        If _anchorFlag = False Then
-            _anchorItem = Nothing
-            _anchorItem = MyList.SelectedItems(0)
-            _anchorFlag = True
+        If sb.Length > 0 Then
+            clstr = sb.ToString()
+            Clipboard.SetDataObject(clstr, False, 5, 100)
         End If
-        Dim user As String = _anchorItem.SubItems(4).Text
-        Dim dTxt As String = _anchorItem.SubItems(7).Text
-        Dim at As New Collections.Specialized.StringCollection
-        Dim pos1 As Integer
-        Dim pos2 As Integer
+    End Sub
 
-        Do While True
-            pos1 = dTxt.IndexOf(_replyHtml, pos2, StringComparison.Ordinal)
-            If pos1 = -1 Then Exit Do
-            pos2 = dTxt.IndexOf(""">", pos1 + _replyHtml.Length, StringComparison.Ordinal)
-            If pos2 > -1 Then
-                at.Add(dTxt.Substring(pos1 + _replyHtml.Length, pos2 - pos1 - _replyHtml.Length))
+    Private Sub CopyIdUri()
+        Dim clstr As String = ""
+        Dim sb As New StringBuilder()
+        For Each idx As Integer In _curList.SelectedIndices
+            Dim post As PostClass = _statuses.Item(_curTab.Text, idx)
+            sb.AppendFormat("http://twitter.com/{0}/statuses/{1}{2}", post.Name, post.Id, Environment.NewLine)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        Next
+        If sb.Length > 0 Then
+            clstr = sb.ToString()
+            Clipboard.SetDataObject(clstr, False, 5, 100)
+        End If
+    End Sub
+
+    Private Sub GoFav(ByVal forward As Boolean)
+        If _curList.VirtualListSize = 0 Then Exit Sub
+        Dim fIdx As Integer = 0
+        Dim toIdx As Integer = 0
+        Dim stp As Integer = 1
+
+        If forward Then
+            If _curList.SelectedIndices.Count = 0 Then
+                fIdx = 0
+            Else
+                fIdx = _curList.SelectedIndices(0) + 1
+                If fIdx > _curList.VirtualListSize - 1 Then Exit Sub
             End If
-        Loop
+            toIdx = _curList.VirtualListSize - 1
+            stp = 1
+        Else
+            If _curList.SelectedIndices.Count = 0 Then
+                fIdx = _curList.VirtualListSize - 1
+            Else
+                fIdx = _curList.SelectedIndices(0) - 1
+                If fIdx < 0 Then Exit Sub
+            End If
+            toIdx = 0
+            stp = -1
+        End If
 
-        For idx As Integer = fIdx To MyList.Items.Count - 1
-            If MyList.Items(idx).SubItems(4).Text = user OrElse _
-               at.Contains(MyList.Items(idx).SubItems(4).Text) OrElse _
-               Regex.IsMatch(MyList.Items(idx).SubItems(2).Text, "@" + user + "([^a-zA-Z0-9_]|$)") Then
-                For Each itm As ListViewItem In MyList.SelectedItems
-                    itm.Selected = False
-                Next
-                MyList.Items(idx).Selected = True
-                MyList.Items(idx).Focused = True
-                MyList.EnsureVisible(idx)
-                MyList.Update()
-                TimerColorize.Start()
+        For idx As Integer = fIdx To toIdx Step stp
+            If _statuses.Item(_curTab.Text, idx).IsFav Then
+                SelectOneItem(_curList, idx)
+                _curList.EnsureVisible(idx)
                 Exit For
             End If
         Next
-        at.Clear()
     End Sub
 
-    Private Sub GoPreviousRelPost()
-        TimerColorize.Stop()
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        If MyList.SelectedItems.Count = 0 Then Exit Sub
+    Private Sub GoPost(ByVal forward As Boolean)
+        If _curList.SelectedIndices.Count = 0 Then Exit Sub
+        Dim fIdx As Integer = 0
+        Dim toIdx As Integer = 0
+        Dim stp As Integer = 1
 
+        If forward Then
+            fIdx = _curList.SelectedIndices(0) + 1
+            If fIdx > _curList.VirtualListSize - 1 Then Exit Sub
+            toIdx = _curList.VirtualListSize - 1
+            stp = 1
+        Else
+            fIdx = _curList.SelectedIndices(0) - 1
+            If fIdx < 0 Then Exit Sub
+            toIdx = 0
+            stp = -1
+        End If
 
-        Dim fIdx As Integer = MyList.SelectedItems(0).Index - 1
-        If fIdx < 0 Then Exit Sub
+        For idx As Integer = fIdx To toIdx Step stp
+            If _statuses.Item(_curTab.Text, idx).Name = _curPost.Name Then
+                SelectOneItem(_curList, idx)
+                _curList.EnsureVisible(idx)
+                Exit For
+            End If
+        Next
+    End Sub
+
+    Private Sub GoRelPost(ByVal forward As Boolean)
+        If _curList.SelectedIndices.Count = 0 Then Exit Sub
+
+        Dim fIdx As Integer = 0
+        Dim toIdx As Integer = 0
+        Dim stp As Integer = 1
+        If forward Then
+            fIdx = _curList.SelectedIndices(0) + 1
+            If fIdx > _curList.VirtualListSize - 1 Then Exit Sub
+            toIdx = _curList.VirtualListSize - 1
+            stp = 1
+        Else
+            fIdx = _curList.SelectedIndices(0) - 1
+            If fIdx < 0 Then Exit Sub
+            toIdx = 0
+            stp = -1
+        End If
 
         If Not _anchorFlag Then
-            _anchorItem = Nothing
-            _anchorItem = DirectCast(MyList.SelectedItems(0).Clone, System.Windows.Forms.ListViewItem)
+            _anchorPost = _curPost
             _anchorFlag = True
         End If
-        Dim user As String = _anchorItem.SubItems(4).Text
-        Dim dTxt As String = _anchorItem.SubItems(7).Text
-        Dim at As New Collections.Specialized.StringCollection
-        Dim pos1 As Integer
-        Dim pos2 As Integer
 
-        Do While True
-            pos1 = dTxt.IndexOf(_replyHtml, pos2, StringComparison.Ordinal)
-            If pos1 = -1 Then Exit Do
-            pos2 = dTxt.IndexOf(""">", pos1 + _replyHtml.Length, StringComparison.Ordinal)
-            If pos2 > -1 Then
-                at.Add(dTxt.Substring(pos1 + _replyHtml.Length, pos2 - pos1 - _replyHtml.Length))
-            End If
-        Loop
-
-        For idx As Integer = fIdx To 0 Step -1
-            If MyList.Items(idx).SubItems(4).Text = user OrElse _
-               at.Contains(MyList.Items(idx).SubItems(4).Text) OrElse _
-               Regex.IsMatch(MyList.Items(idx).SubItems(2).Text, "@" + user + "([^a-zA-Z0-9_]|$)") Then
-                For Each itm As ListViewItem In MyList.SelectedItems
-                    itm.Selected = False
-                Next
-                MyList.Items(idx).Selected = True
-                MyList.Items(idx).Focused = True
-                MyList.EnsureVisible(idx)
-                MyList.Update()
-                TimerColorize.Start()
+        For idx As Integer = fIdx To toIdx Step stp
+            Dim post As PostClass = _statuses.Item(_curTab.Text, idx)
+            If post.Name = _anchorPost.Name OrElse _
+               _anchorPost.ReplyToList.Contains(post.Name.ToLower()) OrElse _
+               post.ReplyToList.Contains(_anchorPost.Name.ToLower()) Then
+                SelectOneItem(_curList, idx)
+                _curList.EnsureVisible(idx)
                 Exit For
             End If
         Next
-        at.Clear()
     End Sub
 
     Private Sub GoAnchor()
-        TimerColorize.Stop()
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        If _anchorItem Is Nothing Then Exit Sub
+        If _anchorPost Is Nothing Then Exit Sub
+        Dim idx As Integer = _statuses.Tabs(_curTab.Text).GetIndex(_anchorPost.Id)
+        If idx = -1 Then Exit Sub
 
-        Dim aid As String = _anchorItem.SubItems(5).Text
-
-        For idx As Integer = 0 To MyList.Items.Count - 1
-            If MyList.Items(idx).SubItems(5).Text = aid Then
-                For Each itm As ListViewItem In MyList.SelectedItems
-                    itm.Selected = False
-                Next
-                MyList.Items(idx).Selected = True
-                MyList.Items(idx).Focused = True
-                MyList.EnsureVisible(idx)
-                MyList.Update()
-                TimerColorize.Start()
-                Exit For
-            End If
-        Next
+        SelectOneItem(_curList, idx)
+        _curList.EnsureVisible(idx)
     End Sub
 
     Private Sub GoTopEnd(ByVal GoTop As Boolean)
-        TimerColorize.Stop()
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
         Dim _item As ListViewItem
+        Dim idx As Integer
 
         If GoTop Then
-            _item = MyList.GetItemAt(0, 25)
-            If _item Is Nothing Then _item = MyList.Items(0)
+            _item = _curList.GetItemAt(0, 25)
+            If _item Is Nothing Then
+                idx = 0
+            Else
+                idx = _item.Index
+            End If
         Else
-            _item = MyList.GetItemAt(0, MyList.ClientSize.Height - 1)
-            If _item Is Nothing Then _item = MyList.Items(MyList.Items.Count - 1)
+            _item = _curList.GetItemAt(0, _curList.ClientSize.Height - 1)
+            If _item Is Nothing Then
+                idx = _curList.VirtualListSize - 1
+            Else
+                idx = _item.Index
+            End If
         End If
-        For Each _itm As ListViewItem In MyList.SelectedItems
-            _itm.Selected = False
-        Next
-        _item.Selected = True
-        _item.Focused = True
-        MyList.Update()
-        TimerColorize.Start()
-
+        SelectOneItem(_curList, idx)
     End Sub
 
     Private Sub GoMiddle()
-        TimerColorize.Stop()
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
         Dim _item As ListViewItem
         Dim idx1 As Integer
         Dim idx2 As Integer
+        Dim idx3 As Integer
 
-        _item = MyList.GetItemAt(0, 0)
-        If _item Is Nothing Then _item = MyList.Items(0)
-        idx1 = _item.Index
-        _item = MyList.GetItemAt(0, MyList.ClientSize.Height - 1)
-        If _item Is Nothing Then _item = MyList.Items(MyList.Items.Count - 1)
-        idx2 = _item.Index
-        _item = MyList.Items((idx1 + idx2) \ 2)
+        _item = _curList.GetItemAt(0, 0)
+        If _item Is Nothing Then
+            idx1 = 0
+        Else
+            idx1 = _item.Index
+        End If
+        _item = _curList.GetItemAt(0, _curList.ClientSize.Height - 1)
+        If _item Is Nothing Then
+            idx2 = _curList.VirtualListSize - 1
+        Else
+            idx2 = _item.Index
+        End If
+        idx3 = (idx1 + idx2) \ 2
 
-        For Each _itm As ListViewItem In MyList.SelectedItems
-            _itm.Selected = False
-        Next
-        _item.Selected = True
-        _item.Focused = True
-        MyList.Update()
-        TimerColorize.Start()
-
+        SelectOneItem(_curList, idx3)
     End Sub
 
     Private Sub GoLast()
-        TimerColorize.Stop()
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim _item As ListViewItem
-        If listViewItemSorter.Column = 3 Then
-            If listViewItemSorter.Order = SortOrder.Ascending Then
-                _item = MyList.Items(MyList.Items.Count - 1)
-                MyList.EnsureVisible(MyList.Items.Count - 1)
-            Else
-                _item = MyList.Items(0)
-                MyList.EnsureVisible(0)
-            End If
+        If _curList.VirtualListSize = 0 Then Exit Sub
+
+        If _statuses.SortOrder = SortOrder.Ascending Then
+            SelectOneItem(_curList, _curList.VirtualListSize - 1)
+            _curList.EnsureVisible(_curList.VirtualListSize - 1)
         Else
-            _item = MyList.Items(MyList.Items.Count - 1)
-            MyList.EnsureVisible(MyList.Items.Count - 1)
+            SelectOneItem(_curList, 0)
+            _curList.EnsureVisible(0)
         End If
-
-        For Each _itm As ListViewItem In MyList.SelectedItems
-            _itm.Selected = False
-        Next
-        _item.Selected = True
-        _item.Focused = True
-
-        MyList.Update()
-        TimerColorize.Start()
-
     End Sub
 
     Private Sub MoveTop()
-        TimerColorize.Stop()
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        If MyList.SelectedItems.Count = 0 Then Exit Sub
-        Dim _item As ListViewItem = MyList.SelectedItems(0)
-        If listViewItemSorter.Column = 3 Then
-            If listViewItemSorter.Order = SortOrder.Ascending Then
-                MyList.EnsureVisible(MyList.Items.Count - 1)
-            Else
-                MyList.EnsureVisible(0)
-            End If
+        If _curList.SelectedIndices.Count = 0 Then Exit Sub
+        Dim idx As Integer = _curList.SelectedIndices(0)
+        If _statuses.SortOrder = SortOrder.Ascending Then
+            _curList.EnsureVisible(_curList.VirtualListSize - 1)
         Else
-            MyList.EnsureVisible(MyList.Items.Count - 1)
+            _curList.EnsureVisible(0)
         End If
-        MyList.EnsureVisible(_item.Index)
-        MyList.Update()
-        TimerColorize.Start()
-
+        _curList.EnsureVisible(idx)
     End Sub
 
     Private Sub MyList_MouseClick(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs)
@@ -4419,7 +3267,7 @@ RETRY:
                 _section.PlaySound = SettingDialog.PlaySound
                 _section.OneWayLove = SettingDialog.OneWayLove
 
-                _section.FontUnread = _fntUnread
+                '_section.FontUnread = _fntUnread
                 _section.ColorUnread = _clUnread
                 _section.FontReaded = _fntReaded
                 _section.ColorReaded = _clReaded
@@ -4462,54 +3310,56 @@ RETRY:
                 _section.OutputzKey = SettingDialog.OutputzKey
                 _section.OutputzUrlmode = SettingDialog.OutputzUrlmode
 
-                _section.DisplayIndex1 = _tabs(0).colHd1.DisplayIndex
-                _section.Width1 = _tabs(0).colHd1.Width
-                If _iconCol = False Then
-                    _section.DisplayIndex2 = _tabs(0).colHd2.DisplayIndex
-                    _section.DisplayIndex3 = _tabs(0).colHd3.DisplayIndex
-                    _section.DisplayIndex4 = _tabs(0).colHd4.DisplayIndex
-                    _section.DisplayIndex5 = _tabs(0).colHd5.DisplayIndex
-                    _section.Width2 = _tabs(0).colHd2.Width
-                    _section.Width3 = _tabs(0).colHd3.Width
-                    _section.Width4 = _tabs(0).colHd4.Width
-                    _section.Width5 = _tabs(0).colHd5.Width
-                End If
-                _section.SortColumn = listViewItemSorter.Column
-                _section.SortOrder = listViewItemSorter.Order
-
-                _section.ListElement.Clear()
+                _section.DisplayIndex1 = _curList.Columns(0).DisplayIndex
+                'If _iconCol = False Then
+                _section.DisplayIndex2 = _curList.Columns(1).DisplayIndex
+                _section.DisplayIndex3 = _curList.Columns(2).DisplayIndex
+                _section.DisplayIndex4 = _curList.Columns(3).DisplayIndex
+                _section.DisplayIndex5 = _curList.Columns(4).DisplayIndex
+                _section.DisplayIndex6 = _curList.Columns(5).DisplayIndex
+                _section.DisplayIndex7 = _curList.Columns(6).DisplayIndex
+                _section.DisplayIndex8 = _curList.Columns(7).DisplayIndex
+                _section.Width1 = _curList.Columns(0).Width
+                _section.Width2 = _curList.Columns(1).Width
+                _section.Width3 = _curList.Columns(2).Width
+                _section.Width4 = _curList.Columns(3).Width
+                _section.Width5 = _curList.Columns(4).Width
+                _section.Width6 = _curList.Columns(5).Width
+                _section.Width7 = _curList.Columns(6).Width
+                _section.Width8 = _curList.Columns(7).Width
+                'End If
+                '_section.SortColumn = listViewItemSorter.Column
+                _section.SortOrder = _statuses.SortOrder
 
                 Dim cnt As Integer = 0
                 If ListTab IsNot Nothing AndAlso _
                    ListTab.TabPages IsNot Nothing AndAlso _
                    ListTab.TabPages.Count > 0 Then
+                    _section.ListElement.Clear()
                     _section.SelectedUser.Clear()
                     For Each tp As TabPage In ListTab.TabPages
                         Dim tabName As String = tp.Text
                         _section.ListElement.Add(New ListElement(tabName))
-                        For Each ts As TabStructure In _tabs
-                            If ts.tabName = tabName Then
-                                _section.ListElement(tabName).Notify = ts.notify
-                                _section.ListElement(tabName).SoundFile = ts.soundFile
-                                _section.ListElement(tabName).UnreadManage = ts.unreadManage
-                                For Each fc As FilterClass In ts.filters
-                                    Dim bf As String = ""
-                                    For Each bfs As String In fc.BodyFilter
-                                        bf += " " + bfs
-                                    Next
-                                    Dim su As New SelectedUser(cnt.ToString)
-                                    cnt += 1
-                                    su.BodyFilter = bf
-                                    su.IdFilter = fc.IDFilter
-                                    su.MoveFrom = fc.moveFrom
-                                    su.SetMark = fc.SetMark
-                                    su.SearchBoth = fc.SearchBoth
-                                    su.UrlSearch = fc.SearchURL
-                                    su.RegexEnable = fc.UseRegex
-                                    su.TabName = tabName
-                                    _section.SelectedUser.Add(su)
-                                Next
-                            End If
+                        Dim tab As TabClass = _statuses.Tabs(tabName)
+                        _section.ListElement(tabName).Notify = tab.Notify
+                        _section.ListElement(tabName).SoundFile = tab.SoundFile
+                        _section.ListElement(tabName).UnreadManage = tab.UnreadManage
+                        For Each fc As FiltersClass In tab.Filters
+                            Dim bf As String = ""
+                            For Each bfs As String In fc.BodyFilter
+                                bf += " " + bfs
+                            Next
+                            Dim su As New SelectedUser(cnt.ToString)
+                            cnt += 1
+                            su.BodyFilter = bf
+                            su.IdFilter = fc.NameFilter
+                            su.MoveFrom = fc.MoveFrom
+                            su.SetMark = fc.SetMark
+                            su.SearchBoth = fc.SearchBoth
+                            su.UrlSearch = fc.SearchUrl
+                            su.RegexEnable = fc.UseRegex
+                            su.TabName = tabName
+                            _section.SelectedUser.Add(su)
                         Next
                     Next
                 End If
@@ -4521,8 +3371,7 @@ RETRY:
     End Sub
 
     Private Sub SaveLogMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SaveLogMenuItem.Click
-        Dim tmp As String = String.Format(My.Resources.SaveLogMenuItem_ClickText1, vbCrLf)
-        Dim rslt As DialogResult = MessageBox.Show(tmp, _
+        Dim rslt As DialogResult = MessageBox.Show(String.Format(My.Resources.SaveLogMenuItem_ClickText1, Environment.NewLine), _
                 My.Resources.SaveLogMenuItem_ClickText2, _
                 MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)
         If rslt = Windows.Forms.DialogResult.Cancel Then Exit Sub
@@ -4536,28 +3385,29 @@ RETRY:
 
         If SaveFileDialog1.ShowDialog = Windows.Forms.DialogResult.OK Then
             If Not SaveFileDialog1.ValidateNames Then Exit Sub
-            Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
             Using sw As StreamWriter = New StreamWriter(SaveFileDialog1.FileName, False, Encoding.UTF8)
                 If rslt = Windows.Forms.DialogResult.Yes Then
                     'All
-                    For Each itm As ListViewItem In MyList.Items
-                        sw.WriteLine(itm.SubItems(1).Text & vbTab & _
-                                 """" & itm.SubItems(2).Text.Replace(vbLf, "").Replace("""", """""") + """" & vbTab & _
-                                 itm.SubItems(3).Text & vbTab & _
-                                 itm.SubItems(4).Text & vbTab & _
-                                 itm.SubItems(5).Text & vbTab & _
-                                 itm.SubItems(6).Text & vbTab & _
-                                 """" & itm.SubItems(7).Text.Replace(vbLf, "").Replace("""", """""") + """")
+                    For idx As Integer = 0 To _curList.VirtualListSize
+                        Dim post As PostClass = _statuses.Item(_curTab.Text, idx)
+                        sw.WriteLine(post.Nickname & vbTab & _
+                                 """" & post.Data.Replace(vbLf, "").Replace("""", """""") + """" & vbTab & _
+                                 post.PDate.ToString() & vbTab & _
+                                 post.Name & vbTab & _
+                                 post.Id.ToString() & vbTab & _
+                                 post.ImageUrl & vbTab & _
+                                 """" & post.OriginalData.Replace(vbLf, "").Replace("""", """""") + """")
                     Next
                 Else
-                    For Each itm As ListViewItem In MyList.SelectedItems
-                        sw.WriteLine(itm.SubItems(1).Text & vbTab & _
-                                 """" & itm.SubItems(2).Text.Replace(vbLf, "").Replace("""", """""") + """" & vbTab & _
-                                 itm.SubItems(3).Text & vbTab & _
-                                 itm.SubItems(4).Text & vbTab & _
-                                 itm.SubItems(5).Text & vbTab & _
-                                 itm.SubItems(6).Text & vbTab & _
-                                 """" & itm.SubItems(7).Text.Replace(vbLf, "").Replace("""", """""") + """")
+                    For Each idx As Integer In _curList.SelectedIndices
+                        Dim post As PostClass = _statuses.Item(_curTab.Text, idx)
+                        sw.WriteLine(post.Nickname & vbTab & _
+                                 """" & post.Data.Replace(vbLf, "").Replace("""", """""") + """" & vbTab & _
+                                 post.PDate.ToString() & vbTab & _
+                                 post.Name & vbTab & _
+                                 post.Id.ToString() & vbTab & _
+                                 post.ImageUrl & vbTab & _
+                                 """" & post.OriginalData.Replace(vbLf, "").Replace("""", """""") + """")
                     Next
                 End If
             End Using
@@ -4568,7 +3418,6 @@ RETRY:
     Private Sub PostBrowser_PreviewKeyDown(ByVal sender As System.Object, ByVal e As System.Windows.Forms.PreviewKeyDownEventArgs) Handles PostBrowser.PreviewKeyDown
         If e.KeyCode = Keys.F5 Then
             e.IsInputKey = True
-            doRefresh()
         End If
         If e.Modifiers = Keys.None AndAlso (e.KeyCode = Keys.Space OrElse e.KeyCode = Keys.ProcessKey) Then
             e.IsInputKey = True
@@ -4577,6 +3426,7 @@ RETRY:
     End Sub
 
     Private Sub Tabs_DoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListTab.MouseDoubleClick
+        'タブ名変更
         If ListTab.SelectedTab.Text = "Recent" OrElse ListTab.SelectedTab.Text = "Reply" OrElse ListTab.SelectedTab.Text = "Direct" Then Exit Sub
         Dim inputName As New InputTabName()
         inputName.TabName = ListTab.SelectedTab.Text
@@ -4585,12 +3435,8 @@ RETRY:
         inputName.Dispose()
         Me.TopMost = SettingDialog.AlwaysTop
         If newTabText <> "" Then
-            Dim _ts As TabStructure = GetTSbyName(ListTab.SelectedTab.Text)
-            TabDialog.RemoveTab(ListTab.SelectedTab.Text)
-            _tabs.Remove(_ts)
-            _ts.tabName = newTabText
+            _statuses.RenameTab(ListTab.SelectedTab.Text, newTabText)
             ListTab.SelectedTab.Text = newTabText
-            _tabs.Add(_ts)
             'タブ名のリスト作り直し
             For i As Integer = 0 To ListTab.TabCount - 1
                 If ListTab.TabPages(i).Text <> "Recent" AndAlso _
@@ -4618,11 +3464,6 @@ RETRY:
                 Dim rect As Rectangle = ListTab.GetTabRect(i)
                 If rect.Left <= cpos.X AndAlso cpos.X <= rect.Right AndAlso _
                    rect.Top <= cpos.Y AndAlso cpos.Y <= rect.Bottom Then
-                    'If i < 3 Then
-                    '    _tabDrag = False
-                    'Else
-                    '    _tabDrag = True
-                    'End If
                     _tabDrag = True
                     Exit For
                 End If
@@ -4633,7 +3474,7 @@ RETRY:
     End Sub
 
     Private Sub Tabs_DragEnter(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DragEventArgs) Handles ListTab.DragEnter
-        If e.Data.GetDataPresent(GetType(TabStructure)) Then
+        If e.Data.GetDataPresent(GetType(TabPage)) Then
             e.Effect = DragDropEffects.Move
         Else
             e.Effect = DragDropEffects.None
@@ -4641,78 +3482,72 @@ RETRY:
     End Sub
 
     Private Sub Tabs_DragDrop(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DragEventArgs) Handles ListTab.DragDrop
-        If e.Data.GetDataPresent(GetType(TabStructure)) Then
-            _tabDrag = False
-            Dim tn As String = ""
-            Dim bef As Boolean
-            Dim cpos As New Point(e.X, e.Y)
-            Dim spos As Point = ListTab.PointToClient(cpos)
-            Dim i As Integer
-            For i = 0 To ListTab.TabPages.Count - 1
-                Dim rect As Rectangle = ListTab.GetTabRect(i)
-                If rect.Left <= spos.X AndAlso spos.X <= rect.Right AndAlso _
-                   rect.Top <= spos.Y AndAlso spos.Y <= rect.Bottom Then
-                    tn = ListTab.TabPages(i).Text
-                    If spos.X <= (rect.Left + rect.Right) / 2 Then
-                        bef = True
-                    Else
-                        bef = False
-                    End If
-                    Exit For
+        If Not e.Data.GetDataPresent(GetType(TabPage)) Then Exit Sub
+
+        _tabDrag = False
+        Dim tn As String = ""
+        Dim bef As Boolean
+        Dim cpos As New Point(e.X, e.Y)
+        Dim spos As Point = ListTab.PointToClient(cpos)
+        Dim i As Integer
+        For i = 0 To ListTab.TabPages.Count - 1
+            Dim rect As Rectangle = ListTab.GetTabRect(i)
+            If rect.Left <= spos.X AndAlso spos.X <= rect.Right AndAlso _
+               rect.Top <= spos.Y AndAlso spos.Y <= rect.Bottom Then
+                tn = ListTab.TabPages(i).Text
+                If spos.X <= (rect.Left + rect.Right) / 2 Then
+                    bef = True
+                Else
+                    bef = False
                 End If
-            Next
-
-            'タブのないところにドロップ->最後尾へ移動
-            If tn = "" Then
-                tn = ListTab.TabPages(ListTab.TabPages.Count - 1).Text
-                bef = False
-                i = ListTab.TabPages.Count - 1
+                Exit For
             End If
-            ''Recent,Reply,Directタブは固定
-            'If tn = "Recent" OrElse tn = "Reply" OrElse tn = "Direct" Then
-            '    tn = "Direct"
-            '    bef = False
-            '    i = 2
-            'End If
+        Next
 
-            Dim ts As TabStructure = DirectCast(e.Data.GetData(GetType(TabStructure)), Tween.TabStructure)
-
-            If ts.tabName = tn Then Exit Sub
-
-            Dim mTp As TabPage = Nothing
-            ListTab.SuspendLayout()
-            For j As Integer = 0 To ListTab.TabPages.Count - 1
-                If ListTab.TabPages(j).Text = ts.tabName Then
-                    mTp = ListTab.TabPages(j)
-                    ListTab.TabPages.Remove(mTp)
-                    If j < i Then i -= 1
-                    Exit For
-                End If
-            Next
-            If bef Then
-                ListTab.TabPages.Insert(i, mTp)
-            Else
-                ListTab.TabPages.Insert(i + 1, mTp)
-            End If
-
-            ListTab.ResumeLayout()
+        'タブのないところにドロップ->最後尾へ移動
+        If tn = "" Then
+            tn = ListTab.TabPages(ListTab.TabPages.Count - 1).Text
+            bef = False
+            i = ListTab.TabPages.Count - 1
         End If
+
+        'Dim ts As TabStructure = DirectCast(e.Data.GetData(GetType(TabStructure)), Tween.TabStructure)
+        Dim tp As TabPage = DirectCast(e.Data.GetData(GetType(TabPage)), TabPage)
+        If tp.Text = tn Then Exit Sub
+
+        Dim mTp As TabPage = Nothing
+        ListTab.SuspendLayout()
+        For j As Integer = 0 To ListTab.TabPages.Count - 1
+            If ListTab.TabPages(j).Text = tp.Text Then
+                mTp = ListTab.TabPages(j)
+                ListTab.TabPages.Remove(mTp)
+                If j < i Then i -= 1
+                Exit For
+            End If
+        Next
+        If bef Then
+            ListTab.TabPages.Insert(i, mTp)
+        Else
+            ListTab.TabPages.Insert(i + 1, mTp)
+        End If
+
+        ListTab.ResumeLayout()
     End Sub
 
     Private Sub MakeReplyOrDirectStatus(Optional ByVal isAuto As Boolean = True, Optional ByVal isReply As Boolean = True, Optional ByVal isAll As Boolean = False)
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-
+        'isAuto:True=先頭に挿入、False=カーソル位置に挿入
+        'isReply:True=@,False=DM
         If Not StatusText.Enabled Then Exit Sub
 
         ' 複数あてリプライはReplyではなく通常ポスト
 
-        If MyList.SelectedItems.Count > 0 Then
+        If _curList.SelectedIndices.Count > 0 Then
             ' アイテムが1件以上選択されている
-            If MyList.SelectedItems.Count = 1 AndAlso Not isAll Then
+            If _curList.SelectedIndices.Count = 1 AndAlso Not isAll Then
                 ' 単独ユーザー宛リプライまたはDM
                 If (ListTab.SelectedTab.Text = "Direct" AndAlso isAuto) OrElse (Not isAuto AndAlso Not isReply) Then
                     ' ダイレクトメッセージ
-                    StatusText.Text = "D " + MyList.SelectedItems(0).SubItems(4).Text + " " + StatusText.Text
+                    StatusText.Text = "D " + _curPost.Name + " " + StatusText.Text
                     StatusText.SelectionStart = StatusText.Text.Length
                     StatusText.Focus()
                     _reply_to_id = 0
@@ -4721,27 +3556,27 @@ RETRY:
                 End If
                 If StatusText.Text = "" Then
                     ' ステータステキストが入力されていない場合先頭に@ユーザー名を追加する
-                    StatusText.Text = "@" + MyList.SelectedItems(0).SubItems(4).Text + " "
-                    _reply_to_id = Integer.Parse(MyList.SelectedItems(0).SubItems(5).Text)
-                    _reply_to_name = MyList.SelectedItems(0).SubItems(4).Text
+                    StatusText.Text = "@" + _curPost.Name + " "
+                    _reply_to_id = _curPost.Id
+                    _reply_to_name = _curPost.Name
                 Else
                     If isAuto Then
-                        If StatusText.Text.Contains("@" + MyList.SelectedItems(0).SubItems(4).Text + " ") Then Exit Sub
+                        If StatusText.Text.Contains("@" + _curPost.Name + " ") Then Exit Sub
                         If Not StatusText.Text.StartsWith("@") Then
                             If StatusText.Text.StartsWith(". ") Then
                                 ' 複数リプライ
-                                StatusText.Text = StatusText.Text.Insert(2, "@" + MyList.SelectedItems(0).SubItems(4).Text + " ")
+                                StatusText.Text = StatusText.Text.Insert(2, "@" + _curPost.Name + " ")
                                 _reply_to_id = 0
                                 _reply_to_name = Nothing
                             Else
                                 ' 単独リプライ
-                                StatusText.Text = "@" + MyList.SelectedItems(0).SubItems(4).Text + " " + StatusText.Text
-                                _reply_to_id = Integer.Parse(MyList.SelectedItems(0).SubItems(5).Text)
-                                _reply_to_name = MyList.SelectedItems(0).SubItems(4).Text
+                                StatusText.Text = "@" + _curPost.Name + " " + StatusText.Text
+                                _reply_to_id = _curPost.Id
+                                _reply_to_name = _curPost.Name
                             End If
                         Else
                             ' 複数リプライ
-                            StatusText.Text = ". @" + MyList.SelectedItems(0).SubItems(4).Text + " " + StatusText.Text
+                            StatusText.Text = ". @" + _curPost.Name + " " + StatusText.Text
                             _reply_to_id = 0
                             _reply_to_name = Nothing
                         End If
@@ -4749,12 +3584,12 @@ RETRY:
                         Dim sidx As Integer = StatusText.SelectionStart
                         If StatusText.Text.StartsWith("@") Then
                             '複数リプライ
-                            StatusText.Text = ". " + StatusText.Text.Insert(sidx, " @" + MyList.SelectedItems(0).SubItems(4).Text + " ")
-                            sidx += 5 + MyList.SelectedItems(0).SubItems(4).Text.Length
+                            StatusText.Text = ". " + StatusText.Text.Insert(sidx, " @" + _curPost.Name + " ")
+                            sidx += 5 + _curPost.Name.Length
                         Else
                             ' 複数リプライ
-                            StatusText.Text = StatusText.Text.Insert(sidx, " @" + MyList.SelectedItems(0).SubItems(4).Text + " ")
-                            sidx += 3 + MyList.SelectedItems(0).SubItems(4).Text.Length
+                            StatusText.Text = StatusText.Text.Insert(sidx, " @" + _curPost.Name + " ")
+                            sidx += 3 + _curPost.Name.Length
                         End If
                         StatusText.SelectionStart = sidx
                         StatusText.Focus()
@@ -4772,41 +3607,36 @@ RETRY:
                     If Not sTxt.StartsWith(". ") Then
                         sTxt = ". " + sTxt
                     End If
-                    For cnt As Integer = 0 To MyList.SelectedItems.Count - 1
-                        If Not sTxt.Contains("@" + MyList.SelectedItems(cnt).SubItems(4).Text + " ") Then
-                            sTxt = sTxt.Insert(2, "@" + MyList.SelectedItems(cnt).SubItems(4).Text + " ")
+                    For cnt As Integer = 0 To _curList.SelectedIndices.Count - 1
+                        Dim post As PostClass = _statuses.Item(_curTab.Text, _curList.SelectedIndices(cnt))
+                        If Not sTxt.Contains("@" + post.Name + " ") Then
+                            sTxt = sTxt.Insert(2, "@" + post.Name + " ")
                         End If
                     Next
                     StatusText.Text = sTxt
                 Else
                     Dim ids As String = ""
                     Dim sidx As Integer = StatusText.SelectionStart
+                    For cnt As Integer = 0 To _curList.SelectedIndices.Count - 1
+                        Dim post As PostClass = _statuses.Item(_curTab.Text, _curList.SelectedIndices(cnt))
+                        If Not ids.Contains("@" + post.Name + " ") AndAlso _
+                           post.Name <> _username Then
+                            ids += "@" + post.Name + " "
+                        End If
+                        If isAll Then
+                            For Each nm As String In post.ReplyToList
+                                If Not ids.Contains("@" + nm + " ") AndAlso _
+                                   nm <> _username Then
+                                    ids += "@" + nm + " "
+                                End If
+                            Next
+                        End If
+                    Next
+                    If ids.Length = 0 Then Exit Sub
                     If Not StatusText.Text.StartsWith(". ") Then
                         StatusText.Text = ". " + StatusText.Text
                         sidx += 2
                     End If
-                    For cnt As Integer = 0 To MyList.SelectedItems.Count - 1
-                        If Not ids.Contains("@" + MyList.SelectedItems(cnt).SubItems(4).Text + " ") Then
-                            ids += "@" + MyList.SelectedItems(cnt).SubItems(4).Text + " "
-                        End If
-                        If isAll Then
-                            Dim pos1 As Integer = 0
-                            Dim pos2 As Integer = 0
-                            Dim dTxt As String = MyList.SelectedItems(cnt).SubItems(7).Text
-                            Dim atId As String = ""
-                            Do While True
-                                pos1 = dTxt.IndexOf(_replyHtml, pos2, StringComparison.Ordinal)
-                                If pos1 = -1 Then Exit Do
-                                pos2 = dTxt.IndexOf(""">", pos1 + _replyHtml.Length, StringComparison.Ordinal)
-                                If pos2 > -1 Then
-                                    atId = "@" + dTxt.Substring(pos1 + _replyHtml.Length, pos2 - pos1 - _replyHtml.Length) + " "
-                                    If Not ids.Contains(atId) AndAlso atId <> "@" + _username + " " Then
-                                        ids += atId
-                                    End If
-                                End If
-                            Loop
-                        End If
-                    Next
                     If sidx > 0 Then
                         If StatusText.Text.Substring(sidx - 1, 1) <> " " Then
                             ids = " " + ids
@@ -4831,7 +3661,6 @@ RETRY:
 
     Private Sub ListTab_MouseUp(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListTab.MouseUp
         _tabDrag = False
-
     End Sub
 
     Private Sub TimerRefreshIcon_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerRefreshIcon.Tick
@@ -4848,44 +3677,31 @@ RETRY:
         '右クリックの場合はタブ名が設定済。アプリケーションキーの場合は現在のタブを対象とする
         If _rclickTabName = "" Then _rclickTabName = ListTab.SelectedTab.Text
 
-        For Each ts As TabStructure In _tabs
-            If ts.tabName = _rclickTabName Then
-                NotifyDispMenuItem.Checked = ts.notify
-                SoundFileComboBox.Items.Clear()
-                SoundFileComboBox.Items.Add("")
-                Dim oDir As IO.DirectoryInfo = New IO.DirectoryInfo(My.Application.Info.DirectoryPath)
-                For Each oFile As IO.FileInfo In oDir.GetFiles("*.wav")
-                    SoundFileComboBox.Items.Add(oFile.Name)
-                Next
-                Dim idx As Integer = SoundFileComboBox.Items.IndexOf(ts.soundFile)
-                If idx = -1 Then idx = 0
-                SoundFileComboBox.SelectedIndex = idx
-                UreadManageMenuItem.Checked = ts.unreadManage
-                Exit For
-            End If
+        Dim tb As TabClass = _statuses.Tabs(_rclickTabName)
+
+        NotifyDispMenuItem.Checked = tb.Notify
+        SoundFileComboBox.Items.Clear()
+        SoundFileComboBox.Items.Add("")
+        Dim oDir As IO.DirectoryInfo = New IO.DirectoryInfo(My.Application.Info.DirectoryPath)
+        For Each oFile As IO.FileInfo In oDir.GetFiles("*.wav")
+            SoundFileComboBox.Items.Add(oFile.Name)
         Next
+        Dim idx As Integer = SoundFileComboBox.Items.IndexOf(tb.SoundFile)
+        If idx = -1 Then idx = 0
+        SoundFileComboBox.SelectedIndex = idx
+        UreadManageMenuItem.Checked = tb.UnreadManage
     End Sub
 
     Private Sub UreadManageMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UreadManageMenuItem.Click
         If _rclickTabName = "" Then Exit Sub
 
-        For Each ts As TabStructure In _tabs
-            If ts.tabName = _rclickTabName Then
-                ts.unreadManage = UreadManageMenuItem.Checked
-                For Each itm As ListViewItem In ts.listCustom.Items
-                    If SettingDialog.UnreadManage AndAlso ts.unreadManage Then
-                    Else
-                        Dim fcl As Color = _clReaded
-                        If itm.SubItems(10).Text = "True" AndAlso SettingDialog.OneWayLove Then fcl = _clOWL
-                        If itm.SubItems(9).Text = "True" Then fcl = _clFav
-                        ts.listCustom.ChangeItemStyles(itm.Index, itm.BackColor, fcl, _fntReaded)
-                        itm.SubItems(8).Text = "True"
-                        ts.unreadCount = 0
-                        ts.oldestUnreadItem = Nothing
-                        If ts.tabPage.ImageIndex = 0 Then ts.tabPage.ImageIndex = -1
-                    End If
-                Next
-                Exit Sub
+        Dim tb As TabClass = _statuses.Tabs(_rclickTabName)
+
+        tb.UnreadManage = UreadManageMenuItem.Checked
+        For Each tp As TabPage In ListTab.TabPages
+            If tp.Text = _rclickTabName Then
+                DirectCast(tp.Controls(0), DetailsListView).Refresh()
+                Exit For
             End If
         Next
     End Sub
@@ -4893,24 +3709,15 @@ RETRY:
     Private Sub NotifyDispMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles NotifyDispMenuItem.Click
         If _rclickTabName = "" Then Exit Sub
 
-        For Each ts As TabStructure In _tabs
-            If ts.tabName = _rclickTabName Then
-                ts.notify = Not ts.notify
-                NotifyDispMenuItem.Checked = ts.notify
-                Exit For
-            End If
-        Next
+        Dim tb As TabClass = _statuses.Tabs(_rclickTabName)
+        tb.Notify = NotifyDispMenuItem.Checked
     End Sub
 
     Private Sub SoundFileComboBox_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SoundFileComboBox.SelectedIndexChanged
         If _rclickTabName = "" Then Exit Sub
 
-        For Each ts As TabStructure In _tabs
-            If ts.tabName = _rclickTabName Then
-                ts.soundFile = DirectCast(SoundFileComboBox.SelectedItem, String)
-                Exit For
-            End If
-        Next
+        Dim tb As TabClass = _statuses.Tabs(_rclickTabName)
+        tb.SoundFile = DirectCast(SoundFileComboBox.SelectedItem, String)
     End Sub
 
     Private Sub DeleteTabMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles DeleteTabMenuItem.Click
@@ -4922,37 +3729,47 @@ RETRY:
     Private Sub FilterEditMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FilterEditMenuItem.Click
         If _rclickTabName = "" Then Exit Sub
 
-        fDialog.Tabs = _tabs
-        fDialog.CurrentTab = _rclickTabName
+        fDialog.SetCurrent(_rclickTabName)
         fDialog.ShowDialog()
-        SaveConfigs()
         Me.TopMost = SettingDialog.AlwaysTop
-        _tabs = fDialog.Tabs
-        ReFilter()
+
+        Me.Cursor = Cursors.WaitCursor
+        _statuses.FilterAll()
+        For Each tb As TabPage In ListTab.TabPages
+            DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
+            If _statuses.Tabs(tb.Text).UnreadCount > 0 Then
+                tb.ImageIndex = 0
+            Else
+                tb.ImageIndex = -1
+            End If
+        Next
+        Me.Cursor = Cursors.Default
     End Sub
 
     Private Sub AddTabMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AddTabMenuItem.Click
         Dim inputName As New InputTabName()
-        inputName.TabName = "MyTab" + _tabs.Count.ToString
+        inputName.TabName = "MyTab" + ListTab.TabPages.Count.ToString
         inputName.ShowDialog()
         Dim tabName As String = inputName.TabName
         inputName.Dispose()
         Me.TopMost = SettingDialog.AlwaysTop
         If tabName <> "" Then
-            If Not AddNewTab(tabName) Then
+            If Not AddNewTab(tabName, False) Then
                 Dim tmp As String = String.Format(My.Resources.AddTabMenuItem_ClickText1, tabName)
                 MessageBox.Show(tmp, My.Resources.AddTabMenuItem_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            Else
+                '成功
+                _statuses.AddTab(tabName)
             End If
         End If
     End Sub
 
     Private Sub TabMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TabMenuItem.Click
-        Dim myList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim tabName As String = ""
-
-        For Each itm As ListViewItem In myList.SelectedItems
-
+        '選択発言を元にフィルタ追加
+        For Each idx As Integer In _curList.SelectedIndices
+            Dim tabName As String = ""
             Do
+                '振り分け先タブ選択
                 If TabDialog.ShowDialog = Windows.Forms.DialogResult.Cancel Then
                     Me.TopMost = SettingDialog.AlwaysTop
                     Exit Sub
@@ -4961,19 +3778,20 @@ RETRY:
                 tabName = TabDialog.SelectedTabName
 
                 ListTab.SelectedTab.Focus()
+                '新規タブが選択→タブ追加
                 If tabName = My.Resources.TabMenuItem_ClickText1 Then
-
                     Dim inputName As New InputTabName()
-                    inputName.TabName = "MyTab" + _tabs.Count.ToString
+                    inputName.TabName = "MyTab" + ListTab.TabPages.Count.ToString
                     inputName.ShowDialog()
                     tabName = inputName.TabName
                     inputName.Dispose()
                     Me.TopMost = SettingDialog.AlwaysTop
-                    If tabName <> "" Then
-                        If Not AddNewTab(tabName) Then
+                    If tabName.Length > 0 Then
+                        If Not AddNewTab(tabName, False) Then
                             Dim tmp As String = String.Format(My.Resources.TabMenuItem_ClickText2, tabName)
                             MessageBox.Show(tmp, My.Resources.TabMenuItem_ClickText3, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                         Else
+                            _statuses.AddTab(tabName)
                             Exit Do
                         End If
                     End If
@@ -4981,15 +3799,16 @@ RETRY:
                     Exit Do
                 End If
             Loop While True
-            fDialog.Tabs = _tabs
-            fDialog.CurrentTab = tabName
-            fDialog.AddNewFilter(itm.SubItems(4).Text, itm.SubItems(2).Text)
+            fDialog.SetCurrent(tabName)
+            fDialog.AddNewFilter(_statuses.Item(_curTab.Text, idx).Name, _statuses.Item(_curTab.Text, idx).Data)
             fDialog.ShowDialog()
             Me.TopMost = SettingDialog.AlwaysTop
-            _tabs = fDialog.Tabs
-            ReFilter()
         Next
 
+        Me.Cursor = Cursors.WaitCursor
+        _statuses.FilterAll()
+        _curList.Refresh()
+        Me.Cursor = Cursors.Default
     End Sub
 
     Protected Overrides Function ProcessDialogKey( _
@@ -5046,19 +3865,17 @@ RETRY:
         Dim rslt As New GetWorkerResult()
 
         Dim args As GetWorkerArg = DirectCast(e.Argument, GetWorkerArg)
-        '        Try
         If args.type = WORKERTYPE.CreateNewSocket Then
             clsTwPost.CreateNewSocket()
         Else
+            PostWorker.ReportProgress(0)
             CheckReplyTo(args.status)
-
             ret = clsTwPost.PostStatus(args.status, _reply_to_id)
-
             _reply_to_id = 0
             _reply_to_name = Nothing
+            PostWorker.ReportProgress(100)
         End If
         rslt.retMsg = ret
-        rslt.TLine = Nothing
         rslt.page = args.page
         rslt.endPage = args.endPage
         rslt.type = args.type
@@ -5071,29 +3888,26 @@ RETRY:
         End If
 
         e.Result = rslt
-        'Catch ex As Exception
-        '    If _endingFlag Then
-        '        e.Cancel = True
-        '        Exit Sub
-        '    End If
-        '    My.Application.Log.DefaultFileLogWriter.Location = Logging.LogFileLocation.ExecutableDirectory
-        '    My.Application.Log.DefaultFileLogWriter.MaxFileSize = 102400
-        '    My.Application.Log.DefaultFileLogWriter.AutoFlush = True
-        '    My.Application.Log.DefaultFileLogWriter.Append = False
-        '    'My.Application.Log.WriteException(ex, _
-        '    '    Diagnostics.TraceEventType.Critical, _
-        '    '    "Source=" + ex.Source + " StackTrace=" + ex.StackTrace + " InnerException=" + IIf(ex.InnerException Is Nothing, "", ex.InnerException.Message))
-        '    My.Application.Log.WriteException(ex, _
-        '        Diagnostics.TraceEventType.Critical, _
-        '        ex.StackTrace + vbCrLf + Now.ToString + vbCrLf + args.type.ToString + vbCrLf + args.status)
-        '    rslt.retMsg = "Tween 例外発生(PostWorker_DoWork)"
-        '    rslt.TLine = Nothing
-        '    rslt.page = args.page
-        '    rslt.endPage = args.endPage
-        '    rslt.type = args.type
+    End Sub
 
-        '    e.Result = rslt
-        'End Try
+    Private Sub PostWorker_ProgressChanged(ByVal sender As Object, ByVal e As System.ComponentModel.ProgressChangedEventArgs) Handles PostWorker.ProgressChanged
+        If e.ProgressPercentage = 0 Then    '開始
+            StatusLabel.Text = "Posting..."
+            StatusText.Enabled = False
+            PostButton.Enabled = False
+            ReplyStripMenuItem.Enabled = False
+            DMStripMenuItem.Enabled = False
+            TimerRefreshIcon.Enabled = True
+        End If
+        If e.ProgressPercentage = 100 Then  '終了
+            StatusLabel.Text = My.Resources.PostWorker_RunWorkerCompletedText4
+            StatusText.Enabled = True
+            PostButton.Enabled = True
+            ReplyStripMenuItem.Enabled = True
+            DMStripMenuItem.Enabled = True
+            TimerRefreshIcon.Enabled = False
+            NotifyIcon1.Icon = NIconAt
+        End If
     End Sub
 
     Private Sub PostWorker_RunWorkerCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles PostWorker.RunWorkerCompleted
@@ -5101,12 +3915,7 @@ RETRY:
             Exit Sub
         End If
 
-        Dim nw As Boolean = True
-        Try
-            nw = My.Computer.Network.IsAvailable
-        Catch ex As Exception
-            nw = True
-        End Try
+        Dim nw As Boolean = IsNetworkAvailable()
         If e.Error IsNot Nothing Then
             If nw Then
                 NotifyIcon1.Icon = NIconAtRed
@@ -5117,40 +3926,26 @@ RETRY:
 
         Dim rslt As GetWorkerResult = DirectCast(e.Result, GetWorkerResult)
 
-        urlUndoBuffer = Nothing
-        UrlUndoToolStripMenuItem.Enabled = False  'Undoをできないように設定
-
-        TimerRefreshIcon.Enabled = False
-        If nw Then
-            NotifyIcon1.Icon = NIconAt
-        Else
+        If Not nw Then
             NotifyIcon1.Icon = NIconAtSmoke
         End If
 
         If rslt.retMsg.Length > 0 Then
             '''''エラー通知方法の変更も設定できるように！
             If nw Then
-                TimerRefreshIcon.Enabled = False
                 NotifyIcon1.Icon = NIconAtRed
             End If
-            'If rslt.retMsg.StartsWith("Tween 例外発生") Then
-            '   MessageBox.Show("エラーが発生しました。申し訳ありません。ログをexeファイルのある場所にTween.logとして作ったので、kiri.feather@gmail.comまで送っていただけると助かります。ご面倒なら@kiri_featherまでお知らせ頂くだけでも助かります。", "エラー発生", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            'End If
         End If
 
         Select Case rslt.type
             Case WORKERTYPE.CreateNewSocket
                 Exit Sub
             Case WORKERTYPE.PostMessage
-                StatusText.Enabled = True
-                PostButton.Enabled = True
-                ReplyStripMenuItem.Enabled = True
-                DMStripMenuItem.Enabled = True
+                urlUndoBuffer = Nothing
+                UrlUndoToolStripMenuItem.Enabled = False  'Undoをできないように設定
 
                 If rslt.retMsg.Length > 0 AndAlso Not rslt.retMsg.StartsWith("Outputz") Then
                     StatusLabel.Text = rslt.retMsg
-                    TimerRefreshIcon.Enabled = False
-                    NotifyIcon1.Icon = NIconAtRed
                 Else
                     _postTimestamps.Add(Now)
                     Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
@@ -5159,11 +3954,6 @@ RETRY:
                             _postTimestamps.RemoveAt(i)
                         End If
                     Next
-                    If rslt.retMsg.Length > 0 Then
-                        StatusLabel.Text = rslt.retMsg
-                    Else
-                        StatusLabel.Text = My.Resources.PostWorker_RunWorkerCompletedText4
-                    End If
                     StatusText.Text = ""
                     _history.Add("")
                     _hisIdx = _history.Count - 1
@@ -5177,10 +3967,9 @@ RETRY:
     End Sub
 
     Private Sub IDRuleMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles IDRuleMenuItem.Click
-        Dim myList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
         Dim tabName As String = ""
-
         Do
+            '振り分け先タブ選択
             If TabDialog.ShowDialog = Windows.Forms.DialogResult.Cancel Then
                 Me.TopMost = SettingDialog.AlwaysTop
                 Exit Sub
@@ -5189,28 +3978,32 @@ RETRY:
             tabName = TabDialog.SelectedTabName
 
             ListTab.SelectedTab.Focus()
+            '新規タブを選択→タブ作成
             If tabName = My.Resources.IDRuleMenuItem_ClickText1 Then
                 Dim inputName As New InputTabName()
-                inputName.TabName = "MyTab" + _tabs.Count.ToString
+                inputName.TabName = "MyTab" + ListTab.TabPages.Count.ToString
                 inputName.ShowDialog()
                 tabName = inputName.TabName
                 inputName.Dispose()
                 Me.TopMost = SettingDialog.AlwaysTop
                 If tabName <> "" Then
-                    If Not AddNewTab(tabName) Then
+                    If Not AddNewTab(tabName, False) Then
                         Dim tmp As String = String.Format(My.Resources.IDRuleMenuItem_ClickText2, tabName)
                         MessageBox.Show(tmp, My.Resources.IDRuleMenuItem_ClickText3, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                     Else
+                        _statuses.AddTab(tabName)
                         Exit Do
                     End If
                 End If
             Else
+                '既存タブを選択
                 Exit Do
             End If
         Loop While True
         Dim mv As Boolean = False
         With Block
-            Dim _tmp As String = String.Format(My.Resources.IDRuleMenuItem_ClickText4, vbCrLf)
+            '移動するか？
+            Dim _tmp As String = String.Format(My.Resources.IDRuleMenuItem_ClickText4, Environment.NewLine)
             If MessageBox.Show(_tmp, My.Resources.IDRuleMenuItem_ClickText5, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
                 mv = False
             Else
@@ -5219,6 +4012,7 @@ RETRY:
         End With
         Dim mk As Boolean = False
         If Not mv Then
+            'マークするか？
             Dim _tmp As String = String.Format(My.Resources.IDRuleMenuItem_ClickText6, vbCrLf)
             If MessageBox.Show(_tmp, My.Resources.IDRuleMenuItem_ClickText7, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
                 mk = True
@@ -5226,385 +4020,89 @@ RETRY:
                 mk = False
             End If
         End If
-        For Each ts As TabStructure In _tabs
-            If ts.tabName = tabName Then
-                Dim ids As New List(Of String)
-                For Each itm As ListViewItem In myList.SelectedItems
-                    If Not ids.Contains(itm.SubItems(4).Text) Then
-                        ids.Add(itm.SubItems(4).Text)
-                        Dim flt As New FilterClass()
-                        flt.BodyFilter.Clear()
-                        flt.IDFilter = itm.SubItems(4).Text
-                        flt.SearchBoth = True
-                        flt.moveFrom = mv
-                        flt.SetMark = mk
-                        flt.UseRegex = False
-                        flt.SearchURL = False
-                        ts.filters.Add(flt)
-                    End If
-                Next
-                ReFilter()
-                Exit Sub
+        For Each idx As Integer In _curList.SelectedIndices
+            Dim post As PostClass = _statuses.Item(_curTab.Text, idx)
+            Dim ids As New List(Of String)
+            If Not ids.Contains(post.Name) Then
+                Dim fc As New FiltersClass
+                ids.Add(post.Name)
+                fc.NameFilter = post.Name
+                fc.SearchBoth = False
+                fc.MoveFrom = mv
+                fc.SetMark = mk
+                fc.UseRegex = False
+                fc.SearchUrl = False
+                _statuses.Tabs(tabName).Filters.Add(fc)
             End If
         Next
+
+        Me.Cursor = Cursors.WaitCursor
+        _statuses.FilterAll()
+        '''''''''''''''''''''''''''''
+        ' 即時反映のためVirtualListSizeの変更必要
+        '(類似箇所チェックすること)
+        '''''''''''''''''''''''''''''
+        _curList.Refresh()
+        Me.Cursor = Cursors.Default
     End Sub
 
     Private Sub CopySTOTMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CopySTOTMenuItem.Click
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim clstr As String = ""
-        For Each itm As ListViewItem In MyList.SelectedItems
-            If clstr <> "" Then clstr += vbCrLf
-            clstr += itm.SubItems(4).Text + ":" + itm.SubItems(2).Text + " [http://twitter.com/" + itm.SubItems(4).Text + "/statuses/" + itm.SubItems(5).Text + "]"
-        Next
-        If clstr <> "" Then
-            Dim i As Integer = 0
-RETRY:
-            Try
-                Clipboard.Clear()
-                Clipboard.SetText(clstr)
-            Catch ex As Exception
-                i += 1
-                If i < 3 Then
-                    System.Threading.Thread.Sleep(500)
-                    My.Application.DoEvents()
-                    GoTo RETRY
-                End If
-            End Try
-        End If
+        Me.CopyStot()
     End Sub
 
     Private Sub CopyURLMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CopyURLMenuItem.Click
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim clstr As String = ""
-        For Each itm As ListViewItem In MyList.SelectedItems
-            If clstr <> "" Then clstr += vbCrLf
-            clstr += "http://twitter.com/" + itm.SubItems(4).Text + "/statuses/" + itm.SubItems(5).Text
-        Next
-        If clstr <> "" Then
-            Dim i As Integer = 0
-RETRY:
-            Try
-                Clipboard.Clear()
-                Clipboard.SetText(clstr)
-            Catch ex As Exception
-                i += 1
-                If i < 3 Then
-                    System.Threading.Thread.Sleep(500)
-                    My.Application.DoEvents()
-                    GoTo RETRY
-                End If
-            End Try
-        End If
+        Me.CopyIdUri()
     End Sub
 
     Private Sub SelectAllMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SelectAllMenuItem.Click
         If StatusText.Focused Then
             StatusText.SelectAll()
         Else
-            Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-            For Each lItem As ListViewItem In MyList.Items
-                lItem.Selected = True
+            For i As Integer = _curList.SelectedIndices.Count - 1 To 0 Step -1
+                _curList.Items(i).Selected = False
+            Next
+            _curList.SelectedIndices.Clear()
+            For i As Integer = 0 To _curList.VirtualListSize - 1
+                _curList.Items(i).Selected = True
             Next
         End If
     End Sub
 
     Private Sub MoveMiddle()
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
         Dim _item As ListViewItem
         Dim idx1 As Integer
         Dim idx2 As Integer
 
-        If MyList.SelectedItems.Count = 0 Then Exit Sub
+        If _curList.SelectedIndices.Count = 0 Then Exit Sub
 
-        Dim idx As Integer = MyList.SelectedItems(0).Index
+        Dim idx As Integer = _curList.SelectedIndices(0)
 
-        _item = MyList.GetItemAt(0, 25)
-        If _item Is Nothing Then _item = MyList.Items(0)
-        idx1 = _item.Index
-        _item = MyList.GetItemAt(0, MyList.ClientSize.Height - 1)
-        If _item Is Nothing Then _item = MyList.Items(MyList.Items.Count - 1)
-        idx2 = _item.Index
+        _item = _curList.GetItemAt(0, 25)
+        If _item Is Nothing Then
+            idx1 = 0
+        Else
+            idx1 = _item.Index
+        End If
+        _item = _curList.GetItemAt(0, _curList.ClientSize.Height - 1)
+        If _item Is Nothing Then
+            idx2 = _curList.VirtualListSize - 1
+        Else
+            idx2 = _item.Index
+        End If
 
         idx -= Math.Abs(idx1 - idx2) \ 2
         If idx < 0 Then idx = 0
 
-        MyList.EnsureVisible(MyList.Items.Count - 1)
-        MyList.EnsureVisible(idx)
-
-        MyList.Update()
-        TimerColorize.Start()
+        _curList.EnsureVisible(_curList.VirtualListSize - 1)
+        _curList.EnsureVisible(idx)
     End Sub
 
     Private Sub WedataMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles WedataMenuItem.Click
-        If clsTwSync IsNot Nothing Then
-            clsTwSync.GetWedata()
-        End If
-    End Sub
-
-    Private Sub ReFilter()
-        Me.Cursor = Cursors.WaitCursor
-
-        '☆☆☆☆　暫定対応　☆☆☆☆
-        '発言保持をクラス化したとき、ちゃんと対応する
-        'このコードではメンテできない
-
-        For Each ts As TabStructure In _tabs
-            ts.listCustom.BeginUpdate()
-        Next
-
-        Dim itms As New List(Of ListViewItem)()
-        For Each ts As TabStructure In _tabs
-            If ts.tabName <> "Recent" AndAlso ts.tabName <> "Reply" AndAlso ts.tabName <> "Direct" AndAlso ts.modified Then
-                For Each itmo As ListViewItem In ts.listCustom.Items
-                    itms.Add(DirectCast(itmo.Clone, System.Windows.Forms.ListViewItem))
-                Next
-                ts.oldestUnreadItem = Nothing
-                ts.listCustom.Items.Clear()
-                ts.unreadCount = 0
-                ts.allCount = 0
-                ts.tabPage.ImageIndex = -1
-
-                For Each ts2 As TabStructure In _tabs
-                    If Not ts2.Equals(ts) AndAlso ts2.tabName <> "Reply" AndAlso ts2.tabName <> "Direct" Then
-                        For Each itm As ListViewItem In ts2.listCustom.Items
-                            Dim mv As Boolean = False
-                            Dim mk As Boolean = False
-                            Dim lItem As New Twitter.MyListItem()
-
-                            lItem.Data = itm.SubItems(2).Text
-                            lItem.Fav = Boolean.Parse(itm.SubItems(9).Text)
-                            lItem.Id = itm.SubItems(5).Text
-                            lItem.ImageUrl = itm.SubItems(6).Text
-                            lItem.Name = itm.SubItems(4).Text
-                            lItem.Nick = itm.SubItems(1).Text
-                            lItem.OrgData = itm.SubItems(7).Text
-                            lItem.PDate = Date.Parse(itm.SubItems(3).Text)
-                            lItem.Protect = itm.SubItems(0).Text.Contains("Ю")
-                            lItem.Reply = Boolean.Parse(itm.SubItems(11).Text)
-                            If itm.SubItems(8).Text = "True" Then
-                                lItem.Readed = True
-                            Else
-                                lItem.Readed = False
-                            End If
-                            itm.SubItems(0).Text = itm.SubItems(0).Text.Replace("♪", "")
-
-                            '                            For Each ts As TabStructure In _tabs
-                            Dim hit As Boolean = False
-
-                            For Each ft As FilterClass In ts.filters
-                                Dim bHit As Boolean = True
-                                Dim tBody As String
-                                If ft.SearchURL Then
-                                    tBody = lItem.OrgData
-                                Else
-                                    tBody = lItem.Data
-                                End If
-                                If ft.SearchBoth Then
-                                    If ft.IDFilter = "" OrElse lItem.Name.Equals(ft.IDFilter, StringComparison.OrdinalIgnoreCase) Then
-                                        For Each fs As String In ft.BodyFilter
-                                            If ft.UseRegex Then
-                                                If Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) = False Then bHit = False
-                                            Else
-                                                If tBody.ToLower.Contains(fs.ToLower) = False Then bHit = False
-                                            End If
-                                            If Not bHit Then Exit For
-                                        Next
-                                    Else
-                                        bHit = False
-                                    End If
-                                Else
-                                    For Each fs As String In ft.BodyFilter
-                                        If ft.UseRegex Then
-                                            If Not (Regex.IsMatch(lItem.Name, fs, RegexOptions.IgnoreCase) OrElse _
-                                                    Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase)) Then bHit = False
-                                        Else
-                                            If Not (lItem.Name.ToLower().Contains(fs.ToLower()) OrElse _
-                                                    tBody.ToLower().Contains(fs.ToLower())) Then bHit = False
-                                        End If
-                                        If Not bHit Then Exit For
-                                    Next
-                                End If
-                                If bHit Then
-                                    hit = True
-                                    If ft.SetMark Then mk = True
-                                    If ft.moveFrom Then mv = True
-                                End If
-                                If hit AndAlso mv AndAlso mk Then Exit For
-                            Next
-                            For Each itmo2 As ListViewItem In ts.listCustom.Items
-                                If itmo2.SubItems(5).Text = itm.SubItems(5).Text Then
-                                    hit = False
-                                    Exit For
-                                End If
-                            Next
-                            If hit Then
-                                Dim itm2 As ListViewItem = DirectCast(itm.Clone, ListViewItem)
-                                ts.allCount += 1
-                                If itm2.SubItems(8).Text = "False" Then
-                                    If ts.unreadManage And SettingDialog.UnreadManage Then
-                                        ts.unreadCount += 1
-                                        If ts.oldestUnreadItem Is Nothing Then
-                                            ts.oldestUnreadItem = itm2
-                                        Else
-                                            If ts.oldestUnreadItem.SubItems(5).Text > itm2.SubItems(5).Text Then
-                                                ts.oldestUnreadItem = itm2
-                                            End If
-                                        End If
-                                    Else
-                                        itm2.SubItems(8).Text = "True"
-                                    End If
-                                End If
-                                ts.listCustom.Items.Add(itm2)
-                            End If
-                            If ts.unreadCount > 0 AndAlso ts.tabPage.ImageIndex = -1 Then ts.tabPage.ImageIndex = 0
-                            'Next
-                            If ts2.tabName = "Recent" Then
-                                If Not mv Then
-                                    If mk Then itm.SubItems(0).Text += "♪"
-                                Else
-                                    ts2.allCount -= 1
-                                    If itm.SubItems(8).Text = "False" Then ts2.unreadCount -= 1
-                                    ts2.listCustom.Items.Remove(itm)
-                                End If
-                            End If
-                        Next
-                    End If
-                Next
-                For Each itm As ListViewItem In itms
-                    Dim mv As Boolean = False
-                    Dim mk As Boolean = False
-                    Dim lItem As New Twitter.MyListItem()
-
-                    lItem.Data = itm.SubItems(2).Text
-                    lItem.Fav = CBool(itm.SubItems(9).Text)
-                    lItem.Id = itm.SubItems(5).Text
-                    lItem.ImageUrl = itm.SubItems(6).Text
-                    lItem.Name = itm.SubItems(4).Text
-                    lItem.Nick = itm.SubItems(1).Text
-                    lItem.OrgData = itm.SubItems(7).Text
-                    lItem.PDate = CDate(itm.SubItems(3).Text)
-                    lItem.Protect = itm.SubItems(0).Text.Contains("Ю")
-                    lItem.Reply = CBool(itm.SubItems(11).Text)
-                    If itm.SubItems(8).Text = "True" Then
-                        lItem.Readed = True
-                    Else
-                        lItem.Readed = False
-                    End If
-                    itm.SubItems(0).Text = itm.SubItems(0).Text.Replace("♪", "")
-
-                    '                            For Each ts As TabStructure In _tabs
-                    Dim hit As Boolean = False
-                    Dim ts2 As TabStructure = GetTSbyName("Recent")
-
-                    For Each ft As FilterClass In ts.filters
-                        Dim bHit As Boolean = True
-                        Dim tBody As String
-                        If ft.SearchURL Then
-                            tBody = lItem.OrgData
-                        Else
-                            tBody = lItem.Data
-                        End If
-                        If ft.SearchBoth Then
-                            If ft.IDFilter = "" OrElse lItem.Name.Equals(ft.IDFilter, StringComparison.CurrentCultureIgnoreCase) Then
-                                For Each fs As String In ft.BodyFilter
-                                    If ft.UseRegex Then
-                                        If Not Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) Then bHit = False
-                                    Else
-                                        If Not tBody.ToLower().Contains(fs.ToLower()) Then bHit = False
-                                    End If
-                                    If Not bHit Then Exit For
-                                Next
-                            Else
-                                bHit = False
-                            End If
-                        Else
-                            For Each fs As String In ft.BodyFilter
-                                If ft.UseRegex Then
-                                    If Not (Regex.IsMatch(lItem.Name, fs, RegexOptions.IgnoreCase) OrElse _
-                                            Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase)) Then bHit = False
-                                Else
-                                    If Not (lItem.Name.ToLower().Contains(fs.ToLower()) OrElse _
-                                            tBody.ToLower().Contains(fs.ToLower())) Then bHit = False
-                                End If
-                                If Not bHit Then Exit For
-                            Next
-                        End If
-                        If bHit Then
-                            hit = True
-                            If ft.SetMark Then mk = True
-                            If ft.moveFrom Then mv = True
-                        End If
-                        If hit AndAlso mv AndAlso mk Then Exit For
-                    Next
-                    For Each itmo2 As ListViewItem In ts.listCustom.Items
-                        If itmo2.SubItems(5).Text = itm.SubItems(5).Text Then
-                            hit = False
-                            Exit For
-                        End If
-                    Next
-                    If hit Then
-                        Dim itm2 As ListViewItem = DirectCast(itm.Clone, ListViewItem)
-                        ts.allCount += 1
-                        If itm2.SubItems(8).Text = "False" Then
-                            If ts.unreadManage AndAlso SettingDialog.UnreadManage Then
-                                ts.unreadCount += 1
-                                If ts.oldestUnreadItem Is Nothing Then
-                                    ts.oldestUnreadItem = itm2
-                                Else
-                                    If ts.oldestUnreadItem.SubItems(5).Text > itm2.SubItems(5).Text Then
-                                        ts.oldestUnreadItem = itm2
-                                    End If
-                                End If
-                            Else
-                                itm2.SubItems(8).Text = "True"
-                            End If
-                        End If
-                        ts.listCustom.Items.Add(itm2)
-                    Else
-                        For Each itmr As ListViewItem In GetTSbyName("Recent").listCustom.Items
-                            If itmr.SubItems(5).Text = itm.SubItems(5).Text Then
-                                hit = True
-                                Exit For
-                            End If
-                        Next
-                        If hit = False Then
-                            ts2.allCount += 1
-                            If itm.SubItems(8).Text = "False" Then
-                                If ts2.unreadManage AndAlso SettingDialog.UnreadManage Then
-                                    ts2.unreadCount += 1
-                                    If ts2.oldestUnreadItem Is Nothing Then
-                                        ts2.oldestUnreadItem = itm
-                                    Else
-                                        If ts2.oldestUnreadItem.SubItems(5).Text > itm.SubItems(5).Text Then
-                                            ts2.oldestUnreadItem = itm
-                                        End If
-                                    End If
-                                Else
-                                    itm.SubItems(8).Text = "True"
-                                End If
-                            End If
-                            ts2.listCustom.Items.Add(DirectCast(itm.Clone, System.Windows.Forms.ListViewItem))
-                        End If
-                    End If
-                    If ts.unreadCount > 0 AndAlso ts.tabPage.ImageIndex = -1 Then ts.tabPage.ImageIndex = 0
-                    If ts2.unreadCount > 0 AndAlso ts2.tabPage.ImageIndex = -1 Then ts2.tabPage.ImageIndex = 0
-                Next
-            End If
-        Next
-
-        For Each ts As TabStructure In _tabs
-            If ts.modified Then
-                ts.modified = False
-            End If
-            ts.listCustom.EndUpdate()
-        Next
-
-        Me.Cursor = Cursors.Default
+        If clsTwSync IsNot Nothing Then clsTwSync.GetWedata()
     End Sub
 
     Private Sub OpenURLMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OpenURLMenuItem.Click
         If PostBrowser.Document.Links.Count > 0 Then
-            Dim uri As Uri
             UrlDialog.ClearUrl()
 
             Dim openUrlStr As String = ""
@@ -5621,34 +4119,28 @@ RETRY:
                 Me.TopMost = SettingDialog.AlwaysTop
             End If
 
-            If openUrlStr <> "" Then
-                Do While ExecWorker.IsBusy
-                    Threading.Thread.Sleep(1)
-                    Application.DoEvents()
-                Loop
-
-                ExecWorker.RunWorkerAsync(openUrlStr)
-            End If
+            If openUrlStr <> "" Then OpenUriAsync(openUrlStr)
         End If
     End Sub
 
     Private Sub ClearTabMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ClearTabMenuItem.Click
         If _rclickTabName = "" Then Exit Sub
-        Dim tmp As String = String.Format(My.Resources.ClearTabMenuItem_ClickText1, vbCrLf)
+        Dim tmp As String = String.Format(My.Resources.ClearTabMenuItem_ClickText1, Environment.NewLine)
         If MessageBox.Show(tmp, My.Resources.ClearTabMenuItem_ClickText2, MessageBoxButtons.OKCancel, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then
             Exit Sub
         End If
 
-        For Each ts As TabStructure In _tabs
-            If ts.tabName = _rclickTabName Then
-                ts.oldestUnreadItem = Nothing
-                ts.allCount = 0
-                ts.unreadCount = 0
-                ts.listCustom.Items.Clear()
-                ts.tabPage.ImageIndex = -1
-                Exit For
-            End If
-        Next
+        _statuses.Tabs(_rclickTabName).ClearIDs()
+        _curList.Refresh()
+        If ListTab.SelectedTab.Text = _rclickTabName Then
+            _anchorPost = Nothing
+            _anchorFlag = False
+            _itemCache = Nothing
+            _itemCacheIndex = -1
+            _curItemIndex = -1
+            _curPost = Nothing
+        End If
+
         SetMainWindowTitle()
         SetStatusLabel()
     End Sub
@@ -5662,11 +4154,9 @@ RETRY:
         If SettingDialog.DispLatestPost <> DispTitleEnum.None AndAlso _
            SettingDialog.DispLatestPost <> DispTitleEnum.Post AndAlso _
            SettingDialog.DispLatestPost <> DispTitleEnum.Ver Then
-            For Each ts As TabStructure In _tabs
-                If ts IsNot Nothing Then
-                    ur += ts.unreadCount
-                    al += ts.allCount
-                End If
+            For Each key As String In _statuses.Tabs.Keys
+                ur += _statuses.Tabs(key).UnreadCount
+                al += _statuses.Tabs(key).AllCount
             Next
         End If
 
@@ -5680,11 +4170,11 @@ RETRY:
                     ttl.Append(_history(_history.Count - 2))
                 End If
             Case DispTitleEnum.UnreadRepCount
-                ttl.AppendFormat(My.Resources.SetMainWindowTitleText1, GetTSbyName("Reply").unreadCount + GetTSbyName("Direct").unreadCount)
+                ttl.AppendFormat(My.Resources.SetMainWindowTitleText1, _statuses.Tabs("Reply").UnreadCount + _statuses.Tabs("Direct").UnreadCount)
             Case DispTitleEnum.UnreadAllCount
                 ttl.AppendFormat(My.Resources.SetMainWindowTitleText2, ur)
             Case DispTitleEnum.UnreadAllRepCount
-                ttl.AppendFormat(My.Resources.SetMainWindowTitleText3, ur, GetTSbyName("Reply").unreadCount + GetTSbyName("Direct").unreadCount)
+                ttl.AppendFormat(My.Resources.SetMainWindowTitleText3, ur, _statuses.Tabs("Reply").UnreadCount + _statuses.Tabs("Direct").UnreadCount)
             Case DispTitleEnum.UnreadCountAllCount
                 ttl.AppendFormat(My.Resources.SetMainWindowTitleText4, ur, al)
         End Select
@@ -5695,18 +4185,18 @@ RETRY:
     Private Sub SetStatusLabel()
         'ステータス欄にカウント表示
         'タブ未読数/タブ発言数 全未読数/総発言数 (未読＠＋未読DM数)
-        Dim urat As Integer = GetTSbyName("Reply").unreadCount + GetTSbyName("Direct").unreadCount
+        Dim urat As Integer = _statuses.Tabs("Reply").UnreadCount + _statuses.Tabs("Direct").UnreadCount
         Dim ur As Integer = 0
         Dim al As Integer = 0
         Dim tur As Integer = 0
         Dim tal As Integer = 0
         Dim slbl As StringBuilder = New StringBuilder(256)
-        For Each ts As TabStructure In _tabs
-            ur += ts.unreadCount
-            al += ts.allCount
-            If ts.tabPage.Equals(ListTab.SelectedTab) Then
-                tur = ts.unreadCount
-                tal = ts.allCount
+        For Each key As String In _statuses.Tabs.Keys
+            ur += _statuses.Tabs(key).UnreadCount
+            al += _statuses.Tabs(key).AllCount
+            If key.Equals(_curTab.Text) Then
+                tur = _statuses.Tabs(key).UnreadCount
+                tal = _statuses.Tabs(key).AllCount
             End If
         Next
 
@@ -5721,7 +4211,6 @@ RETRY:
 
     Private Sub SetNotifyIconText()
         ' タスクトレイアイコンのツールチップテキスト書き換え
-
         If SettingDialog.DispUsername Then
             NotifyIcon1.Text = _username + " - Tween"
         Else
@@ -5788,23 +4277,20 @@ RETRY:
     End Sub
 
     Private Sub RepliedStatusOpenMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RepliedStatusOpenMenuItem.Click
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim id As Integer = clsTwSync.GetReplyStatusID(Integer.Parse(MyList.SelectedItems(0).SubItems(5).Text))
-        If id > 0 Then
-            ExecWorker.RunWorkerAsync("http://twitter.com/" + Regex.Match(MyList.SelectedItems(0).SubItems(2).Text, "@[A-Za-z0-9_]+").Value.Substring(1) + "/statuses/" + id.ToString())
+        If _curPost.InReplyToUser.Length > 0 AndAlso _curPost.InReplyToId > 0 Then
+            OpenUriAsync("http://twitter.com/" + _curPost.InReplyToUser + "/statuses/" + _curPost.InReplyToId.ToString())
         End If
     End Sub
 
     Private Sub ContextMenuStrip3_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuStrip3.Opening
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-
-        If MyList.SelectedItems.Count > 0 Then
-            Dim name As String = MyList.SelectedItems(0).SubItems(6).Text
-            If name <> "" Then
+        '発言詳細のアイコン右クリック時のメニュー制御
+        If _curList.SelectedIndices.Count > 0 Then
+            Dim name As String = _curPost.ImageUrl
+            If name.Length > 0 Then
                 name = IO.Path.GetFileNameWithoutExtension(name.Substring(name.LastIndexOf("/"c)))
                 name = name.Substring(0, name.Length - 7) ' "_normal".Length
                 Me.IconNameToolStripMenuItem.Enabled = True
-                If Me.TIconList.Images.Item(name) Is Nothing Then
+                If Me.TIconDic.ContainsKey(_curPost.ImageUrl) AndAlso Me.TIconDic(_curPost.ImageUrl) IsNot Nothing Then
                     Me.SaveIconPictureToolStripMenuItem.Enabled = True
                 Else
                     Me.SaveIconPictureToolStripMenuItem.Enabled = False
@@ -5823,14 +4309,12 @@ RETRY:
     End Sub
 
     Private Sub IconNameToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles IconNameToolStripMenuItem.Click
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim name As String = MyList.SelectedItems(0).SubItems(6).Text
-        ExecWorker.RunWorkerAsync(name.Remove(name.LastIndexOf("_normal"), 7)) ' "_normal".Length
+        Dim name As String = _curPost.ImageUrl
+        OpenUriAsync(name.Remove(name.LastIndexOf("_normal"), 7)) ' "_normal".Length
     End Sub
 
     Private Sub SaveOriginalSizeIconPictureToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim name As String = MyList.SelectedItems(0).SubItems(6).Text
+        Dim name As String = _curPost.ImageUrl
         name = IO.Path.GetFileNameWithoutExtension(name.Substring(name.LastIndexOf("/"c)))
 
         Me.SaveFileDialog1.FileName = name.Substring(0, name.Length - 8) ' "_normal".Length + 1
@@ -5841,23 +4325,18 @@ RETRY:
     End Sub
 
     Private Sub SaveIconPictureToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SaveIconPictureToolStripMenuItem.Click
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-        Dim name As String = MyList.SelectedItems(0).SubItems(6).Text
+        Dim name As String = _curPost.ImageUrl
 
         Me.SaveFileDialog1.FileName = name.Substring(name.LastIndexOf("/"c) + 1)
 
         If Me.SaveFileDialog1.ShowDialog() = Windows.Forms.DialogResult.OK Then
-            Me.TIconList.Images.Item(name).Save(Me.SaveFileDialog1.FileName)
+            Me.TIconDic(name).Save(Me.SaveFileDialog1.FileName)
         End If
     End Sub
 
     Private Sub SplitContainer2_Panel2_Resize(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SplitContainer2.Panel2.Resize
         Me.StatusText.Multiline = Me.SplitContainer2.Panel2.Height > Me.SplitContainer2.Panel2MinSize + 2
         MultiLineMenuItem.Checked = Me.StatusText.Multiline
-        'If _section IsNot Nothing Then
-        '    _section.StatusMultiline = MultiLineMenuItem.Checked
-        '    If StatusText.Multiline Then _section.StatusTextHeight = SplitContainer2.Panel2.Height
-        'End If
     End Sub
 
     Private Sub StatusText_MultilineChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusText.MultilineChanged
@@ -5899,9 +4378,7 @@ RETRY:
         If StatusText.SelectionLength > 0 Then
             Dim tmp As String = StatusText.SelectedText
             ' httpから始まらない場合、ExcludeStringで指定された文字列で始まる場合は対象としない
-            If Not tmp.StartsWith("http") Then
-                ' Nothing
-            Else
+            If tmp.StartsWith("http") Then
                 ' 文字列が選択されている場合はその文字列について処理
 
                 '短縮URL変換 日本語を含むかもしれないのでURLエンコードする
@@ -6025,37 +4502,37 @@ RETRY:
     End Sub
 
     Private Sub MyList_ColumnReordered(ByVal sender As System.Object, ByVal e As ColumnReorderedEventArgs)
-        Dim MyList As DetailsListView = DirectCast(sender, DetailsListView)
+        'If e.Header.Text = "" Then
+        '    _columnIdx = e.NewDisplayIndex
+        'Else
+        '    Dim cIdx As Integer = 0
+        '    For Each clm As ColumnHeader In _curList.Columns
+        '        If clm.Text = "" Then
+        '            cIdx = clm.DisplayIndex
+        '            If cIdx >= e.NewDisplayIndex AndAlso cIdx < e.OldDisplayIndex Then
+        '                _columnIdx = cIdx + 1
+        '            ElseIf cIdx <= e.NewDisplayIndex AndAlso cIdx > e.OldDisplayIndex Then
+        '                _columnIdx = cIdx - 1
+        '            End If
+        '            Exit For
+        '        End If
+        '    Next
+        'End If
 
-        If e.Header.Text = "" Then
-            _columnIdx = e.NewDisplayIndex
-        Else
-            Dim cIdx As Integer = 0
-            For Each clm As ColumnHeader In MyList.Columns
-                If clm.Text = "" Then
-                    cIdx = clm.DisplayIndex
-                    If cIdx >= e.NewDisplayIndex AndAlso cIdx < e.OldDisplayIndex Then
-                        _columnIdx = cIdx + 1
-                    ElseIf cIdx <= e.NewDisplayIndex AndAlso cIdx > e.OldDisplayIndex Then
-                        _columnIdx = cIdx - 1
-                    End If
-                    Exit For
-                End If
-            Next
-        End If
-
-        _columnChangeFlag = True
+        '_columnChangeFlag = True
     End Sub
 
     Private Sub MyList_CoumnWidthChanging(ByVal sender As System.Object, ByVal e As ColumnWidthChangingEventArgs)
-        _columnChangeFlag = True
+        '_columnChangeFlag = True
     End Sub
 
     Private Sub ToolStripMenuItem3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripMenuItem3.Click
+        '発言詳細で「選択文字列をコピー」
         PostBrowser.Document.ExecCommand("Copy", False, Nothing)
     End Sub
 
     Private Sub doSearchToolStrip(ByVal url As String)
+        '発言詳細で「選択文字列で検索」（選択文字列取得）
         Dim typ As Type = PostBrowser.ActiveXInstance.GetType()
         Dim _SelObj As Object = typ.InvokeMember("selection", BindingFlags.GetProperty, Nothing, PostBrowser.Document.DomDocument, Nothing)
         Dim _objRange As Object = _SelObj.GetType().InvokeMember("createRange", BindingFlags.InvokeMethod, Nothing, _SelObj, Nothing)
@@ -6064,11 +4541,12 @@ RETRY:
 
         If _selText IsNot Nothing Then
             tmp = String.Format(url, HttpUtility.UrlEncode(_selText))
-            ExecWorker.RunWorkerAsync(tmp)
+            OpenUriAsync(tmp)
         End If
     End Sub
 
     Private Sub ToolStripMenuItem5_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripMenuItem5.Click
+        '発言詳細ですべて選択
         PostBrowser.Document.ExecCommand("SelectAll", False, Nothing)
     End Sub
 
@@ -6089,9 +4567,10 @@ RETRY:
     End Sub
 
     Private Sub ToolStripMenuItem4_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripMenuItem4.Click
-        If PostBrowser.StatusText.StartsWith("http") Then   '念のため
-            Clipboard.SetDataObject(PostBrowser.StatusText, False, 5, 100)
-        End If
+        'URLをコピー
+        'If PostBrowser.StatusText.StartsWith("http") Then   '念のため
+        Clipboard.SetDataObject(PostBrowser.StatusText, False, 5, 100)
+        'End If
     End Sub
 
     Private Sub ContextMenuStrip4_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuStrip4.Opening
@@ -6105,6 +4584,7 @@ RETRY:
     End Sub
 
     Private Sub CurrentTabToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CurrentTabToolStripMenuItem.Click
+        '発言詳細の選択文字列で現在のタブを検索
         Dim typ As Type = PostBrowser.ActiveXInstance.GetType()
         Dim _SelObj As Object = typ.InvokeMember("selection", BindingFlags.GetProperty, Nothing, PostBrowser.Document.DomDocument, Nothing)
         Dim _objRange As Object = _SelObj.GetType().InvokeMember("createRange", BindingFlags.InvokeMethod, Nothing, _SelObj, Nothing)
@@ -6143,39 +4623,28 @@ RETRY:
         End If
     End Sub
 
-    Private Function GetTSbyName(ByVal Name As String) As TabStructure
-        For i As Integer = 0 To _tabs.Count - 1
-            If _tabs(i).tabName.Equals(Name) Then Return _tabs(i)
-        Next
-        Return Nothing
-    End Function
-
     ' Contributed by shuyoko <http://twitter.com/shuyoko> BEGIN:
     Private Sub BlackFavAddToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BlackFavAddToolStripMenuItem.Click
 
         Dim cnt As Integer = 0
-        Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
+        'Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
 
-        If ListTab.SelectedTab.Text = "Direct" OrElse MyList.SelectedItems.Count = 0 Then Exit Sub
+        If _curTab.Text = "Direct" OrElse _curList.SelectedIndices.Count = 0 Then Exit Sub
 
-        If MyList.SelectedItems.Count > 1 Then
+        If _curList.SelectedIndices.Count > 1 Then
             If MessageBox.Show(My.Resources.BlackFavAddToolStripMenuItem_ClickText1, My.Resources.BlackFavAddToolStripMenuItem_ClickText2, _
                                MessageBoxButtons.OKCancel, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then
                 Exit Sub
             End If
         End If
 
-        NotifyIcon1.Icon = NIconRefresh(0)
-        TimerRefreshIcon.Enabled = True
-        StatusLabel.Text = My.Resources.BlackFavAddToolStripMenuItem_ClickText3
-
         Dim args As New GetWorkerArg()
-        args.ids = New List(Of String)()
-        args.sIds = New List(Of String)()
-        args.tName = ListTab.SelectedTab.Text
-        For cnt = 0 To MyList.SelectedItems.Count - 1
-            If MyList.SelectedItems(cnt).SubItems(9).Text = "False" Then
-                args.ids.Add(MyList.SelectedItems(cnt).SubItems(5).Text)
+        args.ids = New List(Of Long)
+        args.sIds = New List(Of Long)
+        args.tName = _curTab.Text
+        For Each idx As Integer In _curList.SelectedIndices
+            If Not _statuses.Item(_curTab.Text, idx).IsFav Then
+                args.ids.Add(_statuses.Item(_curTab.Text, idx).Id)
             End If
         Next
         args.type = WORKERTYPE.BlackFavAdd
@@ -6196,171 +4665,51 @@ RETRY:
     Private Sub BlackFavRemoveToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BlackFavRemoveToolStripMenuItem.Click
         ' STUB
     End Sub
-End Class
 
-Public Class TabStructure
-    Public tabPage As System.Windows.Forms.TabPage
-    Public listCustom As DetailsListView
-    Public colHd1 As System.Windows.Forms.ColumnHeader
-    Public colHd2 As System.Windows.Forms.ColumnHeader
-    Public colHd3 As System.Windows.Forms.ColumnHeader
-    Public colHd4 As System.Windows.Forms.ColumnHeader
-    Public colHd5 As System.Windows.Forms.ColumnHeader
-    Public tabName As String
-    Public unreadManage As Boolean
-    Public notify As Boolean
-    Public soundFile As String
-    Public filters As New List(Of FilterClass)()
-    Public modified As Boolean
-    Public oldestUnreadItem As ListViewItem
-    Public unreadCount As Integer
-    Public allCount As Integer
-End Class
-
-Public Class FilterClass
-    Public IDFilter As String
-    Public BodyFilter As New List(Of String)
-    Public SearchBoth As Boolean
-    Public moveFrom As Boolean
-    Public SetMark As Boolean
-    Public SearchURL As Boolean
-    Public UseRegex As Boolean
-End Class
-
-Public Class ListViewItemComparer
-    Implements IComparer
-
-    ''' <summary>
-    ''' 比較する方法
-    ''' </summary>
-    Public Enum ComparerMode
-        [String]
-        [Integer]
-        DateTime
-        None
-    End Enum
-
-    Private _column As Integer
-    Private _order As SortOrder
-    Private _mode As ComparerMode
-    Private _columnModes() As ComparerMode
-
-    ''' <summary>
-    ''' 並び替えるListView列の番号
-    ''' </summary>
-    Public Property Column() As Integer
-        Get
-            Return _column
-        End Get
-        Set(ByVal Value As Integer)
-            If _column = Value Then
-                If _order = SortOrder.Ascending Then
-                    _order = SortOrder.Descending
-                Else
-                    If _order = SortOrder.Descending Then
-                        _order = SortOrder.Ascending
-                    End If
-                End If
-            End If
-            _column = Value
-        End Set
-    End Property
-
-    ''' <summary>
-    ''' 昇順か降順か
-    ''' </summary>
-    Public Property Order() As SortOrder
-        Get
-            Return _order
-        End Get
-        Set(ByVal Value As SortOrder)
-            _order = Value
-        End Set
-    End Property
-
-    ''' <summary>
-    ''' 並び替えの方法
-    ''' </summary>
-    Public Property Mode() As ComparerMode
-        Get
-            Return _mode
-        End Get
-        Set(ByVal Value As ComparerMode)
-            _mode = Value
-        End Set
-    End Property
-
-    ''' <summary>
-    ''' 列ごとの並び替えの方法
-    ''' </summary>
-    Public WriteOnly Property ColumnModes() As ComparerMode()
-        Set(ByVal Value As ComparerMode())
-            _columnModes = Value
-        End Set
-    End Property
-
-    ''' <summary>
-    ''' ListViewItemComparerクラスのコンストラクタ
-    ''' </summary>
-    ''' <param name="col">並び替える列番号</param>
-    ''' <param name="ord">昇順か降順か</param>
-    ''' <param name="cmod">並び替えの方法</param>
-    Public Sub New(ByVal col As Integer, ByVal ord As SortOrder, _
-            ByVal cmod As ComparerMode)
-        _column = col
-        _order = ord
-        _mode = cmod
-    End Sub
-
-    Public Sub New()
-        _column = 0
-        _order = SortOrder.Ascending
-        _mode = ComparerMode.String
-    End Sub
-
-    'xがyより小さいときはマイナスの数、大きいときはプラスの数、
-    '同じときは0を返す
-    Public Function Compare(ByVal x As Object, ByVal y As Object) _
-            As Integer Implements IComparer.Compare
-        Dim result As Integer = 0
-        'ListViewItemの取得
-        Dim itemx As ListViewItem = DirectCast(x, ListViewItem)
-        Dim itemy As ListViewItem = DirectCast(y, ListViewItem)
-
-        '並べ替えの方法を決定
-        If Not (_columnModes Is Nothing) AndAlso _
-                _columnModes.Length > _column Then
-            _mode = _columnModes(_column)
-        End If
-        '並び替えの方法別に、xとyを比較する
-        Select Case _mode
-            Case ComparerMode.String
-                result = String.Compare(itemx.SubItems(_column).Text, _
-                    itemy.SubItems(_column).Text)
-            Case ComparerMode.Integer
-                result = Long.Parse(itemx.SubItems(_column).Text).CompareTo(Long.Parse(itemy.SubItems(_column).Text))
-            Case ComparerMode.DateTime
-                'result = DateTime.Compare( _
-                '    DateTime.Parse(itemx.SubItems(_column).Text, datetimeformatinfo), _
-                '    DateTime.Parse(itemy.SubItems(_column).Text))
-                'result = String.Compare( _
-                '    itemx.SubItems(_column).Text, _
-                '    itemy.SubItems(_column).Text)
-                'StatusID(?)でソート
-                result = Long.Parse(itemx.SubItems(5).Text).CompareTo(Long.Parse(itemy.SubItems(5).Text))
-            Case ComparerMode.None
-                result = 0
-        End Select
-
-        '降順の時は結果を+-逆にする
-        If _order = SortOrder.Descending Then
-            result = -result
-        Else
-            If _order = SortOrder.None Then
-                result = 0
-            End If
-        End If
-        '結果を返す
-        Return result
+    Private Function IsNetworkAvailable() As Boolean
+        Dim nw As Boolean = True
+        Try
+            nw = My.Computer.Network.IsAvailable
+        Catch ex As Exception
+            nw = True
+        End Try
+        Return nw
     End Function
+
+    Private Sub OpenUriAsync(ByVal UriString As String)
+        Do While ExecWorker.IsBusy
+            Threading.Thread.Sleep(1)
+            Application.DoEvents()
+        Loop
+        ExecWorker.RunWorkerAsync(UriString)
+    End Sub
+
+    Private Sub ListTab_Selecting(ByVal sender As System.Object, ByVal e As System.Windows.Forms.TabControlCancelEventArgs) Handles ListTab.Selecting
+        SetListProperty()
+
+        _itemCache = Nothing
+        _itemCacheIndex = -1
+        _postCache = Nothing
+        _curTab = e.TabPage
+        _curList = DirectCast(e.TabPage.Controls(0), DetailsListView)
+        If _curList.SelectedIndices.Count > 0 Then
+            _curItemIndex = _curList.SelectedIndices(0)
+            _curPost = GetCurTabPost(_curItemIndex)
+        Else
+            _curItemIndex = -1
+            _curPost = Nothing
+        End If
+
+        _anchorPost = Nothing
+        _anchorFlag = False
+    End Sub
+
+    Private Sub SelectOneItem(ByVal LView As DetailsListView, ByVal Index As Integer)
+        For i As Integer = _curList.SelectedIndices.Count - 1 To 0 Step -1
+            LView.Items(i).Selected = False
+        Next
+        LView.SelectedIndices.Clear()
+        LView.Items(Index).Selected = True
+        LView.Items(Index).Focused = True
+    End Sub
 End Class
