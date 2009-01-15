@@ -868,10 +868,6 @@ Public Class TweenMain
 
     Private Sub ChangeCacheStyleRead(ByVal Read As Boolean, ByVal Index As Integer, ByVal Tab As TabPage)
         'Read:True=既読 False=未読
-
-
-
-
         '未読管理していなかったら既読として扱う
         If Not _statuses.Tabs(_curTab.Text).UnreadManage OrElse _
            Not SettingDialog.UnreadManage Then Read = True
@@ -882,24 +878,6 @@ Public Class TweenMain
         If Tab.Equals(_curTab) AndAlso _itemCache IsNot Nothing AndAlso Index >= _itemCacheIndex AndAlso Index < _itemCacheIndex + _itemCache.Length Then
             itm = _itemCache(Index - _itemCacheIndex)
             post = _postCache(Index - _itemCacheIndex)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         Else
             itm = DirectCast(Tab.Controls(0), DetailsListView).Items(Index)
             post = _statuses.Item(Tab.Text, Index)
@@ -907,8 +885,6 @@ Public Class TweenMain
 
         ChangeItemStyleRead(Read, itm, post)
     End Sub
-
-
 
     Private Sub ChangeItemStyleRead(ByVal Read As Boolean, ByVal Item As ListViewItem, ByVal Post As PostClass)
         'Dim fnt As Font
@@ -929,44 +905,8 @@ Public Class TweenMain
         Else
             If Read Then
                 cl = _clReaded
-
-
-
-
-
-
-
-
-
-
-
-
             Else
                 cl = _clUnread
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             End If
         End If
         Item.ForeColor = cl
@@ -1334,6 +1274,18 @@ Public Class TweenMain
         Return smsg
     End Function
 
+    Private Sub GetTimelineWorker_ProgressChanged(ByVal sender As Object, ByVal e As System.ComponentModel.ProgressChangedEventArgs) Handles GetTimelineWorker.ProgressChanged
+        Dim smsg As String = DirectCast(e.UserState, String)
+        If smsg.Length > 0 Then StatusLabel.Text = smsg
+        If e.ProgressPercentage = 0 Then    '開始
+            TimerRefreshIcon.Enabled = True
+        End If
+        If e.ProgressPercentage = 100 Then  '終了
+            TimerRefreshIcon.Enabled = False
+            NotifyIcon1.Icon = NIconAt
+        End If
+    End Sub
+
     Private Sub GetTimelineWorker_RunWorkerCompleted(ByVal sender As System.Object, ByVal e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles GetTimelineWorker.RunWorkerCompleted
 
         If _endingFlag OrElse e.Cancelled Then Exit Sub 'キャンセル
@@ -1698,13 +1650,7 @@ Public Class TweenMain
             BlackFavAddToolStripMenuItem.Enabled = False
             'BlackFavRemoveToolStripMenuItem.Enabled = False
         Else
-            Dim nw As Boolean = True
-            Try
-                nw = My.Computer.Network.IsAvailable
-            Catch ex As Exception
-                nw = True
-            End Try
-            If nw Then
+            If IsNetworkAvailable() Then
                 FavAddToolStripMenuItem.Enabled = True
                 FavRemoveToolStripMenuItem.Enabled = True
                 StatusOpenMenuItem.Enabled = True

@@ -1097,7 +1097,7 @@ Partial Public Class Twitter
                     rd.Read()
                     While rd.EOF = False
                         If rd.IsStartElement("screen_name") Then
-                            follower.Add(rd.ReadElementString("screen_name"))
+                            follower.Add(rd.ReadElementString("screen_name").ToLower())
                             lc += 1
                         Else
                             rd.Read()
@@ -1107,7 +1107,7 @@ Partial Public Class Twitter
                 End Using
             Catch ex As XmlException
                 follower.Clear()
-                follower.Add(_uid)  '途中で失敗したら片思い表示しない
+                follower.Add(_uid.ToLower())  '途中で失敗したら片思い表示しない
                 Return "NG(XmlException)"
             End Try
         Loop

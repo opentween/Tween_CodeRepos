@@ -534,7 +534,7 @@ Public Class TabInformations
             Next
         Else
             tb.UnreadCount += 1
-            If tb.OldestUnreadId > Id Then tb.OldestUnreadId = Id
+            If tb.OldestUnreadId > Id OrElse tb.OldestUnreadId = -1 Then tb.OldestUnreadId = Id
             For Each key As String In _tabs.Keys
                 If Not key.Equals(TabName) AndAlso _tabs(key).UnreadManage AndAlso _tabs(key).Contains(Id) Then
                     _tabs(key).UnreadCount += 1
