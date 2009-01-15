@@ -754,13 +754,23 @@ Public Class TweenMain
     End Sub
 
     Private Sub RefreshTimeline(ByVal notifyPosts As List(Of PostClass), ByVal soundFile As String, ByVal addCount As Integer, ByVal Dm As Boolean)
-        Dim topItem As ListViewItem
+
+        For Each tab As TabPage In ListTab.TabPages
+            Dim lst As DetailsListView = DirectCast(tab.Controls(0), DetailsListView)
+            Dim tabInfo As TabClass = _statuses.Tabs(tab.Text)
+            If Dm AndAlso tab.Text = "Direct" OrElse Not Dm Then
+                If lst.VirtualListSize <> tabInfo.AllCount Then lst.VirtualListSize = tabInfo.AllCount 'リスト件数更新
+                If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
+            End If
+        Next
 
         'スクロール制御
-        If _curList.Items.Count > 0 Then
-            If ListLockMenuItem.Checked Then
-                topItem = _curList.TopItem
-            Else
+        If Not ListLockMenuItem.Checked Then
+            Dim topItem As ListViewItem
+
+            'スクロール制御
+            If _curList.Items.Count > 0 Then
+
                 Dim _item As ListViewItem
                 If _statuses.SortOrder = SortOrder.Ascending Then
                     '日時昇順
@@ -782,82 +792,67 @@ Public Class TweenMain
                     End If
                 End If
 
+            Else
+                topItem = Nothing
             End If
-        Else
-            topItem = Nothing
-        End If
-        ''''''''''''''''''''''''''''''''''''''''''
-        For Each tab As TabPage In ListTab.TabPages
-            Dim lst As DetailsListView = DirectCast(tab.Controls(0), DetailsListView)
-            Dim tabInfo As TabClass = _statuses.Tabs(tab.Text)
-            If Dm AndAlso tab.Text = "Direct" OrElse Not Dm Then
-                If lst.VirtualListSize <> tabInfo.AllCount Then lst.VirtualListSize = tabInfo.AllCount 'リスト件数更新
-                If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
-            End If
-        Next
-        'スクロール制御
-        If Not ListLockMenuItem.Checked Then
+
             If topItem IsNot Nothing Then
                 If _curList.Items.Count > 0 AndAlso topItem.Index > -1 Then
-                    _curList.BeginUpdate()
                     _curList.EnsureVisible(_curList.Items.Count - 1)
                     _curList.EnsureVisible(topItem.Index)
-                    _curList.EndUpdate()
                 End If
             Else
                 If _statuses.SortOrder = SortOrder.Ascending AndAlso _curList.Items.Count > 0 Then
-                    _curList.BeginUpdate()
                     _curList.EnsureVisible(_curList.Items.Count - 1)
-                    _curList.EndUpdate()
                 End If
             End If
         End If
 
-            '新着通知
-            If NewPostPopMenuItem.Checked AndAlso notifyPosts.Count > 0 AndAlso Not _initial Then
-                Dim sb As New StringBuilder
-                Dim reply As Boolean = False
-                For Each post As PostClass In notifyPosts
-                    If post.IsReply Then reply = True
-                    If sb.Length > 0 Then sb.Append(System.Environment.NewLine)
-                    Select Case SettingDialog.NameBalloon
-                        Case NameBalloonEnum.UserID
-                            sb.Append(post.Name).Append(" : ")
-                        Case NameBalloonEnum.NickName
-                            sb.Append(post.Nickname).Append(" : ")
-                    End Select
-                    sb.Append(post.Data)
-                Next
-                If SettingDialog.DispUsername Then NotifyIcon1.BalloonTipTitle = _username + " - " Else NotifyIcon1.BalloonTipTitle = ""
-                If Dm Then
-                    NotifyIcon1.BalloonTipIcon = ToolTipIcon.Warning
-                    NotifyIcon1.BalloonTipTitle += "Tween [DM] " + My.Resources.RefreshDirectMessageText1 + " " + addCount.ToString() + My.Resources.RefreshDirectMessageText2
-                ElseIf reply Then
-                    NotifyIcon1.BalloonTipIcon = ToolTipIcon.Warning
-                    NotifyIcon1.BalloonTipTitle += "Tween [Reply!] " + My.Resources.RefreshTimelineText1 + " " + addCount.ToString() + My.Resources.RefreshTimelineText2
-                Else
-                    NotifyIcon1.BalloonTipIcon = ToolTipIcon.Info
-                    NotifyIcon1.BalloonTipTitle += "Tween " + My.Resources.RefreshTimelineText1 + " " + addCount.ToString() + My.Resources.RefreshTimelineText2
-                End If
-                NotifyIcon1.BalloonTipText = sb.ToString()
-                NotifyIcon1.ShowBalloonTip(500)
+        '新着通知
+        If NewPostPopMenuItem.Checked AndAlso notifyPosts.Count > 0 AndAlso Not _initial Then
+            Dim sb As New StringBuilder
+            Dim reply As Boolean = False
+            For Each post As PostClass In notifyPosts
+                If post.IsReply Then reply = True
+                If sb.Length > 0 Then sb.Append(System.Environment.NewLine)
+                Select Case SettingDialog.NameBalloon
+                    Case NameBalloonEnum.UserID
+                        sb.Append(post.Name).Append(" : ")
+                    Case NameBalloonEnum.NickName
+                        sb.Append(post.Nickname).Append(" : ")
+                End Select
+                sb.Append(post.Data)
+            Next
+            If SettingDialog.DispUsername Then NotifyIcon1.BalloonTipTitle = _username + " - " Else NotifyIcon1.BalloonTipTitle = ""
+            If Dm Then
+                NotifyIcon1.BalloonTipIcon = ToolTipIcon.Warning
+                NotifyIcon1.BalloonTipTitle += "Tween [DM] " + My.Resources.RefreshDirectMessageText1 + " " + addCount.ToString() + My.Resources.RefreshDirectMessageText2
+            ElseIf reply Then
+                NotifyIcon1.BalloonTipIcon = ToolTipIcon.Warning
+                NotifyIcon1.BalloonTipTitle += "Tween [Reply!] " + My.Resources.RefreshTimelineText1 + " " + addCount.ToString() + My.Resources.RefreshTimelineText2
+            Else
+                NotifyIcon1.BalloonTipIcon = ToolTipIcon.Info
+                NotifyIcon1.BalloonTipTitle += "Tween " + My.Resources.RefreshTimelineText1 + " " + addCount.ToString() + My.Resources.RefreshTimelineText2
             End If
+            NotifyIcon1.BalloonTipText = sb.ToString()
+            NotifyIcon1.ShowBalloonTip(500)
+        End If
 
-            '★★★リストリフレッシュ必要か？要検証★★★
+        '★★★リストリフレッシュ必要か？要検証★★★
 
-            'サウンド再生
-            If Not _initial AndAlso SettingDialog.PlaySound AndAlso soundFile <> "" Then
-                Try
-                    My.Computer.Audio.Play(My.Application.Info.DirectoryPath.ToString() + "\" + soundFile, AudioPlayMode.Background)
-                Catch ex As Exception
+        'サウンド再生
+        If Not _initial AndAlso SettingDialog.PlaySound AndAlso soundFile <> "" Then
+            Try
+                My.Computer.Audio.Play(My.Application.Info.DirectoryPath.ToString() + "\" + soundFile, AudioPlayMode.Background)
+            Catch ex As Exception
 
-                End Try
-            End If
+            End Try
+        End If
 
-            SetMainWindowTitle()
-            If Not StatusLabelUrl.Text.StartsWith("http") Then SetStatusLabel()
-            'TimerColorize.Stop()
-            'TimerColorize.Start()
+        SetMainWindowTitle()
+        If Not StatusLabelUrl.Text.StartsWith("http") Then SetStatusLabel()
+        'TimerColorize.Stop()
+        'TimerColorize.Start()
     End Sub
 
     Private Sub Mylist_Scrolled(ByVal sender As Object, ByVal e As System.EventArgs)
