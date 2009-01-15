@@ -70,101 +70,121 @@ Namespace TweenCustomControl
             DoubleBuffered = True
         End Sub
 
-        Public Sub ChangeItemBackColor(ByVal index As Integer, ByVal backColor As Color)
-            ChangeSubItemBackColor(index, 0, backColor)
-        End Sub
+        'Public Sub ChangeItemBackColor(ByVal index As Integer, ByVal backColor As Color)
+        '    ChangeSubItemBackColor(index, 0, backColor)
+        'End Sub
 
-        Public Sub ChangeItemForeColor(ByVal index As Integer, ByVal foreColor As Color)
-            ChangeSubItemForeColor(index, 0, foreColor)
-        End Sub
+        'Public Sub ChangeItemForeColor(ByVal index As Integer, ByVal foreColor As Color)
+        '    ChangeSubItemForeColor(index, 0, foreColor)
+        'End Sub
 
-        Public Sub ChangeItemFont(ByVal index As Integer, ByVal fnt As Font)
-            ChangeSubItemFont(index, 0, fnt)
-        End Sub
+        'Public Sub ChangeItemFont(ByVal index As Integer, ByVal fnt As Font)
+        '    ChangeSubItemFont(index, 0, fnt)
+        'End Sub
 
-        Public Sub ChangeItemStyles(ByVal index As Integer, ByVal backColor As Color, ByVal foreColor As Color, ByVal fnt As Font)
-            ChangeSubItemStyles(index, 0, backColor, foreColor, fnt)
-        End Sub
+        'Public Sub ChangeItemStyles(ByVal index As Integer, ByVal backColor As Color, ByVal foreColor As Color, ByVal fnt As Font)
+        '    ChangeSubItemStyles(index, 0, backColor, foreColor, fnt)
+        'End Sub
 
-        Public Sub ChangeSubItemBackColor(ByVal itemIndex As Integer, ByVal subitemIndex As Integer, ByVal backColor As Color)
-            Me.Items(itemIndex).SubItems(subitemIndex).BackColor = backColor
-            SetUpdateBounds(itemIndex, subitemIndex)
-            Me.Update()
-            Me.changeBounds = Rectangle.Empty
-        End Sub
+        'Public Sub ChangeItemFontAndColor(ByVal index As Integer, ByVal fnt As Font, ByVal foreColor As Color)
+        '    ChangeSubItemFontAndColor(index, 0, fnt, foreColor)
+        'End Sub
 
-        Public Sub ChangeSubItemForeColor(ByVal itemIndex As Integer, ByVal subitemIndex As Integer, ByVal foreColor As Color)
-            Me.Items(itemIndex).SubItems(subitemIndex).ForeColor = foreColor
-            SetUpdateBounds(itemIndex, subitemIndex)
-            Me.Update()
-            Me.changeBounds = Rectangle.Empty
-        End Sub
+        'Public Sub ChangeSubItemBackColor(ByVal itemIndex As Integer, ByVal subitemIndex As Integer, ByVal backColor As Color)
+        '    SetUpdateBounds(itemIndex, subitemIndex)
+        '    Me.Items(itemIndex).SubItems(subitemIndex).BackColor = backColor
+        '    Me.Update()
+        '    'Me.changeBounds = Rectangle.Empty
+        'End Sub
 
-        Public Sub ChangeSubItemFont(ByVal itemIndex As Integer, ByVal subitemIndex As Integer, ByVal fnt As Font)
-            Me.Items(itemIndex).SubItems(subitemIndex).Font = fnt
-            SetUpdateBounds(itemIndex, subitemIndex)
-            Me.Update()
-            Me.changeBounds = Rectangle.Empty
-        End Sub
+        'Public Sub ChangeSubItemForeColor(ByVal itemIndex As Integer, ByVal subitemIndex As Integer, ByVal foreColor As Color)
+        '    Me.Items(itemIndex).SubItems(subitemIndex).ForeColor = foreColor
+        '    SetUpdateBounds(itemIndex, subitemIndex)
+        '    Me.Update()
+        '    Me.changeBounds = Rectangle.Empty
+        'End Sub
 
-        Public Sub ChangeSubItemStyles(ByVal itemIndex As Integer, ByVal subitemIndex As Integer, ByVal backColor As Color, ByVal foreColor As Color, ByVal fnt As Font)
-            'SetUpdateBounds(itemIndex, subitemIndex)
-            Me.Items(itemIndex).SubItems(subitemIndex).BackColor = backColor
-            'SetUpdateBounds(itemIndex, subitemIndex)
-            Me.Items(itemIndex).SubItems(subitemIndex).ForeColor = foreColor
-            Me.Items(itemIndex).SubItems(subitemIndex).Font = fnt
-            SetUpdateBounds(itemIndex, subitemIndex)
-            Me.Update()
-            Me.changeBounds = Rectangle.Empty
-        End Sub
+        'Public Sub ChangeSubItemFont(ByVal itemIndex As Integer, ByVal subitemIndex As Integer, ByVal fnt As Font)
+        '    Me.Items(itemIndex).SubItems(subitemIndex).Font = fnt
+        '    SetUpdateBounds(itemIndex, subitemIndex)
+        '    Me.Update()
+        '    Me.changeBounds = Rectangle.Empty
+        'End Sub
 
-        Private Sub SetUpdateBounds(ByVal itemIndex As Integer, ByVal subItemIndex As Integer)
-            If itemIndex > Me.Items.Count Then
-                Throw New ArgumentOutOfRangeException("itemIndex")
-            End If
-            If subItemIndex > Me.Columns.Count Then
-                Throw New ArgumentOutOfRangeException("subItemIndex")
-            End If
-            Dim item As ListViewItem = Me.Items(itemIndex)
-            If item.UseItemStyleForSubItems Then
-                Me.changeBounds = item.Bounds
-            Else
-                Me.changeBounds = Me.GetSubItemBounds(itemIndex, subItemIndex)
-            End If
-        End Sub
+        'Private Sub ChangeSubItemFontAndColor(ByVal itemIndex As Integer, ByVal subitemIndex As Integer, ByVal fnt As Font, ByVal foreColor As Color)
+        '    SetUpdateBounds(itemIndex, subitemIndex)
+        '    Me.Items(itemIndex).SubItems(subitemIndex).ForeColor = foreColor
+        '    SetUpdateBounds(itemIndex, subitemIndex)
+        '    Me.Items(itemIndex).SubItems(subitemIndex).Font = fnt
+        '    Me.Update()
+        '    'Me.changeBounds = Rectangle.Empty
+        'End Sub
 
-        Private Function GetSubItemBounds(ByVal itemIndex As Integer, ByVal subitemIndex As Integer) As Rectangle
-            Dim item As ListViewItem = Me.Items(itemIndex)
-            If subitemIndex = 0 And Me.Columns.Count > 0 Then
-                Dim col0 As Rectangle = item.Bounds
-                Return New Rectangle(col0.Left, col0.Top, item.SubItems(1).Bounds.X + 1, col0.Height)
-            Else
-                Return item.SubItems(subitemIndex).Bounds
-            End If
-        End Function
+        'Public Sub ChangeSubItemStyles(ByVal itemIndex As Integer, ByVal subitemIndex As Integer, ByVal backColor As Color, ByVal foreColor As Color, ByVal fnt As Font)
+        '    'SetUpdateBounds(itemIndex, subitemIndex)
+        '    Me.Items(itemIndex).SubItems(subitemIndex).BackColor = backColor
+        '    'SetUpdateBounds(itemIndex, subitemIndex)
+        '    Me.Items(itemIndex).SubItems(subitemIndex).ForeColor = foreColor
+        '    Me.Items(itemIndex).SubItems(subitemIndex).Font = fnt
+        '    SetUpdateBounds(itemIndex, subitemIndex)
+        '    Me.Update()
+        '    Me.changeBounds = Rectangle.Empty
+        'End Sub
+
+        'Private Sub SetUpdateBounds(ByVal itemIndex As Integer, ByVal subItemIndex As Integer)
+        '    If itemIndex > Me.Items.Count Then
+        '        Throw New ArgumentOutOfRangeException("itemIndex")
+        '    End If
+        '    If subItemIndex > Me.Columns.Count Then
+        '        Throw New ArgumentOutOfRangeException("subItemIndex")
+        '    End If
+        '    Dim item As ListViewItem = Me.Items(itemIndex)
+        '    If item.UseItemStyleForSubItems Then
+        '        Me.changeBounds = item.Bounds
+        '    Else
+        '        Me.changeBounds = Me.GetSubItemBounds(itemIndex, subItemIndex)
+        '    End If
+        'End Sub
+
+        'Public Sub SetUpdateBounds(ByVal item As ListViewItem)
+        '    If item IsNot Nothing Then
+        '        Me.changeBounds = item.Bounds
+        '    Else
+        '        Me.changeBounds = Rectangle.Empty
+        '    End If
+        'End Sub
+
+        'Private Function GetSubItemBounds(ByVal itemIndex As Integer, ByVal subitemIndex As Integer) As Rectangle
+        '    Dim item As ListViewItem = Me.Items(itemIndex)
+        '    If subitemIndex = 0 And Me.Columns.Count > 0 Then
+        '        Dim col0 As Rectangle = item.Bounds
+        '        Return New Rectangle(col0.Left, col0.Top, item.SubItems(1).Bounds.X + 1, col0.Height)
+        '    Else
+        '        Return item.SubItems(subitemIndex).Bounds
+        '    End If
+        'End Function
 
         Protected Overrides Sub WndProc(ByRef m As System.Windows.Forms.Message)
-            Const WM_ERASEBKGND As Integer = &H14
-            Const WM_PAINT As Integer = &HF
+            'Const WM_ERASEBKGND As Integer = &H14
+            'Const WM_PAINT As Integer = &HF
             'Const WM_HSCROLL As Integer = &H114
             Const WM_VSCROLL As Integer = &H115
             Const WM_MOUSEWHEEL As Integer = &H20A
 
-            If m.Msg = WM_ERASEBKGND Then
-                If Me.changeBounds <> Rectangle.Empty Then
-                    m.Msg = 0
-                End If
-            End If
-            If m.Msg = WM_PAINT Then
-                If Me.changeBounds <> Rectangle.Empty Then
-                    'Dim bounds As Rectangle = Me.changeBounds
-                    'Me.changeBounds = Rectangle.Empty
-                    Win32Api.ValidateRect(Me.Handle, IntPtr.Zero)
-                    Me.Invalidate(Me.changeBounds)
-                    Me.changeBounds = Rectangle.Empty
-                End If
-            End If
-            If m.Msg = WM_VSCROLL OrElse m.Msg = WM_MOUSEWHEEL Then
+            'If m.Msg = WM_ERASEBKGND Then
+            '    If Me.changeBounds <> Rectangle.Empty Then
+            '        m.Msg = 0
+            '    End If
+            'End If
+            'If m.Msg = WM_PAINT Then
+            '    If Me.changeBounds <> Rectangle.Empty Then
+            '        Dim bounds As Rectangle = Me.changeBounds
+            '        Me.changeBounds = Rectangle.Empty
+            '        Win32Api.ValidateRect(Me.Handle, IntPtr.Zero)
+            '        Me.Invalidate(bounds)
+            '    End If
+            'End If
+            If m.Msg = WM_VSCROLL Or m.Msg = WM_MOUSEWHEEL Then
                 RaiseEvent Scrolled(Me, New System.EventArgs)
             End If
             MyBase.WndProc(m)

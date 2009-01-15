@@ -43,9 +43,9 @@ Public Class Setting
     Private _MyUnreadManage As Boolean
     Private _MyPlaySound As Boolean
     Private _MyOneWayLove As Boolean
-    Private _fntUnread As Font
+    'Private _fntUnread As Font  '未使用（バージョン互換性のため残してある）
     Private _clUnread As Color
-    Private _fntReaded As Font
+    Private _fntReaded As Font  'リストフォントとして扱う
     Private _clReaded As Color
     Private _clFav As Color
     Private _clOWL As Color
@@ -85,35 +85,24 @@ Public Class Setting
     Private _MyOutputzKey As String
     Private _MyOutputzUrlmode As OutputzUrlmode
 
-    'Public Enum LogUnitEnum
-    '    Minute
-    '    Hour
-    '    Day
-    'End Enum
+    ''''Private _MyWidth8 As Integer
+    ''''Private _MyWidth9 As Integer
+    ''''Private _MyDisplayIndex1 As Integer
+    ''''Private _MyDisplayIndex2 As Integer
+    ''''Private _MyDisplayIndex3 As Integer
+    ''''Private _MyDisplayIndex4 As Integer
+    ''''Private _MyDisplayIndex5 As Integer
+    ''''Private _MyDisplayIndex6 As Integer
+    ''''Private _MyDisplayIndex7 As Integer
+    ''''Private _MyDisplayIndex8 As Integer
+    ''''Private _MyDisplayIndex9 As Integer
+    ''''Private _MySortOrder As SortOrder
+    ''''Private _MyStatusMultiline As Boolean
+    ''''Private _MyStatusTextHeight As Integer
+    ''''Private _MycultureCode As String
 
-    'Public Enum IconSizes
-    '    IconNone = 0
-    '    Icon16 = 1
-    '    Icon24 = 2
-    '    Icon48 = 3
-    '    Icon48_2 = 4
-    'End Enum
-
-    'Public Enum NameBalloonEnum
-    '    None
-    '    UserID
-    '    NickName
-    'End Enum
-
-    'Public Enum DispTitleEnum
-    '    None
-    '    Ver
-    '    Post
-    '    UnreadRepCount
-    '    UnreadAllCount
-    '    UnreadAllRepCount
-    '    UnreadCountAllCount
-    'End Enum
+    '''''タブのリスト
+    '''''フィルターのリスト
 
     Public Function GetValue(ByVal path As String, ByVal defaultValue As String) As String
         Dim xnode As XmlNode = Me._xrootElement.SelectSingleNode("/tween-configuration/" + path)
@@ -261,7 +250,7 @@ Public Class Setting
                 Case 3
                     _MyIconSize = IconSizes.Icon48
                 Case 4
-                    _MyIconSize = IconSizes.Icon48_2
+                    _MyIconSize = IconSizes.Icon48  '廃止
             End Select
             _MyStatusText = StatusText.Text
             _MyPlaySound = PlaySnd.Checked
@@ -269,9 +258,9 @@ Public Class Setting
             _MyUnreadManage = UReadMng.Checked
             _MyOneWayLove = OneWayLv.Checked
 
-            _fntUnread = lblUnRead.Font
+            '_fntUnread = lblListFont.Font     '未使用
             _clUnread = lblUnRead.ForeColor
-            _fntReaded = lblReaded.Font
+            _fntReaded = lblListFont.Font     'リストフォントとして使用
             _clReaded = lblReaded.ForeColor
             _clFav = lblFav.ForeColor
             _clOWL = lblOWL.ForeColor
@@ -388,7 +377,7 @@ Public Class Setting
             Case IconSizes.Icon48
                 IconSize.SelectedIndex = 3
             Case IconSizes.Icon48_2
-                IconSize.SelectedIndex = 4
+                IconSize.SelectedIndex = 3  '廃止
         End Select
         StatusText.Text = _MyStatusText
         UReadMng.Checked = _MyUnreadManage
@@ -401,7 +390,8 @@ Public Class Setting
         TweenMain.PlaySoundMenuItem.Checked = _MyPlaySound
         OneWayLv.Checked = _MyOneWayLove
 
-        lblUnRead.Font = _fntUnread
+        lblListFont.Font = _fntReaded
+        lblUnRead.Font = _fntReaded
         lblUnRead.ForeColor = _clUnread
         lblReaded.Font = _fntReaded
         lblReaded.ForeColor = _clReaded
@@ -636,7 +626,7 @@ Public Class Setting
         End If
     End Sub
 
-    Private Sub btnFontAndColor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnUnread.Click, btnReaded.Click, btnDetail.Click
+    Private Sub btnFontAndColor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnDetail.Click, btnListFont.Click
         Dim Btn As Button = CType(sender, Button)
         Dim rtn As DialogResult
 
@@ -652,16 +642,20 @@ Public Class Setting
         FontDialog1.ShowColor = True
 
         Select Case Btn.Name
-            Case "btnUnread"
-                FontDialog1.Color = lblUnRead.ForeColor
-                FontDialog1.Font = lblUnRead.Font
-            Case "btnReaded"
-                FontDialog1.Color = lblReaded.ForeColor
-                FontDialog1.Font = lblReaded.Font
+            'Case "btnUnread"
+            '    FontDialog1.Color = lblUnRead.ForeColor
+            '    FontDialog1.Font = lblUnRead.Font
+            'Case "btnReaded"
+            '    FontDialog1.Color = lblReaded.ForeColor
+            '    FontDialog1.Font = lblReaded.Font
             Case "btnDetail"
                 FontDialog1.Font = lblDetail.Font
                 FontDialog1.ShowColor = False
                 FontDialog1.ShowEffects = False
+            Case "btnListFont"
+                'FontDialog1.Color = lblUnRead.ForeColor
+                FontDialog1.Font = lblListFont.Font
+                FontDialog1.ShowColor = False   '色設定不可
         End Select
 
         rtn = FontDialog1.ShowDialog
@@ -669,19 +663,21 @@ Public Class Setting
         If rtn = Windows.Forms.DialogResult.Cancel Then Exit Sub
 
         Select Case Btn.Name
-            Case "btnUnread"
-                lblUnRead.ForeColor = FontDialog1.Color
-                lblUnRead.Font = FontDialog1.Font
-            Case "btnReaded"
-                lblReaded.ForeColor = FontDialog1.Color
-                lblReaded.Font = FontDialog1.Font
+            'Case "btnUnread"
+            '    lblUnRead.ForeColor = FontDialog1.Color
+            '    lblUnRead.Font = FontDialog1.Font
+            'Case "btnReaded"
+            '    lblReaded.ForeColor = FontDialog1.Color
+            '    lblReaded.Font = FontDialog1.Font
             Case "btnDetail"
                 lblDetail.Font = FontDialog1.Font
+            Case "btnListFont"
+                lblListFont.Font = FontDialog1.Font
         End Select
 
     End Sub
 
-    Private Sub btnColor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSelf.Click, btnAtSelf.Click, btnTarget.Click, btnAtTarget.Click, btnAtFromTarget.Click, btnFav.Click, btnOWL.Click
+    Private Sub btnColor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSelf.Click, btnAtSelf.Click, btnTarget.Click, btnAtTarget.Click, btnAtFromTarget.Click, btnFav.Click, btnOWL.Click, btnUnread.Click, btnReaded.Click
         Dim Btn As Button = CType(sender, Button)
         Dim rtn As DialogResult
 
@@ -705,6 +701,10 @@ Public Class Setting
                 ColorDialog1.Color = lblFav.ForeColor
             Case "btnOWL"
                 ColorDialog1.Color = lblOWL.ForeColor
+            Case "btnUnread"
+                ColorDialog1.Color = lblUnRead.ForeColor
+            Case "btnReaded"
+                ColorDialog1.Color = lblReaded.ForeColor
         End Select
 
         rtn = ColorDialog1.ShowDialog
@@ -726,6 +726,10 @@ Public Class Setting
                 lblFav.ForeColor = ColorDialog1.Color
             Case "btnOWL"
                 lblOWL.ForeColor = ColorDialog1.Color
+            Case "btnUnread"
+                lblUnRead.ForeColor = ColorDialog1.Color
+            Case "btnReaded"
+                lblReaded.ForeColor = ColorDialog1.Color
         End Select
     End Sub
 
@@ -900,12 +904,14 @@ Public Class Setting
         End Set
     End Property
 
+    '''''未使用
     Public Property FontUnread() As Font
         Get
-            Return _fntUnread
+            Return _fntReaded
         End Get
         Set(ByVal value As Font)
-            _fntUnread = value
+            '_fntUnread = value
+            '無視
         End Set
     End Property
 
@@ -918,6 +924,7 @@ Public Class Setting
         End Set
     End Property
 
+    '''''リストフォントとして使用
     Public Property FontReaded() As Font
         Get
             Return _fntReaded
@@ -1337,5 +1344,108 @@ Public Class Setting
             End If
         End If
     End Sub
+
+    ''''    Private Function EncryptString(ByVal str As String) As String
+    ''''        '文字列をバイト型配列にする
+    ''''        Dim bytesIn As Byte() = System.Text.Encoding.UTF8.GetBytes(str)
+    ''''        'DESCryptoServiceProviderオブジェクトの作成
+    ''''        Dim des As New System.Security.Cryptography.DESCryptoServiceProvider
+
+    ''''        '共有キーと初期化ベクタを決定
+    ''''        'パスワードをバイト配列にする
+    ''''        Dim bytesKey As Byte() = System.Text.Encoding.UTF8.GetBytes("_tween_encrypt_key_")
+    ''''        '共有キーと初期化ベクタを設定
+    ''''        des.Key = ResizeBytesArray(bytesKey, des.Key.Length)
+    ''''        des.IV = ResizeBytesArray(bytesKey, des.IV.Length)
+
+    ''''        '暗号化されたデータを書き出すためのMemoryStream
+    ''''        Using msOut As New System.IO.MemoryStream
+    ''''            'DES暗号化オブジェクトの作成
+    ''''            Using desdecrypt As System.Security.Cryptography.ICryptoTransform = _
+    ''''                des.CreateEncryptor()
+
+    ''''                '書き込むためのCryptoStreamの作成
+    ''''                Using cryptStream As New System.Security.Cryptography.CryptoStream( _
+    ''''                    msOut, desdecrypt, _
+    ''''                    System.Security.Cryptography.CryptoStreamMode.Write)
+    ''''                    '書き込む
+    ''''                    cryptStream.Write(bytesIn, 0, bytesIn.Length)
+    ''''                    cryptStream.FlushFinalBlock()
+    ''''                    '暗号化されたデータを取得
+    ''''                    Dim bytesOut As Byte() = msOut.ToArray()
+
+    ''''                    '閉じる
+    ''''                    cryptStream.Close()
+    ''''                    msOut.Close()
+
+    ''''                    'Base64で文字列に変更して結果を返す
+    ''''                    Return System.Convert.ToBase64String(bytesOut)
+    ''''                End Using
+    ''''            End Using
+    ''''        End Using
+    ''''    End Function
+
+    ''''    Private Function DecryptString(ByVal str As String) As String
+    ''''        'DESCryptoServiceProviderオブジェクトの作成
+    ''''        Dim des As New System.Security.Cryptography.DESCryptoServiceProvider
+
+    ''''        '共有キーと初期化ベクタを決定
+    ''''        'パスワードをバイト配列にする
+    ''''        Dim bytesKey As Byte() = System.Text.Encoding.UTF8.GetBytes("_tween_encrypt_key_")
+    ''''        '共有キーと初期化ベクタを設定
+    ''''        des.Key = ResizeBytesArray(bytesKey, des.Key.Length)
+    ''''        des.IV = ResizeBytesArray(bytesKey, des.IV.Length)
+
+    ''''        'Base64で文字列をバイト配列に戻す
+    ''''        Dim bytesIn As Byte() = System.Convert.FromBase64String(str)
+    ''''        '暗号化されたデータを読み込むためのMemoryStream
+    ''''        Using msIn As New System.IO.MemoryStream(bytesIn)
+    ''''            'DES復号化オブジェクトの作成
+    ''''            Using desdecrypt As System.Security.Cryptography.ICryptoTransform = _
+    ''''                des.CreateDecryptor()
+    ''''                '読み込むためのCryptoStreamの作成
+    ''''                Using cryptStreem As New System.Security.Cryptography.CryptoStream( _
+    ''''                    msIn, desdecrypt, _
+    ''''                    System.Security.Cryptography.CryptoStreamMode.Read)
+
+    ''''                    '復号化されたデータを取得するためのStreamReader
+    ''''                    Using srOut As New System.IO.StreamReader( _
+    ''''                        cryptStreem, System.Text.Encoding.UTF8)
+    ''''                        '復号化されたデータを取得する
+    ''''                        Dim result As String = srOut.ReadToEnd()
+
+    ''''                        '閉じる
+    ''''                        srOut.Close()
+    ''''                        cryptStreem.Close()
+    ''''                        msIn.Close()
+
+    ''''                        Return result
+    ''''                    End Using
+    ''''                End Using
+    ''''            End Using
+    ''''        End Using
+    ''''    End Function
+
+    ''''    Private Function ResizeBytesArray(ByVal bytes() As Byte, _
+    ''''                                ByVal newSize As Integer) As Byte()
+    ''''        Dim newBytes(newSize - 1) As Byte
+    ''''        If bytes.Length <= newSize Then
+    ''''            Dim i As Integer
+    ''''            For i = 0 To bytes.Length - 1
+    ''''                newBytes(i) = bytes(i)
+    ''''            Next i
+    ''''        Else
+    ''''            Dim pos As Integer = 0
+    ''''            Dim i As Integer
+    ''''            For i = 0 To bytes.Length - 1
+    ''''                newBytes(pos) = newBytes(pos) Xor bytes(i)
+    ''''                pos += 1
+    ''''                If pos >= newBytes.Length Then
+    ''''                    pos = 0
+    ''''                End If
+    ''''            Next i
+    ''''        End If
+    ''''        Return newBytes
+    ''''    End Function
 End Class
 

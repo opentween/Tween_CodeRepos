@@ -90,7 +90,10 @@ Partial Class Setting
         Me.btnReaded = New System.Windows.Forms.Button
         Me.lblReaded = New System.Windows.Forms.Label
         Me.Label20 = New System.Windows.Forms.Label
+        Me.btnListFont = New System.Windows.Forms.Button
+        Me.lblListFont = New System.Windows.Forms.Label
         Me.btnUnread = New System.Windows.Forms.Button
+        Me.Label61 = New System.Windows.Forms.Label
         Me.lblUnRead = New System.Windows.Forms.Label
         Me.Label17 = New System.Windows.Forms.Label
         Me.FontDialog1 = New System.Windows.Forms.FontDialog
@@ -489,7 +492,10 @@ Partial Class Setting
         Me.GroupBox1.Controls.Add(Me.btnReaded)
         Me.GroupBox1.Controls.Add(Me.lblReaded)
         Me.GroupBox1.Controls.Add(Me.Label20)
+        Me.GroupBox1.Controls.Add(Me.btnListFont)
+        Me.GroupBox1.Controls.Add(Me.lblListFont)
         Me.GroupBox1.Controls.Add(Me.btnUnread)
+        Me.GroupBox1.Controls.Add(Me.Label61)
         Me.GroupBox1.Controls.Add(Me.lblUnRead)
         Me.GroupBox1.Controls.Add(Me.Label17)
         Me.GroupBox1.Font = Nothing
@@ -820,6 +826,25 @@ Partial Class Setting
         Me.Label20.Font = Nothing
         Me.Label20.Name = "Label20"
         '
+        'btnListFont
+        '
+        Me.btnListFont.AccessibleDescription = Nothing
+        Me.btnListFont.AccessibleName = Nothing
+        resources.ApplyResources(Me.btnListFont, "btnListFont")
+        Me.btnListFont.BackgroundImage = Nothing
+        Me.btnListFont.Font = Nothing
+        Me.btnListFont.Name = "btnListFont"
+        Me.btnListFont.UseVisualStyleBackColor = True
+        '
+        'lblListFont
+        '
+        Me.lblListFont.AccessibleDescription = Nothing
+        Me.lblListFont.AccessibleName = Nothing
+        resources.ApplyResources(Me.lblListFont, "lblListFont")
+        Me.lblListFont.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblListFont.Font = Nothing
+        Me.lblListFont.Name = "lblListFont"
+        '
         'btnUnread
         '
         Me.btnUnread.AccessibleDescription = Nothing
@@ -829,6 +854,14 @@ Partial Class Setting
         Me.btnUnread.Font = Nothing
         Me.btnUnread.Name = "btnUnread"
         Me.btnUnread.UseVisualStyleBackColor = True
+        '
+        'Label61
+        '
+        Me.Label61.AccessibleDescription = Nothing
+        Me.Label61.AccessibleName = Nothing
+        resources.ApplyResources(Me.Label61, "Label61")
+        Me.Label61.Font = Nothing
+        Me.Label61.Name = "Label61"
         '
         'lblUnRead
         '
@@ -1903,4 +1936,7 @@ Partial Class Setting
     Friend WithEvents CheckOutputz As System.Windows.Forms.CheckBox
     Friend WithEvents Label60 As System.Windows.Forms.Label
     Friend WithEvents ComboBoxOutputzUrlmode As System.Windows.Forms.ComboBox
+    Friend WithEvents btnListFont As System.Windows.Forms.Button
+    Friend WithEvents lblListFont As System.Windows.Forms.Label
+    Friend WithEvents Label61 As System.Windows.Forms.Label
 End Class

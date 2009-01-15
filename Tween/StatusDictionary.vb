@@ -43,8 +43,10 @@ Public Class PostClass
     Private _InReplyToUser As String
     Private _InReplyToId As Long
     Private _Source As String
-    Private _ReplyToList As List(Of Long)
+    Private _ReplyToList As New List(Of String)
     Private _IsMe As Boolean
+    Private _ImageIndex As Integer
+    Private _IsDm As Boolean
 
     Public Sub New(ByVal Nickname As String, _
             ByVal Data As String, _
@@ -62,8 +64,10 @@ Public Class PostClass
             ByVal InReplyToUser As String, _
             ByVal InReplyToId As Long, _
             ByVal Source As String, _
-            ByVal ReplyToList As List(Of Long), _
-            ByVal IsMe As Boolean)
+            ByVal ReplyToList As List(Of String), _
+            ByVal IsMe As Boolean, _
+            ByVal ImageIndex As Integer, _
+            ByVal IsDm As Boolean)
         _Nick = Nickname
         _Data = Data
         _ImageUrl = ImageUrl
@@ -82,36 +86,60 @@ Public Class PostClass
         _Source = Source
         _ReplyToList = ReplyToList
         _IsMe = IsMe
+        _ImageIndex = ImageIndex
+        _IsDm = IsDm
     End Sub
-    Public ReadOnly Property Nickname() As String
+
+    Public Sub New()
+    End Sub
+
+    Public Property Nickname() As String
         Get
             Return _Nick
         End Get
+        Set(ByVal value As String)
+            _Nick = value
+        End Set
     End Property
-    Public ReadOnly Property Data() As String
+    Public Property Data() As String
         Get
             Return _Data
         End Get
+        Set(ByVal value As String)
+            _Data = value
+        End Set
     End Property
-    Public ReadOnly Property ImageUrl() As String
+    Public Property ImageUrl() As String
         Get
             Return _ImageUrl
         End Get
+        Set(ByVal value As String)
+            _ImageUrl = value
+        End Set
     End Property
-    Public ReadOnly Property Name() As String
+    Public Property Name() As String
         Get
             Return _Name
         End Get
+        Set(ByVal value As String)
+            _Name = value
+        End Set
     End Property
-    Public ReadOnly Property PDate() As Date
+    Public Property PDate() As Date
         Get
             Return _PDate
         End Get
+        Set(ByVal value As Date)
+            _PDate = value
+        End Set
     End Property
-    Public ReadOnly Property Id() As Long
+    Public Property Id() As Long
         Get
             Return _Id
         End Get
+        Set(ByVal value As Long)
+            _Id = value
+        End Set
     End Property
     Public Property IsFav() As Boolean
         Get
@@ -121,10 +149,13 @@ Public Class PostClass
             _IsFav = value
         End Set
     End Property
-    Public ReadOnly Property OriginalData() As String
+    Public Property OriginalData() As String
         Get
             Return _OrgData
         End Get
+        Set(ByVal value As String)
+            _OrgData = value
+        End Set
     End Property
     Public Property IsRead() As Boolean
         Get
@@ -134,20 +165,29 @@ Public Class PostClass
             _IsRead = value
         End Set
     End Property
-    Public ReadOnly Property IsReply() As Boolean
+    Public Property IsReply() As Boolean
         Get
             Return _IsReply
         End Get
+        Set(ByVal value As Boolean)
+            _IsReply = value
+        End Set
     End Property
-    Public ReadOnly Property IsProtect() As Boolean
+    Public Property IsProtect() As Boolean
         Get
             Return _IsProtect
         End Get
+        Set(ByVal value As Boolean)
+            _IsProtect = value
+        End Set
     End Property
-    Public ReadOnly Property IsOwl() As Boolean
+    Public Property IsOwl() As Boolean
         Get
             Return _IsOWL
         End Get
+        Set(ByVal value As Boolean)
+            _IsOWL = value
+        End Set
     End Property
     Public Property IsMark() As Boolean
         Get
@@ -157,53 +197,85 @@ Public Class PostClass
             _IsMark = value
         End Set
     End Property
-    Public ReadOnly Property InReplyToUser() As String
+    Public Property InReplyToUser() As String
         Get
             Return _InReplyToUser
         End Get
+        Set(ByVal value As String)
+            _InReplyToUser = value
+        End Set
     End Property
-    Public ReadOnly Property InReplyToId() As Long
+    Public Property InReplyToId() As Long
         Get
             Return _InReplyToId
         End Get
+        Set(ByVal value As Long)
+            _InReplyToId = value
+        End Set
     End Property
-    Public ReadOnly Property Source() As String
+    Public Property Source() As String
         Get
             Return _Source
         End Get
+        Set(ByVal value As String)
+            _Source = value
+        End Set
     End Property
-    Public ReadOnly Property ReplyToList() As List(Of Long)
+    Public Property ReplyToList() As List(Of String)
         Get
             Return _ReplyToList
         End Get
+        Set(ByVal value As List(Of String))
+            _ReplyToList = value
+        End Set
     End Property
-    Public ReadOnly Property IsMe() As Boolean
+    Public Property IsMe() As Boolean
         Get
             Return _IsMe
         End Get
+        Set(ByVal value As Boolean)
+            _IsMe = value
+        End Set
+    End Property
+    Public Property ImageIndex() As Integer
+        Get
+            Return _ImageIndex
+        End Get
+        Set(ByVal value As Integer)
+            _ImageIndex = value
+        End Set
+    End Property
+    Public Property IsDm() As Boolean
+        Get
+            Return _IsDm
+        End Get
+        Set(ByVal value As Boolean)
+            _IsDm = value
+        End Set
     End Property
 End Class
 
 Public Class TabInformations
     '個別タブの情報をDictionaryで保持
-    Private _sorter As ListViewItemComparerClass
+    Private _sorter As ListViewItemComparerClass = New ListViewItemComparerClass
     Private _tabs As New Dictionary(Of String, TabClass)
-    'Private Class Statuses
-    Private _statuses As Dictionary(Of Long, PostClass)
+    Private _statuses As Dictionary(Of Long, PostClass) = New Dictionary(Of Long, PostClass)
     Private _addedIds As List(Of Long)
     Private _editMode As EDITMODE
-    'Private _tabs As TabInformations
-    'Private _statuses As Statuses
+
+    Private Shared _instance As TabInformations = New TabInformations
 
     Public Enum EDITMODE
         Post
         Dm
     End Enum
 
-    Public Sub New()
-        _sorter = New ListViewItemComparerClass
-        _statuses = New Dictionary(Of Long, PostClass)
+    Private Sub New()
     End Sub
+
+    Public Shared Function GetInstance() As TabInformations
+        Return _instance    'singleton
+    End Function
 
     Public Sub AddTab(ByVal TabName As String)
         _tabs.Add(TabName, New TabClass())
@@ -211,6 +283,30 @@ Public Class TabInformations
 
     Public Sub AddTab(ByVal TabName As String, ByVal Tab As TabClass)
         _tabs.Add(TabName, Tab)
+    End Sub
+
+    Public Sub RemoveTab(ByVal TabName As String)
+        If TabName.Equals("Recent") OrElse _
+           TabName.Equals("Reply") OrElse _
+           TabName.Equals("Direct") Then Exit Sub '念のため
+
+        For idx As Integer = 0 To _tabs(TabName).AllCount - 1
+            Dim exist As Boolean = False
+            Dim Id As Long = _tabs(TabName).GetId(idx)
+            For Each key As String In _tabs.Keys
+                If Not key.Equals(TabName) AndAlso Not key.Equals("Direct") Then
+                    If _tabs(key).Contains(Id) Then
+                        exist = True
+                        Exit For
+                    End If
+                End If
+            Next
+            If Not exist Then
+                _tabs("Recent").Add(_tabs(TabName).GetId(idx), _statuses(Id).IsRead)
+            End If
+        Next
+
+        _tabs.Remove(TabName)
     End Sub
 
     Public Function ContainsTab(ByVal TabText As String) As Boolean
@@ -254,6 +350,15 @@ Public Class TabInformations
         End Set
     End Property
 
+    Public Sub ToggleSortOrder()
+        If _sorter.Order = Windows.Forms.SortOrder.Ascending Then
+            _sorter.Order = Windows.Forms.SortOrder.Descending
+        Else
+            _sorter.Order = Windows.Forms.SortOrder.Ascending
+        End If
+        Me.SortPosts()
+    End Sub
+
     'Public WriteOnly Property Statuses() As Statuses
     '    Set(ByVal value As Statuses)
     '        _statuses = value
@@ -277,30 +382,67 @@ Public Class TabInformations
     End Sub
 
     Public Sub SetNextUnreadId(ByVal CurrentId As Long, ByVal Tab As TabClass)
-        If Tab.OldestUnreadId = CurrentId Then     '次の未読探索
-            If Tab.UnreadCount = 0 OrElse Tab.AllCount <= 1 Then
+        'CurrentID:今既読にしたID(OldestIDの可能性あり)
+        '最古未読が設定されていて、既読の場合（1発言以上存在）
+        If Tab.OldestUnreadId > -1 AndAlso _
+           _statuses.ContainsKey(Tab.OldestUnreadId) AndAlso _
+           _statuses.Item(Tab.OldestUnreadId).IsRead Then     '次の未読探索
+            If Tab.UnreadCount = 0 Then
+                '未読数０→最古未読なし
                 Tab.OldestUnreadId = -1
-            Else
+            ElseIf Tab.OldestUnreadId = CurrentId Then
+                '最古IDを既読にしたタイミング→次のIDから続けて探索
                 Dim idx As Integer = Tab.GetIndex(CurrentId)
-                Dim toIdx As Integer = 0
-                Dim stp As Integer = 1
-                If _sorter.Order = Windows.Forms.SortOrder.Ascending Then
-                    idx -= 1
-                    toIdx = 0
-                    stp = -1
+                If idx > -1 Then
+                    '続きから探索
+                    FindUnreadId(idx, Tab)
                 Else
-                    idx += 1
-                    toIdx = Tab.AllCount - 1
-                    stp = 1
+                    '頭から探索
+                    FindUnreadId(-1, Tab)
                 End If
-                For i As Integer = idx To toIdx Step stp
-                    If Not _statuses(Tab.GetId(i)).IsRead Then
-                        Tab.OldestUnreadId = Tab.GetId(i)
-                        Exit For
-                    End If
-                Next
+            Else
+                '頭から探索
+                FindUnreadId(-1, Tab)
             End If
+        Else
+            '頭から探索
+            FindUnreadId(-1, Tab)
         End If
+    End Sub
+
+    Private Sub FindUnreadId(ByVal StartIdx As Integer, ByVal Tab As TabClass)
+        If Tab.AllCount = 0 Then
+            Tab.OldestUnreadId = -1
+            Exit Sub
+        End If
+        Dim toIdx As Integer = 0
+        Dim stp As Integer = 1
+        If _sorter.Order = Windows.Forms.SortOrder.Ascending Then
+            If StartIdx = -1 Then
+                StartIdx = 0
+            Else
+                StartIdx += 1
+                If StartIdx > Tab.AllCount - 1 Then StartIdx = Tab.AllCount - 1 '念のため
+            End If
+            toIdx = Tab.AllCount - 1
+            If toIdx < 0 Then toIdx = 0 '念のため
+            stp = 1
+        Else
+            If StartIdx = -1 Then
+                StartIdx = Tab.AllCount - 1
+            Else
+                StartIdx -= 1
+            End If
+            If StartIdx < 0 Then StartIdx = 0 '念のため
+            toIdx = 0
+            stp = -1
+        End If
+        For i As Integer = StartIdx To toIdx Step stp
+            If Not _statuses(Tab.GetId(i)).IsRead Then
+                Tab.OldestUnreadId = Tab.GetId(i)
+                Exit For
+            End If
+        Next
     End Sub
 
     Public Sub BeginUpdate(ByVal EditMode As EDITMODE)
@@ -309,49 +451,97 @@ Public Class TabInformations
         _addedIds = New List(Of Long)  'タブ追加用IDコレクション準備
     End Sub
 
-    Public Function EndUpdate() As List(Of PostClass)
+    Public Function EndUpdate(ByRef soundFile As String, ByVal notifyPosts As List(Of PostClass)) As Integer
+        'notifyPostは呼び出し元でインスタンス作成が必要
+        '戻り値は追加件数
         If _addedIds Is Nothing Then Throw New Exception("You must call 'BeginUpdate' before to add.")
-        Dim NotifyPosts As List(Of PostClass)
-        If _addedIds.Count > 0 Then
-            NotifyPosts = Me.Distribute(_addedIds)    'タブに追加
-        Else
-            NotifyPosts = New List(Of PostClass)    '空のリスト
-        End If
+        If notifyPosts Is Nothing Then Throw New Exception("You must create notifyPost instance before to add.")
+        Dim addCount As Integer
+        addCount = Me.Distribute(_addedIds, soundFile, notifyPosts)    'タブに追加
         _addedIds.Clear()
         _addedIds = Nothing     '後始末
         Me.SortPosts()
-        Return NotifyPosts     '通知用メッセージを戻す
+        Return addCount     '件数
     End Function
 
-    Private Function Distribute(ByVal AddedIDs As List(Of Long)) As List(Of PostClass)
+    Private Function Distribute(ByVal AddedIDs As List(Of Long), ByRef soundFile As String, ByVal notifyPosts As List(Of PostClass)) As Integer
         '各タブのフィルターと照合。合致したらタブにID追加
-        Dim notifyPosts As New List(Of PostClass)
+        '通知メッセージ用に、表示必要な発言リストと再生サウンドを返す
+        'notifyPosts = New List(Of PostClass)
         For Each id As Long In AddedIDs
             Dim post As PostClass = _statuses(id)
             If _editMode = EDITMODE.Post Then
-                Dim add As Boolean = False
-                Dim mv As Boolean = False
+                Dim add As Boolean = False  '通知リスト追加フラグ
+                Dim mv As Boolean = False   '移動フラグ（Recent追加有無）
                 For Each tn As String In _tabs.Keys
                     Dim rslt As HITRESULT = _tabs(tn).AddFiltered(post.Id, post.IsRead, post.Name, post.Data, post.OriginalData)
-                    If rslt = HITRESULT.CopyAndMark Then post.IsMark = True
-                    If rslt <> HITRESULT.None AndAlso _tabs(tn).Notify Then add = True
-                    If rslt = HITRESULT.Move Then mv = True
+                    If rslt <> HITRESULT.None Then
+                        If rslt = HITRESULT.CopyAndMark Then post.IsMark = True 'マークあり
+                        If rslt = HITRESULT.Move Then mv = True '移動
+                        If _tabs(tn).Notify Then add = True '通知あり
+                        If Not _tabs(tn).SoundFile.Equals("") AndAlso soundFile.Equals("") Then
+                            soundFile = _tabs(tn).SoundFile 'wavファイル（未設定の場合のみ）
+                        End If
+                    End If
                 Next
+                If Not mv Then  '移動されなかったらRecentに追加
+                    _tabs("Recent").Add(post.Id, post.IsRead)
+                    If Not _tabs("Recent").SoundFile.Equals("") AndAlso soundFile.Equals("") Then soundFile = _tabs("Recent").SoundFile
+                    If _tabs("Recent").Notify Then add = True
+                End If
+                If post.IsReply Then    'ReplyだったらReplyタブに追加
+                    _tabs("Reply").Add(post.Id, post.IsRead)
+                    If Not _tabs("Reply").SoundFile.Equals("") Then soundFile = _tabs("Reply").SoundFile
+                    If _tabs("Reply").Notify Then add = True
+                End If
                 If add Then notifyPosts.Add(post)
-                If Not mv Then _tabs("Recent").Add(post.Id, post.IsRead)
-                If post.IsReply Then _tabs("Reply").Add(post.Id, post.IsRead)
             Else
                 _tabs("Direct").Add(post.Id, post.IsRead)
                 If _tabs("Direct").Notify Then notifyPosts.Add(post)
+                soundFile = _tabs("Direct").SoundFile
             End If
         Next
-        Return notifyPosts
+        Return AddedIDs.Count
     End Function
 
-    Public Sub AddPost(ByRef Item As PostClass)
+    Public Sub AddPost(ByVal Item As PostClass)
         If _addedIds Is Nothing Then Throw New Exception("You must call 'BeginUpdate' before to add.")
         _statuses.Add(Item.Id, Item)    'DMと区別しない？
         _addedIds.Add(Item.Id)
+    End Sub
+
+    Public Sub SetRead(ByVal Read As Boolean, ByVal TabName As String, ByVal Index As Integer)
+        'Read:True=既読へ　False=未読へ
+        Dim tb As TabClass = _tabs(TabName)
+
+        If tb.UnreadManage = False Then Exit Sub '未読管理していなければ終了
+
+        Dim Id As Long = tb.GetId(Index)
+
+        If _statuses(Id).IsRead.Equals(Read) Then Exit Sub '状態変更なければ終了
+
+        _statuses(Id).IsRead = Read '指定の状態に変更
+
+        If Read Then
+            tb.UnreadCount -= 1
+            Me.SetNextUnreadId(Id, tb)  '次の未読セット
+            '他タブの最古未読ＩＤはタブ切り替え時に。
+            For Each key As String In _tabs.Keys
+                If Not key.Equals(TabName) AndAlso _tabs(key).UnreadManage AndAlso _tabs(key).Contains(Id) Then
+                    _tabs(key).UnreadCount -= 1
+                    If _tabs(key).OldestUnreadId = Id Then _tabs(key).OldestUnreadId = -1
+                End If
+            Next
+        Else
+            tb.UnreadCount += 1
+            If tb.OldestUnreadId > Id Then tb.OldestUnreadId = Id
+            For Each key As String In _tabs.Keys
+                If Not key.Equals(TabName) AndAlso _tabs(key).UnreadManage AndAlso _tabs(key).Contains(Id) Then
+                    _tabs(key).UnreadCount += 1
+                    If _tabs(key).OldestUnreadId > Id Then _tabs(key).OldestUnreadId = Id
+                End If
+            Next
+        End If
     End Sub
 
     Public ReadOnly Property Item(ByVal ID As Long) As PostClass
@@ -359,6 +549,67 @@ Public Class TabInformations
             Return _statuses(ID)
         End Get
     End Property
+
+    Public ReadOnly Property Item(ByVal TabName As String, ByVal Index As Integer) As PostClass
+        Get
+            Return _statuses(_tabs(TabName).GetId(Index))
+        End Get
+    End Property
+
+    Public Sub SetUnreadManage(ByVal Manage As Boolean)
+        If Not Manage Then
+            For Each key As String In _tabs.Keys
+                If _tabs(key).UnreadManage AndAlso _tabs(key).UnreadCount > 0 Then
+                    _tabs(key).UnreadCount = 0
+                    _tabs(key).OldestUnreadId = -1
+                End If
+            Next
+        End If
+    End Sub
+
+    Public Sub RenameTab(ByVal Original As String, ByVal NewName As String)
+        Dim tb As TabClass = _tabs(Original)
+        _tabs.Remove(Original)
+        _tabs.Add(NewName, tb)
+    End Sub
+
+    Public Sub FilterAll()
+        Dim tbr As TabClass = _tabs("Recent")
+        For Each key As String In _tabs.Keys
+            Dim tb As TabClass = _tabs(key)
+            If tb.FilterModified Then
+                tb.FilterModified = False
+                Dim orgIds() As Long = tb.BackupIds()
+                tb.ClearIDs()
+                ''''''''''''''フィルター前のIDsを退避。どのタブにも含まれないidはrecentへ追加
+                ''''''''''''''moveフィルターにヒットした際、recentに該当あればrecentから削除
+                For Each id As Long In _statuses.Keys
+                    Dim post As PostClass = _statuses.Item(id)
+                    If post.IsDm Then Continue For
+                    Dim rslt As HITRESULT = tb.AddFiltered(post.Id, post.IsRead, post.Name, post.Data, post.OriginalData)
+                    '''ここはこぴぺ。修正必要
+                    Select Case rslt
+                        Case HITRESULT.CopyAndMark
+                            post.IsMark = True 'マークあり
+                        Case HITRESULT.Move
+                            tbr.Remove(post.Id)
+                    End Select
+                Next
+                For Each id As Long In orgIds
+                    Dim hit As Boolean = False
+                    For Each tkey As String In _tabs.Keys
+                        If _tabs(tkey).Contains(id) Then
+                            hit = True
+                            Exit For
+                        End If
+                    Next
+                    If Not hit Then tbr.Add(id, _statuses(id).IsRead)
+                Next
+                tb.Sort(_sorter)
+            End If
+        Next
+        tbr.Sort(_sorter)
+    End Sub
 End Class
 
 Public Class TabClass
@@ -370,6 +621,7 @@ Public Class TabClass
     Private _oldestUnreadItem As Long     'ID
     Private _unreadCount As Integer
     Private _ids As List(Of Long)
+    Private _filterMod As Boolean
 
     Public Sub New()
         _filters = New List(Of FiltersClass)
@@ -454,7 +706,11 @@ Public Class TabClass
             Return _unreadManage
         End Get
         Set(ByVal value As Boolean)
-            _unreadManage = value
+            Me._unreadManage = value
+            If Not value Then
+                Me._oldestUnreadItem = -1
+                Me._unreadCount = 0
+            End If
         End Set
     End Property
 
@@ -541,6 +797,19 @@ Public Class TabClass
     Public Function GetIndex(ByVal ID As Long) As Integer
         Return _ids.IndexOf(ID)
     End Function
+
+    Public Property FilterModified() As Boolean
+        Get
+            Return _filterMod
+        End Get
+        Set(ByVal value As Boolean)
+            _filterMod = value
+        End Set
+    End Property
+
+    Public Function BackupIds() As Long()
+        Return _ids.ToArray()
+    End Function
 End Class
 
 Public Class FiltersClass
@@ -576,6 +845,10 @@ Public Class FiltersClass
                 End Try
             Next
         End If
+    End Sub
+
+    Public Sub New()
+
     End Sub
 
     'フィルタ一覧に表示する文言生成
