@@ -9,7 +9,7 @@
     Public _parseNameTo As String = """"
     Public _parseNick As String = "<img alt="""
     Public _parseNickTo As String = """"
-    Public  _parseImg As String = "src="""
+    Public _parseImg As String = "src="""
     Public _parseImgTo As String = """"
     Public _parseMsg1 As String = "<span class=""entry-content"">"
     Public _parseMsg2 As String = "</span>"
