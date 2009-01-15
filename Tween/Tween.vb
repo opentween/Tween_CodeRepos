@@ -565,6 +565,23 @@ Public Class TweenMain
 
         ''''''''''''''''''''''''''''''''''''''''
         _statuses.SortOrder = DirectCast(_section.SortOrder, System.Windows.Forms.SortOrder)
+        Dim mode As IdComparerClass.ComparerMode
+        Select Case _section.SortColumn
+            Case 0, 5, 6    '0:アイコン,5:未読マーク,6:プロテクト・フィルターマーク
+                'ソートしない
+                mode = IdComparerClass.ComparerMode.Id  'Idソートに読み替え
+            Case 1  'ニックネーム
+                mode = IdComparerClass.ComparerMode.Nickname
+            Case 2  '本文
+                mode = IdComparerClass.ComparerMode.Data
+            Case 3  '時刻=発言Id
+                mode = IdComparerClass.ComparerMode.Id
+            Case 4  '名前
+                mode = IdComparerClass.ComparerMode.Name
+            Case 7  'Source
+                mode = IdComparerClass.ComparerMode.Source
+        End Select
+        _statuses.SortMode = mode
         ''''''''''''''''''''''''''''''''''''''''
 
         '_iconCol = False
@@ -900,7 +917,6 @@ Public Class TweenMain
 
     Private Sub ChangeItemStyleRead(ByVal Read As Boolean, ByVal Item As ListViewItem, ByVal Post As PostClass)
         'Dim fnt As Font
-        Dim cl As Color
         'フォント
         If Read Then
             'fnt = _fntReaded
@@ -910,16 +926,18 @@ Public Class TweenMain
             Item.SubItems(5).Text = "★"
         End If
         '文字色
+        Dim cl As Color
         If Post.IsFav Then
             cl = _clFav
         ElseIf Post.IsOwl AndAlso SettingDialog.OneWayLove Then
             cl = _clOWL
-        Else
-            If Read Then
-                cl = _clReaded
-            Else
-                cl = _clUnread
-            End If
+            '変更するのはマークだけとする
+            'Else
+            '    If Read Then
+            '        cl = _clReaded
+            '    Else
+            '        cl = _clUnread
+            '    End If
         End If
         Item.ForeColor = cl
     End Sub
@@ -1641,7 +1659,23 @@ Public Class TweenMain
 
     Private Sub MyList_ColumnClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.ColumnClickEventArgs)
         If SettingDialog.SortOrderLock Then Exit Sub
-        _statuses.ToggleSortOrder()
+        Dim mode As IdComparerClass.ComparerMode
+        Select Case e.Column
+            Case 0, 5, 6    '0:アイコン,5:未読マーク,6:プロテクト・フィルターマーク
+                'ソートしない
+                Exit Sub
+            Case 1  'ニックネーム
+                mode = IdComparerClass.ComparerMode.Nickname
+            Case 2  '本文
+                mode = IdComparerClass.ComparerMode.Data
+            Case 3  '時刻=発言Id
+                mode = IdComparerClass.ComparerMode.Id
+            Case 4  '名前
+                mode = IdComparerClass.ComparerMode.Name
+            Case 7  'Source
+                mode = IdComparerClass.ComparerMode.Source
+        End Select
+        _statuses.ToggleSortOrder(mode)
         _itemCache = Nothing
         _postCache = Nothing
         _curList.Refresh()
@@ -3292,6 +3326,18 @@ RETRY2:
                 'End If
                 '_section.SortColumn = listViewItemSorter.Column
                 _section.SortOrder = _statuses.SortOrder
+                Select Case _statuses.SortMode
+                    Case IdComparerClass.ComparerMode.Nickname  'ニックネーム
+                        _section.SortColumn = 1
+                    Case IdComparerClass.ComparerMode.Data  '本文
+                        _section.SortColumn = 2
+                    Case IdComparerClass.ComparerMode.Id  '時刻=発言Id
+                        _section.SortColumn = 3
+                    Case IdComparerClass.ComparerMode.Name  '名前
+                        _section.SortColumn = 4
+                    Case IdComparerClass.ComparerMode.Source  'Source
+                        _section.SortColumn = 7
+                End Select
 
                 Dim cnt As Integer = 0
                 If ListTab IsNot Nothing AndAlso _
