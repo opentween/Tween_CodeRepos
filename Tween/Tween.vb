@@ -779,6 +779,9 @@ Public Class TweenMain
                 If lst.VirtualListSize <> tabInfo.AllCount Then lst.VirtualListSize = tabInfo.AllCount 'リスト件数更新
                 If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
             End If
+            '暫定
+            _itemCache = Nothing
+            _postCache = Nothing
         Next
 
         'スクロール制御
@@ -2651,8 +2654,13 @@ RETRY2:
 
         If lst.VirtualListSize > 0 AndAlso idx > -1 Then
             SelectOneItem(lst, idx)
-            If lst.Items(idx).Position.Y > lst.ClientSize.Height - _iconSz - 10 Then
-                MoveTop()
+            If _statuses.SortMode = IdComparerClass.ComparerMode.Id Then
+                If _statuses.SortOrder = SortOrder.Ascending AndAlso lst.Items(idx).Position.Y > lst.ClientSize.Height - _iconSz - 10 OrElse _
+                   _statuses.SortOrder = SortOrder.Descending AndAlso lst.Items(idx).Position.Y < _iconSz + 10 Then
+                    MoveTop()
+                Else
+                    lst.EnsureVisible(idx)
+                End If
             Else
                 lst.EnsureVisible(idx)
             End If
