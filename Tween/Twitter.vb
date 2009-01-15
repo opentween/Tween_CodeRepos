@@ -473,10 +473,10 @@ Partial Public Class Twitter
 
                     'from Sourceの取得
                     Try
-                        pos1 = strPost.IndexOf("<span>from <a href=", pos2, StringComparison.Ordinal)
+                        pos1 = strPost.IndexOf(_parseSourceFrom, pos2, StringComparison.Ordinal)
                         If pos1 > -1 Then
-                            pos1 = strPost.IndexOf(""">", pos1 + 19, StringComparison.Ordinal)
-                            pos2 = strPost.IndexOf("</a>", pos1 + 2, StringComparison.Ordinal)
+                            pos1 = strPost.IndexOf(_parseSource2, pos1 + 19, StringComparison.Ordinal)
+                            pos2 = strPost.IndexOf(_parseSourceTo, pos1 + 2, StringComparison.Ordinal)
                             post.Source = HttpUtility.HtmlDecode(strPost.Substring(pos1 + 2, pos2 - pos1 - 2))
                         Else
                             post.Source = "Web"
@@ -1353,6 +1353,16 @@ Partial Public Class Twitter
                                 If ln.StartsWith("      ""tagto"": """) Then
                                     _parseDMcountTo = ln.Substring(16, ln.Length - 1 - 16).Replace("\", "")
                                 End If
+                            Case "GetSource"
+                                If ln.StartsWith("      ""tagfrom"": """) Then
+                                    _parseSourceFrom = ln.Substring(18, ln.Length - 1 - 18).Replace("\", "")
+                                End If
+                                If ln.StartsWith("      ""tagfrom2"": """) Then
+                                    _parseSource2 = ln.Substring(19, ln.Length - 1 - 19).Replace("\", "")
+                                End If
+                                If ln.StartsWith("      ""tagto"": """) Then
+                                    _parseSource2 = ln.Substring(16, ln.Length - 1 - 16).Replace("\", "")
+                                End If
                         End Select
                     End If
             End Select
@@ -1545,6 +1555,9 @@ Partial Public Class Twitter
         sw.WriteLine("    Public _parseProtectMsg2 As String = " + Chr(34) + _parseProtectMsg2.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Public _parseDMcountFrom As String = " + Chr(34) + _parseDMcountFrom.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Public _parseDMcountTo As String = " + Chr(34) + _parseDMcountTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseSourceFrom As String = " + Chr(34) + _parseSourceFrom.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseSource2 As String = " + Chr(34) + _parseSource2.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _parseSourceTo As String = " + Chr(34) + _parseSourceTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("End Module")
 
         sw.Close()
