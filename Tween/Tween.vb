@@ -640,15 +640,26 @@ Public Class TweenMain
                     Dim bflt() As String = flt.BodyFilter.Split(Chr(32))
                     Dim body As New List(Of String)
                     For Each tmpFlt As String In bflt
-                        If tmpFlt.Trim <> "" Then body.Add(tmpFlt.Trim)
+                        Try
+                            Dim dmy As Boolean = False
+                            If flt.RegexEnable Then
+                                ' 正規表現が正しいかどうかチェック 不正な場合はArgumentExceptionが発生するのでフィルタを無視する
+                                Dim rx As Regex = New Regex(tmpFlt)
+                                dmy = rx.IsMatch(tmpFlt)
+                            End If
+                            ' フィルタ追加 ArgumentExceptionが発生した場合はCatchされるのでここに来ない
+                            If tmpFlt.Trim <> "" Then body.Add(tmpFlt.Trim)
+                        Catch ex As ArgumentException
+                            ' ArgumentExceptionが発生した場合は該当フィルタを無視
+                        End Try
                     Next
                     tb.Filters.Add(New FiltersClass(flt.IdFilter, _
-                                                    body, _
-                                                    flt.SearchBoth, _
-                                                    flt.MoveFrom, _
-                                                    flt.SetMark, _
-                                                    flt.UrlSearch, _
-                                                    flt.RegexEnable))
+                            body, _
+                            flt.SearchBoth, _
+                            flt.MoveFrom, _
+                            flt.SetMark, _
+                            flt.UrlSearch, _
+                            flt.RegexEnable))
                 End If
             Next
             _statuses.AddTab(name, tb)
