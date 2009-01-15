@@ -3759,7 +3759,14 @@ RETRY2:
 
         Me.Cursor = Cursors.WaitCursor
         _statuses.FilterAll()
-        _curList.Refresh()
+        For Each tb As TabPage In ListTab.TabPages
+            DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
+            If _statuses.Tabs(tb.Text).UnreadCount > 0 Then
+                tb.ImageIndex = 0
+            Else
+                tb.ImageIndex = -1
+            End If
+        Next
         Me.Cursor = Cursors.Default
     End Sub
 
@@ -3993,11 +4000,14 @@ RETRY2:
 
         Me.Cursor = Cursors.WaitCursor
         _statuses.FilterAll()
-        '''''''''''''''''''''''''''''
-        ' 即時反映のためVirtualListSizeの変更必要
-        '(類似箇所チェックすること)
-        '''''''''''''''''''''''''''''
-        _curList.Refresh()
+        For Each tb As TabPage In ListTab.TabPages
+            DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
+            If _statuses.Tabs(tb.Text).UnreadCount > 0 Then
+                tb.ImageIndex = 0
+            Else
+                tb.ImageIndex = -1
+            End If
+        Next
         Me.Cursor = Cursors.Default
     End Sub
 
