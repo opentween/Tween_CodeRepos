@@ -1801,6 +1801,10 @@ Public Class TweenMain
     End Sub
 
     Private Sub RefreshStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RefreshStripMenuItem.Click
+        DoRefresh()
+    End Sub
+
+    Private Sub DoRefresh()
         Select Case _curTab.Text
             Case "Reply"
                 GetTimeline(WORKERTYPE.Reply, 1, 1)
@@ -2827,7 +2831,7 @@ RETRY2:
     End Sub
 
     Private Sub DLPageMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DLPageMenuItem.Click
-        OpenUriAsync("http://www.asahi-net.or.jp/~ne5h-ykmz/index.html")
+        OpenUriAsync("http://tween.sourceforge.jp/index.html")
     End Sub
 
     Private Sub ListTab_KeyDown(ByVal sender As System.Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles ListTab.KeyDown
@@ -3418,6 +3422,7 @@ RETRY2:
     Private Sub PostBrowser_PreviewKeyDown(ByVal sender As System.Object, ByVal e As System.Windows.Forms.PreviewKeyDownEventArgs) Handles PostBrowser.PreviewKeyDown
         If e.KeyCode = Keys.F5 Then
             e.IsInputKey = True
+            DoRefresh()
         End If
         If e.Modifiers = Keys.None AndAlso (e.KeyCode = Keys.Space OrElse e.KeyCode = Keys.ProcessKey) Then
             e.IsInputKey = True
@@ -3731,6 +3736,7 @@ RETRY2:
 
         fDialog.SetCurrent(_rclickTabName)
         fDialog.ShowDialog()
+        SaveConfigs()
         Me.TopMost = SettingDialog.AlwaysTop
 
         Me.Cursor = Cursors.WaitCursor
@@ -3954,6 +3960,9 @@ RETRY2:
                             _postTimestamps.RemoveAt(i)
                         End If
                     Next
+
+                    If rslt.retMsg.Length > 0 Then StatusLabel.Text = rslt.retMsg 'Outputz失敗時
+
                     StatusText.Text = ""
                     _history.Add("")
                     _hisIdx = _history.Count - 1
@@ -4111,7 +4120,7 @@ RETRY2:
                 openUrlStr = urlEncodeMultiByteChar(PostBrowser.Document.Links(0).GetAttribute("href"))
             Else
                 For Each linkElm As System.Windows.Forms.HtmlElement In PostBrowser.Document.Links
-                    UrlDialog.AddUrl(linkElm.GetAttribute("href"))
+                    UrlDialog.AddUrl(urlEncodeMultibyteChar(linkElm.GetAttribute("href")))
                 Next
                 If UrlDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
                     openUrlStr = UrlDialog.SelectedUrl

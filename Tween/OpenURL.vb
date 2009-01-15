@@ -48,7 +48,7 @@ Public Class OpenURL
     End Sub
 
     Public Sub AddUrl(ByVal strUrl As String)
-        UrlList.Items.Add(urlEncodeMultibyteChar(strUrl))
+        UrlList.Items.Add(strUrl)
     End Sub
 
     Public ReadOnly Property SelectedUrl() As String
