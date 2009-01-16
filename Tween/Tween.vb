@@ -791,10 +791,6 @@ Public Class TweenMain
         '更新確定
         addCount = _statuses.SubmitUpdate(soundFile, notifyPosts)
 
-        '暫定
-        _itemCache = Nothing
-        _postCache = Nothing
-
         'リストに反映＆選択状態復元
         For Each tab As TabPage In ListTab.TabPages
             Dim lst As DetailsListView = DirectCast(tab.Controls(0), DetailsListView)
@@ -802,6 +798,10 @@ Public Class TweenMain
             If Dm AndAlso tab.Text = "Direct" OrElse _
                Not Dm AndAlso tab.Text <> "Direct" Then
                 If lst.VirtualListSize <> tabInfo.AllCount Then
+                    If lst.Equals(_curList) Then
+                        _itemCache = Nothing
+                        _postCache = Nothing
+                    End If
                     lst.VirtualListSize = tabInfo.AllCount 'リスト件数更新
                     Me.SelectListItem(lst, _
                                       _statuses.GetIndex(tab.Text, selId(tab.Text)), _
@@ -2139,10 +2139,6 @@ Public Class TweenMain
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
-        If Not startup Then  '念のため
-            SaveConfigs()
-        End If
-
         Return True
     End Function
 
@@ -2338,14 +2334,17 @@ Public Class TweenMain
     End Sub
 
     Private Sub MyList_CacheVirtualItems(ByVal sender As System.Object, ByVal e As System.Windows.Forms.CacheVirtualItemsEventArgs)
-        If Not (_itemCache Is Nothing) AndAlso e.StartIndex >= _itemCacheIndex AndAlso e.EndIndex <= _itemCacheIndex + _itemCache.Length Then
+        If _itemCache IsNot Nothing AndAlso _
+           e.StartIndex >= _itemCacheIndex AndAlso _
+           e.EndIndex <= _itemCacheIndex + _itemCache.Length AndAlso _
+           _curList.Equals(sender) Then
             'If the newly requested cache is a subset of the old cache, 
             'no need to rebuild everything, so do nothing.
             Return
         End If
 
         'Now we need to rebuild the cache.
-        CreateCache(e.StartIndex, e.EndIndex)
+        If _curList.Equals(sender) Then CreateCache(e.StartIndex, e.EndIndex)
     End Sub
 
     Private Sub MyList_RetrieveVirtualItem(ByVal sender As System.Object, ByVal e As System.Windows.Forms.RetrieveVirtualItemEventArgs)
@@ -3799,6 +3798,7 @@ RETRY2:
             Else
                 '成功
                 _statuses.AddTab(tabName)
+                SaveConfigs()
             End If
         End If
     End Sub
@@ -3831,6 +3831,7 @@ RETRY2:
                             MessageBox.Show(tmp, My.Resources.TabMenuItem_ClickText3, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                         Else
                             _statuses.AddTab(tabName)
+                            SaveConfigs()
                             Exit Do
                         End If
                     End If
@@ -4041,6 +4042,7 @@ RETRY2:
                         MessageBox.Show(tmp, My.Resources.IDRuleMenuItem_ClickText3, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                     Else
                         _statuses.AddTab(tabName)
+                        SaveConfigs()
                         Exit Do
                     End If
                 End If

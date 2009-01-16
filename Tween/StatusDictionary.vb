@@ -626,7 +626,6 @@ Public Class TabInformations
                     Dim post As PostClass = _statuses.Item(id)
                     If post.IsDm Then Continue For
                     Dim rslt As HITRESULT = tb.AddFiltered(post.Id, post.IsRead, post.Name, post.Data, post.OriginalData)
-                    '''ここはこぴぺ。修正必要
                     Select Case rslt
                         Case HITRESULT.CopyAndMark
                             post.IsMark = True 'マークあり
@@ -644,10 +643,13 @@ Public Class TabInformations
                     Next
                     If Not hit Then tbr.Add(id, _statuses(id).IsRead)
                 Next
-                tb.Sort(_sorter)
             End If
         Next
-        tbr.Sort(_sorter)
+
+        For Each key As String In _tabs.Keys
+            _tabs(key).AddSubmit()  '振分確定（各タブに反映）
+        Next
+        Me.SortPosts()
     End Sub
 
     Public Function GetId(ByVal TabName As String, ByVal IndexCollection As ListView.SelectedIndexCollection) As Long()
