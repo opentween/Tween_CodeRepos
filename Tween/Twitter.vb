@@ -488,7 +488,7 @@ Partial Public Class Twitter
                     End Try
 
                     'Get Reply(in_reply_to_user/id)
-                    Dim rg As New Regex("<a href=""https:\/\/twitter\.com\/(?<name>[a-zA-Z0-9_]+)\/status\/(?<id>[0-9]+)"">(?:in reply to |u8fd4u4fe1: )")
+                    Dim rg As New Regex("<a href=""https?:\/\/twitter\.com\/(?<name>[a-zA-Z0-9_]+)\/status\/(?<id>[0-9]+)"">(?:in reply to |u8fd4u4fe1: )")
                     Dim m As Match = rg.Match(strPost)
                     If m.Success Then
                         post.InReplyToUser = m.Result("${name}")
