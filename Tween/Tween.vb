@@ -4331,7 +4331,7 @@ RETRY2:
     End Sub
 
     Private Sub RepliedStatusOpenMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RepliedStatusOpenMenuItem.Click
-        If _curPost.InReplyToUser.Length > 0 AndAlso _curPost.InReplyToId > 0 Then
+        If _curPost.InReplyToUser IsNot Nothing AndAlso _curPost.InReplyToId > 0 Then
             OpenUriAsync("http://twitter.com/" + _curPost.InReplyToUser + "/statuses/" + _curPost.InReplyToId.ToString())
         End If
     End Sub
