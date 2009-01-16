@@ -178,7 +178,7 @@ Public Class TweenMain
     'Backgroundworkerの処理結果通知用引数構造体
     Private Structure GetWorkerResult
         Public retMsg As String                     '処理結果詳細メッセージ。エラー時に値がセットされる
-        Public notifyPosts As List(Of PostClass) '取得した発言。Twitter.MyListItem構造体を要素としたジェネリックリスト
+        'Public notifyPosts As List(Of PostClass) '取得した発言。Twitter.MyListItem構造体を要素としたジェネリックリスト
         Public page As Integer                      '取得対象ページ番号
         Public endPage As Integer                   '取得終了ページ番号（継続可能ならインクリメントされて返る。pageと比較して継続判定）
         Public type As WORKERTYPE                   '処理種別
@@ -187,7 +187,7 @@ Public Class TweenMain
         Public ids As List(Of Long)               'Fav追加・削除時のID
         Public sIds As List(Of Long)                  'Fav追加・削除成功分のID
         Public newDM As Boolean
-        Public soundFile As String
+        'Public soundFile As String
         Public addCount As Integer
     End Structure
 
@@ -770,19 +770,47 @@ Public Class TweenMain
         GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
     End Sub
 
-    Private Sub RefreshTimeline(ByVal notifyPosts As List(Of PostClass), ByVal soundFile As String, ByVal addCount As Integer, ByVal Dm As Boolean)
+    Private Sub RefreshTimeline(ByVal Dm As Boolean)
+        Dim notifyPosts As New List(Of PostClass)
+        Dim soundFile As String = ""
+        Dim addCount As Integer = 0
 
+        '現在の選択状態を退避
+        Dim selId As New Dictionary(Of String, Long())
+        Dim focusedId As New Dictionary(Of String, Long)
+        For Each tab As TabPage In ListTab.TabPages
+            Dim lst As DetailsListView = DirectCast(tab.Controls(0), DetailsListView)
+            selId.Add(tab.Text, _statuses.GetId(tab.Text, lst.SelectedIndices))
+            If lst.FocusedItem IsNot Nothing Then
+                focusedId.Add(tab.Text, _statuses.GetId(tab.Text, lst.FocusedItem.Index))
+            Else
+                focusedId.Add(tab.Text, -1)
+            End If
+        Next
+
+        '更新確定
+        addCount = _statuses.SubmitUpdate(soundFile, notifyPosts)
+
+        '暫定
+        _itemCache = Nothing
+        _postCache = Nothing
+
+        'リストに反映＆選択状態復元
         For Each tab As TabPage In ListTab.TabPages
             Dim lst As DetailsListView = DirectCast(tab.Controls(0), DetailsListView)
             Dim tabInfo As TabClass = _statuses.Tabs(tab.Text)
-            If Dm AndAlso tab.Text = "Direct" OrElse Not Dm Then
-                If lst.VirtualListSize <> tabInfo.AllCount Then lst.VirtualListSize = tabInfo.AllCount 'リスト件数更新
+            If Dm AndAlso tab.Text = "Direct" OrElse _
+               Not Dm AndAlso tab.Text <> "Direct" Then
+                If lst.VirtualListSize <> tabInfo.AllCount Then
+                    lst.VirtualListSize = tabInfo.AllCount 'リスト件数更新
+                    Me.SelectListItem(lst, _
+                                      _statuses.GetIndex(tab.Text, selId(tab.Text)), _
+                                      _statuses.GetIndex(tab.Text, focusedId(tab.Text)))
+                End If
                 If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
             End If
-            '暫定
-            _itemCache = Nothing
-            _postCache = Nothing
         Next
+
 
         'スクロール制御
         If Not ListLockMenuItem.Checked Then
@@ -1106,9 +1134,7 @@ Public Class TweenMain
                                 args.page <= args.endPage AndAlso _
                                 Not GetTimelineWorker.CancellationPending
                 End If
-                rslt.notifyPosts = New List(Of PostClass)
-                rslt.soundFile = ""
-                rslt.addCount = _statuses.EndUpdate(rslt.soundFile, rslt.notifyPosts)
+                rslt.addCount = _statuses.EndUpdate()
             Case WORKERTYPE.Reply
                 _statuses.BeginUpdate(TabInformations.EDITMODE.Post)
                 Do
@@ -1120,9 +1146,7 @@ Public Class TweenMain
                             args.page <= SettingDialog.ReadPagesReply AndAlso _
                             Not GetTimelineWorker.CancellationPending AndAlso _
                             args.page Mod 10 > 0
-                rslt.notifyPosts = New List(Of PostClass)
-                rslt.soundFile = ""
-                rslt.addCount = _statuses.EndUpdate(rslt.soundFile, rslt.notifyPosts)
+                rslt.addCount = _statuses.EndUpdate()
             Case WORKERTYPE.DirectMessegeRcv
                 _statuses.BeginUpdate(TabInformations.EDITMODE.Dm)
                 Do
@@ -1134,9 +1158,7 @@ Public Class TweenMain
                             args.page <= SettingDialog.ReadPagesDM AndAlso _
                             Not GetTimelineWorker.CancellationPending AndAlso _
                             args.page Mod 10 > 0
-                rslt.notifyPosts = New List(Of PostClass)
-                rslt.soundFile = ""
-                rslt.addCount = _statuses.EndUpdate(rslt.soundFile, rslt.notifyPosts)
+                rslt.addCount = _statuses.EndUpdate()
                 If _initial AndAlso SettingDialog.StartupFollowers Then
                     GetTimelineWorker.ReportProgress(50, My.Resources.UpdateFollowersMenuItem1_ClickText1)
                     ret = clsTw.GetFollowers()
@@ -1152,9 +1174,7 @@ Public Class TweenMain
                             args.page <= SettingDialog.ReadPagesDM AndAlso _
                             Not GetTimelineWorker.CancellationPending AndAlso _
                             args.page Mod 10 > 0
-                rslt.notifyPosts = New List(Of PostClass)
-                rslt.soundFile = ""
-                rslt.addCount = _statuses.EndUpdate(rslt.soundFile, rslt.notifyPosts)
+                rslt.addCount = _statuses.EndUpdate()
             Case WORKERTYPE.FavAdd
                 For i As Integer = 0 To args.ids.Count - 1
                     Dim post As PostClass = _statuses.Item(args.ids(i))
@@ -1350,12 +1370,17 @@ Public Class TweenMain
             _initial = False    '起動時モード終了
         End If
 
+        'リストに反映
+        If rslt.type = WORKERTYPE.Timeline OrElse rslt.type = WORKERTYPE.Reply Then
+            RefreshTimeline(False)
+        ElseIf rslt.type = WORKERTYPE.DirectMessegeRcv OrElse rslt.type = WORKERTYPE.DirectMessegeSnt Then
+            RefreshTimeline(True)
+        End If
+
         Select Case rslt.type
             Case WORKERTYPE.CreateNewSocket
                 Exit Sub
             Case WORKERTYPE.Timeline
-                '通知メッセージ、リスト反映
-                RefreshTimeline(rslt.notifyPosts, rslt.soundFile, rslt.addCount, False)
                 If _initial Then
                     '起動時
                     If SettingDialog.ReadPages >= rslt.page + 1 Then
@@ -1398,8 +1423,6 @@ Public Class TweenMain
                     End If
                 End If
             Case WORKERTYPE.Reply
-                '通知メッセージ、リスト反映
-                RefreshTimeline(rslt.notifyPosts, rslt.soundFile, rslt.addCount, False)
                 If _initial Then
                     If SettingDialog.ReadPagesReply >= rslt.page + 1 Then
                         If rslt.page Mod 10 = 0 Then
@@ -1416,7 +1439,6 @@ Public Class TweenMain
                     GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
                 End If
             Case WORKERTYPE.DirectMessegeRcv
-                RefreshTimeline(rslt.notifyPosts, rslt.soundFile, rslt.addCount, True)
                 If _initial Then
                     If SettingDialog.ReadPagesDM >= rslt.page + 1 Then
                         If rslt.page Mod 10 = 0 Then
@@ -1433,7 +1455,6 @@ Public Class TweenMain
                     GetTimeline(WORKERTYPE.DirectMessegeSnt, 1, 1)
                 End If
             Case WORKERTYPE.DirectMessegeSnt
-                RefreshTimeline(rslt.notifyPosts, rslt.soundFile, rslt.addCount, True)
                 If _initial Then
                     If SettingDialog.ReadPagesDM >= rslt.page + 1 Then
                         If rslt.page Mod 10 = 0 Then
@@ -2519,7 +2540,7 @@ RETRY:
                         OrElse _search.IsMatch(post.Data, regOpt) _
                         OrElse _search.IsMatch(post.Name, regOpt) _
                     Then
-                        SelectOneItem(_curList, idx)
+                        SelectListItem(_curList, idx)
                         _curList.EnsureVisible(idx)
                         Exit Sub
                     End If
@@ -2536,7 +2557,7 @@ RETRY:
                     OrElse post.Data.IndexOf(_word, fndOpt) > -1 _
                     OrElse post.Name.IndexOf(_word, fndOpt) > -1 _
                 Then
-                    SelectOneItem(_curList, idx)
+                    SelectListItem(_curList, idx)
                     _curList.EnsureVisible(idx)
                     Exit Sub
                 End If
@@ -2653,7 +2674,7 @@ RETRY2:
         End If
 
         If lst.VirtualListSize > 0 AndAlso idx > -1 Then
-            SelectOneItem(lst, idx)
+            SelectListItem(lst, idx)
             If _statuses.SortMode = IdComparerClass.ComparerMode.Id Then
                 If _statuses.SortOrder = SortOrder.Ascending AndAlso lst.Items(idx).Position.Y > lst.ClientSize.Height - _iconSz - 10 OrElse _
                    _statuses.SortOrder = SortOrder.Descending AndAlso lst.Items(idx).Position.Y < _iconSz + 10 Then
@@ -2782,7 +2803,7 @@ RETRY2:
         TimerColorize.Interval = 100
         'If _itemCache IsNot Nothing Then CreateCache(-1, 0)
         ColorizeList(-1)
-        If _itemCache isnot Nothing Then _curList.RedrawItems(_itemCacheIndex, _itemCacheIndex + _itemCache.Length - 1, False)
+        If _itemCache IsNot Nothing Then _curList.RedrawItems(_itemCacheIndex, _itemCacheIndex + _itemCache.Length - 1, False)
         DispSelectedPost()
         '件数関連の場合、タイトル即時書き換え
         If SettingDialog.DispLatestPost <> DispTitleEnum.None AndAlso _
@@ -3045,7 +3066,7 @@ RETRY2:
 
         For idx As Integer = fIdx To toIdx Step stp
             If _statuses.Item(_curTab.Text, idx).IsFav Then
-                SelectOneItem(_curList, idx)
+                SelectListItem(_curList, idx)
                 _curList.EnsureVisible(idx)
                 Exit For
             End If
@@ -3072,7 +3093,7 @@ RETRY2:
 
         For idx As Integer = fIdx To toIdx Step stp
             If _statuses.Item(_curTab.Text, idx).Name = _curPost.Name Then
-                SelectOneItem(_curList, idx)
+                SelectListItem(_curList, idx)
                 _curList.EnsureVisible(idx)
                 Exit For
             End If
@@ -3107,7 +3128,7 @@ RETRY2:
             If post.Name = _anchorPost.Name OrElse _
                _anchorPost.ReplyToList.Contains(post.Name.ToLower()) OrElse _
                post.ReplyToList.Contains(_anchorPost.Name.ToLower()) Then
-                SelectOneItem(_curList, idx)
+                SelectListItem(_curList, idx)
                 _curList.EnsureVisible(idx)
                 Exit For
             End If
@@ -3119,7 +3140,7 @@ RETRY2:
         Dim idx As Integer = _statuses.Tabs(_curTab.Text).GetIndex(_anchorPost.Id)
         If idx = -1 Then Exit Sub
 
-        SelectOneItem(_curList, idx)
+        SelectListItem(_curList, idx)
         _curList.EnsureVisible(idx)
     End Sub
 
@@ -3142,7 +3163,7 @@ RETRY2:
                 idx = _item.Index
             End If
         End If
-        SelectOneItem(_curList, idx)
+        SelectListItem(_curList, idx)
     End Sub
 
     Private Sub GoMiddle()
@@ -3165,17 +3186,17 @@ RETRY2:
         End If
         idx3 = (idx1 + idx2) \ 2
 
-        SelectOneItem(_curList, idx3)
+        SelectListItem(_curList, idx3)
     End Sub
 
     Private Sub GoLast()
         If _curList.VirtualListSize = 0 Then Exit Sub
 
         If _statuses.SortOrder = SortOrder.Ascending Then
-            SelectOneItem(_curList, _curList.VirtualListSize - 1)
+            SelectListItem(_curList, _curList.VirtualListSize - 1)
             _curList.EnsureVisible(_curList.VirtualListSize - 1)
         Else
-            SelectOneItem(_curList, 0)
+            SelectListItem(_curList, 0)
             _curList.EnsureVisible(0)
         End If
     End Sub
@@ -4735,12 +4756,29 @@ RETRY2:
         _anchorFlag = False
     End Sub
 
-    Private Sub SelectOneItem(ByVal LView As DetailsListView, ByVal Index As Integer)
+    Private Sub SelectListItem(ByVal LView As DetailsListView, ByVal Index As Integer)
+        '単一
         For i As Integer = _curList.SelectedIndices.Count - 1 To 0 Step -1
             LView.Items(i).Selected = False
         Next
         LView.SelectedIndices.Clear()
         LView.Items(Index).Selected = True
         LView.Items(Index).Focused = True
+    End Sub
+
+    Private Sub SelectListItem(ByVal LView As DetailsListView, ByVal Index() As Integer, ByVal FocusedIndex As Integer)
+        '複数
+        For i As Integer = _curList.SelectedIndices.Count - 1 To 0 Step -1
+            LView.Items(i).Selected = False
+        Next
+        LView.SelectedIndices.Clear()
+        If Index IsNot Nothing Then
+            For Each idx As Integer In Index
+                LView.Items(idx).Selected = True
+            Next
+        End If
+        If FocusedIndex > -1 Then
+            LView.Items(FocusedIndex).Focused = True
+        End If
     End Sub
 End Class

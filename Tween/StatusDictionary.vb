@@ -263,6 +263,16 @@ Public Class TabInformations
     Private _addedIds As List(Of Long)
     Private _editMode As EDITMODE
 
+    '発言の追加は4段階
+    'BeginUpdate -> AddPost(複数回) -> EndUpdate          -> SubmitUpdate
+    '準備        -> 発言Dicに追加   -> 仮振分・Notify決定 -> 振分確定(UIと整合とる)
+    '（EndUpdateまでは裏スレッドで処理）
+
+    'トランザクション用
+    Private _addCount As Integer
+    Private _soundFile As String
+    Private _notifyPosts As List(Of PostClass)
+
     Private Shared _instance As TabInformations = New TabInformations
 
     Public Enum EDITMODE
@@ -374,12 +384,6 @@ Public Class TabInformations
         Me.SortPosts()
     End Sub
 
-    'Public WriteOnly Property Statuses() As Statuses
-    '    Set(ByVal value As Statuses)
-    '        _statuses = value
-    '    End Set
-    'End Property
-
     Public Sub RemovePost(ByVal Id As Long)
         Dim post As PostClass = _statuses(Id)
         '各タブから該当ID削除
@@ -463,28 +467,48 @@ Public Class TabInformations
 
     Public Sub BeginUpdate(ByVal EditMode As EDITMODE)
         If _addedIds IsNot Nothing Then Throw New Exception("You must call 'EndUpdate' before begin update.")
+
         _editMode = EditMode
+
+        '初期化
         _addedIds = New List(Of Long)  'タブ追加用IDコレクション準備
+        If _notifyPosts IsNot Nothing Then
+            _notifyPosts.Clear()
+            _notifyPosts = Nothing
+        End If
+        _soundFile = ""
     End Sub
 
-    Public Function EndUpdate(ByRef soundFile As String, ByVal notifyPosts As List(Of PostClass)) As Integer
-        'notifyPostは呼び出し元でインスタンス作成が必要
+    Public Function EndUpdate() As Integer
         '戻り値は追加件数
         If _addedIds Is Nothing Then Throw New Exception("You must call 'BeginUpdate' before to add.")
-        If notifyPosts Is Nothing Then Throw New Exception("You must create notifyPost instance before to add.")
-        Dim addCount As Integer
-        addCount = Me.Distribute(_addedIds, soundFile, notifyPosts)    'タブに追加
+
+        _notifyPosts = New List(Of PostClass)
+        Me.Distribute()    'タブに仮振分
+        _addCount = _addedIds.Count
         _addedIds.Clear()
         _addedIds = Nothing     '後始末
-        Me.SortPosts()
-        Return addCount     '件数
+        Return _addCount     '件数
     End Function
 
-    Private Function Distribute(ByVal AddedIDs As List(Of Long), ByRef soundFile As String, ByVal notifyPosts As List(Of PostClass)) As Integer
+    Public Function SubmitUpdate(ByRef soundFile As String, ByVal notifyPosts As List(Of PostClass)) As Integer
+        If _notifyPosts Is Nothing Then Throw New Exception("You must call 'EndUpdate' before to Submit.")
+
+        For Each key As String In _tabs.Keys
+            _tabs(key).AddSubmit()  '振分確定（各タブに反映）
+        Next
+        Me.SortPosts()
+
+        soundFile = _soundFile
+        notifyPosts = _notifyPosts
+        Return _addCount    '件数（EndUpdateの戻り値と同じ）
+    End Function
+
+    Private Sub Distribute()
         '各タブのフィルターと照合。合致したらタブにID追加
         '通知メッセージ用に、表示必要な発言リストと再生サウンドを返す
         'notifyPosts = New List(Of PostClass)
-        For Each id As Long In AddedIDs
+        For Each id As Long In _addedIds
             Dim post As PostClass = _statuses(id)
             If _editMode = EDITMODE.Post Then
                 Dim add As Boolean = False  '通知リスト追加フラグ
@@ -495,30 +519,29 @@ Public Class TabInformations
                         If rslt = HITRESULT.CopyAndMark Then post.IsMark = True 'マークあり
                         If rslt = HITRESULT.Move Then mv = True '移動
                         If _tabs(tn).Notify Then add = True '通知あり
-                        If Not _tabs(tn).SoundFile.Equals("") AndAlso soundFile.Equals("") Then
-                            soundFile = _tabs(tn).SoundFile 'wavファイル（未設定の場合のみ）
+                        If Not _tabs(tn).SoundFile.Equals("") AndAlso _soundFile.Equals("") Then
+                            _soundFile = _tabs(tn).SoundFile 'wavファイル（未設定の場合のみ）
                         End If
                     End If
                 Next
                 If Not mv Then  '移動されなかったらRecentに追加
                     _tabs("Recent").Add(post.Id, post.IsRead)
-                    If Not _tabs("Recent").SoundFile.Equals("") AndAlso soundFile.Equals("") Then soundFile = _tabs("Recent").SoundFile
+                    If Not _tabs("Recent").SoundFile.Equals("") AndAlso _soundFile.Equals("") Then _soundFile = _tabs("Recent").SoundFile
                     If _tabs("Recent").Notify Then add = True
                 End If
                 If post.IsReply Then    'ReplyだったらReplyタブに追加
                     _tabs("Reply").Add(post.Id, post.IsRead)
-                    If Not _tabs("Reply").SoundFile.Equals("") Then soundFile = _tabs("Reply").SoundFile
+                    If Not _tabs("Reply").SoundFile.Equals("") Then _soundFile = _tabs("Reply").SoundFile
                     If _tabs("Reply").Notify Then add = True
                 End If
-                If add Then notifyPosts.Add(post)
+                If add Then _notifyPosts.Add(post)
             Else
                 _tabs("Direct").Add(post.Id, post.IsRead)
-                If _tabs("Direct").Notify Then notifyPosts.Add(post)
-                soundFile = _tabs("Direct").SoundFile
+                If _tabs("Direct").Notify Then _notifyPosts.Add(post)
+                _soundFile = _tabs("Direct").SoundFile
             End If
         Next
-        Return AddedIDs.Count
-    End Function
+    End Sub
 
     Public Sub AddPost(ByVal Item As PostClass)
         If _addedIds Is Nothing Then Throw New Exception("You must call 'BeginUpdate' before to add.")
@@ -626,6 +649,35 @@ Public Class TabInformations
         Next
         tbr.Sort(_sorter)
     End Sub
+
+    Public Function GetId(ByVal TabName As String, ByVal IndexCollection As ListView.SelectedIndexCollection) As Long()
+        If IndexCollection.Count = 0 Then Return Nothing
+
+        Dim tb As TabClass = _tabs(TabName)
+        Dim Ids(IndexCollection.Count - 1) As Long
+        For i As Integer = 0 To Ids.Length - 1
+            Ids(i) = tb.GetId(IndexCollection(i))
+        Next
+        Return Ids
+    End Function
+
+    Public Function GetId(ByVal TabName As String, ByVal Index As Integer) As Long
+        Return _tabs(TabName).GetId(Index)
+    End Function
+
+    Public Function GetIndex(ByVal TabName As String, ByVal Ids() As Long) As Integer()
+        If Ids Is Nothing Then Return Nothing
+        Dim idx(Ids.Length - 1) As Integer
+        Dim tb As TabClass = _tabs(TabName)
+        For i As Integer = 0 To Ids.Length - 1
+            idx(i) = tb.GetIndex(Ids(i))
+        Next
+        Return idx
+    End Function
+
+    Public Function GetIndex(ByVal TabName As String, ByVal Id As Long) As Integer
+        Return _tabs(TabName).GetIndex(Id)
+    End Function
 End Class
 
 Public Class TabClass
@@ -638,6 +690,17 @@ Public Class TabClass
     Private _unreadCount As Integer
     Private _ids As List(Of Long)
     Private _filterMod As Boolean
+    Private _tmpIds As List(Of TempolaryId)
+
+    Private Structure TempolaryId
+        Public Id As Long
+        Public Read As Boolean
+
+        Public Sub New(ByVal argId As Long, ByVal argRead As Boolean)
+            Id = argId
+            Read = argRead
+        End Sub
+    End Structure
 
     Public Sub New()
         _filters = New List(Of FiltersClass)
@@ -688,34 +751,29 @@ Public Class TabClass
             End Select
         Next
 
-        If rslt <> HITRESULT.None Then Me.Add(ID, Read)
+        If rslt <> HITRESULT.None Then
+            If _tmpIds Is Nothing Then _tmpIds = New List(Of TempolaryId)
+            _tmpIds.Add(New TempolaryId(ID, Read))
+        End If
+        'Me.Add(ID, Read)
 
         Return rslt 'マーク付けは呼び出し元で行うこと
     End Function
+
+    Public Sub AddSubmit()
+        If _tmpIds Is Nothing Then Exit Sub
+        For Each tId As TempolaryId In _tmpIds
+            Me.Add(tId.Id, tId.Read)
+        Next
+        _tmpIds.Clear()
+        _tmpIds = Nothing
+    End Sub
 
     Public Sub Remove(ByVal Id As Long)
         If Not Me._ids.Contains(Id) Then Exit Sub
 
         Me._ids.Remove(Id)
     End Sub
-
-    'Public Property TabPage() As TabPage
-    '    Get
-    '        Return _tabPage
-    '    End Get
-    '    Set(ByVal value As TabPage)
-    '        _tabPage = value
-    '    End Set
-    'End Property
-
-    'Public Property ListCustom() As DetailsListView
-    '    Get
-    '        Return _listCustom
-    '    End Get
-    '    Set(ByVal value As DetailsListView)
-    '        _listCustom = value
-    '    End Set
-    'End Property
 
     Public Property UnreadManage() As Boolean
         Get
@@ -747,15 +805,6 @@ Public Class TabClass
             _soundFile = value
         End Set
     End Property
-
-    'Public Property Modified() As Boolean
-    '    Get
-    '        Return _modified
-    '    End Get
-    '    Set(ByVal value As Boolean)
-    '        _modified = value
-    '    End Set
-    'End Property
 
     Public Property OldestUnreadId() As Long
         Get
@@ -799,12 +848,6 @@ Public Class TabClass
         _unreadCount = 0
         _oldestUnreadItem = -1
     End Sub
-
-    'Public ReadOnly Property StatusIDs() As List(Of Long)
-    '    Get
-    '        Return _ids
-    '    End Get
-    'End Property
 
     Public Function GetId(ByVal Index As Integer) As Long
         Return _ids(Index)
