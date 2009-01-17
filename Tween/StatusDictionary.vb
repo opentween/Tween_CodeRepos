@@ -393,8 +393,8 @@ Public Class TabInformations
                 If tab.UnreadManage AndAlso Not post.IsRead Then    '未読管理
                     tab.UnreadCount -= 1
                     Me.SetNextUnreadId(Id, tab)
-                    tab.Remove(Id)
                 End If
+                tab.Remove(Id)
             End If
         Next
         _statuses.Remove(Id)
