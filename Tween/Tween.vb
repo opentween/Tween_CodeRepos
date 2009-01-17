@@ -1502,6 +1502,7 @@ Public Class TweenMain
                         Dim post As PostClass = _statuses.Item(rslt.sIds(i))
                         Dim idx As Integer = _statuses.Tabs(rslt.tName).GetIndex(rslt.sIds(i))
                         ChangeCacheStyleRead(post.IsRead, idx, _curTab)
+                        If idx = _curItemIndex Then NameLabel.ForeColor = System.Drawing.SystemColors.ControlText
                     End If
                 Next
                 _curList.EndUpdate()
