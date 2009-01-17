@@ -43,6 +43,8 @@ Public Class FilterDialog
         Next
         If ListFilters.Items.Count > 0 Then ListFilters.SelectedIndex = 0
 
+        If _directAdd Then Exit Sub
+
         ComboTabs.Enabled = True
         ListFilters.Enabled = True
         ListFilters.Focus()
@@ -318,12 +320,12 @@ Public Class FilterDialog
             ListFilters.SelectedIndex = i
         End If
         _mode = EDITMODE.None
-        ComboTabs.Enabled = True
-        ListFilters.Enabled = True
-        ButtonNew.Enabled = True
-        ButtonEdit.Enabled = True
-        ButtonDelete.Enabled = True
-        ButtonClose.Enabled = True
+        'ComboTabs.Enabled = True
+        'ListFilters.Enabled = True
+        'ButtonNew.Enabled = True
+        'ButtonEdit.Enabled = True
+        'ButtonDelete.Enabled = True
+        'ButtonClose.Enabled = True
 
         _sts.Tabs(ComboTabs.SelectedItem.ToString()).FilterModified = True
 

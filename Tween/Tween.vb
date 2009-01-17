@@ -962,13 +962,8 @@ Public Class TweenMain
             cl = _clFav
         ElseIf Post.IsOwl AndAlso SettingDialog.OneWayLove Then
             cl = _clOWL
-            '変更するのはマークだけとする
-            'Else
-            '    If Read Then
-            '        cl = _clReaded
-            '    Else
-            '        cl = _clUnread
-            '    End If
+        Else
+            cl = System.Drawing.SystemColors.ControlText
         End If
         Item.ForeColor = cl
     End Sub
@@ -1482,27 +1477,14 @@ Public Class TweenMain
                 End If
                 ' Contributed by shuyoko <http://twitter.com/shuyoko> BEGIN:
                 ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
-            Case WORKERTYPE.FavAdd, WORKERTYPE.BlackFavAdd
+            Case WORKERTYPE.FavAdd, WORKERTYPE.BlackFavAdd, WORKERTYPE.FavRemove
                 _curList.BeginUpdate()
                 For i As Integer = 0 To rslt.sIds.Count - 1
                     If _curTab.Text.Equals(rslt.tName) Then
                         Dim idx As Integer = _statuses.Tabs(rslt.tName).GetIndex(rslt.sIds(i))
-                        If _itemCache IsNot Nothing AndAlso _
-                           idx >= _itemCacheIndex AndAlso idx < _itemCacheIndex + _itemCache.Length Then
-                            _itemCache(idx - _itemCacheIndex).ForeColor = _clFav
-                        End If
-                        If idx = _curItemIndex Then NameLabel.ForeColor = _clFav
-                    End If
-                Next
-                _curList.EndUpdate()
-            Case WORKERTYPE.FavRemove
-                _curList.BeginUpdate()
-                For i As Integer = 0 To rslt.sIds.Count - 1
-                    If _curTab.Text.Equals(rslt.tName) Then
                         Dim post As PostClass = _statuses.Item(rslt.sIds(i))
-                        Dim idx As Integer = _statuses.Tabs(rslt.tName).GetIndex(rslt.sIds(i))
                         ChangeCacheStyleRead(post.IsRead, idx, _curTab)
-                        If idx = _curItemIndex Then NameLabel.ForeColor = System.Drawing.SystemColors.ControlText
+                        If idx = _curItemIndex Then DispSelectedPost() '選択アイテム再表示
                     End If
                 Next
                 _curList.EndUpdate()
@@ -3706,6 +3688,13 @@ RETRY2:
         If idx = -1 Then idx = 0
         SoundFileComboBox.SelectedIndex = idx
         UreadManageMenuItem.Checked = tb.UnreadManage
+        If _rclickTabName = "Recent" OrElse _rclickTabName = "Reply" OrElse _rclickTabName = "Direct" Then
+            FilterEditMenuItem.Enabled = False
+            DeleteTabMenuItem.Enabled = False
+        Else
+            FilterEditMenuItem.Enabled = True
+            DeleteTabMenuItem.Enabled = True
+        End If
     End Sub
 
     Private Sub UreadManageMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UreadManageMenuItem.Click
@@ -3751,6 +3740,8 @@ RETRY2:
         Me.TopMost = SettingDialog.AlwaysTop
 
         Me.Cursor = Cursors.WaitCursor
+        _itemCache = Nothing
+        _postCache = Nothing
         _statuses.FilterAll()
         For Each tb As TabPage In ListTab.TabPages
             DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
@@ -3825,6 +3816,8 @@ RETRY2:
         Next
 
         Me.Cursor = Cursors.WaitCursor
+        _itemCache = Nothing
+        _postCache = Nothing
         _statuses.FilterAll()
         For Each tb As TabPage In ListTab.TabPages
             DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
@@ -4050,14 +4043,14 @@ RETRY2:
                 mk = False
             End If
         End If
+        Dim ids As New List(Of String)
         For Each idx As Integer In _curList.SelectedIndices
             Dim post As PostClass = _statuses.Item(_curTab.Text, idx)
-            Dim ids As New List(Of String)
             If Not ids.Contains(post.Name) Then
                 Dim fc As New FiltersClass
                 ids.Add(post.Name)
                 fc.NameFilter = post.Name
-                fc.SearchBoth = False
+                fc.SearchBoth = True
                 fc.MoveFrom = mv
                 fc.SetMark = mk
                 fc.UseRegex = False
@@ -4065,8 +4058,11 @@ RETRY2:
                 _statuses.Tabs(tabName).Filters.Add(fc)
             End If
         Next
+        _statuses.Tabs(tabName).FilterModified = True
 
         Me.Cursor = Cursors.WaitCursor
+        _itemCache = Nothing
+        _postCache = Nothing
         _statuses.FilterAll()
         For Each tb As TabPage In ListTab.TabPages
             DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
@@ -4163,17 +4159,23 @@ RETRY2:
             Exit Sub
         End If
 
-        _statuses.Tabs(_rclickTabName).ClearIDs()
-        _curList.Refresh()
+        _statuses.ClearTabIds(_rclickTabName)
         If ListTab.SelectedTab.Text = _rclickTabName Then
             _anchorPost = Nothing
             _anchorFlag = False
             _itemCache = Nothing
+            _postCache = Nothing
             _itemCacheIndex = -1
             _curItemIndex = -1
             _curPost = Nothing
             _curList.VirtualListSize = 0
         End If
+        For Each tb As TabPage In ListTab.TabPages
+            If tb.Text = _rclickTabName Then
+                tb.ImageIndex = -1
+                Exit For
+            End If
+        Next
 
         SetMainWindowTitle()
         SetStatusLabel()
