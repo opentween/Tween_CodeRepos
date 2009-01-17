@@ -4172,6 +4172,7 @@ RETRY2:
             _itemCacheIndex = -1
             _curItemIndex = -1
             _curPost = Nothing
+            _curList.VirtualListSize = 0
         End If
 
         SetMainWindowTitle()
