@@ -680,6 +680,22 @@ Public Class TabInformations
     Public Function GetIndex(ByVal TabName As String, ByVal Id As Long) As Integer
         Return _tabs(TabName).GetIndex(Id)
     End Function
+
+    Public Sub ClearTabIds(ByVal TabName As String)
+        '不要なPostを削除
+        For Each Id As Long In _tabs(TabName).BackupIds
+            Dim Hit As Boolean = False
+            For Each tb As TabClass In _tabs.Values
+                If tb.Contains(Id) Then
+                    Hit = True
+                    Exit For
+                End If
+            Next
+            If Not Hit Then _statuses.Remove(Id)
+        Next
+        '指定タブをクリア
+        _tabs(TabName).ClearIDs()
+    End Sub
 End Class
 
 Public Class TabClass
