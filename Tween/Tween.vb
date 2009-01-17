@@ -1950,7 +1950,9 @@ Public Class TweenMain
                     Else
                         tb.ImageIndex = 0
                     End If
-                    DirectCast(tb.Controls(0), DetailsListView).Font = _fntReaded
+                    If tb.Controls.Count <> 0 Then
+                        DirectCast(tb.Controls(0), DetailsListView).Font = _fntReaded
+                    End If
                 Next
 
                 SetMainWindowTitle()
@@ -2989,20 +2991,6 @@ RETRY2:
         For Each idx As Integer In _curList.SelectedIndices
             Dim post As PostClass = _statuses.Item(_curTab.Text, idx)
             sb.AppendFormat("{0}:{1} [http://twitter.com/{0}/statuses/{2}]{3}", post.Name, post.Data, post.Id, Environment.NewLine)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         Next
         If sb.Length > 0 Then
             clstr = sb.ToString()
@@ -3016,20 +3004,6 @@ RETRY2:
         For Each idx As Integer In _curList.SelectedIndices
             Dim post As PostClass = _statuses.Item(_curTab.Text, idx)
             sb.AppendFormat("http://twitter.com/{0}/statuses/{1}{2}", post.Name, post.Id, Environment.NewLine)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         Next
         If sb.Length > 0 Then
             clstr = sb.ToString()
@@ -3334,23 +3308,27 @@ RETRY2:
                 _section.OutputzKey = SettingDialog.OutputzKey
                 _section.OutputzUrlmode = SettingDialog.OutputzUrlmode
 
-                _section.DisplayIndex1 = _curList.Columns(0).DisplayIndex
-                'If _iconCol = False Then
-                _section.DisplayIndex2 = _curList.Columns(1).DisplayIndex
-                _section.DisplayIndex3 = _curList.Columns(2).DisplayIndex
-                _section.DisplayIndex4 = _curList.Columns(3).DisplayIndex
-                _section.DisplayIndex5 = _curList.Columns(4).DisplayIndex
-                _section.DisplayIndex6 = _curList.Columns(5).DisplayIndex
-                _section.DisplayIndex7 = _curList.Columns(6).DisplayIndex
-                _section.DisplayIndex8 = _curList.Columns(7).DisplayIndex
-                _section.Width1 = _curList.Columns(0).Width
-                _section.Width2 = _curList.Columns(1).Width
-                _section.Width3 = _curList.Columns(2).Width
-                _section.Width4 = _curList.Columns(3).Width
-                _section.Width5 = _curList.Columns(4).Width
-                _section.Width6 = _curList.Columns(5).Width
-                _section.Width7 = _curList.Columns(6).Width
-                _section.Width8 = _curList.Columns(7).Width
+                Try
+                    _section.DisplayIndex1 = _curList.Columns(0).DisplayIndex
+                    'If _iconCol = False Then
+                    _section.DisplayIndex2 = _curList.Columns(1).DisplayIndex
+                    _section.DisplayIndex3 = _curList.Columns(2).DisplayIndex
+                    _section.DisplayIndex4 = _curList.Columns(3).DisplayIndex
+                    _section.DisplayIndex5 = _curList.Columns(4).DisplayIndex
+                    _section.DisplayIndex6 = _curList.Columns(5).DisplayIndex
+                    _section.DisplayIndex7 = _curList.Columns(6).DisplayIndex
+                    _section.DisplayIndex8 = _curList.Columns(7).DisplayIndex
+                    _section.Width1 = _curList.Columns(0).Width
+                    _section.Width2 = _curList.Columns(1).Width
+                    _section.Width3 = _curList.Columns(2).Width
+                    _section.Width4 = _curList.Columns(3).Width
+                    _section.Width5 = _curList.Columns(4).Width
+                    _section.Width6 = _curList.Columns(5).Width
+                    _section.Width7 = _curList.Columns(6).Width
+                    _section.Width8 = _curList.Columns(7).Width
+                Catch ex As ArgumentOutOfRangeException
+
+                End Try
                 'End If
                 '_section.SortColumn = listViewItemSorter.Column
                 _section.SortOrder = _statuses.SortOrder
