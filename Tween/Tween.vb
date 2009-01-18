@@ -1016,7 +1016,10 @@ Public Class TweenMain
     End Function
 
     Private Sub PostButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PostButton.Click
-        If StatusText.Text.Trim.Length = 0 Then Exit Sub
+        If StatusText.Text.Trim.Length = 0 Then
+            DoRefresh()
+            Exit Sub
+        End If
 
         _history(_history.Count - 1) = StatusText.Text.Trim
 
