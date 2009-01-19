@@ -709,6 +709,7 @@ Public Class TabClass
     Private _ids As List(Of Long)
     Private _filterMod As Boolean
     Private _tmpIds As List(Of TempolaryId)
+    'Private rwLock As New System.Threading.ReaderWriterLock()   'フィルタ用
 
     Private Structure TempolaryId
         Public Id As Long
@@ -754,6 +755,9 @@ Public Class TabClass
                                 ByVal Name As String, _
                                 ByVal Body As String, _
                                 ByVal OrgData As String) As HITRESULT
+        'Try
+        '    rwLock.AcquireReaderLock(System.Threading.Timeout.Infinite) '読み取りロック取得
+
         Dim rslt As HITRESULT = HITRESULT.None
         '全フィルタ評価（優先順位あり）
         For Each ft As FiltersClass In _filters
@@ -776,6 +780,10 @@ Public Class TabClass
         'Me.Add(ID, Read)
 
         Return rslt 'マーク付けは呼び出し元で行うこと
+
+        'Finally
+        '    rwLock.ReleaseReaderLock()
+        'End Try
     End Function
 
     Public Sub AddSubmit()
@@ -848,14 +856,59 @@ Public Class TabClass
         End Get
     End Property
 
-    Public Property Filters() As List(Of FiltersClass)
-        Get
-            Return _filters
-        End Get
-        Set(ByVal value As List(Of FiltersClass))
-            _filters = value
-        End Set
-    End Property
+    'Public Property Filters() As List(Of FiltersClass)
+    '    Get
+    '        Return _filters
+    '    End Get
+    '    Set(ByVal value As List(Of FiltersClass))
+    '        _filters = value
+    '    End Set
+    'End Property
+
+    Public Function GetFilters() As FiltersClass()
+        'Try
+        '    rwLock.AcquireReaderLock(System.Threading.Timeout.Infinite) '読み取りロック取得
+        Return _filters.ToArray()
+        'Finally
+        '    rwLock.ReleaseReaderLock()
+        'End Try
+    End Function
+
+    Public Sub RemoveFilter(ByVal filter As FiltersClass)
+        'Try
+        '    rwLock.AcquireWriterLock(System.Threading.Timeout.Infinite) '書き込みロック取得
+        _filters.Remove(filter)
+        _filterMod = True
+        'Finally
+        '    rwLock.ReleaseWriterLock()
+        'End Try
+    End Sub
+
+    Public Sub AddFilter(ByVal filter As FiltersClass)
+        'Try
+        '    rwLock.AcquireWriterLock(System.Threading.Timeout.Infinite) '書き込みロック取得
+        _filters.Add(filter)
+        _filterMod = True
+        'Finally
+        '    rwLock.ReleaseWriterLock()
+        'End Try
+    End Sub
+
+    Public Sub EditFilter(ByVal original As FiltersClass, ByVal modified As FiltersClass)
+        'Try
+        '    rwLock.AcquireWriterLock(System.Threading.Timeout.Infinite) '書き込みロック取得
+        original.BodyFilter = modified.BodyFilter
+        original.MoveFrom = modified.MoveFrom
+        original.NameFilter = modified.NameFilter
+        original.SearchBoth = modified.SearchBoth
+        original.SearchUrl = modified.SearchUrl
+        original.SetMark = modified.SetMark
+        original.UseRegex = modified.UseRegex
+        _filterMod = True
+        'Finally
+        '    rwLock.ReleaseWriterLock()
+        'End Try
+    End Sub
 
     Public Function Contains(ByVal ID As Long) As Boolean
         Return _ids.Contains(ID)
@@ -1034,11 +1087,9 @@ Public Class FiltersClass
         End Set
     End Property
 
-    Public ReadOnly Property Summary() As String
-        Get
-            Return MakeSummary()
-        End Get
-    End Property
+    Public Overrides Function ToString() As String
+        Return MakeSummary()
+    End Function
 
     Public Function IsHit(ByVal Name As String, ByVal Body As String, ByVal OrgData As String) As HITRESULT
         Dim bHit As Boolean = True
