@@ -3337,6 +3337,7 @@ RETRY2:
                     _section.Width7 = _curList.Columns(6).Width
                     _section.Width8 = _curList.Columns(7).Width
                 Catch ex As ArgumentOutOfRangeException
+                Catch ex As NullReferenceException
 
                 End Try
                 'End If
