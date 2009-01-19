@@ -1960,7 +1960,7 @@ Public Class TweenMain
                     Else
                         tb.ImageIndex = 0
                     End If
-                    If tb.Controls.Count <> 0 Then
+                    If tb.Controls IsNot Nothing AndAlso tb.Controls.Count > 0 Then
                         DirectCast(tb.Controls(0), DetailsListView).Font = _fntReaded
                     End If
                 Next
@@ -2102,28 +2102,41 @@ Public Class TweenMain
 
         _listCustom.SmallImageList = TIconSmallList
         '_listCustom.ListViewItemSorter = listViewItemSorter
+        Dim dispOrder(8) As Integer
         If Not startup Then
-            _listCustom.Columns(0).Width = _curList.Columns(0).Width
-            _listCustom.Columns(0).DisplayIndex = _curList.Columns(0).DisplayIndex
-            'If Not _iconCol Then
-            _listCustom.Columns(1).Width = _curList.Columns(1).Width
-            _listCustom.Columns(2).Width = _curList.Columns(2).Width
-            _listCustom.Columns(3).Width = _curList.Columns(3).Width
-            _listCustom.Columns(4).Width = _curList.Columns(4).Width
-            _listCustom.Columns(5).Width = _curList.Columns(5).Width
-            _listCustom.Columns(6).Width = _curList.Columns(6).Width
-            _listCustom.Columns(7).Width = _curList.Columns(7).Width
-            _listCustom.Columns(1).DisplayIndex = _curList.Columns(1).DisplayIndex
-            _listCustom.Columns(2).DisplayIndex = _curList.Columns(2).DisplayIndex
-            _listCustom.Columns(3).DisplayIndex = _curList.Columns(3).DisplayIndex
-            _listCustom.Columns(4).DisplayIndex = _curList.Columns(4).DisplayIndex
-            _listCustom.Columns(5).DisplayIndex = _curList.Columns(5).DisplayIndex
-            _listCustom.Columns(6).DisplayIndex = _curList.Columns(6).DisplayIndex
-            _listCustom.Columns(7).DisplayIndex = _curList.Columns(7).DisplayIndex
-            'End If
+            For i As Integer = 0 To 7
+                For j As Integer = 0 To 7
+                    If _curList.Columns(j).DisplayIndex = i Then
+                        dispOrder(i) = j
+                        Exit For
+                    End If
+                Next
+            Next
+            For i As Integer = 0 To 7
+                _listCustom.Columns(i).Width = _curList.Columns(i).Width
+                _listCustom.Columns(dispOrder(i)).DisplayIndex = i
+            Next
         Else
+            For i As Integer = 0 To 7
+                If _section.DisplayIndex1 = i Then
+                    dispOrder(i) = 0
+                ElseIf _section.DisplayIndex2 = i Then
+                    dispOrder(i) = 1
+                ElseIf _section.DisplayIndex3 = i Then
+                    dispOrder(i) = 2
+                ElseIf _section.DisplayIndex4 = i Then
+                    dispOrder(i) = 3
+                ElseIf _section.DisplayIndex5 = i Then
+                    dispOrder(i) = 4
+                ElseIf _section.DisplayIndex6 = i Then
+                    dispOrder(i) = 5
+                ElseIf _section.DisplayIndex7 = i Then
+                    dispOrder(i) = 6
+                ElseIf _section.DisplayIndex8 = i Then
+                    dispOrder(i) = 7
+                End If
+            Next
             _listCustom.Columns(0).Width = _section.Width1
-            'If Not _iconCol Then
             _listCustom.Columns(1).Width = _section.Width2
             _listCustom.Columns(2).Width = _section.Width3
             _listCustom.Columns(3).Width = _section.Width4
@@ -2131,15 +2144,9 @@ Public Class TweenMain
             _listCustom.Columns(5).Width = _section.Width6
             _listCustom.Columns(6).Width = _section.Width7
             _listCustom.Columns(7).Width = _section.Width8
-            _listCustom.Columns(0).DisplayIndex = _section.DisplayIndex1
-            _listCustom.Columns(1).DisplayIndex = _section.DisplayIndex2
-            _listCustom.Columns(2).DisplayIndex = _section.DisplayIndex3
-            _listCustom.Columns(3).DisplayIndex = _section.DisplayIndex4
-            _listCustom.Columns(4).DisplayIndex = _section.DisplayIndex5
-            _listCustom.Columns(5).DisplayIndex = _section.DisplayIndex6
-            _listCustom.Columns(6).DisplayIndex = _section.DisplayIndex7
-            _listCustom.Columns(7).DisplayIndex = _section.DisplayIndex8
-            'End If
+            For i As Integer = 0 To 7
+                _listCustom.Columns(dispOrder(i)).DisplayIndex = i
+            Next
         End If
 
         _tabPage.ResumeLayout(False)
@@ -2283,12 +2290,22 @@ Public Class TweenMain
         '削除などで見つからない場合は処理せず
         If _curList Is Nothing Then Exit Sub
 
+        Dim dispOrder(8) As Integer
+        For i As Integer = 0 To 7
+            For j As Integer = 0 To 7
+                If _curList.Columns(j).DisplayIndex = i Then
+                    dispOrder(i) = j
+                    Exit For
+                End If
+            Next
+        Next
+
         '列幅、列並びを他のタブに設定
         For Each tb As TabPage In ListTab.TabPages
             If Not tb.Equals(_curTab) Then
                 Dim lst As DetailsListView = DirectCast(tb.Controls(0), DetailsListView)
                 For i As Integer = 0 To lst.Columns.Count - 1
-                    lst.Columns(i).DisplayIndex = _curList.Columns(i).DisplayIndex
+                    lst.Columns(dispOrder(i)).DisplayIndex = i
                     lst.Columns(i).Width = _curList.Columns(i).Width
                 Next
             End If
@@ -3728,15 +3745,12 @@ RETRY2:
     Private Sub UreadManageMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UreadManageMenuItem.Click
         If _rclickTabName = "" Then Exit Sub
 
-        Dim tb As TabClass = _statuses.Tabs(_rclickTabName)
-
-        tb.UnreadManage = UreadManageMenuItem.Checked
-        For Each tp As TabPage In ListTab.TabPages
-            If tp.Text = _rclickTabName Then
-                DirectCast(tp.Controls(0), DetailsListView).Refresh()
-                Exit For
-            End If
-        Next
+        _statuses.SetTabUnreadManage(_rclickTabName, UreadManageMenuItem.Checked)
+        If _curTab.Text = _rclickTabName Then
+            _itemCache = Nothing
+            _postCache = Nothing
+            _curList.Refresh()
+        End If
     End Sub
 
     Private Sub NotifyDispMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles NotifyDispMenuItem.Click
