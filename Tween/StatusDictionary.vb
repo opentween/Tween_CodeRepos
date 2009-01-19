@@ -596,11 +596,28 @@ Public Class TabInformations
     End Property
 
     Public Sub SetUnreadManage(ByVal Manage As Boolean)
-        If Not Manage Then
+        If Manage Then
             For Each key As String In _tabs.Keys
-                If _tabs(key).UnreadManage AndAlso _tabs(key).UnreadCount > 0 Then
-                    _tabs(key).UnreadCount = 0
-                    _tabs(key).OldestUnreadId = -1
+                Dim tb As TabClass = _tabs(key)
+                If tb.UnreadManage Then
+                    Dim cnt As Integer = 0
+                    Dim oldest As Long = Long.MaxValue
+                    For Each id As Long In tb.BackupIds
+                        If Not _statuses(id).IsRead Then
+                            cnt += 1
+                            If oldest > id Then oldest = id
+                        End If
+                    Next
+                    tb.OldestUnreadId = oldest
+                    tb.UnreadCount = cnt
+                End If
+            Next
+        Else
+            For Each key As String In _tabs.Keys
+                Dim tb As TabClass = _tabs(key)
+                If tb.UnreadManage AndAlso tb.UnreadCount > 0 Then
+                    tb.UnreadCount = 0
+                    tb.OldestUnreadId = -1
                 End If
             Next
         End If
@@ -695,6 +712,26 @@ Public Class TabInformations
         Next
         '指定タブをクリア
         _tabs(TabName).ClearIDs()
+    End Sub
+
+    Public Sub SetTabUnreadManage(ByVal TabName As String, ByVal Manage As Boolean)
+        Dim tb As TabClass = _tabs(TabName)
+        If Manage Then
+            Dim cnt As Integer = 0
+            Dim oldest As Long = Long.MaxValue
+            For Each id As Long In tb.BackupIds
+                If Not _statuses(id).IsRead Then
+                    cnt += 1
+                    If oldest > id Then oldest = id
+                End If
+            Next
+            tb.OldestUnreadId = oldest
+            tb.UnreadCount = cnt
+        Else
+            tb.OldestUnreadId = -1
+            tb.UnreadCount = 0
+        End If
+        tb.UnreadManage = Manage
     End Sub
 End Class
 
