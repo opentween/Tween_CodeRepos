@@ -531,7 +531,11 @@ Partial Public Class Twitter
                     links.Add(post.Id)
 
                     post.IsMe = post.Name.Equals(_uid, StringComparison.OrdinalIgnoreCase)
-                    post.IsOwl = Not follower.Contains(post.Name.ToLower())
+                    If follower.Count > 1 Then
+                        post.IsOwl = Not follower.Contains(post.Name.ToLower())
+                    Else
+                        post.IsOwl = False
+                    End If
                     post.IsRead = read
 
                     _statuses.AddPost(post)
