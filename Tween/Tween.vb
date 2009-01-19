@@ -670,7 +670,7 @@ Public Class TweenMain
                             ' ArgumentExceptionが発生した場合は該当フィルタを無視
                         End Try
                     Next
-                    tb.Filters.Add(New FiltersClass(flt.IdFilter, _
+                    tb.AddFilter(New FiltersClass(flt.IdFilter, _
                             body, _
                             flt.SearchBoth, _
                             flt.MoveFrom, _
@@ -775,6 +775,56 @@ Public Class TweenMain
         Dim soundFile As String = ""
         Dim addCount As Integer = 0
 
+        'スクロール制御準備
+        Dim smode As Integer = -1    '-1:制御しない,-2:最新へ,その他:topitem使用
+        Dim topId As Long = -1
+        Dim befCnt As Integer = _curList.VirtualListSize
+        If _curList.VirtualListSize > 0 Then
+            If _statuses.SortMode = IdComparerClass.ComparerMode.Id Then
+                If _statuses.SortOrder = SortOrder.Ascending Then
+                    'Id昇順
+                    If ListLockMenuItem.Checked Then
+                        '制御しない
+                        smode = -1
+                    Else
+                        '最下行が表示されていたら、最下行へ強制スクロール。最下行が表示されていなかったら制御しない
+                        Dim _item As ListViewItem
+                        _item = _curList.GetItemAt(0, _curList.ClientSize.Height - 1)   '一番下
+                        If _item Is Nothing Then _item = _curList.Items(_curList.Items.Count - 1)
+                        If _item.Index = _curList.Items.Count - 1 Then
+                            smode = -2
+                        Else
+                            smode = -1
+                        End If
+                    End If
+                Else
+                    'Id降順
+                    If ListLockMenuItem.Checked Then
+                        '現在表示位置へ強制スクロール
+                        topId = _statuses.GetId(_curTab.Text, _curList.TopItem.Index)
+                        smode = 0
+                    Else
+                        '最上行が表示されていたら、制御しない。最上行が表示されていなかったら、現在表示位置へ強制スクロール
+                        Dim _item As ListViewItem
+                        _item = _curList.GetItemAt(0, 25)     '一番上
+                        If _item Is Nothing Then _item = _curList.Items(0)
+                        If _item.Index = 0 Then
+                            smode = -1
+                        Else
+                            topId = _statuses.GetId(_curTab.Text, _curList.TopItem.Index)
+                            smode = 0
+                        End If
+                    End If
+                End If
+            Else
+                '現在表示位置へ強制スクロール
+                topId = _statuses.GetId(_curTab.Text, _curList.TopItem.Index)
+                smode = 0
+            End If
+        Else
+            smode = -1
+        End If
+
         '現在の選択状態を退避
         Dim selId As New Dictionary(Of String, Long())
         Dim focusedId As New Dictionary(Of String, Long)
@@ -811,49 +861,21 @@ Public Class TweenMain
             End If
         Next
 
-
-        'スクロール制御
-        If Not ListLockMenuItem.Checked Then
-            Dim topItem As ListViewItem
-
-            'スクロール制御
-            If _curList.Items.Count > 0 Then
-
-                Dim _item As ListViewItem
-                If _statuses.SortOrder = SortOrder.Ascending Then
-                    '日時昇順
-                    _item = _curList.GetItemAt(0, _curList.ClientSize.Height - 1)   '一番下
-                    If _item Is Nothing Then _item = _curList.Items(_curList.Items.Count - 1)
-                    If _item.Index = _curList.Items.Count - 1 Then
-                        topItem = Nothing   'スクロールする
-                    Else
-                        topItem = _curList.TopItem
+        'スクロール制御後処理
+        If befCnt <> _curList.VirtualListSize Then
+            Select Case smode
+                Case -2
+                    '最下行へ
+                    _curList.EnsureVisible(_curList.VirtualListSize - 1)
+                Case -1
+                    '制御しない
+                Case Else
+                    '表示位置キープ
+                    If _curList.VirtualListSize > 0 Then
+                        _curList.EnsureVisible(_curList.VirtualListSize - 1)
+                        _curList.EnsureVisible(_statuses.GetIndex(_curTab.Text, topId))
                     End If
-                Else
-                    '日時降順
-                    _item = _curList.GetItemAt(0, 25)     '一番上
-                    If _item Is Nothing Then _item = _curList.Items(0)
-                    If _item.Index = 0 Then
-                        topItem = Nothing   'スクロールする
-                    Else
-                        topItem = _curList.TopItem
-                    End If
-                End If
-
-            Else
-                topItem = Nothing
-            End If
-
-            If topItem IsNot Nothing Then
-                If _curList.Items.Count > 0 AndAlso topItem.Index > -1 Then
-                    _curList.EnsureVisible(_curList.Items.Count - 1)
-                    _curList.EnsureVisible(topItem.Index)
-                End If
-            Else
-                If _statuses.SortOrder = SortOrder.Ascending AndAlso _curList.Items.Count > 0 Then
-                    _curList.EnsureVisible(_curList.Items.Count - 1)
-                End If
-            End If
+            End Select
         End If
 
         '新着通知
@@ -1770,6 +1792,8 @@ Public Class TweenMain
 
         _itemCache = Nothing    'キャッシュ破棄
         _postCache = Nothing
+        _curPost = Nothing
+        _curItemIndex = -1
         For Each tb As TabPage In ListTab.TabPages
             DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
             If _statuses.Tabs(tb.Text).UnreadCount = 0 AndAlso tb.ImageIndex = 0 Then tb.ImageIndex = -1
@@ -2806,7 +2830,7 @@ RETRY2:
 
     Private Sub DispSelectedPost()
 
-        If _curList.SelectedIndices.Count = 0 Then Exit Sub
+        If _curList.SelectedIndices.Count = 0 OrElse _curPost Is Nothing Then Exit Sub
 
         Dim dTxt As String = detailHtmlFormat + _curPost.OriginalData + detailHtmlFormat4
         NameLabel.Text = _curPost.Name + "/" + _curPost.Nickname
@@ -3033,7 +3057,7 @@ RETRY2:
     End Sub
 
     Private Sub GoPost(ByVal forward As Boolean)
-        If _curList.SelectedIndices.Count = 0 Then Exit Sub
+        If _curList.SelectedIndices.Count = 0 OrElse _curPost Is Nothing Then Exit Sub
         Dim fIdx As Integer = 0
         Dim toIdx As Integer = 0
         Dim stp As Integer = 1
@@ -3344,7 +3368,7 @@ RETRY2:
                         _section.ListElement(tabName).Notify = tab.Notify
                         _section.ListElement(tabName).SoundFile = tab.SoundFile
                         _section.ListElement(tabName).UnreadManage = tab.UnreadManage
-                        For Each fc As FiltersClass In tab.Filters
+                        For Each fc As FiltersClass In tab.GetFilters
                             Dim bf As String = ""
                             For Each bfs As String In fc.BodyFilter
                                 bf += " " + bfs
@@ -3544,7 +3568,7 @@ RETRY2:
 
         If _curList.SelectedIndices.Count > 0 Then
             ' アイテムが1件以上選択されている
-            If _curList.SelectedIndices.Count = 1 AndAlso Not isAll Then
+            If _curList.SelectedIndices.Count = 1 AndAlso Not isAll AndAlso _curPost IsNot Nothing Then
                 ' 単独ユーザー宛リプライまたはDM
                 If (ListTab.SelectedTab.Text = "Direct" AndAlso isAuto) OrElse (Not isAuto AndAlso Not isReply) Then
                     ' ダイレクトメッセージ
@@ -3745,6 +3769,8 @@ RETRY2:
         Me.Cursor = Cursors.WaitCursor
         _itemCache = Nothing
         _postCache = Nothing
+        _curPost = Nothing
+        _curItemIndex = -1
         _statuses.FilterAll()
         For Each tb As TabPage In ListTab.TabPages
             DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
@@ -3821,6 +3847,8 @@ RETRY2:
         Me.Cursor = Cursors.WaitCursor
         _itemCache = Nothing
         _postCache = Nothing
+        _curPost = Nothing
+        _curItemIndex = -1
         _statuses.FilterAll()
         For Each tb As TabPage In ListTab.TabPages
             DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
@@ -4058,14 +4086,15 @@ RETRY2:
                 fc.SetMark = mk
                 fc.UseRegex = False
                 fc.SearchUrl = False
-                _statuses.Tabs(tabName).Filters.Add(fc)
+                _statuses.Tabs(tabName).AddFilter(fc)
             End If
         Next
-        _statuses.Tabs(tabName).FilterModified = True
 
         Me.Cursor = Cursors.WaitCursor
         _itemCache = Nothing
         _postCache = Nothing
+        _curPost = Nothing
+        _curItemIndex = -1
         _statuses.FilterAll()
         For Each tb As TabPage In ListTab.TabPages
             DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
@@ -4316,14 +4345,14 @@ RETRY2:
     End Sub
 
     Private Sub RepliedStatusOpenMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RepliedStatusOpenMenuItem.Click
-        If _curPost.InReplyToUser IsNot Nothing AndAlso _curPost.InReplyToId > 0 Then
+        If _curPost IsNot Nothing AndAlso _curPost.InReplyToUser IsNot Nothing AndAlso _curPost.InReplyToId > 0 Then
             OpenUriAsync("http://twitter.com/" + _curPost.InReplyToUser + "/statuses/" + _curPost.InReplyToId.ToString())
         End If
     End Sub
 
     Private Sub ContextMenuStrip3_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuStrip3.Opening
         '発言詳細のアイコン右クリック時のメニュー制御
-        If _curList.SelectedIndices.Count > 0 Then
+        If _curList.SelectedIndices.Count > 0 AndAlso _curPost IsNot Nothing Then
             Dim name As String = _curPost.ImageUrl
             If name.Length > 0 Then
                 name = IO.Path.GetFileNameWithoutExtension(name.Substring(name.LastIndexOf("/"c)))
@@ -4348,11 +4377,13 @@ RETRY2:
     End Sub
 
     Private Sub IconNameToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles IconNameToolStripMenuItem.Click
+        If _curPost Is Nothing Then Exit Sub
         Dim name As String = _curPost.ImageUrl
         OpenUriAsync(name.Remove(name.LastIndexOf("_normal"), 7)) ' "_normal".Length
     End Sub
 
     Private Sub SaveOriginalSizeIconPictureToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
+        If _curPost Is Nothing Then Exit Sub
         Dim name As String = _curPost.ImageUrl
         name = IO.Path.GetFileNameWithoutExtension(name.Substring(name.LastIndexOf("/"c)))
 
@@ -4364,6 +4395,7 @@ RETRY2:
     End Sub
 
     Private Sub SaveIconPictureToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SaveIconPictureToolStripMenuItem.Click
+        If _curPost Is Nothing Then Exit Sub
         Dim name As String = _curPost.ImageUrl
 
         Me.SaveFileDialog1.FileName = name.Substring(name.LastIndexOf("/"c) + 1)

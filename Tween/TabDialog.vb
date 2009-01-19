@@ -38,9 +38,7 @@ Public Class FilterDialog
         If ComboTabs.Items.Count = 0 Then Exit Sub
 
         ListFilters.Items.Clear()
-        For Each fc As FiltersClass In _sts.Tabs(tabName).Filters
-            ListFilters.Items.Add(fc.Summary)
-        Next
+        ListFilters.Items.AddRange(_sts.Tabs(tabName).GetFilters())
         If ListFilters.Items.Count > 0 Then ListFilters.SelectedIndex = 0
 
         If _directAdd Then Exit Sub
@@ -90,28 +88,6 @@ Public Class FilterDialog
         _directAdd = True
     End Sub
 
-    'Public Sub AddNewIDFilter(ByVal id As String, ByVal TabText As String, ByVal move As Boolean, ByVal mark As Boolean)
-    '    For Each ts As TabStructure In _tabs
-    '        If ts.tabName = TabText Then
-    '            Dim ft As FilterClass
-
-    '            ft = New FilterClass
-
-    '            ft.moveFrom = move
-    '            ft.SetMark = mark
-
-    '            ft.IDFilter = id
-    '            ft.SearchBoth = True
-    '            ft.UseRegex = False
-    '            ft.SearchURL = False
-
-    '            ts.filters.Add(ft)
-
-    '            Exit For
-    '        End If
-    '    Next
-    'End Sub
-
     Private Sub ButtonNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonNew.Click
         ButtonNew.Enabled = False
         ButtonEdit.Enabled = False
@@ -159,9 +135,8 @@ Public Class FilterDialog
 
         Dim i As Integer = ListFilters.SelectedIndex
 
+        _sts.Tabs(ComboTabs.SelectedItem.ToString()).RemoveFilter(DirectCast(ListFilters.SelectedItem, FiltersClass))
         ListFilters.Items.RemoveAt(i)
-        _sts.Tabs(ComboTabs.SelectedItem.ToString()).Filters.RemoveAt(i)
-        _sts.Tabs(ComboTabs.SelectedItem.ToString()).FilterModified = True
     End Sub
 
     Private Sub ButtonCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonCancel.Click
@@ -184,7 +159,7 @@ Public Class FilterDialog
     Private Sub ShowDetail()
 
         If ListFilters.SelectedIndex > -1 Then
-            Dim fc As FiltersClass = _sts.Tabs(ComboTabs.SelectedItem.ToString()).Filters(ListFilters.SelectedIndex)
+            Dim fc As FiltersClass = DirectCast(ListFilters.SelectedItem, FiltersClass)
             If fc.SearchBoth Then
                 RadioAND.Checked = True
                 RadioPLUS.Checked = False
@@ -281,14 +256,9 @@ Public Class FilterDialog
         Dim i As Integer = ListFilters.SelectedIndex
         Dim ft As FiltersClass
 
-        If _mode = EDITMODE.AddNew Then
-            ft = New FiltersClass()
-        Else
-            ft = _sts.Tabs(ComboTabs.SelectedItem.ToString()).Filters(i)
-            ft.BodyFilter.Clear()
-        End If
+        ft = New FiltersClass()
 
-        ft.moveFrom = OptMove.Checked
+        ft.MoveFrom = OptMove.Checked
         ft.SetMark = OptMark.Checked
 
         If RadioAND.Checked Then
@@ -310,7 +280,9 @@ Public Class FilterDialog
         ft.SearchURL = CheckURL.Checked
 
         If _mode = EDITMODE.AddNew Then
-            _sts.Tabs(ComboTabs.SelectedItem.ToString()).Filters.Add(ft)
+            _sts.Tabs(ComboTabs.SelectedItem.ToString()).AddFilter(ft)
+        Else
+            _sts.Tabs(ComboTabs.SelectedItem.ToString()).EditFilter(DirectCast(ListFilters.SelectedItem, FiltersClass), ft)
         End If
 
         SetFilters(ComboTabs.SelectedItem.ToString)
@@ -320,14 +292,7 @@ Public Class FilterDialog
             ListFilters.SelectedIndex = i
         End If
         _mode = EDITMODE.None
-        'ComboTabs.Enabled = True
-        'ListFilters.Enabled = True
-        'ButtonNew.Enabled = True
-        'ButtonEdit.Enabled = True
-        'ButtonDelete.Enabled = True
-        'ButtonClose.Enabled = True
 
-        _sts.Tabs(ComboTabs.SelectedItem.ToString()).FilterModified = True
 
         If _directAdd Then
             Me.Close()
@@ -366,17 +331,17 @@ Public Class FilterDialog
     End Sub
 
     Private Sub ListFilters_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ListFilters.DoubleClick
-        If ListFilters.SelectedItem Is Nothing Then
-            Exit Sub
-        End If
+        'If ListFilters.SelectedItem Is Nothing Then
+        '    Exit Sub
+        'End If
 
-        If ListFilters.IndexFromPoint(ListFilters.PointToClient(Control.MousePosition)) = ListBox.NoMatches Then
-            Exit Sub
-        End If
+        'If ListFilters.IndexFromPoint(ListFilters.PointToClient(Control.MousePosition)) = ListBox.NoMatches Then
+        '    Exit Sub
+        'End If
 
-        If ListFilters.Items(ListFilters.IndexFromPoint(ListFilters.PointToClient(Control.MousePosition))) Is Nothing Then
-            Exit Sub
-        End If
+        'If ListFilters.Items(ListFilters.IndexFromPoint(ListFilters.PointToClient(Control.MousePosition))) Is Nothing Then
+        '    Exit Sub
+        'End If
         ButtonEdit_Click(sender, e)
     End Sub
 
