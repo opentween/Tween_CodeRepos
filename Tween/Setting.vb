@@ -259,9 +259,9 @@ Public Class Setting
             _MyOneWayLove = OneWayLv.Checked
 
             '_fntUnread = lblListFont.Font     '未使用
-            _clUnread = lblUnRead.ForeColor
+            '_clUnread = lblUnRead.ForeColor
             _fntReaded = lblListFont.Font     'リストフォントとして使用
-            _clReaded = lblReaded.ForeColor
+            '_clReaded = lblReaded.ForeColor
             _clFav = lblFav.ForeColor
             _clOWL = lblOWL.ForeColor
             _fntDetail = lblDetail.Font
@@ -391,10 +391,10 @@ Public Class Setting
         OneWayLv.Checked = _MyOneWayLove
 
         lblListFont.Font = _fntReaded
-        lblUnRead.Font = _fntReaded
-        lblUnRead.ForeColor = _clUnread
-        lblReaded.Font = _fntReaded
-        lblReaded.ForeColor = _clReaded
+        'lblUnRead.Font = _fntReaded
+        'lblUnRead.ForeColor = _clUnread
+        'lblReaded.Font = _fntReaded
+        'lblReaded.ForeColor = _clReaded
         lblFav.ForeColor = _clFav
         lblOWL.ForeColor = _clOWL
         lblDetail.Font = _fntDetail
@@ -677,7 +677,7 @@ Public Class Setting
 
     End Sub
 
-    Private Sub btnColor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSelf.Click, btnAtSelf.Click, btnTarget.Click, btnAtTarget.Click, btnAtFromTarget.Click, btnFav.Click, btnOWL.Click, btnUnread.Click, btnReaded.Click
+    Private Sub btnColor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSelf.Click, btnAtSelf.Click, btnTarget.Click, btnAtTarget.Click, btnAtFromTarget.Click, btnFav.Click, btnOWL.Click
         Dim Btn As Button = CType(sender, Button)
         Dim rtn As DialogResult
 
@@ -702,9 +702,9 @@ Public Class Setting
             Case "btnOWL"
                 ColorDialog1.Color = lblOWL.ForeColor
             Case "btnUnread"
-                ColorDialog1.Color = lblUnRead.ForeColor
+                'ColorDialog1.Color = lblUnRead.ForeColor
             Case "btnReaded"
-                ColorDialog1.Color = lblReaded.ForeColor
+                'ColorDialog1.Color = lblReaded.ForeColor
         End Select
 
         rtn = ColorDialog1.ShowDialog
@@ -727,9 +727,9 @@ Public Class Setting
             Case "btnOWL"
                 lblOWL.ForeColor = ColorDialog1.Color
             Case "btnUnread"
-                lblUnRead.ForeColor = ColorDialog1.Color
+                'lblUnRead.ForeColor = ColorDialog1.Color
             Case "btnReaded"
-                lblReaded.ForeColor = ColorDialog1.Color
+                'lblReaded.ForeColor = ColorDialog1.Color
         End Select
     End Sub
 
