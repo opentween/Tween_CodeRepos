@@ -491,7 +491,7 @@ Public Class TabInformations
         Return _addCount     '件数
     End Function
 
-    Public Function SubmitUpdate(ByRef soundFile As String, ByVal notifyPosts As List(Of PostClass)) As Integer
+    Public Function SubmitUpdate(ByRef soundFile As String, ByRef notifyPosts As List(Of PostClass)) As Integer
         If _notifyPosts Is Nothing Then Throw New Exception("You must call 'EndUpdate' before to Submit.")
 
         For Each key As String In _tabs.Keys
