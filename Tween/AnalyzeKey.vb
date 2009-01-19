@@ -20,7 +20,7 @@
     Public _parseDateTo As String = """"
     Public _getAuthKey As String = "<input name=""authenticity_token"" value="""
     Public _getAuthKeyTo As String = """"
-    Public _parseStar As String = "<a href=""#"" class="""
+    Public _parseStar As String = "<a class="""
     Public _parseStarTo As String = """"
     Public _parseStarEmpty As String = "non-fav"
     Public _followerList As String = "<select id=""direct_message_user_id"" name=""user[id]""><option value="""" selected=""selected"">"
