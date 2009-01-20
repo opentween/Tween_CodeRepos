@@ -1115,45 +1115,143 @@ Partial Public Class Twitter
         Return ""
     End Function
 
-    Public Function GetFollowers() As String
+    Delegate Function GetFollowersDelegate(ByVal Query As Integer) As String
+    Private _GetFollowersMethodSync As New Object
+
+    Private Function GetFollowersMethod(ByVal Query As Integer) As String
+        Dim resStatus As String = ""
+        Dim resMsg As String = ""
+        Dim sock As MySocket = New MySocket("UTF-8", _uid, _pwd, _proxyType, _proxyAddress, _proxyPort, _proxyUser, _proxyPassword)
+
+        resMsg = DirectCast(sock.GetWebResponse("https://" + _hubServer + _GetFollowers + _pageQry + Query.ToString, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
+        If resStatus.StartsWith("OK") = False Then
+            Return resStatus
+        End If
+
+        Try
+            Using rd As Xml.XmlTextReader = New Xml.XmlTextReader(New System.IO.StringReader(resMsg))
+                Dim lc As Integer = 0
+                rd.Read()
+                While rd.EOF = False
+                    If rd.IsStartElement("screen_name") Then
+                        Dim tmp As String = rd.ReadElementString("screen_name").ToLower()
+                        SyncLock _GetFollowersMethodSync
+                            follower.Add(tmp)
+                        End SyncLock
+                        lc += 1
+                    Else
+                        rd.Read()
+                    End If
+                End While
+            End Using
+        Catch ex As XmlException
+            Return "NG(XmlException)"
+        End Try
+
+        Return ""
+    End Function
+
+    Private _cntrwl As New Threading.ReaderWriterLock
+    Dim _threadCnt As Integer = 0
+
+    Private Property ThreadCount() As Integer
+        Get
+            Dim cnt As Integer
+            _cntrwl.AcquireReaderLock(System.Threading.Timeout.Infinite)
+            cnt = _threadCnt
+            _cntrwl.ReleaseReaderLock()
+            Return cnt
+        End Get
+        Set(ByVal value As Integer)
+            _cntrwl.AcquireWriterLock(System.Threading.Timeout.Infinite)
+            _threadCnt = value
+            _cntrwl.ReleaseWriterLock()
+        End Set
+    End Property
+
+    Private _errrwl As New Threading.ReaderWriterLock
+    Dim _threadErr As Boolean = False
+    Private Property IsThreadError() As Boolean
+        Get
+            Dim err As Boolean
+            _errrwl.AcquireReaderLock(System.Threading.Timeout.Infinite)
+            err = _threadErr
+            _errrwl.ReleaseReaderLock()
+            Return err
+        End Get
+        Set(ByVal value As Boolean)
+            _errrwl.AcquireWriterLock(System.Threading.Timeout.Infinite)
+            _threadErr = value
+            _errrwl.ReleaseWriterLock()
+        End Set
+    End Property
+
+    Private Sub GetFollowersCallback(ByVal ar As IAsyncResult)
+        Dim dlgt As GetFollowersDelegate = DirectCast(ar.AsyncState, GetFollowersDelegate)
+        If ThreadCount > 0 Then
+            ThreadCount -= 1
+        End If
+        If Not dlgt.EndInvoke(ar).Equals("") AndAlso Not IsThreadError Then
+            IsThreadError = True
+        End If
+    End Sub
+
+    Private Function doGetFollowers() As String
+#If DEBUG Then
+        Dim sw As New System.Diagnostics.Stopwatch
+        sw.Start()
+#End If
         Dim resStatus As String = ""
         Dim resMsg As String = ""
         Dim i As Integer = 0
+        Dim DelegateInstance As GetFollowersDelegate = New GetFollowersDelegate(AddressOf GetFollowersMethod)
+
+        Dim threadMax As Integer = 4
 
         follower.Clear()
         follower.Add(_uid.ToLower())
-        Do While True
-            i += 1
-            resMsg = DirectCast(_mySock.GetWebResponse("https://" + _hubServer + _GetFollowers + _pageQry + i.ToString, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
-            If resStatus.StartsWith("OK") = False Then
+
+        resMsg = DirectCast(_mySock.GetWebResponse("https://twitter.com/users/show/" + _uid + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
+        Dim xd As XmlDocument = New XmlDocument()
+        Try
+            xd.LoadXml(resMsg)
+            i = (Integer.Parse(xd.SelectSingleNode("/user/followers_count/text()").Value) + 100) \ 100 ' Followersカウント取得しページ単位に切り上げる
+        Catch ex As XmlException
+            Return "NG"
+        End Try
+
+        For cnt As Integer = 1 To i
+            Do Until ThreadCount < threadMax
+                If IsThreadError Then
+                    follower.Clear()
+                    follower.Add(_uid.ToLower())
+                    Return "NG"
+                End If
+            Loop
+            DelegateInstance.BeginInvoke(cnt, New AsyncCallback(AddressOf GetFollowersCallback), DelegateInstance)
+            ThreadCount += 1
+        Next
+
+        Do While ThreadCount > 0
+            '全てのスレッドの終了を待つ
+            If IsThreadError Then
+                ' エラーが発生しているならFollowersリストクリア
                 follower.Clear()
-                follower.Add(_uid.ToLower())  '途中で失敗したら片思い表示しない
-                Return resStatus
+                follower.Add(_uid.ToLower())
+                Return "NG"
             End If
-
-            Try
-                Using rd As Xml.XmlTextReader = New Xml.XmlTextReader(New System.IO.StringReader(resMsg))
-                    Dim lc As Integer = 0
-
-                    rd.Read()
-                    While rd.EOF = False
-                        If rd.IsStartElement("screen_name") Then
-                            follower.Add(rd.ReadElementString("screen_name").ToLower())
-                            lc += 1
-                        Else
-                            rd.Read()
-                        End If
-                    End While
-                    If lc = 0 Then Exit Do
-                End Using
-            Catch ex As XmlException
-                follower.Clear()
-                follower.Add(_uid.ToLower())  '途中で失敗したら片思い表示しない
-                Return "NG(XmlException)"
-            End Try
         Loop
 
+#If DEBUG Then
+        Dim millisec As Long = sw.ElapsedMilliseconds
+        Console.WriteLine(millisec)
+#End If
+
         Return ""
+    End Function
+
+    Public Function GetFollowers() As String
+        Return doGetFollowers()
     End Function
 
     Public Property Username() As String
