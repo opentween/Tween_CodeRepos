@@ -129,5 +129,20 @@ retry:
         Return sb.ToString()
     End Function
 
+    Public Sub MoveArrayItem(ByVal values() As Integer, ByVal idx_fr As Integer, ByVal idx_to As Integer)
+        Dim moved_value As Integer = values(idx_fr)
+        Dim num_moved As Integer = Math.Abs(idx_fr - idx_to)
+
+        If idx_to < idx_fr Then
+            Array.Copy(values, idx_to, values, _
+                idx_to + 1, num_moved)
+        Else
+            Array.Copy(values, idx_fr + 1, values, _
+                idx_fr, num_moved)
+        End If
+
+        values(idx_to) = moved_value
+    End Sub
+
     Public _Outputz As Outputz
 End Module

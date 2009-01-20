@@ -682,6 +682,16 @@ Public Class TweenMain
             _statuses.AddTab(name, tb)
         Next
 
+        AddHandler My.Computer.Network.NetworkAvailabilityChanged, AddressOf Network_NetworkAvailabilityChanged
+        If SettingDialog.MinimizeToTray = False OrElse Me.WindowState <> FormWindowState.Minimized Then
+            Me.Visible = True
+        End If
+        _curTab = ListTab.SelectedTab
+        _curItemIndex = -1
+        _curList = DirectCast(_curTab.Controls(0), DetailsListView)
+        SetMainWindowTitle()
+        SetNotifyIconText()
+
         'バージョンチェック（引数：起動時チェックの場合はTrue･･･チェック結果のメッセージを表示しない）
         If SettingDialog.StartupVersion Then
             CheckNewVersion(True)
@@ -701,15 +711,6 @@ Public Class TweenMain
             RefreshStripMenuItem.Enabled = False
         End If
 
-        AddHandler My.Computer.Network.NetworkAvailabilityChanged, AddressOf Network_NetworkAvailabilityChanged
-        If SettingDialog.MinimizeToTray = False OrElse Me.WindowState <> FormWindowState.Minimized Then
-            Me.Visible = True
-        End If
-        _curTab = ListTab.SelectedTab
-        _curItemIndex = -1
-        _curList = DirectCast(_curTab.Controls(0), DetailsListView)
-        SetMainWindowTitle()
-        SetNotifyIconText()
     End Sub
 
     Private Sub Network_NetworkAvailabilityChanged(ByVal sender As Object, ByVal e As Devices.NetworkAvailableEventArgs)
@@ -2157,7 +2158,7 @@ Public Class TweenMain
         Me.ListTab.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
-
+        Diagnostics.Debug.WriteLine("inz")
         Return True
     End Function
 
@@ -3334,31 +3335,25 @@ RETRY2:
                 _section.Outputz = SettingDialog.Outputz
                 _section.OutputzKey = SettingDialog.OutputzKey
                 _section.OutputzUrlmode = SettingDialog.OutputzUrlmode
-
-                Try
-                    _section.DisplayIndex1 = _curList.Columns(0).DisplayIndex
-                    'If _iconCol = False Then
-                    _section.DisplayIndex2 = _curList.Columns(1).DisplayIndex
-                    _section.DisplayIndex3 = _curList.Columns(2).DisplayIndex
-                    _section.DisplayIndex4 = _curList.Columns(3).DisplayIndex
-                    _section.DisplayIndex5 = _curList.Columns(4).DisplayIndex
-                    _section.DisplayIndex6 = _curList.Columns(5).DisplayIndex
-                    _section.DisplayIndex7 = _curList.Columns(6).DisplayIndex
-                    _section.DisplayIndex8 = _curList.Columns(7).DisplayIndex
-                    _section.Width1 = _curList.Columns(0).Width
-                    _section.Width2 = _curList.Columns(1).Width
-                    _section.Width3 = _curList.Columns(2).Width
-                    _section.Width4 = _curList.Columns(3).Width
-                    _section.Width5 = _curList.Columns(4).Width
-                    _section.Width6 = _curList.Columns(5).Width
-                    _section.Width7 = _curList.Columns(6).Width
-                    _section.Width8 = _curList.Columns(7).Width
-                Catch ex As ArgumentOutOfRangeException
-                Catch ex As NullReferenceException
-
-                End Try
-                'End If
-                '_section.SortColumn = listViewItemSorter.Column
+                'Try
+                '    _section.DisplayIndex1 = _curList.Columns(0).DisplayIndex
+                '    _section.DisplayIndex2 = _curList.Columns(1).DisplayIndex
+                '    _section.DisplayIndex3 = _curList.Columns(2).DisplayIndex
+                '    _section.DisplayIndex4 = _curList.Columns(3).DisplayIndex
+                '    _section.DisplayIndex5 = _curList.Columns(4).DisplayIndex
+                '    _section.DisplayIndex6 = _curList.Columns(5).DisplayIndex
+                '    _section.DisplayIndex7 = _curList.Columns(6).DisplayIndex
+                '    _section.DisplayIndex8 = _curList.Columns(7).DisplayIndex
+                '    _section.Width1 = _curList.Columns(0).Width
+                '    _section.Width2 = _curList.Columns(1).Width
+                '    _section.Width3 = _curList.Columns(2).Width
+                '    _section.Width4 = _curList.Columns(3).Width
+                '    _section.Width5 = _curList.Columns(4).Width
+                '    _section.Width6 = _curList.Columns(5).Width
+                '    _section.Width7 = _curList.Columns(6).Width
+                '    _section.Width8 = _curList.Columns(7).Width
+                'Catch ex As ArgumentOutOfRangeException
+                'End Try
                 _section.SortOrder = _statuses.SortOrder
                 Select Case _statuses.SortMode
                     Case IdComparerClass.ComparerMode.Nickname  'ニックネーム
@@ -4588,6 +4583,44 @@ RETRY2:
     End Sub
 
     Private Sub MyList_ColumnReordered(ByVal sender As System.Object, ByVal e As ColumnReorderedEventArgs)
+        Dim lst As DetailsListView = DirectCast(sender, DetailsListView)
+        Dim darr(lst.Columns.Count - 1) As Integer
+        For i As Integer = 0 To lst.Columns.Count - 1
+            darr(lst.Columns(i).DisplayIndex) = i
+        Next
+        MoveArrayItem(darr, e.OldDisplayIndex, e.NewDisplayIndex)
+
+        If _section Is Nothing Then Exit Sub
+
+        For i As Integer = 0 To lst.Columns.Count - 1
+            Select Case darr(i)
+                Case 0
+                    _section.DisplayIndex1 = i
+                Case 1
+                    _section.DisplayIndex2 = i
+                Case 2
+                    _section.DisplayIndex3 = i
+                Case 3
+                    _section.DisplayIndex4 = i
+                Case 4
+                    _section.DisplayIndex5 = i
+                Case 5
+                    _section.DisplayIndex6 = i
+                Case 6
+                    _section.DisplayIndex7 = i
+                Case 7
+                    _section.DisplayIndex8 = i
+            End Select
+        Next
+        _section.Width1 = lst.Columns(0).Width
+        _section.Width2 = lst.Columns(1).Width
+        _section.Width3 = lst.Columns(2).Width
+        _section.Width4 = lst.Columns(3).Width
+        _section.Width5 = lst.Columns(4).Width
+        _section.Width6 = lst.Columns(5).Width
+        _section.Width7 = lst.Columns(6).Width
+        _section.Width8 = lst.Columns(7).Width
+
         'If e.Header.Text = "" Then
         '    _columnIdx = e.NewDisplayIndex
         'Else
@@ -4609,7 +4642,16 @@ RETRY2:
     End Sub
 
     Private Sub MyList_CoumnWidthChanging(ByVal sender As System.Object, ByVal e As ColumnWidthChangingEventArgs)
-        '_columnChangeFlag = True
+        Dim lst As DetailsListView = DirectCast(sender, DetailsListView)
+        If _section Is Nothing Then Exit Sub
+        _section.Width1 = lst.Columns(0).Width
+        _section.Width2 = lst.Columns(1).Width
+        _section.Width3 = lst.Columns(2).Width
+        _section.Width4 = lst.Columns(3).Width
+        _section.Width5 = lst.Columns(4).Width
+        _section.Width6 = lst.Columns(5).Width
+        _section.Width7 = lst.Columns(6).Width
+        _section.Width8 = lst.Columns(7).Width
     End Sub
 
     Private Sub ToolStripMenuItem3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripMenuItem3.Click
