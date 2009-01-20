@@ -2158,7 +2158,6 @@ Public Class TweenMain
         Me.ListTab.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
-        Diagnostics.Debug.WriteLine("inz")
         Return True
     End Function
 

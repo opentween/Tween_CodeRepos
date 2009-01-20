@@ -27,6 +27,9 @@ Imports System.Text
 Imports System.Text.RegularExpressions
 
 Partial Public Class Twitter
+    Delegate Sub GetIconImageDelegate(ByVal post As PostClass, ByVal imgs As Dictionary(Of String, Image), ByVal imgsS As ImageList)
+    Private iconLock As New Object
+
     Public links As New List(Of Long)
 
     Private _authKey As String              'StatusUpdate、発言削除で使用
@@ -278,6 +281,9 @@ Partial Public Class Twitter
         Dim posts() As String = retMsg.Split(strSep, StringSplitOptions.RemoveEmptyEntries)
         Dim intCnt As Integer = 0
         Dim listCnt As Integer = links.Count
+        Dim dlgt(20) As GetIconImageDelegate
+        Dim ar(20) As IAsyncResult
+        Dim arIdx As Integer = -1
 
         For Each strPost As String In posts
             intCnt += 1
@@ -524,7 +530,9 @@ Partial Public Class Twitter
                         post.IsFav = False
                     End If
 
-                    post.ImageIndex = GetIconImage(post.ImageUrl, imgs, imgsS)
+                    arIdx += 1
+                    dlgt(arIdx) = New GetIconImageDelegate(AddressOf GetIconImage)
+                    ar(arIdx) = dlgt(arIdx).BeginInvoke(post, imgs, imgsS, Nothing, Nothing)
 
                     If _endingFlag Then Return ""
 
@@ -542,7 +550,7 @@ Partial Public Class Twitter
                 End If
 
                 'テスト実装：DMカウント取得
-                If intCnt = posts.Length And gType = GetTypes.GET_TIMELINE And page = 1 Then
+                If intCnt = posts.Length AndAlso gType = GetTypes.GET_TIMELINE AndAlso page = 1 Then
                     pos1 = strPost.IndexOf(_parseDMcountFrom, pos2, StringComparison.Ordinal)
                     If pos1 > -1 Then
                         Try
@@ -558,6 +566,10 @@ Partial Public Class Twitter
                 End If
                 getDM = _getDm
             End If
+        Next
+
+        For i As Integer = 0 To arIdx
+            dlgt(i).EndInvoke(ar(i))
         Next
 
         If page = 1 AndAlso (links.Count - listCnt) >= _nextThreshold Then
@@ -661,6 +673,9 @@ Partial Public Class Twitter
         Dim posts() As String = retMsg.Split(strSep, StringSplitOptions.RemoveEmptyEntries)
         Dim intCnt As Integer = 0   'カウンタ
         Dim listCnt As Integer = links.Count
+        Dim dlgt(20) As GetIconImageDelegate
+        Dim ar(20) As IAsyncResult
+        Dim arIdx As Integer = -1
 
         For Each strPost As String In posts
             intCnt += 1
@@ -783,7 +798,9 @@ Partial Public Class Twitter
                     post.IsFav = False
 
                     'Imageの取得
-                    post.ImageIndex = GetIconImage(post.ImageUrl, imgs, imgsS)
+                    arIdx += 1
+                    dlgt(arIdx) = New GetIconImageDelegate(AddressOf GetIconImage)
+                    ar(arIdx) = dlgt(arIdx).BeginInvoke(post, imgs, imgsS, Nothing, Nothing)
 
                     If _endingFlag Then Return ""
 
@@ -803,6 +820,10 @@ Partial Public Class Twitter
                     _statuses.AddPost(post)
                 End If
             End If
+        Next
+
+        For i As Integer = 0 To arIdx
+            dlgt(i).EndInvoke(ar(i))
         Next
 
         Return ""
@@ -894,24 +915,40 @@ Partial Public Class Twitter
         Return retStr
     End Function
 
-    Private Function GetIconImage(ByVal pathUrl As String, ByVal imgs As Dictionary(Of String, Image), ByVal imgsS As ImageList) As Integer
-        If _endingFlag OrElse Not _getIcon Then Return -1
-        If imgsS.Images.ContainsKey(pathUrl) Then Return imgsS.Images.IndexOfKey(pathUrl)
+    Private Sub GetIconImage(ByVal post As PostClass, ByVal imgs As Dictionary(Of String, Image), ByVal imgsS As ImageList)
+        If _endingFlag OrElse Not _getIcon Then
+            post.ImageIndex = -1
+            Exit Sub
+        End If
+        If imgsS.Images.ContainsKey(post.ImageUrl) Then
+            post.ImageIndex = imgsS.Images.IndexOfKey(post.ImageUrl)
+            Exit Sub
+        End If
 
+        Dim sock As New MySocket("UTF-8", _uid, _pwd, _proxyType, _proxyAddress, _proxyPort, _proxyUser, _proxyPassword)
         Dim resStatus As String = ""
-        Dim img As Image = DirectCast(_mySock.GetWebResponse(pathUrl, resStatus, MySocket.REQ_TYPE.ReqGETBinary), System.Drawing.Image)
-        If img Is Nothing Then Return -1
-
-        imgs.Add(pathUrl, img)  '詳細表示用ディクショナリに追加
+        Dim img As Image = DirectCast(sock.GetWebResponse(post.ImageUrl, resStatus, MySocket.REQ_TYPE.ReqGETBinary), System.Drawing.Image)
+        If img Is Nothing Then
+            post.ImageIndex = -1
+            Exit Sub
+        End If
 
         Dim bmp2 As New Bitmap(_iconSz, _iconSz)
         Using g As Graphics = Graphics.FromImage(bmp2)
             g.InterpolationMode = Drawing2D.InterpolationMode.High
             g.DrawImage(img, 0, 0, _iconSz, _iconSz)
         End Using
-        imgsS.Images.Add(pathUrl, bmp2)
-        Return imgsS.Images.IndexOfKey(pathUrl)
-    End Function
+
+        SyncLock iconLock
+            If imgsS.Images.ContainsKey(post.ImageUrl) Then
+                post.ImageIndex = imgsS.Images.IndexOfKey(post.ImageUrl)
+                Exit Sub
+            End If
+            imgs.Add(post.ImageUrl, img)  '詳細表示用ディクショナリに追加
+            imgsS.Images.Add(post.ImageUrl, bmp2)
+            post.ImageIndex = imgsS.Images.IndexOfKey(post.ImageUrl)
+        End SyncLock
+    End Sub
 
     Private Function GetAuthKey(ByVal resMsg As String) As Integer
         Dim pos1 As Integer
@@ -1195,7 +1232,7 @@ Partial Public Class Twitter
         Dim resStatus As String = ""
         Dim resMsg As String = ""
 
-        resMsg = DirectCast(_mySock.GetWebResponse(wedataUrl, resStatus, timeout:=10 * 1000), String) 'タイムアウト時間を10秒に設定
+        resMsg = DirectCast(_mySock.GetWebResponse(wedataUrl, resStatus, timeOut:=10 * 1000), String) 'タイムアウト時間を10秒に設定
         If resMsg.Length = 0 Then Exit Sub
 
         Dim rs As New System.IO.StringReader(resMsg)
