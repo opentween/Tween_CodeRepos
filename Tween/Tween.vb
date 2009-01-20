@@ -3742,10 +3742,17 @@ RETRY2:
 
         _statuses.SetTabUnreadManage(_rclickTabName, UreadManageMenuItem.Checked)
         If _curTab.Text = _rclickTabName Then
+            If _statuses.Tabs(_rclickTabName).UnreadCount > 0 Then
+                _curTab.ImageIndex = 0
+            Else
+                _curTab.ImageIndex = -1
+            End If
             _itemCache = Nothing
             _postCache = Nothing
             _curList.Refresh()
         End If
+        SetMainWindowTitle()
+        SetStatusLabel()
     End Sub
 
     Private Sub NotifyDispMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles NotifyDispMenuItem.Click
