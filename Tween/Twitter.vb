@@ -1125,6 +1125,7 @@ Partial Public Class Twitter
 
         resMsg = DirectCast(sock.GetWebResponse("https://" + _hubServer + _GetFollowers + _pageQry + Query.ToString, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
         If resStatus.StartsWith("OK") = False Then
+            IsThreadError = True
             Return resStatus
         End If
 
@@ -1145,56 +1146,25 @@ Partial Public Class Twitter
                 End While
             End Using
         Catch ex As XmlException
+            IsThreadError = True
             Return "NG(XmlException)"
         End Try
 
         Return ""
     End Function
 
-    Private _cntrwl As New Threading.ReaderWriterLock
-    Dim _threadCnt As Integer = 0
+    Private _threadErr As Boolean = False
 
-    Private Property ThreadCount() As Integer
-        Get
-            Dim cnt As Integer
-            _cntrwl.AcquireReaderLock(System.Threading.Timeout.Infinite)
-            cnt = _threadCnt
-            _cntrwl.ReleaseReaderLock()
-            Return cnt
-        End Get
-        Set(ByVal value As Integer)
-            _cntrwl.AcquireWriterLock(System.Threading.Timeout.Infinite)
-            _threadCnt = value
-            _cntrwl.ReleaseWriterLock()
-        End Set
-    End Property
-
-    Private _errrwl As New Threading.ReaderWriterLock
-    Dim _threadErr As Boolean = False
     Private Property IsThreadError() As Boolean
         Get
-            Dim err As Boolean
-            _errrwl.AcquireReaderLock(System.Threading.Timeout.Infinite)
-            err = _threadErr
-            _errrwl.ReleaseReaderLock()
-            Return err
+            Return _threadErr
         End Get
         Set(ByVal value As Boolean)
-            _errrwl.AcquireWriterLock(System.Threading.Timeout.Infinite)
             _threadErr = value
-            _errrwl.ReleaseWriterLock()
         End Set
     End Property
 
-    Private Sub GetFollowersCallback(ByVal ar As IAsyncResult)
-        Dim dlgt As GetFollowersDelegate = DirectCast(ar.AsyncState, GetFollowersDelegate)
-        If ThreadCount > 0 Then
-            ThreadCount -= 1
-        End If
-        If Not dlgt.EndInvoke(ar).Equals("") AndAlso Not IsThreadError Then
-            IsThreadError = True
-        End If
-    End Sub
+    Private ReadOnly _doGetFoilowersSync As New Object
 
     Private Function doGetFollowers() As String
 #If DEBUG Then
@@ -1206,7 +1176,9 @@ Partial Public Class Twitter
         Dim i As Integer = 0
         Dim DelegateInstance As GetFollowersDelegate = New GetFollowersDelegate(AddressOf GetFollowersMethod)
 
-        Dim threadMax As Integer = 16
+        SyncLock _doGetFoilowersSync
+            IsThreadError = False
+        End SyncLock
 
         follower.Clear()
         follower.Add(_uid.ToLower())
@@ -1215,34 +1187,31 @@ Partial Public Class Twitter
         Dim xd As XmlDocument = New XmlDocument()
         Try
             xd.LoadXml(resMsg)
-            i = (Integer.Parse(xd.SelectSingleNode("/user/followers_count/text()").Value) + 100) \ 100 ' Followersカウント取得しページ単位に切り上げる
+            i = (Integer.Parse(xd.SelectSingleNode("/user/followers_count/text()").Value) + 100) \ 100 - 1 ' Followersカウント取得しページ単位に切り上げる
         Catch ex As XmlException
             Return "NG"
         End Try
 
-        For cnt As Integer = 1 To i
-            Do Until ThreadCount < threadMax
-                System.Threading.Thread.Sleep(10)
-                If IsThreadError Then
-                    follower.Clear()
-                    follower.Add(_uid.ToLower())
-                    Return "NG"
-                End If
-            Loop
-            DelegateInstance.BeginInvoke(cnt, New AsyncCallback(AddressOf GetFollowersCallback), DelegateInstance)
-            ThreadCount += 1
+        Dim ar(i) As IAsyncResult
+        Dim handle(i) As Threading.WaitHandle
+        For cnt As Integer = 0 To i
+            ' 全スレッド一度に開始 調停はwinsock任せ
+            ar(cnt) = DelegateInstance.BeginInvoke(cnt + 1, Nothing, Nothing)
+            handle(cnt) = ar(cnt).AsyncWaitHandle
         Next
 
-        Do While ThreadCount > 0
-            System.Threading.Thread.Sleep(10)
-            '全てのスレッドの終了を待つ
+        '全てのスレッドの終了を待つ
+        Threading.WaitHandle.WaitAll(handle)
+        System.Threading.Thread.Sleep(10)
+
+        SyncLock _doGetFoilowersSync
             If IsThreadError Then
                 ' エラーが発生しているならFollowersリストクリア
                 follower.Clear()
                 follower.Add(_uid.ToLower())
                 Return "NG"
             End If
-        Loop
+        End SyncLock
 
 #If DEBUG Then
         Dim millisec As Long = sw.ElapsedMilliseconds
