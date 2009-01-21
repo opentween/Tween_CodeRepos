@@ -77,8 +77,17 @@ Public Module MyCommon
         Move
     End Enum
 
-    Public follower As New Collections.Specialized.StringCollection
-    Public cCon As New System.Net.CookieContainer()
+    'Backgroundworkerへ処理種別を通知するための引数用Enum
+    Public Enum WORKERTYPE
+        Timeline                'タイムライン取得
+        Reply                   '返信取得
+        DirectMessegeRcv        '受信DM取得
+        DirectMessegeSnt        '送信DM取得
+        PostMessage             '発言POST
+        FavAdd                  'Fav追加
+        FavRemove               'Fav削除
+        BlackFavAdd             'BlackFav追加 (Added by shuyoko <http://twitter.com/shuyoko>)
+    End Enum
 
     Public Const Block As Object = Nothing
 

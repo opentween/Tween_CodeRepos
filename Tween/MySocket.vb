@@ -28,12 +28,12 @@ Imports System.IO.Compression
 
 Public Class MySocket
     Private _enc As Encoding
-    Private _version As String
+    Private Shared _version As String = My.Application.Info.Version.ToString
     Private _cre As String
-    Private _uid As String
-    Private _pwd As String
     Private _proxy As System.Net.WebProxy
     Private _proxyType As ProxyTypeEnum
+    Private Shared cCon As New System.Net.CookieContainer()
+    Private Shared cConLock As New Object
 
     Public Enum REQ_TYPE
         ReqGET
@@ -62,11 +62,8 @@ Public Class MySocket
             ByVal ProxyPassword As String)
         _enc = Encoding.GetEncoding(EncodeType)
         ServicePointManager.Expect100Continue = False
-        _version = My.Application.Info.Version.ToString
         If Username <> "" Then
             _cre = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes(Username + ":" + Password))
-            _uid = Username
-            _pwd = Password
         End If
         Select Case ProxyType
             Case ProxyTypeEnum.None
@@ -78,7 +75,6 @@ Public Class MySocket
                 End If
                 'IE設定（システム設定）はデフォルト値なので処理しない
         End Select
-        _proxyType = ProxyType
     End Sub
 
     Public Function GetWebResponse(ByVal url As String, _
@@ -99,7 +95,7 @@ Public Class MySocket
                 webReq.CookieContainer = cCon
                 webReq.AutomaticDecompression = DecompressionMethods.Deflate Or DecompressionMethods.GZip
             End If
-            webReq.KeepAlive = False
+            webReq.KeepAlive = True
             webReq.AllowAutoRedirect = False
             webReq.UserAgent = userAgent
             If reqType = REQ_TYPE.ReqGetNoCache Then
@@ -175,23 +171,15 @@ Public Class MySocket
             End If
 
             Using webRes As HttpWebResponse = CType(webReq.GetResponse(), HttpWebResponse)
-                'Cookieの処理
-                '*** 暫定　http://twitter.com　へアクセスすると、Cookie.Domain = ".twitter.com"になるため
-                'If webReq.RequestUri.Host = "twitter.com" And reqType <> REQ_TYPE.ReqPOSTAPI Then
-                '    For Each ck As Cookie In webRes.Cookies
-                '        If ck.Domain = ".twitter.com" Then
-                '            ck.Domain = "twitter.com"
-                '            _cCon.Add(ck)
-                '        End If
-                '    Next
-                'End If
                 If reqType <> REQ_TYPE.ReqPOSTAPI And reqType <> REQ_TYPE.ReqGetAPI Then
-                    For Each ck As Cookie In webRes.Cookies
-                        If ck.Domain.StartsWith(".") Then
-                            ck.Domain = ck.Domain.Substring(1, ck.Domain.Length - 1)
-                            cCon.Add(ck)
-                        End If
-                    Next
+                    SyncLock cConLock
+                        For Each ck As Cookie In webRes.Cookies
+                            If ck.Domain.StartsWith(".") Then
+                                ck.Domain = ck.Domain.Substring(1, ck.Domain.Length - 1)
+                                cCon.Add(ck)
+                            End If
+                        Next
+                    End SyncLock
                 End If
                 resStatus = webRes.StatusCode.ToString() + " " + webRes.ResponseUri.AbsoluteUri
 
@@ -307,22 +295,6 @@ Public Class MySocket
 
         Return ""
     End Function
-
-    Public WriteOnly Property Username() As String
-        Set(ByVal value As String)
-            _uid = value
-        End Set
-    End Property
-
-    Public WriteOnly Property Password() As String
-        Set(ByVal value As String)
-            _pwd = value
-        End Set
-    End Property
-
-    Public Sub CreateCredentialInfo()
-        _cre = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes(_uid + ":" + _pwd))
-    End Sub
 
     Private Sub StreamToFile(ByVal InStream As Stream, ByVal Path As String, ByVal Encoding As String)
         Dim strm As Stream
