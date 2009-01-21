@@ -152,6 +152,4 @@ retry:
 
         values(idx_to) = moved_value
     End Sub
-
-    Public _Outputz As Outputz
 End Module

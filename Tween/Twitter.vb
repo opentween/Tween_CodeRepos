@@ -28,6 +28,7 @@ Imports System.Text.RegularExpressions
 
 Public Module Twitter
     Delegate Sub GetIconImageDelegate(ByVal post As PostClass, ByVal imgs As Dictionary(Of String, Image), ByVal imgsS As ImageList)
+    Private ReadOnly LockObj As New Object
 
     Private links As New List(Of Long)
     Private follower As New Collections.Specialized.StringCollection
@@ -252,7 +253,7 @@ Public Module Twitter
         Dim posts() As String = retMsg.Split(strSep, StringSplitOptions.RemoveEmptyEntries)
         Dim intCnt As Integer = 0
         Dim listCnt As Integer = 0
-        SyncLock GetType(Twitter)
+        SyncLock LockObj
             listCnt = links.Count
         End SyncLock
         Dim dlgt(20) As GetIconImageDelegate
@@ -341,7 +342,7 @@ Public Module Twitter
                 End If
 
                 '二重取得回避
-                SyncLock GetType(Twitter)
+                SyncLock LockObj
                     If links.Contains(post.Id) Then Continue For
                 End SyncLock
 
@@ -513,12 +514,12 @@ Public Module Twitter
 
                 If _endingFlag Then Return ""
 
-                SyncLock GetType(Twitter)
+                SyncLock LockObj
                     links.Add(post.Id)
                 End SyncLock
 
                 post.IsMe = post.Name.Equals(_uid, StringComparison.OrdinalIgnoreCase)
-                SyncLock GetType(Twitter)
+                SyncLock LockObj
                     If follower.Count > 1 Then
                         post.IsOwl = Not follower.Contains(post.Name.ToLower())
                     Else
@@ -552,7 +553,7 @@ Public Module Twitter
             dlgt(i).EndInvoke(ar(i))
         Next
 
-        SyncLock GetType(Twitter)
+        SyncLock LockObj
             If page = 1 AndAlso (links.Count - listCnt) >= _nextThreshold Then
                 '新着が閾値の件数以上なら、次のページも念のため読み込み
                 endPage = _nextPages + 1
@@ -655,7 +656,7 @@ Public Module Twitter
         Dim posts() As String = retMsg.Split(strSep, StringSplitOptions.RemoveEmptyEntries)
         Dim intCnt As Integer = 0   'カウンタ
         Dim listCnt As Integer = 0
-        SyncLock GetType(Twitter)
+        SyncLock LockObj
             listCnt = links.Count
         End SyncLock
         Dim dlgt(20) As GetIconImageDelegate
@@ -702,7 +703,7 @@ Public Module Twitter
                     Return "GetDirectMessage -> Err: Can't get Nick."
                 End Try
 
-                SyncLock GetType(Twitter)
+                SyncLock LockObj
                     If links.Contains(post.Id) Then Continue For
                 End SyncLock
 
@@ -792,7 +793,7 @@ Public Module Twitter
 
                 If _endingFlag Then Return ""
 
-                SyncLock GetType(Twitter)
+                SyncLock LockObj
                     links.Add(post.Id)
                 End SyncLock
 
@@ -909,16 +910,15 @@ Public Module Twitter
             Exit Sub
         End If
 
-        SyncLock GetType(Twitter)
+        SyncLock LockObj
             If imgsS.Images.ContainsKey(post.ImageUrl) Then
                 post.ImageIndex = imgsS.Images.IndexOfKey(post.ImageUrl)
                 Exit Sub
             End If
         End SyncLock
 
-        Dim sock As New MySocket("UTF-8", _uid, _pwd, _proxyType, _proxyAddress, _proxyPort, _proxyUser, _proxyPassword)
         Dim resStatus As String = ""
-        Dim img As Image = DirectCast(sock.GetWebResponse(post.ImageUrl, resStatus, MySocket.REQ_TYPE.ReqGETBinary), System.Drawing.Image)
+        Dim img As Image = DirectCast(CreateSocket.GetWebResponse(post.ImageUrl, resStatus, MySocket.REQ_TYPE.ReqGETBinary), System.Drawing.Image)
         If img Is Nothing Then
             post.ImageIndex = -1
             Exit Sub
@@ -930,7 +930,7 @@ Public Module Twitter
             g.DrawImage(img, 0, 0, _iconSz, _iconSz)
         End Using
 
-        SyncLock GetType(Twitter)
+        SyncLock LockObj
             If imgsS.Images.ContainsKey(post.ImageUrl) Then
                 post.ImageIndex = imgsS.Images.IndexOfKey(post.ImageUrl)
                 Exit Sub
@@ -993,7 +993,7 @@ Public Module Twitter
         Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _statusUpdatePathAPI, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI, dataStr), String)
 
         If resStatus.StartsWith("OK") Then
-            resStatus = _Outputz.Post(CreateSocket, postStr.Length)
+            resStatus = Outputz.Post(CreateSocket, postStr.Length)
             If resStatus.Length > 0 Then
                 Return "Outputz:" + resStatus
             Else
@@ -1111,9 +1111,8 @@ Public Module Twitter
     Private Function GetFollowersMethod(ByVal Query As Integer) As String
         Dim resStatus As String = ""
         Dim resMsg As String = ""
-        Dim sock As MySocket = New MySocket("UTF-8", _uid, _pwd, _proxyType, _proxyAddress, _proxyPort, _proxyUser, _proxyPassword)
 
-        resMsg = DirectCast(sock.GetWebResponse("https://" + _hubServer + _GetFollowers + _pageQry + Query.ToString, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
+        resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _GetFollowers + _pageQry + Query.ToString, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
         If resStatus.StartsWith("OK") = False Then
             IsThreadError = True
             Return resStatus
@@ -1126,7 +1125,7 @@ Public Module Twitter
                 While rd.EOF = False
                     If rd.IsStartElement("screen_name") Then
                         Dim tmp As String = rd.ReadElementString("screen_name").ToLower()
-                        SyncLock GetType(Twitter)
+                        SyncLock LockObj
                             follower.Add(tmp)
                         End SyncLock
                         lc += 1
@@ -1220,14 +1219,14 @@ Public Module Twitter
         System.Threading.Thread.Sleep(10)
         ' エラーが発生しているならFollowersリストクリア
 
-        SyncLock GetType(Twitter)
-            If IsThreadError Then
+        If IsThreadError Then
+            ' エラーが発生しているならFollowersリストクリア
+            SyncLock LockObj
                 follower.Clear()
                 follower.Add(_uid.ToLower())
-
-                Return "NG"
-            End If
-        End SyncLock
+            End SyncLock
+            Return "NG"
+        End If
 
 #If DEBUG Then
         Dim millisec As Long = sw.ElapsedMilliseconds
@@ -1551,12 +1550,6 @@ Public Module Twitter
             _iconSz = value
         End Set
     End Property
-
-    'Public Sub CreateNewSocket()
-    '    _mySock = Nothing
-    '    _mySock = New MySocket("UTF-8", Username, Password, _proxyType, _proxyAddress, _proxyPort, _proxyUser, _proxyPassword)
-    '    _signed = False
-    'End Sub
 
     Public Function MakeShortUrl(ByVal ConverterType As UrlConverter, ByVal SrcUrl As String) As String
         Dim ret As String = ""
