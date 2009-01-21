@@ -1116,7 +1116,7 @@ Partial Public Class Twitter
     End Function
 
     Delegate Function GetFollowersDelegate(ByVal Query As Integer) As String
-    Private _GetFollowersMethodSync As New Object
+    Private ReadOnly _GetFollowersMethodSync As New Object
 
     Private Function GetFollowersMethod(ByVal Query As Integer) As String
         Dim resStatus As String = ""
@@ -1206,7 +1206,7 @@ Partial Public Class Twitter
         Dim i As Integer = 0
         Dim DelegateInstance As GetFollowersDelegate = New GetFollowersDelegate(AddressOf GetFollowersMethod)
 
-        Dim threadMax As Integer = 4
+        Dim threadMax As Integer = 16
 
         follower.Clear()
         follower.Add(_uid.ToLower())
@@ -1222,6 +1222,7 @@ Partial Public Class Twitter
 
         For cnt As Integer = 1 To i
             Do Until ThreadCount < threadMax
+                System.Threading.Thread.Sleep(10)
                 If IsThreadError Then
                     follower.Clear()
                     follower.Add(_uid.ToLower())
@@ -1233,6 +1234,7 @@ Partial Public Class Twitter
         Next
 
         Do While ThreadCount > 0
+            System.Threading.Thread.Sleep(10)
             '全てのスレッドの終了を待つ
             If IsThreadError Then
                 ' エラーが発生しているならFollowersリストクリア
