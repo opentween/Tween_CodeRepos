@@ -1,5 +1,5 @@
 ﻿Public Module AnalyzeKey
-'    このファイルはデバッグビルドのTweenにより自動作成されました   作成日時  2009/01/15 12:50:53
+'    このファイルはデバッグビルドのTweenにより自動作成されました   作成日時  2009/01/21 15:49:28
 
     Public _splitPost As String = "<tr id=""status_"
     Public _splitPostRecent As String = "<tr id=""status_"
