@@ -324,17 +324,17 @@ Public Class Setting
             _MyAlwaysTop = CheckAlwaysTop.Checked
             _MyUrlConvertAuto = CheckAutoConvertUrl.Checked
             _MyOutputz = CheckOutputz.Checked
-            _Outputz.Enabled = _MyOutputz
+            Outputz.Enabled = _MyOutputz
             _MyOutputzKey = TextBoxOutputzKey.Text.Trim()
-            _Outputz.key = _MyOutputzKey
+            Outputz.key = _MyOutputzKey
 
             Select Case ComboBoxOutputzUrlmode.SelectedIndex
                 Case 0
                     _MyOutputzUrlmode = OutputzUrlmode.twittercom
-                    _Outputz.url = "http://twitter.com/"
+                    Outputz.url = "http://twitter.com/"
                 Case 1
                     _MyOutputzUrlmode = OutputzUrlmode.twittercomWithUsername
-                    _Outputz.url = "http://twitter.com/" + _MyuserID
+                    Outputz.url = "http://twitter.com/" + _MyuserID
             End Select
             'TweenMain.SetMainWindowTitle()
             'TweenMain.SetNotifyIconText()
@@ -471,9 +471,9 @@ Public Class Setting
         CheckAlwaysTop.Checked = _MyAlwaysTop
         CheckAutoConvertUrl.Checked = _MyUrlConvertAuto
         CheckOutputz.Checked = _MyOutputz
-        _Outputz.Enabled = _MyOutputz
+        Outputz.Enabled = _MyOutputz
         TextBoxOutputzKey.Text = _MyOutputzKey
-        _Outputz.key = _MyOutputzKey
+        Outputz.key = _MyOutputzKey
 
         Select Case _MyOutputzUrlmode
             Case OutputzUrlmode.twittercom
@@ -1254,7 +1254,7 @@ Public Class Setting
             _MyUrlConvertAuto = value
         End Set
     End Property
-    Public Property Outputz() As Boolean
+    Public Property OutputzEnabled() As Boolean
         Get
             Return _MyOutputz
         End Get

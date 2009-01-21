@@ -296,7 +296,7 @@ Public Class MySocket
         Return ""
     End Function
 
-    Private Sub StreamToFile(ByVal InStream As Stream, ByVal Path As String, ByVal Encoding As String)
+    Private Shared Sub StreamToFile(ByVal InStream As Stream, ByVal Path As String, ByVal Encoding As String)
         Dim strm As Stream
         If Encoding.Equals("gzip") OrElse Encoding.Equals("deflate") Then
             strm = InStream
