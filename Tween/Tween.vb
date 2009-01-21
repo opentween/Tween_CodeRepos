@@ -33,10 +33,6 @@ Imports System.ComponentModel
 Imports System.Xml.XPath
 
 Public Class TweenMain
-    Private clsTw As Twitter            'Twitter用通信データ処理カスタムクラス（非同期通信用）
-    Private clsTwPost As Twitter            'Twitter用通信データ処理カスタムクラス（発言投稿専用）
-    Private clsTwSync As Twitter            'Twitter用通信データ処理カスタムクラス（同期通信用）
-
     '各種設定
     Private _username As String         'ユーザー名
     Private _password As String         'パスワード（デクリプト済み）
@@ -161,19 +157,6 @@ Public Class TweenMain
         Friend Declare Function FlashWindow Lib "user32.dll" ( _
             ByVal hwnd As Integer, ByVal bInvert As Integer) As Integer
     End Class
-
-    'Backgroundworkerへ処理種別を通知するための引数用Enum
-    Private Enum WORKERTYPE
-        Timeline                'タイムライン取得
-        Reply                   '返信取得
-        DirectMessegeRcv        '受信DM取得
-        DirectMessegeSnt        '送信DM取得
-        PostMessage             '発言POST
-        FavAdd                  'Fav追加
-        FavRemove               'Fav削除
-        BlackFavAdd             'BlackFav追加 (Added by shuyoko <http://twitter.com/shuyoko>)
-        CreateNewSocket         'Socket再作成
-    End Enum
 
     'Backgroundworkerの処理結果通知用引数構造体
     Private Structure GetWorkerResult
@@ -554,14 +537,22 @@ Public Class TweenMain
         'TIconList.ColorDepth = ColorDepth.Depth32Bit
 
         'Twitter用通信クラス初期化
-        clsTw = New Twitter(_username, _password, SettingDialog.ProxyType, SettingDialog.ProxyAddress, SettingDialog.ProxyPort, SettingDialog.ProxyUser, SettingDialog.ProxyPassword)
-        clsTwPost = New Twitter(_username, _password, SettingDialog.ProxyType, SettingDialog.ProxyAddress, SettingDialog.ProxyPort, SettingDialog.ProxyUser, SettingDialog.ProxyPassword)
-        clsTwSync = New Twitter(_username, _password, SettingDialog.ProxyType, SettingDialog.ProxyAddress, SettingDialog.ProxyPort, SettingDialog.ProxyUser, SettingDialog.ProxyPassword)
+        Twitter.Username = _username
+        Twitter.Password = _password
+        Twitter.ProxyType = SettingDialog.ProxyType
+        Twitter.ProxyAddress = SettingDialog.ProxyAddress
+        Twitter.ProxyPort = SettingDialog.ProxyPort
+        Twitter.ProxyUser = SettingDialog.ProxyUser
+        Twitter.ProxyPassword = SettingDialog.ProxyPassword
+        Twitter.NextThreshold = SettingDialog.NextPageThreshold   '次頁取得閾値
+        Twitter.NextPages = SettingDialog.NextPagesInt    '閾値オーバー時の読み込みページ数（未使用）
+
+        'clsTw = New Twitter(_username, _password, SettingDialog.ProxyType, SettingDialog.ProxyAddress, SettingDialog.ProxyPort, SettingDialog.ProxyUser, SettingDialog.ProxyPassword)
+        'clsTwPost = New Twitter(_username, _password, SettingDialog.ProxyType, SettingDialog.ProxyAddress, SettingDialog.ProxyPort, SettingDialog.ProxyUser, SettingDialog.ProxyPassword)
+        'clsTwSync = New Twitter(_username, _password, SettingDialog.ProxyType, SettingDialog.ProxyAddress, SettingDialog.ProxyPort, SettingDialog.ProxyUser, SettingDialog.ProxyPassword)
         If SettingDialog.StartupKey Then
-            clsTw.GetWedata()
+            Twitter.GetWedata()
         End If
-        clsTw.NextThreshold = SettingDialog.NextPageThreshold   '次頁取得閾値
-        clsTw.NextPages = SettingDialog.NextPagesInt    '閾値オーバー時の読み込みページ数（未使用）
 
         ''''''''''''''''''''''''''''''''''''''''
         _statuses.SortOrder = DirectCast(_section.SortOrder, System.Windows.Forms.SortOrder)
@@ -599,16 +590,14 @@ Public Class TweenMain
                 '_iconCol = True
         End Select
         If _iconSz = 0 Then
-            clsTw.GetIcon = False
+            Twitter.GetIcon = False
         Else
-            clsTw.GetIcon = True
-            clsTw.IconSize = _iconSz
+            Twitter.GetIcon = True
+            Twitter.IconSize = _iconSz
         End If
-        clsTwPost.UseAPI = SettingDialog.UseAPI
-        clsTw.HubServer = SettingDialog.HubServer
-        clsTwPost.HubServer = SettingDialog.HubServer
-        clsTwSync.HubServer = SettingDialog.HubServer
-        clsTw.TinyUrlResolve = SettingDialog.TinyUrlResolve
+        Twitter.UseAPI = SettingDialog.UseAPI
+        Twitter.HubServer = SettingDialog.HubServer
+        Twitter.TinyUrlResolve = SettingDialog.TinyUrlResolve
 
         '発言詳細部アイコンをリストアイコンにサイズ変更
         ChangeImageSize()
@@ -716,18 +705,6 @@ Public Class TweenMain
     Private Sub Network_NetworkAvailabilityChanged(ByVal sender As Object, ByVal e As Devices.NetworkAvailableEventArgs)
         If e.IsNetworkAvailable Then
             Dim args As New GetWorkerArg()
-            args.type = WORKERTYPE.CreateNewSocket
-            Do While GetTimelineWorker.IsBusy
-                Threading.Thread.Sleep(1)
-                Application.DoEvents()
-            Loop
-            GetTimelineWorker.RunWorkerAsync(args)
-            Do While PostWorker.IsBusy
-                Threading.Thread.Sleep(1)
-                Application.DoEvents()
-            Loop
-            PostWorker.RunWorkerAsync(args)
-            clsTwSync.CreateNewSocket()
             PostButton.Enabled = True
             FavAddToolStripMenuItem.Enabled = True
             FavRemoveToolStripMenuItem.Enabled = True
@@ -1093,8 +1070,7 @@ Public Class TweenMain
             _endingFlag = True
             GetTimelineWorker.CancelAsync()
             PostWorker.CancelAsync()
-            If clsTw IsNot Nothing Then clsTw.Ending = True
-            If clsTwPost IsNot Nothing Then clsTwPost.Ending = True
+            Twitter.Ending = True
 
             TimerTimeline.Enabled = False
             TimerDM.Enabled = False
@@ -1140,7 +1116,7 @@ Public Class TweenMain
                 If _initial Then
                     Do
                         GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
-                        ret = clsTw.GetTimeline(args.page, read, args.endPage, Twitter.GetTypes.GET_TIMELINE, TIconDic, TIconSmallList, rslt.newDM)
+                        ret = Twitter.GetTimeline(args.page, read, args.endPage, args.type, TIconDic, TIconSmallList, rslt.newDM)
                         args.page += 1
                     Loop While ret.Length = 0 AndAlso _
                                 args.page <= SettingDialog.ReadPages AndAlso _
@@ -1149,7 +1125,7 @@ Public Class TweenMain
                 Else
                     Do
                         GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
-                        ret = clsTw.GetTimeline(args.page, read, args.endPage, Twitter.GetTypes.GET_TIMELINE, TIconDic, TIconSmallList, rslt.newDM)
+                        ret = Twitter.GetTimeline(args.page, read, args.endPage, args.type, TIconDic, TIconSmallList, rslt.newDM)
                         args.page += 1
                     Loop While ret.Length = 0 AndAlso _
                                 args.page <= args.endPage AndAlso _
@@ -1160,7 +1136,7 @@ Public Class TweenMain
                 _statuses.BeginUpdate(TabInformations.EDITMODE.Post)
                 Do
                     GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
-                    ret = clsTw.GetTimeline(args.page, read, args.endPage, Twitter.GetTypes.GET_REPLY, TIconDic, TIconSmallList, rslt.newDM)
+                    ret = Twitter.GetTimeline(args.page, read, args.endPage, args.type, TIconDic, TIconSmallList, rslt.newDM)
                     args.page += 1
                 Loop While _initial AndAlso _
                             ret.Length = 0 AndAlso _
@@ -1172,7 +1148,7 @@ Public Class TweenMain
                 _statuses.BeginUpdate(TabInformations.EDITMODE.Dm)
                 Do
                     GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
-                    ret = clsTw.GetDirectMessage(args.page, read, args.endPage, Twitter.GetTypes.GET_DMRCV, TIconDic, TIconSmallList)
+                    ret = Twitter.GetDirectMessage(args.page, read, args.endPage, args.type, TIconDic, TIconSmallList)
                     args.page += 1
                 Loop While _initial AndAlso _
                             ret.Length = 0 AndAlso _
@@ -1182,13 +1158,13 @@ Public Class TweenMain
                 rslt.addCount = _statuses.EndUpdate()
                 If _initial AndAlso SettingDialog.StartupFollowers Then
                     GetTimelineWorker.ReportProgress(50, My.Resources.UpdateFollowersMenuItem1_ClickText1)
-                    ret = clsTw.GetFollowers()
+                    ret = Twitter.GetFollowers()
                 End If
             Case WORKERTYPE.DirectMessegeSnt
                 _statuses.BeginUpdate(TabInformations.EDITMODE.Dm)
                 Do
                     GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
-                    ret = clsTw.GetDirectMessage(args.page, read, args.endPage, Twitter.GetTypes.GET_DMSNT, TIconDic, TIconSmallList)
+                    ret = Twitter.GetDirectMessage(args.page, read, args.endPage, args.type, TIconDic, TIconSmallList)
                     args.page += 1
                 Loop While _initial AndAlso _
                             ret.Length = 0 AndAlso _
@@ -1202,7 +1178,7 @@ Public Class TweenMain
                     args.page = i + 1
                     GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
                     If Not post.IsFav Then
-                        ret = clsTw.PostFavAdd(post.Id)
+                        ret = Twitter.PostFavAdd(post.Id)
                         If ret.Length = 0 Then
                             args.sIds.Add(post.Id)
                             post.IsFav = True    'リスト再描画必要
@@ -1217,7 +1193,7 @@ Public Class TweenMain
                     args.page = i + 1
                     GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
                     If post.IsFav Then
-                        ret = clsTw.PostFavRemove(post.Id)
+                        ret = Twitter.PostFavRemove(post.Id)
                         If ret.Length = 0 Then
                             args.sIds.Add(post.Id)
                             post.IsFav = False    'リスト再描画必要
@@ -1233,9 +1209,9 @@ Public Class TweenMain
                     args.page = i + 1
                     GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
                     If Not post.IsFav Then
-                        ret = clsTw.GetBlackFavId(post.Id, blackid)
+                        ret = Twitter.GetBlackFavId(post.Id, blackid)
                         If ret.Length = 0 Then
-                            ret = clsTw.PostFavAdd(blackid)
+                            ret = Twitter.PostFavAdd(blackid)
                             If ret.Length = 0 Then
                                 args.sIds.Add(post.Id)
                                 post.IsFav = True    'リスト再描画必要
@@ -1246,8 +1222,6 @@ Public Class TweenMain
                 Next
                 rslt.sIds = args.sIds
                 ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
-            Case WORKERTYPE.CreateNewSocket
-                clsTw.CreateNewSocket()
         End Select
 
         'キャンセル要求
@@ -1305,13 +1279,13 @@ Public Class TweenMain
         If Not Finish Then
             '継続中メッセージ
             Select Case AsyncArg.type
-                Case TweenMain.WORKERTYPE.Timeline
+                Case WORKERTYPE.Timeline
                     smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText5 + AsyncArg.page.ToString() + My.Resources.GetTimelineWorker_RunWorkerCompletedText6
-                Case TweenMain.WORKERTYPE.Reply
+                Case WORKERTYPE.Reply
                     smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText4 + AsyncArg.page.ToString() + My.Resources.GetTimelineWorker_RunWorkerCompletedText6
-                Case TweenMain.WORKERTYPE.DirectMessegeRcv
+                Case WORKERTYPE.DirectMessegeRcv
                     smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText8 + AsyncArg.page.ToString() + My.Resources.GetTimelineWorker_RunWorkerCompletedText6
-                Case TweenMain.WORKERTYPE.DirectMessegeSnt
+                Case WORKERTYPE.DirectMessegeSnt
                     smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText12 + AsyncArg.page.ToString() + My.Resources.GetTimelineWorker_RunWorkerCompletedText6
                 Case WORKERTYPE.FavAdd
                     smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText15 + AsyncArg.page.ToString() + "/" + AsyncArg.ids.Count.ToString() + _
@@ -1322,18 +1296,17 @@ Public Class TweenMain
                 Case WORKERTYPE.BlackFavAdd
                     smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText15_black + AsyncArg.page.ToString() + "/" + AsyncArg.ids.Count.ToString() + _
                                         My.Resources.GetTimelineWorker_RunWorkerCompletedText16 + (AsyncArg.page - AsyncArg.sIds.Count - 1).ToString()
-                Case WORKERTYPE.CreateNewSocket
             End Select
         Else
             '完了メッセージ
             Select Case AsyncArg.type
-                Case TweenMain.WORKERTYPE.Timeline
+                Case WORKERTYPE.Timeline
                     smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText1
-                Case TweenMain.WORKERTYPE.Reply
+                Case WORKERTYPE.Reply
                     smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText9
-                Case TweenMain.WORKERTYPE.DirectMessegeRcv
+                Case WORKERTYPE.DirectMessegeRcv
                     smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText11
-                Case TweenMain.WORKERTYPE.DirectMessegeSnt
+                Case WORKERTYPE.DirectMessegeSnt
                     smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText13
                 Case WORKERTYPE.FavAdd
                     '進捗メッセージ残す
@@ -1341,8 +1314,6 @@ Public Class TweenMain
                     '進捗メッセージ残す
                 Case WORKERTYPE.BlackFavAdd
                     '進捗メッセージ残す
-                Case WORKERTYPE.CreateNewSocket
-                    '不要
             End Select
         End If
         Return smsg
@@ -1399,8 +1370,6 @@ Public Class TweenMain
         End If
 
         Select Case rslt.type
-            Case WORKERTYPE.CreateNewSocket
-                Exit Sub
             Case WORKERTYPE.Timeline
                 If _initial Then
                     '起動時
@@ -1518,20 +1487,20 @@ Public Class TweenMain
 
     End Sub
 
-    Private Sub GetTimeline(ByVal WorkerType As WORKERTYPE, ByVal fromPage As Integer, ByVal toPage As Integer)
+    Private Sub GetTimeline(ByVal WkType As WORKERTYPE, ByVal fromPage As Integer, ByVal toPage As Integer)
         If Not IsNetworkAvailable() Then Exit Sub
         'タイマー停止
-        Select Case WorkerType
-            Case TweenMain.WORKERTYPE.Timeline, TweenMain.WORKERTYPE.Reply
+        Select Case WkType
+            Case WORKERTYPE.Timeline, WORKERTYPE.Reply
                 TimerTimeline.Enabled = False
-            Case TweenMain.WORKERTYPE.DirectMessegeRcv, TweenMain.WORKERTYPE.DirectMessegeSnt
+            Case WORKERTYPE.DirectMessegeRcv, WORKERTYPE.DirectMessegeSnt
                 TimerDM.Enabled = False
         End Select
         '非同期実行引数設定
         Dim args As New GetWorkerArg
         args.page = fromPage
         args.endPage = toPage
-        args.type = WorkerType
+        args.type = WkType
         '不要かな？一旦コメントアウト
         ''ステータス設定
         'Select Case WorkerType
@@ -1773,9 +1742,9 @@ Public Class TweenMain
             Dim Id As Long = GetCurTabPost(idx).Id
             Dim rtn As String = ""
             If _curTab.Text = "Direct" Then
-                rtn = clsTwSync.RemoveDirectMessage(Id.ToString())
+                rtn = Twitter.RemoveDirectMessage(Id)
             Else
-                rtn = clsTwSync.RemoveStatus(Id.ToString())
+                rtn = Twitter.RemoveStatus(Id)
             End If
             If rtn.Length > 0 Then
                 'エラー
@@ -1847,12 +1816,8 @@ Public Class TweenMain
             SyncLock _syncObject
                 _username = SettingDialog.UserID
                 _password = SettingDialog.PasswordStr
-                clsTw.Username = _username
-                clsTw.Password = _password
-                clsTwPost.Username = _username
-                clsTwPost.Password = _password
-                clsTwSync.Username = _username
-                clsTwSync.Password = _password
+                Twitter.Username = _username
+                Twitter.Password = _password
                 If SettingDialog.TimelinePeriodInt > 0 Then
                     If SettingDialog.PeriodAdjust Then
                         If SettingDialog.TimelinePeriodInt * 1000 < TimerTimeline.Interval Then
@@ -1873,45 +1838,18 @@ Public Class TweenMain
                     TimerDM.Interval = 600000
                     TimerDM.Enabled = False
                 End If
-                clsTw.NextThreshold = SettingDialog.NextPageThreshold
-                clsTw.NextPages = SettingDialog.NextPagesInt
-                clsTwPost.UseAPI = SettingDialog.UseAPI
-                clsTw.HubServer = SettingDialog.HubServer
-                clsTwPost.HubServer = SettingDialog.HubServer
-                clsTwSync.HubServer = SettingDialog.HubServer
-                clsTw.TinyUrlResolve = SettingDialog.TinyUrlResolve
-                clsTw.RestrictFavCheck = SettingDialog.RestrictFavCheck
+                Twitter.NextThreshold = SettingDialog.NextPageThreshold
+                Twitter.NextPages = SettingDialog.NextPagesInt
+                Twitter.UseAPI = SettingDialog.UseAPI
+                Twitter.HubServer = SettingDialog.HubServer
+                Twitter.TinyUrlResolve = SettingDialog.TinyUrlResolve
+                Twitter.RestrictFavCheck = SettingDialog.RestrictFavCheck
 
-                clsTw.ProxyType = SettingDialog.ProxyType
-                clsTw.ProxyAddress = SettingDialog.ProxyAddress
-                clsTw.ProxyPort = SettingDialog.ProxyPort
-                clsTw.ProxyUser = SettingDialog.ProxyUser
-                clsTw.ProxyPassword = SettingDialog.ProxyPassword
-                Dim args As New GetWorkerArg()
-                args.type = WORKERTYPE.CreateNewSocket
-                Do While GetTimelineWorker.IsBusy
-                    Threading.Thread.Sleep(1)
-                    Application.DoEvents()
-                Loop
-                GetTimelineWorker.RunWorkerAsync(args)
-                clsTwPost.ProxyType = SettingDialog.ProxyType
-                clsTwPost.ProxyAddress = SettingDialog.ProxyAddress
-                clsTwPost.ProxyPort = SettingDialog.ProxyPort
-                clsTwPost.ProxyUser = SettingDialog.ProxyUser
-                clsTwPost.ProxyPassword = SettingDialog.ProxyPassword
-
-                Do While PostWorker.IsBusy
-                    Threading.Thread.Sleep(1)
-                    Application.DoEvents()
-                Loop
-                PostWorker.RunWorkerAsync(args)
-
-                clsTwSync.ProxyType = SettingDialog.ProxyType
-                clsTwSync.ProxyAddress = SettingDialog.ProxyAddress
-                clsTwSync.ProxyPort = SettingDialog.ProxyPort
-                clsTwSync.ProxyUser = SettingDialog.ProxyUser
-                clsTwSync.ProxyPassword = SettingDialog.ProxyPassword
-                clsTw.CreateNewSocket()
+                Twitter.ProxyType = SettingDialog.ProxyType
+                Twitter.ProxyAddress = SettingDialog.ProxyAddress
+                Twitter.ProxyPort = SettingDialog.ProxyPort
+                Twitter.ProxyUser = SettingDialog.ProxyUser
+                Twitter.ProxyPassword = SettingDialog.ProxyPassword
 
                 If Not SettingDialog.UnreadManage Then
                     ReadedStripMenuItem.Enabled = False
@@ -2766,15 +2704,15 @@ RETRY2:
         Dim strVer As String
         Dim forceUpdate As Boolean = My.Computer.Keyboard.ShiftKeyDown
 
-        retMsg = clsTwSync.GetVersionInfo()
+        retMsg = Twitter.GetVersionInfo()
         If retMsg.Length > 0 Then
             strVer = retMsg.Substring(0, 4)
             If strVer.CompareTo(My.Application.Info.Version.ToString.Replace(".", "")) > 0 Then
                 Dim tmp As String = String.Format(My.Resources.CheckNewVersionText3, strVer)
                 If MessageBox.Show(tmp, My.Resources.CheckNewVersionText1, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
-                    retMsg = clsTwSync.GetTweenBinary(strVer)
+                    retMsg = Twitter.GetTweenBinary(strVer)
                     If retMsg.Length = 0 Then
-                        retMsg = clsTwSync.GetTweenUpBinary()
+                        retMsg = Twitter.GetTweenUpBinary()
                         If retMsg.Length = 0 Then
                             System.Diagnostics.Process.Start(My.Application.Info.DirectoryPath + "\TweenUp.exe")
                             If startup Then
@@ -2795,9 +2733,9 @@ RETRY2:
                 If forceUpdate Then
                     Dim tmp As String = String.Format(My.Resources.CheckNewVersionText6, strVer)
                     If MessageBox.Show(tmp, My.Resources.CheckNewVersionText1, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
-                        retMsg = clsTwSync.GetTweenBinary(strVer)
+                        retMsg = Twitter.GetTweenBinary(strVer)
                         If retMsg.Length = 0 Then
-                            retMsg = clsTwSync.GetTweenUpBinary()
+                            retMsg = Twitter.GetTweenUpBinary()
                             If retMsg.Length = 0 Then
                                 System.Diagnostics.Process.Start(My.Application.Info.DirectoryPath + "\TweenUp.exe")
                                 If startup Then
@@ -3906,10 +3844,10 @@ RETRY2:
     End Function
 
     Private Sub InfoTwitterMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles InfoTwitterMenuItem.Click
-        If clsTw.InfoTwitter.Trim() = "" Then
+        If Twitter.InfoTwitter.Trim() = "" Then
             MessageBox.Show(My.Resources.InfoTwitterMenuItem_ClickText1, My.Resources.InfoTwitterMenuItem_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Information)
         Else
-            Dim inf As String = clsTw.InfoTwitter.Trim()
+            Dim inf As String = Twitter.InfoTwitter.Trim()
             inf = "<html><head></head><body>" + inf + "</body></html>"
             PostBrowser.Visible = False
             PostBrowser.DocumentText = inf
@@ -3931,16 +3869,12 @@ RETRY2:
         Dim rslt As New GetWorkerResult()
 
         Dim args As GetWorkerArg = DirectCast(e.Argument, GetWorkerArg)
-        If args.type = WORKERTYPE.CreateNewSocket Then
-            clsTwPost.CreateNewSocket()
-        Else
-            PostWorker.ReportProgress(0)
-            CheckReplyTo(args.status)
-            ret = clsTwPost.PostStatus(args.status, _reply_to_id)
-            _reply_to_id = 0
-            _reply_to_name = Nothing
-            PostWorker.ReportProgress(100)
-        End If
+        PostWorker.ReportProgress(0)
+        CheckReplyTo(args.status)
+        ret = Twitter.PostStatus(args.status, _reply_to_id)
+        _reply_to_id = 0
+        _reply_to_name = Nothing
+        PostWorker.ReportProgress(100)
         rslt.retMsg = ret
         rslt.page = args.page
         rslt.endPage = args.endPage
@@ -4004,8 +3938,6 @@ RETRY2:
         End If
 
         Select Case rslt.type
-            Case WORKERTYPE.CreateNewSocket
-                Exit Sub
             Case WORKERTYPE.PostMessage
                 urlUndoBuffer = Nothing
                 UrlUndoToolStripMenuItem.Enabled = False  'Undoをできないように設定
@@ -4175,7 +4107,7 @@ RETRY2:
     End Sub
 
     Private Sub WedataMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles WedataMenuItem.Click
-        If clsTwSync IsNot Nothing Then clsTwSync.GetWedata()
+        Twitter.GetWedata()
     End Sub
 
     Private Sub OpenURLMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OpenURLMenuItem.Click
@@ -4344,7 +4276,7 @@ RETRY2:
         My.Application.DoEvents()
         Me.Cursor = Cursors.WaitCursor
         Dim ret As String
-        ret = clsTwSync.GetFollowers()
+        ret = Twitter.GetFollowers()
         If ret <> "" Then
             StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText2 & ret
             Exit Sub
@@ -4469,7 +4401,7 @@ RETRY2:
                 ' 文字列が選択されている場合はその文字列について処理
 
                 '短縮URL変換 日本語を含むかもしれないのでURLエンコードする
-                result = clsTwSync.MakeShortUrl(Converter_Type, StatusText.SelectedText)
+                result = Twitter.MakeShortUrl(Converter_Type, StatusText.SelectedText)
 
                 If result.Equals("Can't convert") Then
                     Return False
@@ -4506,7 +4438,7 @@ RETRY2:
                 StatusText.Select(StatusText.Text.IndexOf(tmp, StringComparison.Ordinal), tmp.Length)
 
                 '短縮URL変換
-                result = clsTwSync.MakeShortUrl(Converter_Type, StatusText.SelectedText)
+                result = Twitter.MakeShortUrl(Converter_Type, StatusText.SelectedText)
 
                 If result.Equals("Can't convert") Then
                     Return False
