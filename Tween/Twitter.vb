@@ -1137,7 +1137,12 @@ Public Module Twitter
             End Using
         Catch ex As XmlException
             IsThreadError = True
+            TraceOut("NG(XmlException)")
             Return "NG(XmlException)"
+        Catch ex As Exception
+            IsThreadError = True
+            TraceOut("NG OtherError:" + ex.Message)
+            Return "NG OtherError:" + ex.Message
         End Try
 
         Return ""
@@ -1153,6 +1158,32 @@ Public Module Twitter
             _threadErr = value
         End Set
     End Property
+
+    Private Sub GetFollowersCallback(ByVal ar As IAsyncResult)
+        Dim dlgt As GetFollowersDelegate = DirectCast(ar.AsyncState, GetFollowersDelegate)
+
+        Try
+            Dim ret As String = dlgt.EndInvoke(ar)
+            If Not ret.Equals("") AndAlso Not IsThreadError Then
+                TraceOut(ret)
+                IsThreadError = True
+            End If
+        Catch ex As XmlException
+            IsThreadError = True
+        Catch ex As Exception
+            IsThreadError = True
+            'Dim _dlgt As rethrowExceptionDelegate = New rethrowExceptionDelegate(AddressOf rethrowException)
+            ' UIスレッドで例外を再スロー(うまく投げられない?)
+            '_dlgt.BeginInvoke(ex, Nothing, Nothing)
+        End Try
+
+    End Sub
+
+    Delegate Sub rethrowExceptionDelegate(ByVal ex As Exception)
+
+    Private Sub rethrowException(ByVal ex As Exception)
+        Throw New ApplicationException("バックグラウンド操作で例外発生(GetFollowersDelegate)", ex)
+    End Sub
 
     Private Function doGetFollowers() As String
 #If DEBUG Then
@@ -1180,22 +1211,23 @@ Public Module Twitter
         Dim handle(i) As Threading.WaitHandle
         For cnt As Integer = 0 To i
             ' 全スレッド一度に開始 調停はwinsock任せ
-            ar(cnt) = DelegateInstance.BeginInvoke(cnt + 1, Nothing, Nothing)
+            ar(cnt) = DelegateInstance.BeginInvoke(cnt + 1, New System.AsyncCallback(AddressOf GetFollowersCallback), DelegateInstance)
             handle(cnt) = ar(cnt).AsyncWaitHandle
         Next
 
         '全てのスレッドの終了を待つ
         Threading.WaitHandle.WaitAll(handle)
         System.Threading.Thread.Sleep(10)
+        ' エラーが発生しているならFollowersリストクリア
 
-        If IsThreadError Then
-            ' エラーが発生しているならFollowersリストクリア
-            SyncLock GetType(Twitter)
+        SyncLock GetType(Twitter)
+            If IsThreadError Then
                 follower.Clear()
                 follower.Add(_uid.ToLower())
-            End SyncLock
-            Return "NG"
-        End If
+
+                Return "NG"
+            End If
+        End SyncLock
 
 #If DEBUG Then
         Dim millisec As Long = sw.ElapsedMilliseconds
