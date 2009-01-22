@@ -1226,6 +1226,7 @@ Public Module Twitter
         Do
         Loop Until Interlocked.Add(threadNum, 0) = 0
 
+        semaphore.Close()
 
         ' エラーが発生しているならFollowersリストクリア
 
