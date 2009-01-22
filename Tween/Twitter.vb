@@ -24,6 +24,7 @@
 Imports System.Web
 Imports System.Xml
 Imports System.Text
+Imports System.Threading
 Imports System.Text.RegularExpressions
 
 Public Module Twitter
@@ -1160,7 +1161,8 @@ Public Module Twitter
 
     Private Sub GetFollowersCallback(ByVal ar As IAsyncResult)
         Dim dlgt As GetFollowersDelegate = DirectCast(ar.AsyncState, GetFollowersDelegate)
-
+        semaphore.Release()
+        Interlocked.Decrement(threadNum)
         Try
             Dim ret As String = dlgt.EndInvoke(ar)
             If Not ret.Equals("") AndAlso Not IsThreadError Then
@@ -1184,6 +1186,9 @@ Public Module Twitter
         Throw New ApplicationException("バックグラウンド操作で例外発生(GetFollowersDelegate)", ex)
     End Sub
 
+    Private semaphore As Threading.Semaphore = Nothing
+    Private threadNum As Integer = 0
+
     Private Function doGetFollowers() As String
 #If DEBUG Then
         Dim sw As New System.Diagnostics.Stopwatch
@@ -1193,7 +1198,11 @@ Public Module Twitter
         Dim resMsg As String = ""
         Dim i As Integer = 0
         Dim DelegateInstance As GetFollowersDelegate = New GetFollowersDelegate(AddressOf GetFollowersMethod)
+        Dim threadMax As Integer = 8
 
+        semaphore = New System.Threading.Semaphore(threadMax, threadMax) 'スレッド最大数
+        threadNum = 0
+        IsThreadError = False
         follower.Clear()
         follower.Add(_uid.ToLower())
 
@@ -1206,17 +1215,18 @@ Public Module Twitter
             Return "NG"
         End Try
 
-        Dim ar(i) As IAsyncResult
-        Dim handle(i) As Threading.WaitHandle
+
         For cnt As Integer = 0 To i
-            ' 全スレッド一度に開始 調停はwinsock任せ
-            ar(cnt) = DelegateInstance.BeginInvoke(cnt + 1, New System.AsyncCallback(AddressOf GetFollowersCallback), DelegateInstance)
-            handle(cnt) = ar(cnt).AsyncWaitHandle
+            semaphore.WaitOne()
+            Interlocked.Increment(threadNum)
+            DelegateInstance.BeginInvoke(cnt + 1, New System.AsyncCallback(AddressOf GetFollowersCallback), DelegateInstance)
         Next
 
         '全てのスレッドの終了を待つ
-        Threading.WaitHandle.WaitAll(handle)
-        System.Threading.Thread.Sleep(10)
+        Do
+        Loop Until Interlocked.Add(threadNum, 0) = 0
+
+
         ' エラーが発生しているならFollowersリストクリア
 
         If IsThreadError Then
