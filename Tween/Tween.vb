@@ -3347,10 +3347,8 @@ RETRY2:
                         Next
                     Next
                 End If
-
+                _config.Save()
             End SyncLock
-
-            _config.Save()
         End If
     End Sub
 
