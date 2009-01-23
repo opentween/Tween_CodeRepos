@@ -142,13 +142,10 @@ Partial Class TweenMain
         Me.AboutMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.TimerTimeline = New System.Windows.Forms.Timer(Me.components)
         Me.NotifyIcon1 = New System.Windows.Forms.NotifyIcon(Me.components)
-        Me.GetTimelineWorker = New System.ComponentModel.BackgroundWorker
         Me.TimerDM = New System.Windows.Forms.Timer(Me.components)
-        Me.ExecWorker = New System.ComponentModel.BackgroundWorker
         Me.TimerColorize = New System.Windows.Forms.Timer(Me.components)
         Me.SaveFileDialog1 = New System.Windows.Forms.SaveFileDialog
         Me.TimerRefreshIcon = New System.Windows.Forms.Timer(Me.components)
-        Me.PostWorker = New System.ComponentModel.BackgroundWorker
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog
         Me.ToolStripContainer1.BottomToolStripPanel.SuspendLayout()
         Me.ToolStripContainer1.ContentPanel.SuspendLayout()
@@ -486,6 +483,7 @@ Partial Class TweenMain
         '
         Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SettingStripMenuItem, Me.ToolStripSeparator9, Me.SaveLogMenuItem, Me.ToolStripSeparator17, Me.NewPostPopMenuItem, Me.PlaySoundMenuItem, Me.ListLockMenuItem, Me.ToolStripSeparator15, Me.MultiLineMenuItem, Me.ToolStripSeparator21, Me.EndToolStripMenuItem})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
+        Me.ContextMenuStrip1.OwnerItem = Me.MenuItemFile
         Me.ContextMenuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
         Me.ContextMenuStrip1.ShowCheckMargin = True
         Me.ContextMenuStrip1.ShowImageMargin = False
@@ -853,17 +851,9 @@ Partial Class TweenMain
         Me.NotifyIcon1.ContextMenuStrip = Me.ContextMenuStrip1
         resources.ApplyResources(Me.NotifyIcon1, "NotifyIcon1")
         '
-        'GetTimelineWorker
-        '
-        Me.GetTimelineWorker.WorkerReportsProgress = True
-        Me.GetTimelineWorker.WorkerSupportsCancellation = True
-        '
         'TimerDM
         '
         Me.TimerDM.Interval = 600000
-        '
-        'ExecWorker
-        '
         '
         'TimerColorize
         '
@@ -871,11 +861,6 @@ Partial Class TweenMain
         'TimerRefreshIcon
         '
         Me.TimerRefreshIcon.Interval = 50
-        '
-        'PostWorker
-        '
-        Me.PostWorker.WorkerReportsProgress = True
-        Me.PostWorker.WorkerSupportsCancellation = True
         '
         'OpenFileDialog1
         '
@@ -922,7 +907,6 @@ Partial Class TweenMain
     Friend WithEvents NotifyIcon1 As System.Windows.Forms.NotifyIcon
     Friend WithEvents ContextMenuStrip1 As System.Windows.Forms.ContextMenuStrip
     Friend WithEvents EndToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents GetTimelineWorker As System.ComponentModel.BackgroundWorker
     Friend WithEvents ContextMenuStrip2 As System.Windows.Forms.ContextMenuStrip
     Friend WithEvents FavAddToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents FavRemoveToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
@@ -943,7 +927,6 @@ Partial Class TweenMain
     Friend WithEvents SettingStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator9 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents TabImage As System.Windows.Forms.ImageList
-    Friend WithEvents ExecWorker As System.ComponentModel.BackgroundWorker
     Friend WithEvents NewPostPopMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ListLockMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents JumpUnreadMenuItem As System.Windows.Forms.ToolStripMenuItem
@@ -968,7 +951,6 @@ Partial Class TweenMain
     Friend WithEvents AddTabMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator20 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents ReplyAllStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents PostWorker As System.ComponentModel.BackgroundWorker
     Friend WithEvents IDRuleMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator10 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents SelectAllMenuItem As System.Windows.Forms.ToolStripMenuItem

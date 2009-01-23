@@ -137,6 +137,10 @@ Public Class TweenMain
     Private _curItemIndex As Integer
     Private _curList As DetailsListView
     Private _curPost As PostClass
+    Private _waitFollower As Boolean = False
+    Private _waitTimeline As Boolean = False
+    Private _waitReply As Boolean = False
+    Private _waitDm As Boolean = False
     '''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 #If DEBUG Then
@@ -557,9 +561,6 @@ Public Class TweenMain
         Twitter.NextThreshold = SettingDialog.NextPageThreshold   '次頁取得閾値
         Twitter.NextPages = SettingDialog.NextPagesInt    '閾値オーバー時の読み込みページ数（未使用）
 
-        'clsTw = New Twitter(_username, _password, SettingDialog.ProxyType, SettingDialog.ProxyAddress, SettingDialog.ProxyPort, SettingDialog.ProxyUser, SettingDialog.ProxyPassword)
-        'clsTwPost = New Twitter(_username, _password, SettingDialog.ProxyType, SettingDialog.ProxyAddress, SettingDialog.ProxyPort, SettingDialog.ProxyUser, SettingDialog.ProxyPassword)
-        'clsTwSync = New Twitter(_username, _password, SettingDialog.ProxyType, SettingDialog.ProxyAddress, SettingDialog.ProxyPort, SettingDialog.ProxyUser, SettingDialog.ProxyPassword)
         If SettingDialog.StartupKey Then
             Twitter.GetWedata()
         End If
@@ -697,7 +698,30 @@ Public Class TweenMain
         End If
 
         If IsNetworkAvailable() Then
-            GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
+            If SettingDialog.StartupFollowers Then
+                _waitFollower = True
+                GetTimeline(WORKERTYPE.Follower, 0, 0)
+            End If
+            If SettingDialog.ReadPagesDM > 0 Then
+                _waitDm = True
+                GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, SettingDialog.ReadPagesDM)
+            End If
+            Do While _waitFollower
+                System.Threading.Thread.Sleep(1)
+                My.Application.DoEvents()
+            Loop
+            If SettingDialog.ReadPages > 0 Then
+                _waitTimeline = True
+                GetTimeline(WORKERTYPE.Timeline, 1, SettingDialog.ReadPages)
+            End If
+            If SettingDialog.ReadPagesReply > 0 Then
+                _waitReply = True
+                GetTimeline(WORKERTYPE.Reply, 1, SettingDialog.ReadPagesReply)
+            End If
+            Do While _waitTimeline OrElse _waitReply
+                System.Threading.Thread.Sleep(1)
+                My.Application.DoEvents()
+            Loop
         Else
             TimerRefreshIcon.Enabled = False
             NotifyIcon1.Icon = NIconAtSmoke
@@ -709,6 +733,7 @@ Public Class TweenMain
             DeleteStripMenuItem.Enabled = False
             RefreshStripMenuItem.Enabled = False
         End If
+        _initial = False
 
     End Sub
 
@@ -728,7 +753,7 @@ Public Class TweenMain
                 If SettingDialog.DMPeriodInt > 0 Then TimerDM.Enabled = True
                 If SettingDialog.TimelinePeriodInt > 0 Then TimerTimeline.Enabled = True
             Else
-                GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
+                GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
             End If
         Else
             TimerRefreshIcon.Enabled = False
@@ -747,7 +772,7 @@ Public Class TweenMain
 
         If Not IsNetworkAvailable() Then Exit Sub
 
-        GetTimeline(WORKERTYPE.Timeline, 1, 1)
+        GetTimeline(WORKERTYPE.Timeline, 1, 0)
     End Sub
 
     Private Sub TimerDM_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerDM.Tick
@@ -755,14 +780,10 @@ Public Class TweenMain
 
         If Not IsNetworkAvailable() Then Exit Sub
 
-        GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
+        GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
     End Sub
 
-    Private Sub RefreshTimeline(ByVal Dm As Boolean)
-        Dim notifyPosts As New List(Of PostClass)
-        Dim soundFile As String = ""
-        Dim addCount As Integer = 0
-
+    Private Sub RefreshTimeline()
         'スクロール制御準備
         Dim smode As Integer = -1    '-1:制御しない,-2:最新へ,その他:topitem使用
         Dim topId As Long = -1
@@ -827,26 +848,26 @@ Public Class TweenMain
         Next
 
         '更新確定
+        Dim notifyPosts() As PostClass = Nothing
+        Dim soundFile As String = ""
+        Dim addCount As Integer = 0
         addCount = _statuses.SubmitUpdate(soundFile, notifyPosts)
 
         'リストに反映＆選択状態復元
         For Each tab As TabPage In ListTab.TabPages
             Dim lst As DetailsListView = DirectCast(tab.Controls(0), DetailsListView)
             Dim tabInfo As TabClass = _statuses.Tabs(tab.Text)
-            If Dm AndAlso tab.Text = "Direct" OrElse _
-               Not Dm AndAlso tab.Text <> "Direct" Then
-                If lst.VirtualListSize <> tabInfo.AllCount Then
-                    If lst.Equals(_curList) Then
-                        _itemCache = Nothing
-                        _postCache = Nothing
-                    End If
-                    lst.VirtualListSize = tabInfo.AllCount 'リスト件数更新
-                    Me.SelectListItem(lst, _
-                                      _statuses.GetIndex(tab.Text, selId(tab.Text)), _
-                                      _statuses.GetIndex(tab.Text, focusedId(tab.Text)))
+            If lst.VirtualListSize <> tabInfo.AllCount Then
+                If lst.Equals(_curList) Then
+                    _itemCache = Nothing
+                    _postCache = Nothing
                 End If
-                If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
+                lst.VirtualListSize = tabInfo.AllCount 'リスト件数更新
+                Me.SelectListItem(lst, _
+                                  _statuses.GetIndex(tab.Text, selId(tab.Text)), _
+                                  _statuses.GetIndex(tab.Text, focusedId(tab.Text)))
             End If
+            If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
         Next
 
         'スクロール制御後処理
@@ -867,11 +888,15 @@ Public Class TweenMain
         End If
 
         '新着通知
-        If NewPostPopMenuItem.Checked AndAlso notifyPosts.Count > 0 AndAlso Not _initial Then
+        If NewPostPopMenuItem.Checked AndAlso _
+           notifyPosts IsNot Nothing AndAlso notifyPosts.Length > 0 AndAlso _
+           Not _initial Then
             Dim sb As New StringBuilder
             Dim reply As Boolean = False
+            Dim dm As Boolean = False
             For Each post As PostClass In notifyPosts
                 If post.IsReply Then reply = True
+                If post.IsDm Then dm = True
                 If sb.Length > 0 Then sb.Append(System.Environment.NewLine)
                 Select Case SettingDialog.NameBalloon
                     Case NameBalloonEnum.UserID
@@ -882,7 +907,7 @@ Public Class TweenMain
                 sb.Append(post.Data)
             Next
             If SettingDialog.DispUsername Then NotifyIcon1.BalloonTipTitle = _username + " - " Else NotifyIcon1.BalloonTipTitle = ""
-            If Dm Then
+            If dm Then
                 NotifyIcon1.BalloonTipIcon = ToolTipIcon.Warning
                 NotifyIcon1.BalloonTipTitle += "Tween [DM] " + My.Resources.RefreshDirectMessageText1 + " " + addCount.ToString() + My.Resources.RefreshDirectMessageText2
             ElseIf reply Then
@@ -1057,11 +1082,14 @@ Public Class TweenMain
         If regex.IsMatch(args.status) AndAlso args.status.EndsWith(" .") = False Then args.status += " ."
         If mc2.Success Then args.status = regex2.Replace(args.status, "$& ")
 
-        Do While PostWorker.IsBusy
-            Threading.Thread.Sleep(1)
-            Application.DoEvents()
-        Loop
-        PostWorker.RunWorkerAsync(args)
+        Dim bw As New BackgroundWorker
+        bw.WorkerReportsProgress = True
+        bw.WorkerSupportsCancellation = True
+        AddHandler bw.DoWork, AddressOf GetTimelineWorker_DoWork
+        AddHandler bw.ProgressChanged, AddressOf PostWorker_ProgressChanged
+        AddHandler bw.RunWorkerCompleted, AddressOf GetTimelineWorker_RunWorkerCompleted
+
+        bw.RunWorkerAsync(args)
 
         ListTab.SelectedTab.Controls(0).Focus()
     End Sub
@@ -1078,8 +1106,7 @@ Public Class TweenMain
             Me.Visible = False
         Else
             _endingFlag = True
-            GetTimelineWorker.CancelAsync()
-            PostWorker.CancelAsync()
+            'GetTimelineWorker.CancelAsync()
             Twitter.Ending = True
 
             TimerTimeline.Enabled = False
@@ -1101,8 +1128,9 @@ Public Class TweenMain
         Me.Activate()
     End Sub
 
-    Private Sub GetTimelineWorker_DoWork(ByVal sender As System.Object, ByVal e As System.ComponentModel.DoWorkEventArgs) Handles GetTimelineWorker.DoWork
-        If GetTimelineWorker.CancellationPending OrElse _endingFlag Then
+    Private Sub GetTimelineWorker_DoWork(ByVal sender As System.Object, ByVal e As System.ComponentModel.DoWorkEventArgs)
+        Dim bw As BackgroundWorker = DirectCast(sender, BackgroundWorker)
+        If bw.CancellationPending OrElse _endingFlag Then
             e.Cancel = True
             Exit Sub
         End If
@@ -1118,75 +1146,23 @@ Public Class TweenMain
         Dim args As GetWorkerArg = DirectCast(e.Argument, GetWorkerArg)
 
 
-        GetTimelineWorker.ReportProgress(0, "")   'Notifyアイコンアニメーション開始
+        bw.ReportProgress(0, "")   'Notifyアイコンアニメーション開始
 
         Select Case args.type
-            Case WORKERTYPE.Timeline
-                _statuses.BeginUpdate(TabInformations.EDITMODE.Post)
-                If _initial Then
-                    Do
-                        GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
-                        ret = Twitter.GetTimeline(args.page, read, args.endPage, args.type, TIconDic, TIconSmallList, rslt.newDM)
-                        args.page += 1
-                    Loop While ret.Length = 0 AndAlso _
-                                args.page <= SettingDialog.ReadPages AndAlso _
-                                Not GetTimelineWorker.CancellationPending AndAlso _
-                                args.page Mod 10 > 0
-                Else
-                    Do
-                        GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
-                        ret = Twitter.GetTimeline(args.page, read, args.endPage, args.type, TIconDic, TIconSmallList, rslt.newDM)
-                        args.page += 1
-                    Loop While ret.Length = 0 AndAlso _
-                                args.page <= args.endPage AndAlso _
-                                Not GetTimelineWorker.CancellationPending
-                End If
-                rslt.addCount = _statuses.EndUpdate()
-            Case WORKERTYPE.Reply
-                _statuses.BeginUpdate(TabInformations.EDITMODE.Post)
-                Do
-                    GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
-                    ret = Twitter.GetTimeline(args.page, read, args.endPage, args.type, TIconDic, TIconSmallList, rslt.newDM)
-                    args.page += 1
-                Loop While _initial AndAlso _
-                            ret.Length = 0 AndAlso _
-                            args.page <= SettingDialog.ReadPagesReply AndAlso _
-                            Not GetTimelineWorker.CancellationPending AndAlso _
-                            args.page Mod 10 > 0
-                rslt.addCount = _statuses.EndUpdate()
-            Case WORKERTYPE.DirectMessegeRcv
-                _statuses.BeginUpdate(TabInformations.EDITMODE.Dm)
-                Do
-                    GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
-                    ret = Twitter.GetDirectMessage(args.page, read, args.endPage, args.type, TIconDic, TIconSmallList)
-                    args.page += 1
-                Loop While _initial AndAlso _
-                            ret.Length = 0 AndAlso _
-                            args.page <= SettingDialog.ReadPagesDM AndAlso _
-                            Not GetTimelineWorker.CancellationPending AndAlso _
-                            args.page Mod 10 > 0
-                rslt.addCount = _statuses.EndUpdate()
-                If _initial AndAlso SettingDialog.StartupFollowers Then
-                    GetTimelineWorker.ReportProgress(50, My.Resources.UpdateFollowersMenuItem1_ClickText1)
-                    ret = Twitter.GetFollowers()
-                End If
-            Case WORKERTYPE.DirectMessegeSnt
-                _statuses.BeginUpdate(TabInformations.EDITMODE.Dm)
-                Do
-                    GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
-                    ret = Twitter.GetDirectMessage(args.page, read, args.endPage, args.type, TIconDic, TIconSmallList)
-                    args.page += 1
-                Loop While _initial AndAlso _
-                            ret.Length = 0 AndAlso _
-                            args.page <= SettingDialog.ReadPagesDM AndAlso _
-                            Not GetTimelineWorker.CancellationPending AndAlso _
-                            args.page Mod 10 > 0
-                rslt.addCount = _statuses.EndUpdate()
+            Case WORKERTYPE.Timeline, WORKERTYPE.Reply
+                bw.ReportProgress(50, MakeStatusMessage(args, False))
+                ret = Twitter.GetTimeline(args.page, read, args.endPage, args.type, TIconDic, TIconSmallList, rslt.newDM)
+                rslt.addCount = _statuses.DistributePosts()
+            Case WORKERTYPE.DirectMessegeRcv    '送信分もまとめて取得
+                bw.ReportProgress(50, MakeStatusMessage(args, False))
+                ret = Twitter.GetDirectMessage(args.page, read, args.endPage, args.type, TIconDic, TIconSmallList)
+                rslt.addCount = _statuses.DistributePosts()
             Case WORKERTYPE.FavAdd
+                'スレッド処理はしない
                 For i As Integer = 0 To args.ids.Count - 1
                     Dim post As PostClass = _statuses.Item(args.ids(i))
                     args.page = i + 1
-                    GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
+                    bw.ReportProgress(50, MakeStatusMessage(args, False))
                     If Not post.IsFav Then
                         ret = Twitter.PostFavAdd(post.Id)
                         If ret.Length = 0 Then
@@ -1198,10 +1174,11 @@ Public Class TweenMain
                 Next
                 rslt.sIds = args.sIds
             Case WORKERTYPE.FavRemove
+                'スレッド処理はしない
                 For i As Integer = 0 To args.ids.Count - 1
                     Dim post As PostClass = _statuses.Item(args.ids(i))
                     args.page = i + 1
-                    GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
+                    bw.ReportProgress(50, MakeStatusMessage(args, False))
                     If post.IsFav Then
                         ret = Twitter.PostFavRemove(post.Id)
                         If ret.Length = 0 Then
@@ -1213,11 +1190,12 @@ Public Class TweenMain
                 rslt.sIds = args.sIds
                 ' Contributed by shuyoko <http://twitter.com/shuyoko> BEGIN:
             Case WORKERTYPE.BlackFavAdd
+                'スレッド処理はしない
                 For i As Integer = 0 To args.ids.Count - 1
                     Dim post As PostClass = _statuses.Item(args.ids(i))
                     Dim blackid As Long = 0
                     args.page = i + 1
-                    GetTimelineWorker.ReportProgress(50, MakeStatusMessage(args, False))
+                    bw.ReportProgress(50, MakeStatusMessage(args, False))
                     If Not post.IsFav Then
                         ret = Twitter.GetBlackFavId(post.Id, blackid)
                         If ret.Length = 0 Then
@@ -1232,10 +1210,20 @@ Public Class TweenMain
                 Next
                 rslt.sIds = args.sIds
                 ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
+            Case WORKERTYPE.PostMessage
+                bw.ReportProgress(0)    'ReportProgressの割り当ては「Postworker_ProgressChanged」なので注意
+                CheckReplyTo(args.status)
+                ret = Twitter.PostStatus(args.status, _reply_to_id)
+                _reply_to_id = 0
+                _reply_to_name = Nothing
+                bw.ReportProgress(100)
+            Case WORKERTYPE.Follower
+                bw.ReportProgress(50, My.Resources.UpdateFollowersMenuItem1_ClickText1)
+                ret = Twitter.GetFollowers()
         End Select
 
         'キャンセル要求
-        If GetTimelineWorker.CancellationPending Then
+        If bw.CancellationPending Then
             e.Cancel = True
             Exit Sub
         End If
@@ -1268,7 +1256,7 @@ Public Class TweenMain
         End If
 
         '終了ステータス
-        GetTimelineWorker.ReportProgress(100, MakeStatusMessage(args, True))   'ステータス書き換え、Notifyアイコンアニメーション開始
+        bw.ReportProgress(100, MakeStatusMessage(args, True))   'ステータス書き換え、Notifyアイコンアニメーション開始
 
         rslt.retMsg = ret
         rslt.type = args.type
@@ -1295,8 +1283,8 @@ Public Class TweenMain
                     smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText4 + AsyncArg.page.ToString() + My.Resources.GetTimelineWorker_RunWorkerCompletedText6
                 Case WORKERTYPE.DirectMessegeRcv
                     smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText8 + AsyncArg.page.ToString() + My.Resources.GetTimelineWorker_RunWorkerCompletedText6
-                Case WORKERTYPE.DirectMessegeSnt
-                    smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText12 + AsyncArg.page.ToString() + My.Resources.GetTimelineWorker_RunWorkerCompletedText6
+                    'Case WORKERTYPE.DirectMessegeSnt
+                    '    smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText12 + AsyncArg.page.ToString() + My.Resources.GetTimelineWorker_RunWorkerCompletedText6
                 Case WORKERTYPE.FavAdd
                     smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText15 + AsyncArg.page.ToString() + "/" + AsyncArg.ids.Count.ToString() + _
                                         My.Resources.GetTimelineWorker_RunWorkerCompletedText16 + (AsyncArg.page - AsyncArg.sIds.Count - 1).ToString()
@@ -1329,7 +1317,7 @@ Public Class TweenMain
         Return smsg
     End Function
 
-    Private Sub GetTimelineWorker_ProgressChanged(ByVal sender As Object, ByVal e As System.ComponentModel.ProgressChangedEventArgs) Handles GetTimelineWorker.ProgressChanged
+    Private Sub GetTimelineWorker_ProgressChanged(ByVal sender As Object, ByVal e As System.ComponentModel.ProgressChangedEventArgs)
         Dim smsg As String = DirectCast(e.UserState, String)
         If smsg.Length > 0 Then StatusLabel.Text = smsg
         If e.ProgressPercentage = 0 Then    '開始
@@ -1341,7 +1329,7 @@ Public Class TweenMain
         End If
     End Sub
 
-    Private Sub GetTimelineWorker_RunWorkerCompleted(ByVal sender As System.Object, ByVal e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles GetTimelineWorker.RunWorkerCompleted
+    Private Sub GetTimelineWorker_RunWorkerCompleted(ByVal sender As System.Object, ByVal e As System.ComponentModel.RunWorkerCompletedEventArgs)
 
         If _endingFlag OrElse e.Cancelled Then Exit Sub 'キャンセル
 
@@ -1357,7 +1345,12 @@ Public Class TweenMain
 
         If e.Error IsNot Nothing Then
             If nw Then NotifyIcon1.Icon = NIconAtRed
-            Throw e.Error
+            ExceptionOut(e.Error)
+            _waitTimeline = False
+            _waitReply = False
+            _waitFollower = False
+            _waitDm = False
+            _initial = False
             Exit Sub
         End If
 
@@ -1369,40 +1362,20 @@ Public Class TweenMain
         If rslt.retMsg.Length > 0 Then
             If nw Then NotifyIcon1.Icon = NIconAtRed
             StatusLabel.Text = rslt.retMsg
+            _waitTimeline = False
+            _waitReply = False
+            _waitFollower = False
+            _waitDm = False
             _initial = False    '起動時モード終了
         End If
 
         'リストに反映
-        If rslt.type = WORKERTYPE.Timeline OrElse rslt.type = WORKERTYPE.Reply Then
-            RefreshTimeline(False)
-        ElseIf rslt.type = WORKERTYPE.DirectMessegeRcv OrElse rslt.type = WORKERTYPE.DirectMessegeSnt Then
-            RefreshTimeline(True)
-        End If
+        RefreshTimeline()
 
         Select Case rslt.type
             Case WORKERTYPE.Timeline
-                If _initial Then
-                    '起動時
-                    If SettingDialog.ReadPages >= rslt.page + 1 Then
-                        If rslt.page Mod 10 = 0 Then
-                            If NextPageMessage(rslt.page) = Windows.Forms.DialogResult.No Then
-                                If SettingDialog.ReadPagesReply > 0 Then
-                                    GetTimeline(WORKERTYPE.Reply, 1, 1)
-                                Else
-                                    _initial = False
-                                End If
-                                Exit Sub  '抜ける
-                            End If
-                        End If
-                        GetTimeline(WORKERTYPE.Timeline, rslt.page + 1, rslt.endPage)   '続きを読む
-                    Else
-                        If SettingDialog.CheckReply Then
-                            GetTimeline(WORKERTYPE.Reply, 1, 1)
-                        Else
-                            _initial = False
-                        End If
-                    End If
-                Else
+                _waitTimeline = False
+                If Not _initial Then
                     '通常時
                     '自動調整
                     If SettingDialog.PeriodAdjust AndAlso SettingDialog.TimelinePeriodInt > 0 Then
@@ -1416,70 +1389,43 @@ Public Class TweenMain
                             If TimerTimeline.Interval > SettingDialog.TimelinePeriodInt * 1000 Then TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
                         End If
                     End If
-                    If SettingDialog.CheckReply Then
-                        GetTimeline(WORKERTYPE.Reply, 1, 1)
-                    ElseIf rslt.newDM Then
-                        GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
+                    If rslt.newDM Then
+                        GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
                     End If
                 End If
             Case WORKERTYPE.Reply
-                If _initial Then
-                    If SettingDialog.ReadPagesReply >= rslt.page + 1 Then
-                        If rslt.page Mod 10 = 0 Then
-                            If NextPageMessage(rslt.page) = Windows.Forms.DialogResult.No Then
-                                _initial = False
-                                Exit Sub  '抜ける
-                            End If
-                        End If
-                        GetTimeline(WORKERTYPE.Reply, rslt.page + 1, rslt.endPage)
-                    Else
-                        _initial = False
-                    End If
-                ElseIf rslt.newDM Then
-                    GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
+                _waitReply = False
+                If rslt.newDM Then
+                    GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
                 End If
             Case WORKERTYPE.DirectMessegeRcv
-                If _initial Then
-                    If SettingDialog.ReadPagesDM >= rslt.page + 1 Then
-                        If rslt.page Mod 10 = 0 Then
-                            If NextPageMessage(rslt.page) = Windows.Forms.DialogResult.No Then
-                                GetTimeline(WORKERTYPE.DirectMessegeSnt, 1, 1)
-                                Exit Sub  '抜ける
-                            End If
-                        End If
-                        GetTimeline(WORKERTYPE.DirectMessegeRcv, rslt.page + 1, rslt.endPage)
-                    Else
-                        GetTimeline(WORKERTYPE.DirectMessegeSnt, 1, 1)
-                    End If
-                Else
-                    GetTimeline(WORKERTYPE.DirectMessegeSnt, 1, 1)
-                End If
-            Case WORKERTYPE.DirectMessegeSnt
-                If _initial Then
-                    If SettingDialog.ReadPagesDM >= rslt.page + 1 Then
-                        If rslt.page Mod 10 = 0 Then
-                            If NextPageMessage(rslt.page) = Windows.Forms.DialogResult.No Then
-                                If SettingDialog.ReadPages > 0 Then
-                                    GetTimeline(WORKERTYPE.Timeline, 1, 1)
-                                ElseIf SettingDialog.ReadPagesReply > 0 Then
-                                    GetTimeline(WORKERTYPE.Reply, 1, 1)
-                                Else
-                                    _initial = False
-                                End If
-                                Exit Sub   '抜ける
-                            End If
-                        End If
-                        GetTimeline(WORKERTYPE.DirectMessegeSnt, rslt.page + 1, rslt.endPage)
-                    Else
-                        If SettingDialog.ReadPages > 0 Then
-                            GetTimeline(WORKERTYPE.Timeline, 1, 1)
-                        ElseIf SettingDialog.ReadPagesReply > 0 Then
-                            GetTimeline(WORKERTYPE.Reply, 1, 1)
-                        Else
-                            _initial = False
-                        End If
-                    End If
-                End If
+                _waitDm = False
+                'Case WORKERTYPE.DirectMessegeSnt
+                'If _initial Then
+                '    If SettingDialog.ReadPagesDM >= rslt.page + 1 Then
+                '        If rslt.page Mod 10 = 0 Then
+                '            If NextPageMessage(rslt.page) = Windows.Forms.DialogResult.No Then
+                '                If SettingDialog.ReadPages > 0 Then
+                '                    GetTimeline(WORKERTYPE.Timeline, 1, 1)
+                '                ElseIf SettingDialog.ReadPagesReply > 0 Then
+                '                    GetTimeline(WORKERTYPE.Reply, 1, 1)
+                '                Else
+                '                    _initial = False
+                '                End If
+                '                Exit Sub   '抜ける
+                '            End If
+                '        End If
+                '        GetTimeline(WORKERTYPE.DirectMessegeSnt, rslt.page + 1, rslt.endPage)
+                '    Else
+                '        If SettingDialog.ReadPages > 0 Then
+                '            GetTimeline(WORKERTYPE.Timeline, 1, 1)
+                '        ElseIf SettingDialog.ReadPagesReply > 0 Then
+                '            GetTimeline(WORKERTYPE.Reply, 1, 1)
+                '        Else
+                '            _initial = False
+                '        End If
+                '    End If
+                'End If
                 ' Contributed by shuyoko <http://twitter.com/shuyoko> BEGIN:
                 ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
             Case WORKERTYPE.FavAdd, WORKERTYPE.BlackFavAdd, WORKERTYPE.FavRemove
@@ -1493,11 +1439,37 @@ Public Class TweenMain
                     End If
                 Next
                 _curList.EndUpdate()
+            Case WORKERTYPE.PostMessage
+                urlUndoBuffer = Nothing
+                UrlUndoToolStripMenuItem.Enabled = False  'Undoをできないように設定
+
+                If rslt.retMsg.Length > 0 AndAlso Not rslt.retMsg.StartsWith("Outputz") Then
+                    StatusLabel.Text = rslt.retMsg
+                Else
+                    _postTimestamps.Add(Now)
+                    Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
+                    For i As Integer = _postTimestamps.Count - 1 To 0 Step -1
+                        If _postTimestamps(i).CompareTo(oneHour) < 0 Then
+                            _postTimestamps.RemoveAt(i)
+                        End If
+                    Next
+
+                    If rslt.retMsg.Length > 0 Then StatusLabel.Text = rslt.retMsg 'Outputz失敗時
+
+                    StatusText.Text = ""
+                    _history.Add("")
+                    _hisIdx = _history.Count - 1
+                    SetMainWindowTitle()
+                End If
+                GetTimeline(WORKERTYPE.Timeline, 1, 0)
+            Case WORKERTYPE.Follower
+                _waitFollower = False
         End Select
 
     End Sub
 
     Private Sub GetTimeline(ByVal WkType As WORKERTYPE, ByVal fromPage As Integer, ByVal toPage As Integer)
+        'toPage=0:通常モード
         If Not IsNetworkAvailable() Then Exit Sub
         'タイマー停止
         Select Case WkType
@@ -1511,23 +1483,24 @@ Public Class TweenMain
         args.page = fromPage
         args.endPage = toPage
         args.type = WkType
-        '不要かな？一旦コメントアウト
-        ''ステータス設定
-        'Select Case WorkerType
-        '    Case TweenMain.WORKERTYPE.Timeline
-        '        If Not _initial Then StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText5 + args.page.ToString() + My.Resources.GetTimelineWorker_RunWorkerCompletedText6
-        '    Case TweenMain.WORKERTYPE.Reply
-        '        If Not _initial Then StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText4
-        '    Case TweenMain.WORKERTYPE.DirectMessegeRcv
-        '        StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText8
-        '    Case TweenMain.WORKERTYPE.DirectMessegeSnt
-        '        StatusLabel.Text = My.Resources.GetTimelineWorker_RunWorkerCompletedText12
-        'End Select
-        Do While GetTimelineWorker.IsBusy
-            Threading.Thread.Sleep(1)
-            Application.DoEvents()
-        Loop
-        GetTimelineWorker.RunWorkerAsync(args)
+
+        RunAsync(args)
+
+        If _initial Then Exit Sub
+
+        If WkType = WORKERTYPE.Timeline AndAlso fromPage = 1 AndAlso SettingDialog.CheckReply Then
+            args.type = WORKERTYPE.Reply
+            args.page = 1
+            args.endPage = 1
+            RunAsync(args)
+        End If
+
+        If WkType = WORKERTYPE.DirectMessegeRcv Then
+            args.type = WORKERTYPE.DirectMessegeSnt
+            args.page = 1
+            args.endPage = 1
+            RunAsync(args)
+        End If
     End Sub
 
     Private Function NextPageMessage(ByVal page As Integer) As DialogResult
@@ -1577,13 +1550,7 @@ Public Class TweenMain
             Exit Sub
         End If
 
-        Do While GetTimelineWorker.IsBusy
-            Threading.Thread.Sleep(1)
-            Application.DoEvents()
-        Loop
-
-        GetTimelineWorker.RunWorkerAsync(args)
-
+        RunAsync(args)
     End Sub
 
     Private Sub FavRemoveToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FavRemoveToolStripMenuItem.Click
@@ -1610,13 +1577,7 @@ Public Class TweenMain
             Exit Sub
         End If
 
-        Do While GetTimelineWorker.IsBusy
-            Threading.Thread.Sleep(1)
-            Application.DoEvents()
-        Loop
-
-        GetTimelineWorker.RunWorkerAsync(args)
-
+        RunAsync(args)
     End Sub
 
     Private Function GetCurTabPost(ByVal Index As Integer) As PostClass
@@ -1813,11 +1774,11 @@ Public Class TweenMain
     Private Sub DoRefresh()
         Select Case _curTab.Text
             Case "Reply"
-                GetTimeline(WORKERTYPE.Reply, 1, 1)
+                GetTimeline(WORKERTYPE.Reply, 1, 0)
             Case "Direct"
-                GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 1)
+                GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
             Case Else
-                GetTimeline(WORKERTYPE.Timeline, 1, 1)
+                GetTimeline(WORKERTYPE.Timeline, 1, 0)
         End Select
     End Sub
 
@@ -2272,7 +2233,7 @@ Public Class TweenMain
         End If
     End Sub
 
-    Private Sub ExecWorker_DoWork(ByVal sender As System.Object, ByVal e As System.ComponentModel.DoWorkEventArgs) Handles ExecWorker.DoWork
+    Private Sub ExecWorker_DoWork(ByVal sender As System.Object, ByVal e As System.ComponentModel.DoWorkEventArgs)
         Dim myPath As String = Convert.ToString(e.Argument)
 
         Try
@@ -3867,38 +3828,7 @@ RETRY2:
         MakeReplyOrDirectStatus(False, True, True)
     End Sub
 
-    Private Sub PostWorker_DoWork(ByVal sender As System.Object, ByVal e As System.ComponentModel.DoWorkEventArgs) Handles PostWorker.DoWork
-        If PostWorker.CancellationPending OrElse _endingFlag Then
-            e.Cancel = True
-            Exit Sub
-        End If
-
-        Dim ret As String = ""
-        Dim rslt As New GetWorkerResult()
-
-        Dim args As GetWorkerArg = DirectCast(e.Argument, GetWorkerArg)
-        PostWorker.ReportProgress(0)
-        CheckReplyTo(args.status)
-        ret = Twitter.PostStatus(args.status, _reply_to_id)
-        _reply_to_id = 0
-        _reply_to_name = Nothing
-        PostWorker.ReportProgress(100)
-        rslt.retMsg = ret
-        rslt.page = args.page
-        rslt.endPage = args.endPage
-        rslt.type = args.type
-        rslt.imgs = Nothing
-        rslt.tName = args.tName
-
-        If PostWorker.CancellationPending Then
-            e.Cancel = True
-            Exit Sub
-        End If
-
-        e.Result = rslt
-    End Sub
-
-    Private Sub PostWorker_ProgressChanged(ByVal sender As Object, ByVal e As System.ComponentModel.ProgressChangedEventArgs) Handles PostWorker.ProgressChanged
+    Private Sub PostWorker_ProgressChanged(ByVal sender As Object, ByVal e As System.ComponentModel.ProgressChangedEventArgs)
         If e.ProgressPercentage = 0 Then    '開始
             StatusLabel.Text = "Posting..."
             StatusText.Enabled = False
@@ -3916,63 +3846,6 @@ RETRY2:
             TimerRefreshIcon.Enabled = False
             NotifyIcon1.Icon = NIconAt
         End If
-    End Sub
-
-    Private Sub PostWorker_RunWorkerCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles PostWorker.RunWorkerCompleted
-        If _endingFlag OrElse e.Cancelled Then
-            Exit Sub
-        End If
-
-        Dim nw As Boolean = IsNetworkAvailable()
-        If e.Error IsNot Nothing Then
-            If nw Then
-                NotifyIcon1.Icon = NIconAtRed
-            End If
-            Throw e.Error
-            Exit Sub
-        End If
-
-        Dim rslt As GetWorkerResult = DirectCast(e.Result, GetWorkerResult)
-
-        If Not nw Then
-            NotifyIcon1.Icon = NIconAtSmoke
-        End If
-
-        If rslt.retMsg.Length > 0 Then
-            '''''エラー通知方法の変更も設定できるように！
-            If nw Then
-                NotifyIcon1.Icon = NIconAtRed
-            End If
-        End If
-
-        Select Case rslt.type
-            Case WORKERTYPE.PostMessage
-                urlUndoBuffer = Nothing
-                UrlUndoToolStripMenuItem.Enabled = False  'Undoをできないように設定
-
-                If rslt.retMsg.Length > 0 AndAlso Not rslt.retMsg.StartsWith("Outputz") Then
-                    StatusLabel.Text = rslt.retMsg
-                Else
-                    _postTimestamps.Add(Now)
-                    Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
-                    For i As Integer = _postTimestamps.Count - 1 To 0 Step -1
-                        If _postTimestamps(i).CompareTo(oneHour) < 0 Then
-                            _postTimestamps.RemoveAt(i)
-                        End If
-                    Next
-
-                    If rslt.retMsg.Length > 0 Then StatusLabel.Text = rslt.retMsg 'Outputz失敗時
-
-                    StatusText.Text = ""
-                    _history.Add("")
-                    _hisIdx = _history.Count - 1
-                    SetMainWindowTitle()
-                End If
-
-                If Not GetTimelineWorker.IsBusy Then
-                    GetTimeline(WORKERTYPE.Timeline, 1, 1)
-                End If
-        End Select
     End Sub
 
     Private Sub IDRuleMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles IDRuleMenuItem.Click
@@ -4727,12 +4600,7 @@ RETRY2:
             Exit Sub
         End If
 
-        Do While GetTimelineWorker.IsBusy
-            Threading.Thread.Sleep(1)
-            Application.DoEvents()
-        Loop
-
-        GetTimelineWorker.RunWorkerAsync(args)
+        RunAsync(args)
     End Sub
     ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
 
@@ -4751,11 +4619,10 @@ RETRY2:
     End Function
 
     Private Sub OpenUriAsync(ByVal UriString As String)
-        Do While ExecWorker.IsBusy
-            Threading.Thread.Sleep(1)
-            Application.DoEvents()
-        Loop
-        ExecWorker.RunWorkerAsync(UriString)
+        Dim bw As New BackgroundWorker
+        AddHandler bw.DoWork, AddressOf ExecWorker_DoWork
+
+        bw.RunWorkerAsync(UriString)
     End Sub
 
     Private Sub ListTab_Selecting(ByVal sender As System.Object, ByVal e As System.Windows.Forms.TabControlCancelEventArgs) Handles ListTab.Selecting
@@ -4802,5 +4669,15 @@ RETRY2:
         If FocusedIndex > -1 Then
             LView.Items(FocusedIndex).Focused = True
         End If
+    End Sub
+
+    Private Sub RunAsync(ByVal args As GetWorkerArg)
+        Dim bw As New BackgroundWorker
+        bw.WorkerReportsProgress = True
+        bw.WorkerSupportsCancellation = True
+        AddHandler bw.DoWork, AddressOf GetTimelineWorker_DoWork
+        AddHandler bw.ProgressChanged, AddressOf GetTimelineWorker_ProgressChanged
+        AddHandler bw.RunWorkerCompleted, AddressOf GetTimelineWorker_RunWorkerCompleted
+        bw.RunWorkerAsync(args)
     End Sub
 End Class
