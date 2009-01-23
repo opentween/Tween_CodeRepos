@@ -33,7 +33,7 @@ Public Class MySocket
     Private _proxy As System.Net.WebProxy
     Private _proxyType As ProxyTypeEnum
     Private Shared cCon As New System.Net.CookieContainer()
-    Private Shared cConLock As New Object
+    Private Shared ReadOnly cConLock As New Object
 
     Public Enum REQ_TYPE
         ReqGET
@@ -313,5 +313,11 @@ Public Class MySocket
                 End While
             End Using
         End Using
+    End Sub
+
+    Public Shared Sub ResetCookie()
+        SyncLock cConLock
+            cCon = New System.Net.CookieContainer()
+        End SyncLock
     End Sub
 End Class

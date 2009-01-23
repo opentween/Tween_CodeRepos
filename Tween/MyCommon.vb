@@ -87,6 +87,7 @@ Public Module MyCommon
         FavAdd                  'Fav追加
         FavRemove               'Fav削除
         BlackFavAdd             'BlackFav追加 (Added by shuyoko <http://twitter.com/shuyoko>)
+        Follower                'Followerリスト取得
     End Enum
 
     Public Const Block As Object = Nothing
@@ -108,6 +109,31 @@ Public Module MyCommon
             writer.WriteLine(Message)
             writer.WriteLine()
         End Using
+    End Sub
+
+    Public Sub ExceptionOut(ByVal ex As Exception)
+        Dim now As DateTime = DateTime.Now
+        Dim fileName As String = String.Format("Tween-{0:0000}{1:00}{2:00}-{3:00}{4:00}{5:00}.log", now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second)
+
+        Using writer As IO.StreamWriter = New IO.StreamWriter(fileName)
+            writer.WriteLine(My.Resources.UnhandledExceptionText1, DateTime.Now.ToString())
+            writer.WriteLine(My.Resources.UnhandledExceptionText2)
+            writer.WriteLine(My.Resources.UnhandledExceptionText3)
+            writer.WriteLine()
+            writer.WriteLine(My.Resources.UnhandledExceptionText4)
+            writer.WriteLine(My.Resources.UnhandledExceptionText5, Environment.OSVersion.VersionString)
+            writer.WriteLine(My.Resources.UnhandledExceptionText6, Environment.Version.ToString())
+            writer.WriteLine(My.Resources.UnhandledExceptionText7, My.Application.Info.Version.ToString())
+            writer.WriteLine(My.Resources.UnhandledExceptionText8, ex.GetType().FullName, ex.Message)
+            writer.WriteLine(ex.StackTrace)
+            writer.WriteLine()
+        End Using
+
+        If MessageBox.Show(String.Format(My.Resources.UnhandledExceptionText9, fileName, Environment.NewLine), _
+                           My.Resources.UnhandledExceptionText10, MessageBoxButtons.OKCancel, MessageBoxIcon.Error) = DialogResult.OK _
+        Then
+            Diagnostics.Process.Start(fileName)
+        End If
     End Sub
 
     ''' <summary>

@@ -261,7 +261,7 @@ Public Class TabInformations
     Private _tabs As New Dictionary(Of String, TabClass)
     Private _statuses As Dictionary(Of Long, PostClass) = New Dictionary(Of Long, PostClass)
     Private _addedIds As List(Of Long)
-    Private _editMode As EDITMODE
+    'Private _editMode As EDITMODE
 
     '発言の追加は4段階
     'BeginUpdate -> AddPost(複数回) -> EndUpdate          -> SubmitUpdate
@@ -272,6 +272,7 @@ Public Class TabInformations
     Private _addCount As Integer
     Private _soundFile As String
     Private _notifyPosts As List(Of PostClass)
+    Private ReadOnly LockObj As New Object
 
     Private Shared _instance As TabInformations = New TabInformations
 
@@ -465,43 +466,58 @@ Public Class TabInformations
         Next
     End Sub
 
-    Public Sub BeginUpdate(ByVal EditMode As EDITMODE)
-        If _addedIds IsNot Nothing Then Throw New Exception("You must call 'EndUpdate' before begin update.")
+    'Public Sub BeginUpdate(ByVal EditMode As EDITMODE)
+    '    If _addedIds IsNot Nothing Then Throw New Exception("You must call 'EndUpdate' before begin update.")
 
-        _editMode = EditMode
+    '    _editMode = EditMode
 
-        '初期化
-        _addedIds = New List(Of Long)  'タブ追加用IDコレクション準備
-        If _notifyPosts IsNot Nothing Then
-            _notifyPosts.Clear()
-            _notifyPosts = Nothing
-        End If
-        _soundFile = ""
-    End Sub
+    '    '初期化
+    '    _addedIds = New List(Of Long)  'タブ追加用IDコレクション準備
+    '    If _notifyPosts IsNot Nothing Then
+    '        _notifyPosts.Clear()
+    '        _notifyPosts = Nothing
+    '    End If
+    '    _soundFile = ""
+    'End Sub
 
-    Public Function EndUpdate() As Integer
-        '戻り値は追加件数
-        If _addedIds Is Nothing Then Throw New Exception("You must call 'BeginUpdate' before to add.")
+    Public Function DistributePosts() As Integer
+        SyncLock LockObj
+            '戻り値は追加件数
+            If _addedIds Is Nothing Then Exit Function
+            If _addedIds.Count = 0 Then Exit Function
 
-        _notifyPosts = New List(Of PostClass)
-        Me.Distribute()    'タブに仮振分
-        _addCount = _addedIds.Count
-        _addedIds.Clear()
-        _addedIds = Nothing     '後始末
-        Return _addCount     '件数
+            If _notifyPosts Is Nothing Then _notifyPosts = New List(Of PostClass)
+            Me.Distribute()    'タブに仮振分
+            _addCount = _addedIds.Count
+            _addedIds.Clear()
+            _addedIds = Nothing     '後始末
+            Return _addCount     '件数
+        End SyncLock
     End Function
 
-    Public Function SubmitUpdate(ByRef soundFile As String, ByRef notifyPosts As List(Of PostClass)) As Integer
-        If _notifyPosts Is Nothing Then Throw New Exception("You must call 'EndUpdate' before to Submit.")
+    Public Function SubmitUpdate(ByRef soundFile As String, ByRef notifyPosts As PostClass()) As Integer
+        '注：メインスレッドから呼ぶこと
+        SyncLock LockObj
+            If _notifyPosts Is Nothing Then
+                soundFile = ""
+                notifyPosts = Nothing
+                Return 0
+            End If
 
-        For Each key As String In _tabs.Keys
-            _tabs(key).AddSubmit()  '振分確定（各タブに反映）
-        Next
-        Me.SortPosts()
+            For Each key As String In _tabs.Keys
+                _tabs(key).AddSubmit()  '振分確定（各タブに反映）
+            Next
+            Me.SortPosts()
 
-        soundFile = _soundFile
-        notifyPosts = _notifyPosts
-        Return _addCount    '件数（EndUpdateの戻り値と同じ）
+            soundFile = String.Copy(_soundFile)
+            _soundFile = ""
+            notifyPosts = _notifyPosts.ToArray()
+            _notifyPosts.Clear()
+            _notifyPosts = Nothing
+            Dim retCnt As Integer = _addCount
+            _addCount = 0
+            Return retCnt    '件数（EndUpdateの戻り値と同じ）
+        End SyncLock
     End Function
 
     Private Sub Distribute()
@@ -510,7 +526,7 @@ Public Class TabInformations
         'notifyPosts = New List(Of PostClass)
         For Each id As Long In _addedIds
             Dim post As PostClass = _statuses(id)
-            If _editMode = EDITMODE.Post Then
+            If Not post.IsDm Then
                 Dim add As Boolean = False  '通知リスト追加フラグ
                 Dim mv As Boolean = False   '移動フラグ（Recent追加有無）
                 For Each tn As String In _tabs.Keys
@@ -544,9 +560,11 @@ Public Class TabInformations
     End Sub
 
     Public Sub AddPost(ByVal Item As PostClass)
-        If _addedIds Is Nothing Then Throw New Exception("You must call 'BeginUpdate' before to add.")
-        _statuses.Add(Item.Id, Item)    'DMと区別しない？
-        _addedIds.Add(Item.Id)
+        SyncLock LockObj
+            If _addedIds Is Nothing Then _addedIds = New List(Of Long) 'タブ追加用IDコレクション準備
+            _statuses.Add(Item.Id, Item)    'DMと区別しない？
+            _addedIds.Add(Item.Id)
+        End SyncLock
     End Sub
 
     Public Sub SetRead(ByVal Read As Boolean, ByVal TabName As String, ByVal Index As Integer)

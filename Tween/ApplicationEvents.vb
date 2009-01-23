@@ -70,29 +70,7 @@ Namespace My
         End Sub
 
         Private Sub MyApplication_UnhandledException(ByVal sender As Object, ByVal e As Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs) Handles Me.UnhandledException
-            Dim now As DateTime = DateTime.Now
-            Dim fileName As String = String.Format("Tween-{0:0000}{1:00}{2:00}-{3:00}{4:00}{5:00}.log", now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second)
-
-            Using writer As IO.StreamWriter = New IO.StreamWriter(fileName)
-                writer.WriteLine(My.Resources.UnhandledExceptionText1, DateTime.Now.ToString())
-                writer.WriteLine(My.Resources.UnhandledExceptionText2)
-                writer.WriteLine(My.Resources.UnhandledExceptionText3)
-                writer.WriteLine()
-                writer.WriteLine(My.Resources.UnhandledExceptionText4)
-                writer.WriteLine(My.Resources.UnhandledExceptionText5, Environment.OSVersion.VersionString)
-                writer.WriteLine(My.Resources.UnhandledExceptionText6, Environment.Version.ToString())
-                writer.WriteLine(My.Resources.UnhandledExceptionText7, Application.Info.Version.ToString())
-                writer.WriteLine(My.Resources.UnhandledExceptionText8, e.Exception.GetType().FullName, e.Exception.Message)
-                writer.WriteLine(e.Exception.StackTrace)
-                writer.WriteLine()
-            End Using
-
-            If MessageBox.Show(String.Format(My.Resources.UnhandledExceptionText9, fileName, Environment.NewLine), _
-                               My.Resources.UnhandledExceptionText10, MessageBoxButtons.OKCancel, MessageBoxIcon.Error) = DialogResult.OK _
-            Then
-                Diagnostics.Process.Start(fileName)
-            End If
-
+            ExceptionOut(e.Exception)
             e.ExitApplication = False
         End Sub
     End Class
