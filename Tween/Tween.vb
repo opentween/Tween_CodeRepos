@@ -1283,6 +1283,7 @@ Public Class TweenMain
     End Function
 
     Private Sub GetTimelineWorker_ProgressChanged(ByVal sender As Object, ByVal e As System.ComponentModel.ProgressChangedEventArgs)
+        If _endingFlag Then Exit Sub
         Dim smsg As String = DirectCast(e.UserState, String)
         If smsg.Length > 0 Then StatusLabel.Text = smsg
         If e.ProgressPercentage = 0 Then    '開始
