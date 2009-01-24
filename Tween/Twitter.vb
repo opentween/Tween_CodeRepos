@@ -69,6 +69,8 @@ Public Module Twitter
 
     Private _hubServer As String
 
+    Private _owner As TweenMain
+
     '共通で使用する状態
     Private _authKey As String              'StatusUpdate、発言削除で使用
     Private _authKeyDM As String              'DM送信、DM削除で使用
@@ -1025,12 +1027,9 @@ Public Module Twitter
             Exit Sub
         End If
 
-        SyncLock LockObj
-            If imgsS.Images.ContainsKey(post.ImageUrl) Then
-                post.ImageIndex = imgsS.Images.IndexOfKey(post.ImageUrl)
-                Exit Sub
-            End If
-        End SyncLock
+        Dim dlgt As New TweenMain.SetImageIndexDelegate(AddressOf _owner.SetImageIndex)
+        post.ImageIndex = DirectCast(_owner.Invoke(dlgt, post), Integer)
+        If post.ImageIndex > -1 Then Exit Sub
 
         Dim resStatus As String = ""
         Dim img As Image = DirectCast(CreateSocket.GetWebResponse(post.ImageUrl, resStatus, MySocket.REQ_TYPE.ReqGETBinary), System.Drawing.Image)
@@ -1045,15 +1044,8 @@ Public Module Twitter
             g.DrawImage(img, 0, 0, _iconSz, _iconSz)
         End Using
 
-        SyncLock LockObj
-            If imgsS.Images.ContainsKey(post.ImageUrl) Then
-                post.ImageIndex = imgsS.Images.IndexOfKey(post.ImageUrl)
-                Exit Sub
-            End If
-            imgs.Add(post.ImageUrl, img)  '詳細表示用ディクショナリに追加
-            imgsS.Images.Add(post.ImageUrl, bmp2)
-            post.ImageIndex = imgsS.Images.IndexOfKey(post.ImageUrl)
-        End SyncLock
+        Dim dlgt2 As New TweenMain.AddImageDelegate(AddressOf _owner.AddImage)
+        _owner.Invoke(dlgt2, New Object() {post, img, bmp2})
     End Sub
 
     Private Function GetAuthKey(ByVal resMsg As String) As Integer
@@ -1760,6 +1752,12 @@ Public Module Twitter
     Private Function CreateSocket() As MySocket
         Return New MySocket("UTF-8", _uid, _pwd, _proxyType, _proxyAddress, _proxyPort, _proxyUser, _proxyPassword)
     End Function
+
+    Public WriteOnly Property Owner() As TweenMain
+        Set(ByVal value As TweenMain)
+            _owner = value
+        End Set
+    End Property
 
 #If DEBUG Then
     Public Sub GenerateAnalyzeKey()

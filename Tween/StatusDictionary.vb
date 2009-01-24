@@ -509,7 +509,7 @@ Public Class TabInformations
             Next
             Me.SortPosts()
 
-            soundFile = String.Copy(_soundFile)
+            soundFile = _soundFile
             _soundFile = ""
             notifyPosts = _notifyPosts.ToArray()
             _notifyPosts.Clear()

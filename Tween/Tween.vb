@@ -303,6 +303,8 @@ Public Class TweenMain
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Me.Visible = False
 
+        Twitter.Owner = Me  'Invoke用
+
         LoadIcons() ' アイコン読み込み
 
         '発言保持クラス
@@ -697,43 +699,6 @@ Public Class TweenMain
             CheckNewVersion(True)
         End If
 
-        If IsNetworkAvailable() Then
-            If SettingDialog.StartupFollowers Then
-                _waitFollower = True
-                GetTimeline(WORKERTYPE.Follower, 0, 0)
-            End If
-            If SettingDialog.ReadPagesDM > 0 Then
-                _waitDm = True
-                GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, SettingDialog.ReadPagesDM)
-            End If
-            Do While _waitFollower
-                System.Threading.Thread.Sleep(1)
-                My.Application.DoEvents()
-            Loop
-            If SettingDialog.ReadPages > 0 Then
-                _waitTimeline = True
-                GetTimeline(WORKERTYPE.Timeline, 1, SettingDialog.ReadPages)
-            End If
-            If SettingDialog.ReadPagesReply > 0 Then
-                _waitReply = True
-                GetTimeline(WORKERTYPE.Reply, 1, SettingDialog.ReadPagesReply)
-            End If
-            Do While _waitTimeline OrElse _waitReply
-                System.Threading.Thread.Sleep(1)
-                My.Application.DoEvents()
-            Loop
-        Else
-            TimerRefreshIcon.Enabled = False
-            NotifyIcon1.Icon = NIconAtSmoke
-            PostButton.Enabled = False
-            FavAddToolStripMenuItem.Enabled = False
-            FavRemoveToolStripMenuItem.Enabled = False
-            MoveToHomeToolStripMenuItem.Enabled = False
-            MoveToFavToolStripMenuItem.Enabled = False
-            DeleteStripMenuItem.Enabled = False
-            RefreshStripMenuItem.Enabled = False
-        End If
-        _initial = False
 
     End Sub
 
@@ -4679,5 +4644,66 @@ RETRY2:
         AddHandler bw.ProgressChanged, AddressOf GetTimelineWorker_ProgressChanged
         AddHandler bw.RunWorkerCompleted, AddressOf GetTimelineWorker_RunWorkerCompleted
         bw.RunWorkerAsync(args)
+    End Sub
+
+    Public Delegate Function SetImageIndexDelegate(ByVal post As PostClass) As Integer
+
+    Public Function SetImageIndex(ByVal post As PostClass) As Integer
+        Return TIconSmallList.Images.IndexOfKey(post.ImageUrl)
+    End Function
+
+    Public Delegate Sub AddImageDelegate(ByVal post As PostClass, ByVal Img As Image, ByVal ImgBmp As Bitmap)
+
+    Public Sub AddImage(ByVal post As PostClass, ByVal Img As Image, ByVal ImgBmp As Bitmap)
+        post.ImageIndex = SetImageIndex(post)
+        If post.ImageIndex > -1 Then Exit Sub
+
+        TIconDic.Add(post.ImageUrl, Img)  '詳細表示用ディクショナリに追加
+        TIconSmallList.Images.Add(post.ImageUrl, ImgBmp)
+        post.ImageIndex = TIconSmallList.Images.IndexOfKey(post.ImageUrl)
+    End Sub
+
+    Private Sub TweenMain_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
+        If IsNetworkAvailable() Then
+            If SettingDialog.StartupFollowers Then
+                _waitFollower = True
+                GetTimeline(WORKERTYPE.Follower, 0, 0)
+            End If
+            Do While _waitFollower
+                System.Threading.Thread.Sleep(1)
+                My.Application.DoEvents()
+            Loop
+            If SettingDialog.ReadPagesDM > 0 Then
+                _waitDm = True
+                GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, SettingDialog.ReadPagesDM)
+            End If
+            Do While _waitFollower
+                System.Threading.Thread.Sleep(1)
+                My.Application.DoEvents()
+            Loop
+            If SettingDialog.ReadPages > 0 Then
+                _waitTimeline = True
+                GetTimeline(WORKERTYPE.Timeline, 1, SettingDialog.ReadPages)
+            End If
+            If SettingDialog.ReadPagesReply > 0 Then
+                _waitReply = True
+                GetTimeline(WORKERTYPE.Reply, 1, SettingDialog.ReadPagesReply)
+            End If
+            Do While _waitTimeline OrElse _waitReply
+                System.Threading.Thread.Sleep(1)
+                My.Application.DoEvents()
+            Loop
+        Else
+            TimerRefreshIcon.Enabled = False
+            NotifyIcon1.Icon = NIconAtSmoke
+            PostButton.Enabled = False
+            FavAddToolStripMenuItem.Enabled = False
+            FavRemoveToolStripMenuItem.Enabled = False
+            MoveToHomeToolStripMenuItem.Enabled = False
+            MoveToFavToolStripMenuItem.Enabled = False
+            DeleteStripMenuItem.Enabled = False
+            RefreshStripMenuItem.Enabled = False
+        End If
+        _initial = False
     End Sub
 End Class
