@@ -648,36 +648,32 @@ Public Module Twitter
                                     ByVal gType As WORKERTYPE, _
                                     ByVal imgs As Dictionary(Of String, Image), _
                                     ByVal imgsS As ImageList) As String
-        Try
-            If endPage = 0 Then
-                '通常モード(DMはモード関係なし)
-                endPage = 1
-            End If
-            '起動時モード 
-            Dim num As Integer = (endPage - page + 1) * 2 - 1
-            Dim ar(num) As IAsyncResult
-            Dim dlgt(num) As GetDirectMessageDelegate
+        If endPage = 0 Then
+            '通常モード(DMはモード関係なし)
+            endPage = 1
+        End If
+        '起動時モード 
+        Dim num As Integer = (endPage - page + 1) * 2 - 1
+        Dim ar(num) As IAsyncResult
+        Dim dlgt(num) As GetDirectMessageDelegate
 
-            For idx As Integer = 0 To num
-                If idx Mod 2 = 0 Then
-                    gType = WORKERTYPE.DirectMessegeRcv
-                Else
-                    gType = WORKERTYPE.DirectMessegeSnt
-                End If
-                dlgt(idx) = New GetDirectMessageDelegate(AddressOf GetDirectMessageThread)
-                GetTmSemaphore.WaitOne()
-                ar(idx) = dlgt(idx).BeginInvoke(page + idx, read, endPage + idx, gType, imgs, imgsS, Nothing, Nothing)
-            Next
-            Dim rslt As String = ""
-            For idx As Integer = 0 To num
-                Dim trslt As String = ""
-                trslt = dlgt(idx).EndInvoke(ar(idx))
-                If trslt.Length > 0 AndAlso rslt.Length = 0 Then rslt = trslt
-            Next
-            Return rslt
-        Finally
-            GetTmSemaphore.Release()
-        End Try
+        For idx As Integer = 0 To num
+            If idx Mod 2 = 0 Then
+                gType = WORKERTYPE.DirectMessegeRcv
+            Else
+                gType = WORKERTYPE.DirectMessegeSnt
+            End If
+            dlgt(idx) = New GetDirectMessageDelegate(AddressOf GetDirectMessageThread)
+            GetTmSemaphore.WaitOne()
+            ar(idx) = dlgt(idx).BeginInvoke(page + idx, read, endPage + idx, gType, imgs, imgsS, Nothing, Nothing)
+        Next
+        Dim rslt As String = ""
+        For idx As Integer = 0 To num
+            Dim trslt As String = ""
+            trslt = dlgt(idx).EndInvoke(ar(idx))
+            If trslt.Length > 0 AndAlso rslt.Length = 0 Then rslt = trslt
+        Next
+        Return rslt
     End Function
 
     Private Function GetDirectMessageThread(ByVal page As Integer, _
@@ -686,253 +682,258 @@ Public Module Twitter
                                     ByVal gType As WORKERTYPE, _
                                     ByVal imgs As Dictionary(Of String, Image), _
                                     ByVal imgsS As ImageList) As String
-        If _endingFlag Then Return ""
+        Try
+            If _endingFlag Then Return ""
 
-        Dim retMsg As String = ""
-        Dim resStatus As String = ""
+            Dim retMsg As String = ""
+            Dim resStatus As String = ""
 
-        _getDm = False
-        'endPage = page
+            _getDm = False
+            'endPage = page
 
-        If _signed = False Then
-            retMsg = SignIn()
-            If retMsg.Length > 0 Then
-                Return retMsg
-            End If
-        End If
-
-        If _endingFlag Then Return ""
-
-        'リクエストメッセージを作成する
-        Dim pageQuery As String = _pageQry + page.ToString
-
-        If gType = WORKERTYPE.DirectMessegeRcv Then
-            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathRcv + pageQuery, resStatus), String)
-        Else
-            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathSnt + pageQuery, resStatus), String)
-        End If
-
-        If retMsg.Length = 0 Then
-            _signed = False
-            Return resStatus
-        End If
-
-        ' tr 要素の class 属性を消去
-        Do
-            Dim idx As Integer = retMsg.IndexOf("<tr class=""", StringComparison.Ordinal)
-            If idx = -1 Then Exit Do
-            retMsg = retMsg.Remove(idx + 4, retMsg.IndexOf("""", idx + 11 + 1, StringComparison.Ordinal) - idx - 2) ' 11 = "<tr class=""".Length
-        Loop
-
-        If _endingFlag Then Return ""
-
-        ''AuthKeyの取得
-        'If GetAuthKeyDM(retMsg) < 0 Then
-        '    _signed = False
-        '    Return "GetDirectMessage -> Err: Busy(1)"
-        'End If
-
-        Dim pos1 As Integer
-        Dim pos2 As Integer
-
-        ''Followerの抽出（Webのあて先リストがおかしいのでコメントアウト）
-        'If page = 1 And gType = GetTypes.GET_DMRCV Then
-        '    pos1 = retMsg.IndexOf(_followerList)
-        '    If pos1 = -1 Then
-        '        If follower.Count = 0 Then follower.Add(_uid)
-        '        '取得失敗
-        '        _signed = False
-        '        Return "GetDirectMessage -> Err: Busy(3)"
-        '    End If
-        '    follower.Clear()
-        '    follower.Add(_uid)
-        '    pos1 += _followerList.Length
-        '    pos1 = retMsg.IndexOf(_followerMbr1, pos1)
-        '    Try
-        '        Do While pos1 > -1
-        '            pos2 = retMsg.IndexOf(_followerMbr2, pos1)
-        '            pos1 = retMsg.IndexOf(_followerMbr3, pos2)
-        '            follower.Add(retMsg.Substring(pos2 + _followerMbr2.Length, pos1 - pos2 - _followerMbr2.Length))
-        '            pos1 = retMsg.IndexOf(_followerMbr1, pos1)
-        '        Loop
-        '        follower.RemoveAt(follower.Count - 1)
-        '    Catch ex As Exception
-        '        _signed = False
-        '        Return "GetDirectMessage -> Err: Can't get followers"
-        '    End Try
-        'End If
-
-        '各メッセージに分割可能か？
-        pos1 = retMsg.IndexOf(_splitDM, StringComparison.Ordinal)
-        If pos1 = -1 Then
-            '0件（メッセージなし。エラーの場合もありうるが判別できないので正常として戻す）
-            Return ""
-        End If
-
-        Dim strSep() As String = {_splitDM}
-        Dim posts() As String = retMsg.Split(strSep, StringSplitOptions.RemoveEmptyEntries)
-        Dim intCnt As Integer = 0   'カウンタ
-        Dim listCnt As Integer = 0
-        SyncLock LockObj
-            listCnt = links.Count
-        End SyncLock
-        Dim dlgt(20) As GetIconImageDelegate
-        Dim ar(20) As IAsyncResult
-        Dim arIdx As Integer = -1
-
-        For Each strPost As String In posts
-            intCnt += 1
-
-            If intCnt > 1 Then  '1件目はヘッダなので無視
-                'Dim lItem As New MyListItem
-                Dim post As New PostClass()
-
-                'Get ID
-                Try
-                    pos1 = 0
-                    pos2 = strPost.IndexOf("""", 0, StringComparison.Ordinal)
-                    post.Id = Long.Parse(HttpUtility.HtmlDecode(strPost.Substring(0, pos2)))
-                Catch ex As Exception
-                    _signed = False
-                    TraceOut("DM-ID:" + strPost)
-                    Return "GetDirectMessage -> Err: Can't get ID"
-                End Try
-
-                'Get Name
-                Try
-                    pos1 = strPost.IndexOf(_parseName, pos2, StringComparison.Ordinal)
-                    pos2 = strPost.IndexOf(_parseNameTo, pos1, StringComparison.Ordinal)
-                    post.Name = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseName.Length, pos2 - pos1 - _parseName.Length))
-                Catch ex As Exception
-                    _signed = False
-                    TraceOut("DM-Name:" + strPost)
-                    Return "GetDirectMessage -> Err: Can't get Name"
-                End Try
-
-                'Get Nick
-                Try
-                    pos1 = strPost.IndexOf(_parseNick, pos2, StringComparison.Ordinal)
-                    pos2 = strPost.IndexOf(_parseNickTo, pos1 + _parseNick.Length, StringComparison.Ordinal)
-                    post.Nickname = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseNick.Length, pos2 - pos1 - _parseNick.Length))
-                Catch ex As Exception
-                    _signed = False
-                    TraceOut("DM-Nick:" + strPost)
-                    Return "GetDirectMessage -> Err: Can't get Nick."
-                End Try
-
-                SyncLock LockObj
-                    If links.Contains(post.Id) Then Continue For
-                End SyncLock
-
-                'Get ImagePath
-                Try
-                    pos1 = strPost.IndexOf(_parseImg, pos2, StringComparison.Ordinal)
-                    pos2 = strPost.IndexOf(_parseImgTo, pos1 + _parseImg.Length, StringComparison.Ordinal)
-                    post.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length))
-                Catch ex As Exception
-                    _signed = False
-                    TraceOut("DM-Img:" + strPost)
-                    Return "GetDirectMessage -> Err: Can't get ImagePath"
-                End Try
-
-                'Get Protect 
-                Try
-                    pos1 = strPost.IndexOf(_isProtect, pos2, StringComparison.Ordinal)
-                    If pos1 > -1 Then post.IsProtect = True
-                Catch ex As Exception
-                    _signed = False
-                    TraceOut("DM-Protect:" + strPost)
-                    Return "GetDirectMessage -> Err: Can't get Protect"
-                End Try
-
-                Dim orgData As String = ""
-
-                'Get Message
-                Try
-                    pos1 = strPost.IndexOf(_parseDM1, pos2, StringComparison.Ordinal)
-                    If pos1 > -1 Then
-                        pos2 = strPost.IndexOf(_parseDM2, pos1, StringComparison.Ordinal)
-                        orgData = strPost.Substring(pos1 + _parseDM1.Length, pos2 - pos1 - _parseDM1.Length).Trim()
-                    Else
-                        pos1 = strPost.IndexOf(_parseDM11, pos2, StringComparison.Ordinal)
-                        pos2 = strPost.IndexOf(_parseDM2, pos1, StringComparison.Ordinal)
-                        orgData = strPost.Substring(pos1 + _parseDM11.Length, pos2 - pos1 - _parseDM11.Length).Trim()
-                    End If
-                    orgData = Regex.Replace(orgData, "<a href=""https://twitter\.com/" + post.Name + "/status/[0-9]+"">\.\.\.</a>$", "")
-                    orgData = orgData.Replace("&lt;3", "♡")
-                Catch ex As Exception
-                    _signed = False
-                    TraceOut("DM-Body:" + strPost)
-                    Return "GetDirectMessage -> Err: Can't get body"
-                End Try
-
-                '短縮URL解決処理（orgData書き換え）
-                orgData = ShortUrlResolve(orgData)
-
-                '表示用にhtml整形
-                post.OriginalData = AdjustHtml(orgData)
-
-                '単純テキストの取り出し（リンクタグ除去）
-                Try
-                    post.Data = GetPlainText(orgData)
-                Catch ex As Exception
-                    _signed = False
-                    TraceOut("DM-Link:" + strPost)
-                    Return "GetDirectMessage -> Err: Can't parse links"
-                End Try
-
-                'Get Date
-                Try
-                    pos1 = strPost.IndexOf(_parseDate, pos2, StringComparison.Ordinal)
-                    pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length, StringComparison.Ordinal)
-                    post.PDate = DateTime.ParseExact(strPost.Substring(pos1 + _parseDate.Length, pos2 - pos1 - _parseDate.Length), "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz", System.Globalization.DateTimeFormatInfo.InvariantInfo, Globalization.DateTimeStyles.None)
-                Catch ex As Exception
-                    _signed = False
-                    TraceOut("DM-Date:" + strPost)
-                    Return "GetTimeline -> Err: Can't get date."
-                End Try
-
-
-                'Get Fav
-                'pos1 = strPost.IndexOf(_parseStar, pos2)
-                'pos2 = strPost.IndexOf("""", pos1 + _parseStar.Length)
-                'If strPost.Substring(pos1 + _parseStar.Length, pos2 - pos1 - _parseStar.Length) = "empty" Then
-                '    lItem.Fav = False
-                'Else
-                '    lItem.Fav = True
-                'End If
-                post.IsFav = False
-
-                'Imageの取得
-                arIdx += 1
-                dlgt(arIdx) = New GetIconImageDelegate(AddressOf GetIconImage)
-                ar(arIdx) = dlgt(arIdx).BeginInvoke(post, imgs, imgsS, Nothing, Nothing)
-
-                If _endingFlag Then Return ""
-
-                SyncLock LockObj
-                    links.Add(post.Id)
-                End SyncLock
-
-                '受信ＤＭかの判定で使用
-                If gType = WORKERTYPE.DirectMessegeRcv Then
-                    post.IsOwl = False
-                Else
-                    post.IsOwl = True
+            If _signed = False Then
+                retMsg = SignIn()
+                If retMsg.Length > 0 Then
+                    Return retMsg
                 End If
-
-                post.IsRead = read
-                post.IsDm = True
-
-                TabInformations.GetInstance.AddPost(post)
             End If
-        Next
 
-        For i As Integer = 0 To arIdx
-            dlgt(i).EndInvoke(ar(i))
-        Next
+            If _endingFlag Then Return ""
 
-        Return ""
+            'リクエストメッセージを作成する
+            Dim pageQuery As String = _pageQry + page.ToString
+
+            If gType = WORKERTYPE.DirectMessegeRcv Then
+                retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathRcv + pageQuery, resStatus), String)
+            Else
+                retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathSnt + pageQuery, resStatus), String)
+            End If
+
+            If retMsg.Length = 0 Then
+                _signed = False
+                Return resStatus
+            End If
+
+            ' tr 要素の class 属性を消去
+            Do
+                Dim idx As Integer = retMsg.IndexOf("<tr class=""", StringComparison.Ordinal)
+                If idx = -1 Then Exit Do
+                retMsg = retMsg.Remove(idx + 4, retMsg.IndexOf("""", idx + 11 + 1, StringComparison.Ordinal) - idx - 2) ' 11 = "<tr class=""".Length
+            Loop
+
+            If _endingFlag Then Return ""
+
+            ''AuthKeyの取得
+            'If GetAuthKeyDM(retMsg) < 0 Then
+            '    _signed = False
+            '    Return "GetDirectMessage -> Err: Busy(1)"
+            'End If
+
+            Dim pos1 As Integer
+            Dim pos2 As Integer
+
+            ''Followerの抽出（Webのあて先リストがおかしいのでコメントアウト）
+            'If page = 1 And gType = GetTypes.GET_DMRCV Then
+            '    pos1 = retMsg.IndexOf(_followerList)
+            '    If pos1 = -1 Then
+            '        If follower.Count = 0 Then follower.Add(_uid)
+            '        '取得失敗
+            '        _signed = False
+            '        Return "GetDirectMessage -> Err: Busy(3)"
+            '    End If
+            '    follower.Clear()
+            '    follower.Add(_uid)
+            '    pos1 += _followerList.Length
+            '    pos1 = retMsg.IndexOf(_followerMbr1, pos1)
+            '    Try
+            '        Do While pos1 > -1
+            '            pos2 = retMsg.IndexOf(_followerMbr2, pos1)
+            '            pos1 = retMsg.IndexOf(_followerMbr3, pos2)
+            '            follower.Add(retMsg.Substring(pos2 + _followerMbr2.Length, pos1 - pos2 - _followerMbr2.Length))
+            '            pos1 = retMsg.IndexOf(_followerMbr1, pos1)
+            '        Loop
+            '        follower.RemoveAt(follower.Count - 1)
+            '    Catch ex As Exception
+            '        _signed = False
+            '        Return "GetDirectMessage -> Err: Can't get followers"
+            '    End Try
+            'End If
+
+            '各メッセージに分割可能か？
+            pos1 = retMsg.IndexOf(_splitDM, StringComparison.Ordinal)
+            If pos1 = -1 Then
+                '0件（メッセージなし。エラーの場合もありうるが判別できないので正常として戻す）
+                Return ""
+            End If
+
+            Dim strSep() As String = {_splitDM}
+            Dim posts() As String = retMsg.Split(strSep, StringSplitOptions.RemoveEmptyEntries)
+            Dim intCnt As Integer = 0   'カウンタ
+            Dim listCnt As Integer = 0
+            SyncLock LockObj
+                listCnt = links.Count
+            End SyncLock
+            Dim dlgt(20) As GetIconImageDelegate
+            Dim ar(20) As IAsyncResult
+            Dim arIdx As Integer = -1
+
+            For Each strPost As String In posts
+                intCnt += 1
+
+                If intCnt > 1 Then  '1件目はヘッダなので無視
+                    'Dim lItem As New MyListItem
+                    Dim post As New PostClass()
+
+                    'Get ID
+                    Try
+                        pos1 = 0
+                        pos2 = strPost.IndexOf("""", 0, StringComparison.Ordinal)
+                        post.Id = Long.Parse(HttpUtility.HtmlDecode(strPost.Substring(0, pos2)))
+                    Catch ex As Exception
+                        _signed = False
+                        TraceOut("DM-ID:" + strPost)
+                        Return "GetDirectMessage -> Err: Can't get ID"
+                    End Try
+
+                    'Get Name
+                    Try
+                        pos1 = strPost.IndexOf(_parseName, pos2, StringComparison.Ordinal)
+                        pos2 = strPost.IndexOf(_parseNameTo, pos1, StringComparison.Ordinal)
+                        post.Name = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseName.Length, pos2 - pos1 - _parseName.Length))
+                    Catch ex As Exception
+                        _signed = False
+                        TraceOut("DM-Name:" + strPost)
+                        Return "GetDirectMessage -> Err: Can't get Name"
+                    End Try
+
+                    'Get Nick
+                    Try
+                        pos1 = strPost.IndexOf(_parseNick, pos2, StringComparison.Ordinal)
+                        pos2 = strPost.IndexOf(_parseNickTo, pos1 + _parseNick.Length, StringComparison.Ordinal)
+                        post.Nickname = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseNick.Length, pos2 - pos1 - _parseNick.Length))
+                    Catch ex As Exception
+                        _signed = False
+                        TraceOut("DM-Nick:" + strPost)
+                        Return "GetDirectMessage -> Err: Can't get Nick."
+                    End Try
+
+                    SyncLock LockObj
+                        If links.Contains(post.Id) Then Continue For
+                    End SyncLock
+
+                    'Get ImagePath
+                    Try
+                        pos1 = strPost.IndexOf(_parseImg, pos2, StringComparison.Ordinal)
+                        pos2 = strPost.IndexOf(_parseImgTo, pos1 + _parseImg.Length, StringComparison.Ordinal)
+                        post.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length))
+                    Catch ex As Exception
+                        _signed = False
+                        TraceOut("DM-Img:" + strPost)
+                        Return "GetDirectMessage -> Err: Can't get ImagePath"
+                    End Try
+
+                    'Get Protect 
+                    Try
+                        pos1 = strPost.IndexOf(_isProtect, pos2, StringComparison.Ordinal)
+                        If pos1 > -1 Then post.IsProtect = True
+                    Catch ex As Exception
+                        _signed = False
+                        TraceOut("DM-Protect:" + strPost)
+                        Return "GetDirectMessage -> Err: Can't get Protect"
+                    End Try
+
+                    Dim orgData As String = ""
+
+                    'Get Message
+                    Try
+                        pos1 = strPost.IndexOf(_parseDM1, pos2, StringComparison.Ordinal)
+                        If pos1 > -1 Then
+                            pos2 = strPost.IndexOf(_parseDM2, pos1, StringComparison.Ordinal)
+                            orgData = strPost.Substring(pos1 + _parseDM1.Length, pos2 - pos1 - _parseDM1.Length).Trim()
+                        Else
+                            pos1 = strPost.IndexOf(_parseDM11, pos2, StringComparison.Ordinal)
+                            pos2 = strPost.IndexOf(_parseDM2, pos1, StringComparison.Ordinal)
+                            orgData = strPost.Substring(pos1 + _parseDM11.Length, pos2 - pos1 - _parseDM11.Length).Trim()
+                        End If
+                        orgData = Regex.Replace(orgData, "<a href=""https://twitter\.com/" + post.Name + "/status/[0-9]+"">\.\.\.</a>$", "")
+                        orgData = orgData.Replace("&lt;3", "♡")
+                    Catch ex As Exception
+                        _signed = False
+                        TraceOut("DM-Body:" + strPost)
+                        Return "GetDirectMessage -> Err: Can't get body"
+                    End Try
+
+                    '短縮URL解決処理（orgData書き換え）
+                    orgData = ShortUrlResolve(orgData)
+
+                    '表示用にhtml整形
+                    post.OriginalData = AdjustHtml(orgData)
+
+                    '単純テキストの取り出し（リンクタグ除去）
+                    Try
+                        post.Data = GetPlainText(orgData)
+                    Catch ex As Exception
+                        _signed = False
+                        TraceOut("DM-Link:" + strPost)
+                        Return "GetDirectMessage -> Err: Can't parse links"
+                    End Try
+
+                    'Get Date
+                    Try
+                        pos1 = strPost.IndexOf(_parseDate, pos2, StringComparison.Ordinal)
+                        pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length, StringComparison.Ordinal)
+                        post.PDate = DateTime.ParseExact(strPost.Substring(pos1 + _parseDate.Length, pos2 - pos1 - _parseDate.Length), "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz", System.Globalization.DateTimeFormatInfo.InvariantInfo, Globalization.DateTimeStyles.None)
+                    Catch ex As Exception
+                        _signed = False
+                        TraceOut("DM-Date:" + strPost)
+                        Return "GetTimeline -> Err: Can't get date."
+                    End Try
+
+
+                    'Get Fav
+                    'pos1 = strPost.IndexOf(_parseStar, pos2)
+                    'pos2 = strPost.IndexOf("""", pos1 + _parseStar.Length)
+                    'If strPost.Substring(pos1 + _parseStar.Length, pos2 - pos1 - _parseStar.Length) = "empty" Then
+                    '    lItem.Fav = False
+                    'Else
+                    '    lItem.Fav = True
+                    'End If
+                    post.IsFav = False
+
+                    'Imageの取得
+                    arIdx += 1
+                    dlgt(arIdx) = New GetIconImageDelegate(AddressOf GetIconImage)
+                    ar(arIdx) = dlgt(arIdx).BeginInvoke(post, imgs, imgsS, Nothing, Nothing)
+
+                    If _endingFlag Then Return ""
+
+                    SyncLock LockObj
+                        links.Add(post.Id)
+                    End SyncLock
+
+                    '受信ＤＭかの判定で使用
+                    If gType = WORKERTYPE.DirectMessegeRcv Then
+                        post.IsOwl = False
+                    Else
+                        post.IsOwl = True
+                    End If
+
+                    post.IsRead = read
+                    post.IsDm = True
+
+                    TabInformations.GetInstance.AddPost(post)
+                End If
+            Next
+
+            For i As Integer = 0 To arIdx
+                dlgt(i).EndInvoke(ar(i))
+            Next
+
+            Return ""
+
+        Finally
+            GetTmSemaphore.Release()
+        End Try
     End Function
 
     Private Function ShortUrlResolve(ByVal orgData As String) As String
