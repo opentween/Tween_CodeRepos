@@ -25,6 +25,7 @@ Imports System.Web
 Imports System.Xml
 Imports System.Text
 Imports System.Threading
+Imports System.IO
 Imports System.Text.RegularExpressions
 
 Public Module Twitter
@@ -1293,6 +1294,58 @@ Public Module Twitter
         Throw New ApplicationException("バックグラウンド操作で例外発生(GetFollowersDelegate)", ex)
     End Sub
 
+    ' キャッシュの検証と読み込み　-1を渡した場合は読み込みのみ行う（APIエラーでFollowersCountが取得できなかったとき）
+
+    Private Function ValidateCache(ByVal _FollowersCount As Integer) As Integer
+        Dim CacheFileName As String = Path.Combine(Path.GetDirectoryName(Reflection.Assembly.GetExecutingAssembly.Location), "FollowersCache")
+
+        If Not File.Exists(CacheFileName) Then
+            ' 存在しない場合はそのまま帰る
+            Return _FollowersCount
+        End If
+
+        Dim serializer As Xml.Serialization.XmlSerializer = New Xml.Serialization.XmlSerializer(follower.GetType())
+
+        Try
+            Using fs As New IO.FileStream(CacheFileName, FileMode.Open)
+                follower = CType(serializer.Deserialize(fs), Specialized.StringCollection)
+            End Using
+        Catch ex As XmlException
+            ' 不正なxmlの場合は読み直し
+            follower.Clear()
+            follower.Add(_uid.ToLower())
+            Return _FollowersCount
+        End Try
+
+        If _FollowersCount = -1 Then Return follower.Count
+
+        If (_FollowersCount + 1) = follower.Count Then
+            '変動がないので読み込みの必要なし
+            Return 0
+        ElseIf (_FollowersCount + 1) < follower.Count Then
+            '減っている場合はどこが抜けているのかわからないので全部破棄して読み直し
+            follower.Clear()
+            follower.Add(_uid.ToLower())
+            Return _FollowersCount
+        End If
+
+        ' 増えた場合は差分だけ読む
+
+        Return _FollowersCount - follower.Count
+
+    End Function
+
+    Private Sub UpdateCache()
+        Dim CacheFileName As String = Path.Combine(Path.GetDirectoryName(Reflection.Assembly.GetExecutingAssembly.Location), "FollowersCache")
+
+        Dim serializer As Xml.Serialization.XmlSerializer = New Xml.Serialization.XmlSerializer(follower.GetType())
+
+        Using fs As New IO.FileStream(CacheFileName, FileMode.Create)
+            serializer.Serialize(fs, follower)
+        End Using
+
+    End Sub
+
     Private semaphore As Threading.Semaphore = Nothing
     Private threadNum As Integer = 0
 
@@ -1305,7 +1358,8 @@ Public Module Twitter
         Dim resMsg As String = ""
         Dim i As Integer = 0
         Dim DelegateInstance As GetFollowersDelegate = New GetFollowersDelegate(AddressOf GetFollowersMethod)
-        Dim threadMax As Integer = 8            ' 最大スレッド数
+        Dim threadMax As Integer = 4            ' 最大スレッド数
+        Dim followersCount As Integer = 0
 
         Interlocked.Exchange(threadNum, 0)      ' スレッド数カウンタ初期化
         IsThreadError = False
@@ -1316,10 +1370,26 @@ Public Module Twitter
         Dim xd As XmlDocument = New XmlDocument()
         Try
             xd.LoadXml(resMsg)
-            i = (Integer.Parse(xd.SelectSingleNode("/user/followers_count/text()").Value) + 100) \ 100 - 1 ' Followersカウント取得しページ単位に切り上げる
+            followersCount = Integer.Parse(xd.SelectSingleNode("/user/followers_count/text()").Value)
+
         Catch ex As XmlException
-            Return "NG"
+            If ValidateCache(-1) < 0 Then
+                ' FollowersカウントがAPIで取得できず、なおかつキャッシュから読めなかった
+                Return "NG"
+            Else
+                'キャッシュを読み出せたのでキャッシュを使う
+                Return ""
+            End If
         End Try
+
+        Dim tmp As Integer = ValidateCache(followersCount)
+
+        If tmp <> 0 Then
+            i = (tmp + 100) \ 100 - 1 ' Followersカウント取得しページ単位に切り上げる
+        Else
+            Return ""
+        End If
+
 
         semaphore = New System.Threading.Semaphore(threadMax, threadMax) 'スレッド最大数
 
@@ -1346,6 +1416,8 @@ Public Module Twitter
             End SyncLock
             Return "NG"
         End If
+
+        UpdateCache()
 
 #If DEBUG Then
         Dim millisec As Long = sw.ElapsedMilliseconds
