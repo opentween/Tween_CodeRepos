@@ -334,7 +334,7 @@ Public Class TweenMain
 
         '<<<<<<<<<設定関連>>>>>>>>>
         '設定読み出し
-        _config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
+        _config = ConfigurationManager.OpenExeConfiguration(Assembly.GetExecutingAssembly.Location)
         _section = DirectCast(_config.GetSection("TwitterSetting"), ListSection)
         '初回起動時で設定ファイルがない場合、"TwitterSetting"セクションを作成。構成要素も作成することで他の要素もデフォルト値での取得が可能
         If _section Is Nothing Then
