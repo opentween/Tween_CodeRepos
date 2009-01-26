@@ -1235,7 +1235,9 @@ Public Module Twitter
                     If rd.IsStartElement("screen_name") Then
                         Dim tmp As String = rd.ReadElementString("screen_name").ToLower()
                         SyncLock LockObj
-                            follower.Add(tmp)
+                            If Not follower.Contains(tmp) Then
+                                follower.Add(tmp)
+                            End If
                         End SyncLock
                         lc += 1
                     Else
