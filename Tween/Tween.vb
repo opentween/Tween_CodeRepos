@@ -141,6 +141,7 @@ Public Class TweenMain
     Private _waitTimeline As Boolean = False
     Private _waitReply As Boolean = False
     Private _waitDm As Boolean = False
+    Private _bw(9) As BackgroundWorker
     '''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 #If DEBUG Then
@@ -1054,7 +1055,7 @@ Public Class TweenMain
         AddHandler bw.ProgressChanged, AddressOf PostWorker_ProgressChanged
         AddHandler bw.RunWorkerCompleted, AddressOf GetTimelineWorker_RunWorkerCompleted
 
-        bw.RunWorkerAsync(args)
+        RunAsync(args)
 
         ListTab.SelectedTab.Controls(0).Focus()
     End Sub
@@ -1070,6 +1071,8 @@ Public Class TweenMain
             e.Cancel = True
             Me.Visible = False
         Else
+            SaveConfigs()
+
             _endingFlag = True
             'GetTimelineWorker.CancelAsync()
             Twitter.Ending = True
@@ -1079,7 +1082,18 @@ Public Class TweenMain
 
             NotifyIcon1.Visible = False
 
-            SaveConfigs()
+            Dim flg As Boolean = False
+            Do
+                flg = True
+                For i As Integer = 0 To _bw.Length - 1
+                    If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then
+                        flg = False
+                        Exit For
+                    End If
+                Next
+                Threading.Thread.Sleep(500)
+                Application.DoEvents()
+            Loop Until flg = True
 
             Me.Visible = False
         End If
@@ -3646,6 +3660,7 @@ RETRY2:
         If _rclickTabName = "" Then Exit Sub
 
         RemoveSpecifiedTab(_rclickTabName)
+        _rclickTabName = ""
     End Sub
 
     Private Sub FilterEditMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FilterEditMenuItem.Click
@@ -4640,7 +4655,24 @@ RETRY2:
     End Sub
 
     Private Sub RunAsync(ByVal args As GetWorkerArg)
-        Dim bw As New BackgroundWorker
+        Dim bw As BackgroundWorker = Nothing
+        For i As Integer = 0 To _bw.Length - 1
+            If _bw(i) IsNot Nothing AndAlso Not _bw(i).IsBusy Then
+                bw = _bw(i)
+                Exit For
+            End If
+        Next
+        If bw Is Nothing Then
+            For i As Integer = 0 To _bw.Length - 1
+                If _bw(i) Is Nothing Then
+                    _bw(i) = New BackgroundWorker
+                    bw = _bw(i)
+                    Exit For
+                End If
+            Next
+        End If
+        If bw Is Nothing Then Exit Sub
+
         bw.WorkerReportsProgress = True
         bw.WorkerSupportsCancellation = True
         AddHandler bw.DoWork, AddressOf GetTimelineWorker_DoWork
@@ -4676,10 +4708,11 @@ RETRY2:
                 _waitDm = True
                 GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, SettingDialog.ReadPagesDM)
             End If
-            Do While _waitFollower
+            Do While _waitFollower AndAlso Not _endingFlag
                 System.Threading.Thread.Sleep(1)
                 My.Application.DoEvents()
             Loop
+            If _endingFlag Then Exit Sub
             If SettingDialog.ReadPages > 0 Then
                 _waitTimeline = True
                 GetTimeline(WORKERTYPE.Timeline, 1, SettingDialog.ReadPages)
@@ -4688,7 +4721,7 @@ RETRY2:
                 _waitReply = True
                 GetTimeline(WORKERTYPE.Reply, 1, SettingDialog.ReadPagesReply)
             End If
-            Do While _waitTimeline OrElse _waitReply
+            Do While (_waitTimeline OrElse _waitReply) AndAlso Not _endingFlag
                 System.Threading.Thread.Sleep(1)
                 My.Application.DoEvents()
             Loop
