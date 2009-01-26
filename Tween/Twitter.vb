@@ -29,20 +29,16 @@ Imports System.IO
 Imports System.Text.RegularExpressions
 
 Public Module Twitter
-    Delegate Sub GetIconImageDelegate(ByVal post As PostClass, ByVal imgs As Dictionary(Of String, Image), ByVal imgsS As ImageList)
+    Delegate Sub GetIconImageDelegate(ByVal post As PostClass)
     Delegate Function GetTimelineDelegate(ByVal page As Integer, _
                                 ByVal read As Boolean, _
                                 ByRef endPage As Integer, _
                                 ByVal gType As WORKERTYPE, _
-                                ByVal imgs As Dictionary(Of String, Image), _
-                                ByVal imgsS As ImageList, _
                                 ByRef getDM As Boolean) As String
     Delegate Function GetDirectMessageDelegate(ByVal page As Integer, _
                                     ByVal read As Boolean, _
                                     ByVal endPage As Integer, _
-                                    ByVal gType As WORKERTYPE, _
-                                    ByVal imgs As Dictionary(Of String, Image), _
-                                    ByVal imgsS As ImageList) As String
+                                    ByVal gType As WORKERTYPE) As String
     Private ReadOnly LockObj As New Object
     Private GetTmSemaphore As New Threading.Semaphore(8, 8)
 
@@ -186,44 +182,46 @@ Public Module Twitter
         'ユーザー情報からデータ部分の生成
         Dim account As String = ""
 
-        '未認証
-        _signed = False
+        SyncLock LockObj
+            If _signed Then Return ""
 
-        MySocket.ResetCookie()
+            '未認証
+            _signed = False
 
-        Dim resStatus As String = ""
-        Dim resMsg As String = ""
+            MySocket.ResetCookie()
 
-        resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + "/", resStatus, MySocket.REQ_TYPE.ReqGET), String)
-        If resMsg.Length = 0 Then
-            Return "SignIn -> " + resStatus
-        End If
-        Dim authToken As String = ""
-        Dim rg As New Regex("authenticity_token"" type=""hidden"" value=""(?<auth>[a-z0-9]+)""")
-        Dim m As Match = rg.Match(resMsg)
-        If m.Success Then
-            authToken = m.Result("${auth}")
-        Else
-            Return "SignIn -> Can't get token."
-        End If
+            Dim resStatus As String = ""
+            Dim resMsg As String = ""
 
-        account = _authKeyHeader + authToken + "&" + _uidHeader + _uid + "&" + _pwdHeader + _pwd + "&" + "remember_me=1"
+            resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + "/", resStatus, MySocket.REQ_TYPE.ReqGET), String)
+            If resMsg.Length = 0 Then
+                Return "SignIn -> " + resStatus
+            End If
+            Dim authToken As String = ""
+            Dim rg As New Regex("authenticity_token"" type=""hidden"" value=""(?<auth>[a-z0-9]+)""")
+            Dim m As Match = rg.Match(resMsg)
+            If m.Success Then
+                authToken = m.Result("${auth}")
+            Else
+                Return "SignIn -> Can't get token."
+            End If
 
-        resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _loginPath, resStatus, MySocket.REQ_TYPE.ReqPOST, account), String)
-        If resMsg.Length = 0 Then
-            Return "SignIn -> " + resStatus
-        End If
+            account = _authKeyHeader + authToken + "&" + _uidHeader + _uid + "&" + _pwdHeader + _pwd + "&" + "remember_me=1"
 
-        _signed = True
-        Return ""
+            resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _loginPath, resStatus, MySocket.REQ_TYPE.ReqPOST, account), String)
+            If resMsg.Length = 0 Then
+                Return "SignIn -> " + resStatus
+            End If
+
+            _signed = True
+            Return ""
+        End SyncLock
     End Function
 
     Public Function GetTimeline(ByVal page As Integer, _
                                 ByVal read As Boolean, _
                                 ByRef endPage As Integer, _
                                 ByVal gType As WORKERTYPE, _
-                                ByVal imgs As Dictionary(Of String, Image), _
-                                ByVal imgsS As ImageList, _
                                 ByRef getDM As Boolean) As String
 
         If endPage = 0 Then
@@ -231,7 +229,7 @@ Public Module Twitter
             Dim epage As Integer = page
             GetTmSemaphore.WaitOne()
             Dim trslt As String = ""
-            trslt = GetTimelineThread(page, read, epage, gType, imgs, imgsS, getDM)
+            trslt = GetTimelineThread(page, read, epage, gType, getDM)
             If trslt.Length > 0 Then Return trslt
             page += 1
             If epage < page OrElse gType = WORKERTYPE.Reply Then Return ""
@@ -245,7 +243,7 @@ Public Module Twitter
         For idx As Integer = 0 To num
             dlgt(idx) = New GetTimelineDelegate(AddressOf GetTimelineThread)
             GetTmSemaphore.WaitOne()
-            ar(idx) = dlgt(idx).BeginInvoke(page + idx, read, endPage + idx, gType, imgs, imgsS, getDM, Nothing, Nothing)
+            ar(idx) = dlgt(idx).BeginInvoke(page + idx, read, endPage + idx, gType, getDM, Nothing, Nothing)
         Next
         Dim rslt As String = ""
         For idx As Integer = 0 To num
@@ -263,8 +261,6 @@ Public Module Twitter
                                 ByVal read As Boolean, _
                                 ByRef endPage As Integer, _
                                 ByVal gType As WORKERTYPE, _
-                                ByVal imgs As Dictionary(Of String, Image), _
-                                ByVal imgsS As ImageList, _
                                 ByRef getDM As Boolean) As String
         Try
             If _endingFlag Then Return ""
@@ -585,9 +581,6 @@ Public Module Twitter
                         post.IsFav = False
                     End If
 
-                    arIdx += 1
-                    dlgt(arIdx) = New GetIconImageDelegate(AddressOf GetIconImage)
-                    ar(arIdx) = dlgt(arIdx).BeginInvoke(post, imgs, imgsS, Nothing, Nothing)
 
                     If _endingFlag Then Return ""
 
@@ -605,7 +598,10 @@ Public Module Twitter
                     End SyncLock
                     post.IsRead = read
 
-                    TabInformations.GetInstance.AddPost(post)
+                    arIdx += 1
+                    dlgt(arIdx) = New GetIconImageDelegate(AddressOf GetIconImage)
+                    ar(arIdx) = dlgt(arIdx).BeginInvoke(post, Nothing, Nothing)
+
                 End If
 
                 'テスト実装：DMカウント取得
@@ -646,9 +642,7 @@ Public Module Twitter
     Public Function GetDirectMessage(ByVal page As Integer, _
                                     ByVal read As Boolean, _
                                     ByVal endPage As Integer, _
-                                    ByVal gType As WORKERTYPE, _
-                                    ByVal imgs As Dictionary(Of String, Image), _
-                                    ByVal imgsS As ImageList) As String
+                                    ByVal gType As WORKERTYPE) As String
         If endPage = 0 Then
             '通常モード(DMはモード関係なし)
             endPage = 1
@@ -666,7 +660,7 @@ Public Module Twitter
             End If
             dlgt(idx) = New GetDirectMessageDelegate(AddressOf GetDirectMessageThread)
             GetTmSemaphore.WaitOne()
-            ar(idx) = dlgt(idx).BeginInvoke(page + idx, read, endPage + idx, gType, imgs, imgsS, Nothing, Nothing)
+            ar(idx) = dlgt(idx).BeginInvoke(page + idx, read, endPage + idx, gType, Nothing, Nothing)
         Next
         Dim rslt As String = ""
         For idx As Integer = 0 To num
@@ -680,9 +674,7 @@ Public Module Twitter
     Private Function GetDirectMessageThread(ByVal page As Integer, _
                                     ByVal read As Boolean, _
                                     ByVal endPage As Integer, _
-                                    ByVal gType As WORKERTYPE, _
-                                    ByVal imgs As Dictionary(Of String, Image), _
-                                    ByVal imgsS As ImageList) As String
+                                    ByVal gType As WORKERTYPE) As String
         Try
             If _endingFlag Then Return ""
 
@@ -901,10 +893,6 @@ Public Module Twitter
                     'End If
                     post.IsFav = False
 
-                    'Imageの取得
-                    arIdx += 1
-                    dlgt(arIdx) = New GetIconImageDelegate(AddressOf GetIconImage)
-                    ar(arIdx) = dlgt(arIdx).BeginInvoke(post, imgs, imgsS, Nothing, Nothing)
 
                     If _endingFlag Then Return ""
 
@@ -922,13 +910,16 @@ Public Module Twitter
                     post.IsRead = read
                     post.IsDm = True
 
-                    TabInformations.GetInstance.AddPost(post)
+                    'Imageの取得
+                    arIdx += 1
+                    dlgt(arIdx) = New GetIconImageDelegate(AddressOf GetIconImage)
+                    ar(arIdx) = dlgt(arIdx).BeginInvoke(post, Nothing, Nothing)
                 End If
             Next
 
-            For i As Integer = 0 To arIdx
-                dlgt(i).EndInvoke(ar(i))
-            Next
+            'For i As Integer = 0 To arIdx
+            '    dlgt(i).EndInvoke(ar(i))
+            'Next
 
             Return ""
 
@@ -1023,20 +1014,27 @@ Public Module Twitter
         Return retStr
     End Function
 
-    Private Sub GetIconImage(ByVal post As PostClass, ByVal imgs As Dictionary(Of String, Image), ByVal imgsS As ImageList)
-        If _endingFlag OrElse Not _getIcon Then
+    Private Sub GetIconImage(ByVal post As PostClass)
+        If _endingFlag Then Exit Sub
+
+        If Not _getIcon Then
             post.ImageIndex = -1
+            TabInformations.GetInstance.AddPost(post)
             Exit Sub
         End If
 
-        Dim dlgt As New TweenMain.SetImageIndexDelegate(AddressOf _owner.SetImageIndex)
+        Dim dlgt As New TweenMain.GetImageIndexDelegate(AddressOf _owner.GetImageIndex)
         post.ImageIndex = DirectCast(_owner.Invoke(dlgt, post), Integer)
-        If post.ImageIndex > -1 Then Exit Sub
+        If post.ImageIndex > -1 Then
+            TabInformations.GetInstance.AddPost(post)
+            Exit Sub
+        End If
 
         Dim resStatus As String = ""
         Dim img As Image = DirectCast(CreateSocket.GetWebResponse(post.ImageUrl, resStatus, MySocket.REQ_TYPE.ReqGETBinary), System.Drawing.Image)
         If img Is Nothing Then
             post.ImageIndex = -1
+            TabInformations.GetInstance.AddPost(post)
             Exit Sub
         End If
 
@@ -1046,8 +1044,9 @@ Public Module Twitter
             g.DrawImage(img, 0, 0, _iconSz, _iconSz)
         End Using
 
-        Dim dlgt2 As New TweenMain.AddImageDelegate(AddressOf _owner.AddImage)
+        Dim dlgt2 As New TweenMain.SetImageDelegate(AddressOf _owner.SetImage)
         _owner.Invoke(dlgt2, New Object() {post, img, bmp2})
+        TabInformations.GetInstance.AddPost(post)
     End Sub
 
     Private Function GetAuthKey(ByVal resMsg As String) As Integer

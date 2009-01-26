@@ -1116,11 +1116,11 @@ Public Class TweenMain
         Select Case args.type
             Case WORKERTYPE.Timeline, WORKERTYPE.Reply
                 bw.ReportProgress(50, MakeStatusMessage(args, False))
-                ret = Twitter.GetTimeline(args.page, read, args.endPage, args.type, TIconDic, TIconSmallList, rslt.newDM)
+                ret = Twitter.GetTimeline(args.page, read, args.endPage, args.type, rslt.newDM)
                 rslt.addCount = _statuses.DistributePosts()
             Case WORKERTYPE.DirectMessegeRcv    '送信分もまとめて取得
                 bw.ReportProgress(50, MakeStatusMessage(args, False))
-                ret = Twitter.GetDirectMessage(args.page, read, args.endPage, args.type, TIconDic, TIconSmallList)
+                ret = Twitter.GetDirectMessage(args.page, read, args.endPage, args.type)
                 rslt.addCount = _statuses.DistributePosts()
             Case WORKERTYPE.FavAdd
                 'スレッド処理はしない
@@ -4647,16 +4647,16 @@ RETRY2:
         bw.RunWorkerAsync(args)
     End Sub
 
-    Public Delegate Function SetImageIndexDelegate(ByVal post As PostClass) As Integer
+    Public Delegate Function GetImageIndexDelegate(ByVal post As PostClass) As Integer
 
-    Public Function SetImageIndex(ByVal post As PostClass) As Integer
+    Public Function GetImageIndex(ByVal post As PostClass) As Integer
         Return TIconSmallList.Images.IndexOfKey(post.ImageUrl)
     End Function
 
-    Public Delegate Sub AddImageDelegate(ByVal post As PostClass, ByVal Img As Image, ByVal ImgBmp As Bitmap)
+    Public Delegate Sub SetImageDelegate(ByVal post As PostClass, ByVal Img As Image, ByVal ImgBmp As Bitmap)
 
-    Public Sub AddImage(ByVal post As PostClass, ByVal Img As Image, ByVal ImgBmp As Bitmap)
-        post.ImageIndex = SetImageIndex(post)
+    Public Sub SetImage(ByVal post As PostClass, ByVal Img As Image, ByVal ImgBmp As Bitmap)
+        post.ImageIndex = GetImageIndex(post)
         If post.ImageIndex > -1 Then Exit Sub
 
         TIconDic.Add(post.ImageUrl, Img)  '詳細表示用ディクショナリに追加
@@ -4670,10 +4670,6 @@ RETRY2:
                 _waitFollower = True
                 GetTimeline(WORKERTYPE.Follower, 0, 0)
             End If
-            Do While _waitFollower
-                System.Threading.Thread.Sleep(1)
-                My.Application.DoEvents()
-            Loop
             If SettingDialog.ReadPagesDM > 0 Then
                 _waitDm = True
                 GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, SettingDialog.ReadPagesDM)
