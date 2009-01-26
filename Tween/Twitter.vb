@@ -1350,7 +1350,7 @@ Public Module Twitter
     Private semaphore As Threading.Semaphore = Nothing
     Private threadNum As Integer = 0
 
-    Private Function doGetFollowers() As String
+    Private Function doGetFollowers(ByVal CacheInvalidate As Boolean) As String
 #If DEBUG Then
         Dim sw As New System.Diagnostics.Stopwatch
         sw.Start()
@@ -1372,9 +1372,8 @@ Public Module Twitter
         Try
             xd.LoadXml(resMsg)
             followersCount = Integer.Parse(xd.SelectSingleNode("/user/followers_count/text()").Value)
-
         Catch ex As XmlException
-            If ValidateCache(-1) < 0 Then
+            If CacheInvalidate OrElse ValidateCache(-1) < 0 Then
                 ' FollowersカウントがAPIで取得できず、なおかつキャッシュから読めなかった
                 Return "NG"
             Else
@@ -1383,7 +1382,14 @@ Public Module Twitter
             End If
         End Try
 
-        Dim tmp As Integer = ValidateCache(followersCount)
+        Dim tmp As Integer
+
+        If CacheInvalidate Then
+            tmp = followersCount
+        Else
+            tmp = ValidateCache(followersCount)
+        End If
+
 
         If tmp <> 0 Then
             i = (tmp + 100) \ 100 - 1 ' Followersカウント取得しページ単位に切り上げる
@@ -1407,7 +1413,7 @@ Public Module Twitter
 
         '全てのスレッドの終了を待つ(スレッド数カウンタが0になるまで待機)
         Do
-            Thread.Sleep(100)
+            Thread.Sleep(50)
         Loop Until Interlocked.Add(threadNum, 0) = 0
 
         semaphore.Close()
@@ -1433,7 +1439,7 @@ Public Module Twitter
         Return ""
     End Function
 
-    Public Function GetFollowers() As String
+    Public Function GetFollowers(ByVal CacheInvalidate As Boolean) As String
         Dim retMsg As String = ""
         If _signed = False Then
             retMsg = SignIn()
@@ -1442,7 +1448,7 @@ Public Module Twitter
             End If
         End If
 
-        Return doGetFollowers()
+        Return doGetFollowers(CacheInvalidate)
     End Function
 
     Public Property Username() As String

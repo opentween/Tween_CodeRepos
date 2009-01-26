@@ -1198,7 +1198,7 @@ Public Class TweenMain
                 bw.ReportProgress(100)
             Case WORKERTYPE.Follower
                 bw.ReportProgress(50, My.Resources.UpdateFollowersMenuItem1_ClickText1)
-                ret = Twitter.GetFollowers()
+                ret = Twitter.GetFollowers(False)       ' Followersリストキャッシュ有効
         End Select
 
         'キャンセル要求
@@ -4135,20 +4135,6 @@ RETRY2:
         End If
     End Sub
 
-    Private Sub UpdateFollowersMenuItem1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UpdateFollowersMenuItem1.Click
-        StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText1
-        My.Application.DoEvents()
-        Me.Cursor = Cursors.WaitCursor
-        Dim ret As String
-        ret = Twitter.GetFollowers()
-        If ret <> "" Then
-            StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText2 & ret
-            Exit Sub
-        End If
-        StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText3
-        Me.Cursor = Cursors.Default
-    End Sub
-
     Private Sub SplitContainer1_SplitterMoved(ByVal sender As Object, ByVal e As System.Windows.Forms.SplitterEventArgs) Handles SplitContainer1.SplitterMoved
         If Me.WindowState = FormWindowState.Normal Then
             _mySpDis = SplitContainer1.SplitterDistance
@@ -4737,5 +4723,27 @@ RETRY2:
             RefreshStripMenuItem.Enabled = False
         End If
         _initial = False
+    End Sub
+
+    Private Sub doGetFollowersMenu(ByVal CacheInvalidate As Boolean)
+        StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText1
+        My.Application.DoEvents()
+        Me.Cursor = Cursors.WaitCursor
+        Dim ret As String
+        ret = Twitter.GetFollowers(CacheInvalidate)
+        If ret <> "" Then
+            StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText2 & ret
+            Exit Sub
+        End If
+        StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText3
+        Me.Cursor = Cursors.Default
+    End Sub
+
+    Private Sub GetFollowersDiffToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles GetFollowersDiffToolStripMenuItem.Click
+        doGetFollowersMenu(False)       ' Followersリストキャッシュ有効
+    End Sub
+
+    Private Sub GetFollowersAllToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles GetFollowersAllToolStripMenuItem.Click
+        doGetFollowersMenu(True)        ' Followersリストキャッシュ無効
     End Sub
 End Class

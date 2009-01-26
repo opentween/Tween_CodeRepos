@@ -128,6 +128,8 @@ Partial Class TweenMain
         Me.TinyURLToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.IsgdToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.UpdateFollowersMenuItem1 = New System.Windows.Forms.ToolStripMenuItem
+        Me.GetFollowersDiffToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.GetFollowersAllToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.MenuItemHelp = New System.Windows.Forms.ToolStripMenuItem
         Me.MatomeMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator12 = New System.Windows.Forms.ToolStripSeparator
@@ -595,7 +597,6 @@ Partial Class TweenMain
         '
         Me.ContextMenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ReplyStripMenuItem, Me.ReplyAllStripMenuItem, Me.DMStripMenuItem, Me.ToolStripSeparator2, Me.FavAddToolStripMenuItem, Me.FavRemoveToolStripMenuItem, Me.ToolStripSeparator22, Me.BlackFavAddToolStripMenuItem, Me.BlackFavRemoveToolStripMenuItem, Me.ToolStripSeparator1, Me.MoveToHomeToolStripMenuItem, Me.MoveToFavToolStripMenuItem, Me.StatusOpenMenuItem, Me.RepliedStatusOpenMenuItem, Me.FavorareMenuItem, Me.OpenURLMenuItem, Me.ToolStripSeparator3, Me.TabMenuItem, Me.IDRuleMenuItem, Me.ToolStripSeparator4, Me.ReadedStripMenuItem, Me.UnreadStripMenuItem, Me.JumpUnreadMenuItem, Me.ToolStripSeparator10, Me.SelectAllMenuItem, Me.ToolStripSeparator5, Me.DeleteStripMenuItem, Me.ToolStripSeparator8, Me.RefreshStripMenuItem})
         Me.ContextMenuStrip2.Name = "ContextMenuStrip2"
-        Me.ContextMenuStrip2.OwnerItem = Me.MenuItemOperate
         Me.ContextMenuStrip2.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
         resources.ApplyResources(Me.ContextMenuStrip2, "ContextMenuStrip2")
         '
@@ -778,8 +779,19 @@ Partial Class TweenMain
         '
         'UpdateFollowersMenuItem1
         '
+        Me.UpdateFollowersMenuItem1.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.GetFollowersDiffToolStripMenuItem, Me.GetFollowersAllToolStripMenuItem})
         Me.UpdateFollowersMenuItem1.Name = "UpdateFollowersMenuItem1"
         resources.ApplyResources(Me.UpdateFollowersMenuItem1, "UpdateFollowersMenuItem1")
+        '
+        'GetFollowersDiffToolStripMenuItem
+        '
+        Me.GetFollowersDiffToolStripMenuItem.Name = "GetFollowersDiffToolStripMenuItem"
+        resources.ApplyResources(Me.GetFollowersDiffToolStripMenuItem, "GetFollowersDiffToolStripMenuItem")
+        '
+        'GetFollowersAllToolStripMenuItem
+        '
+        Me.GetFollowersAllToolStripMenuItem.Name = "GetFollowersAllToolStripMenuItem"
+        resources.ApplyResources(Me.GetFollowersAllToolStripMenuItem, "GetFollowersAllToolStripMenuItem")
         '
         'MenuItemHelp
         '
@@ -1025,5 +1037,7 @@ Partial Class TweenMain
     Friend WithEvents ToolStripSeparator22 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents BlackFavAddToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents BlackFavRemoveToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents GetFollowersDiffToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents GetFollowersAllToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class
