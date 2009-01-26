@@ -1299,7 +1299,7 @@ Public Module Twitter
     ' キャッシュの検証と読み込み　-1を渡した場合は読み込みのみ行う（APIエラーでFollowersCountが取得できなかったとき）
 
     Private Function ValidateCache(ByVal _FollowersCount As Integer) As Integer
-        Dim CacheFileName As String = Path.Combine(Path.GetDirectoryName(Reflection.Assembly.GetExecutingAssembly.Location), "FollowersCache")
+        Dim CacheFileName As String = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "FollowersCache")
 
         If Not File.Exists(CacheFileName) Then
             ' 存在しない場合はそのまま帰る
@@ -1338,7 +1338,7 @@ Public Module Twitter
     End Function
 
     Private Sub UpdateCache()
-        Dim CacheFileName As String = Path.Combine(Path.GetDirectoryName(Reflection.Assembly.GetExecutingAssembly.Location), "FollowersCache")
+        Dim CacheFileName As String = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "FollowersCache")
 
         Dim serializer As Xml.Serialization.XmlSerializer = New Xml.Serialization.XmlSerializer(follower.GetType())
 
@@ -1389,6 +1389,11 @@ Public Module Twitter
         If tmp <> 0 Then
             i = (tmp + 100) \ 100 - 1 ' Followersカウント取得しページ単位に切り上げる
         Else
+            ' キャッシュの件数に変化がなかった
+#If DEBUG Then
+            sw.Stop()
+            Console.WriteLine(sw.ElapsedMilliseconds)
+#End If
             Return ""
         End If
 
@@ -1422,8 +1427,8 @@ Public Module Twitter
         UpdateCache()
 
 #If DEBUG Then
-        Dim millisec As Long = sw.ElapsedMilliseconds
-        Console.WriteLine(millisec)
+        sw.Stop()
+        Console.WriteLine(sw.ElapsedMilliseconds)
 #End If
 
         Return ""
