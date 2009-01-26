@@ -2112,6 +2112,7 @@ Public Class TweenMain
         _tabPage.Dispose()
         _listCustom.Dispose()
         _statuses.RemoveTab(TabName)
+        _rclickTabName = ""
 
         SaveConfigs()
     End Sub
@@ -3648,7 +3649,8 @@ RETRY2:
     End Sub
 
     Private Sub FilterEditMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FilterEditMenuItem.Click
-        If _rclickTabName = "" Then Exit Sub
+        If _rclickTabName = "" OrElse _rclickTabName = "Recent" _
+                OrElse _rclickTabName = "Reply" OrElse _rclickTabName = "Direct" Then Exit Sub
 
         fDialog.SetCurrent(_rclickTabName)
         fDialog.ShowDialog()
