@@ -562,6 +562,7 @@ Public Class TabInformations
     Public Sub AddPost(ByVal Item As PostClass)
         SyncLock LockObj
             If _addedIds Is Nothing Then _addedIds = New List(Of Long) 'タブ追加用IDコレクション準備
+            If _statuses.ContainsKey(Item.Id) Then Exit Sub '追加済みなら何もしない
             _statuses.Add(Item.Id, Item)    'DMと区別しない？
             _addedIds.Add(Item.Id)
         End SyncLock
