@@ -1247,10 +1247,6 @@ Public Module Twitter
             IsThreadError = True
             TraceOut("NG(XmlException)")
             Return "NG(XmlException)"
-        Catch ex As Exception
-            IsThreadError = True
-            ExceptionOut(ex)
-            Return "NG OtherError:" + ex.Message
         End Try
 
         Return ""
@@ -1277,6 +1273,7 @@ Public Module Twitter
                 IsThreadError = True
             End If
         Catch ex As Exception
+            IsThreadError = True
             ExceptionOut(ex)
         Finally
             semaphore.Release()                     ' セマフォから出る
