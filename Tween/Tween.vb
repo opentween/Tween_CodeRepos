@@ -4628,17 +4628,17 @@ RETRY2:
                 If _bw(i) Is Nothing Then
                     _bw(i) = New BackgroundWorker
                     bw = _bw(i)
+                    bw.WorkerReportsProgress = True
+                    bw.WorkerSupportsCancellation = True
+                    AddHandler bw.DoWork, AddressOf GetTimelineWorker_DoWork
+                    AddHandler bw.ProgressChanged, AddressOf GetTimelineWorker_ProgressChanged
+                    AddHandler bw.RunWorkerCompleted, AddressOf GetTimelineWorker_RunWorkerCompleted
                     Exit For
                 End If
             Next
         End If
         If bw Is Nothing Then Exit Sub
 
-        bw.WorkerReportsProgress = True
-        bw.WorkerSupportsCancellation = True
-        AddHandler bw.DoWork, AddressOf GetTimelineWorker_DoWork
-        AddHandler bw.ProgressChanged, AddressOf GetTimelineWorker_ProgressChanged
-        AddHandler bw.RunWorkerCompleted, AddressOf GetTimelineWorker_RunWorkerCompleted
         bw.RunWorkerAsync(args)
     End Sub
 
