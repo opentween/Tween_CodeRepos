@@ -88,6 +88,7 @@ Public Module MyCommon
         FavRemove               'Fav削除
         BlackFavAdd             'BlackFav追加 (Added by shuyoko <http://twitter.com/shuyoko>)
         Follower                'Followerリスト取得
+        OpenUri                 'Uri開く
     End Enum
 
     Public Const Block As Object = Nothing
