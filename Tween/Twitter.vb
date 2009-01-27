@@ -1220,13 +1220,12 @@ Public Module Twitter
         Dim resStatus As String = ""
         Dim resMsg As String = ""
 
-        resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _GetFollowers + _pageQry + Query.ToString, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
-        If resStatus.StartsWith("OK") = False Then
-            IsThreadError = True
-            Return resStatus
-        End If
-
         Try
+            resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _GetFollowers + _pageQry + Query.ToString, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
+            If resStatus.StartsWith("OK") = False Then
+                IsThreadError = True
+                Return resStatus
+            End If
             Using rd As Xml.XmlTextReader = New Xml.XmlTextReader(New System.IO.StringReader(resMsg))
                 Dim lc As Integer = 0
                 rd.Read()
@@ -1250,7 +1249,7 @@ Public Module Twitter
             Return "NG(XmlException)"
         Catch ex As Exception
             IsThreadError = True
-            TraceOut("NG OtherError:" + ex.Message)
+            ExceptionOut(ex)
             Return "NG OtherError:" + ex.Message
         End Try
 
@@ -1270,29 +1269,20 @@ Public Module Twitter
 
     Private Sub GetFollowersCallback(ByVal ar As IAsyncResult)
         Dim dlgt As GetFollowersDelegate = DirectCast(ar.AsyncState, GetFollowersDelegate)
-        semaphore.Release()                     ' セマフォから出る
-        Interlocked.Decrement(threadNum)        ' スレッド数カウンタを-1
+
         Try
             Dim ret As String = dlgt.EndInvoke(ar)
             If Not ret.Equals("") AndAlso Not IsThreadError Then
                 TraceOut(ret)
                 IsThreadError = True
             End If
-        Catch ex As XmlException
-            IsThreadError = True
         Catch ex As Exception
-            IsThreadError = True
-            'Dim _dlgt As rethrowExceptionDelegate = New rethrowExceptionDelegate(AddressOf rethrowException)
-            ' UIスレッドで例外を再スロー(うまく投げられない?)
-            '_dlgt.BeginInvoke(ex, Nothing, Nothing)
+            ExceptionOut(ex)
+        Finally
+            semaphore.Release()                     ' セマフォから出る
+            Interlocked.Decrement(threadNum)        ' スレッド数カウンタを-1
         End Try
 
-    End Sub
-
-    Delegate Sub rethrowExceptionDelegate(ByVal ex As Exception)
-
-    Private Sub rethrowException(ByVal ex As Exception)
-        Throw New ApplicationException("バックグラウンド操作で例外発生(GetFollowersDelegate)", ex)
     End Sub
 
     ' キャッシュの検証と読み込み　-1を渡した場合は読み込みのみ行う（APIエラーでFollowersCountが取得できなかったとき）
