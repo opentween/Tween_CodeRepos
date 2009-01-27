@@ -1048,13 +1048,6 @@ Public Class TweenMain
         If regex.IsMatch(args.status) AndAlso args.status.EndsWith(" .") = False Then args.status += " ."
         If mc2.Success Then args.status = regex2.Replace(args.status, "$& ")
 
-        Dim bw As New BackgroundWorker
-        bw.WorkerReportsProgress = True
-        bw.WorkerSupportsCancellation = True
-        AddHandler bw.DoWork, AddressOf GetTimelineWorker_DoWork
-        AddHandler bw.ProgressChanged, AddressOf PostWorker_ProgressChanged
-        AddHandler bw.RunWorkerCompleted, AddressOf GetTimelineWorker_RunWorkerCompleted
-
         RunAsync(args)
 
         ListTab.SelectedTab.Controls(0).Focus()
@@ -1125,7 +1118,7 @@ Public Class TweenMain
         Dim args As GetWorkerArg = DirectCast(e.Argument, GetWorkerArg)
 
 
-        bw.ReportProgress(0, "")   'Notifyアイコンアニメーション開始
+        If args.type <> WORKERTYPE.OpenUri Then bw.ReportProgress(0, "") 'Notifyアイコンアニメーション開始
 
         Select Case args.type
             Case WORKERTYPE.Timeline, WORKERTYPE.Reply
@@ -1190,15 +1183,27 @@ Public Class TweenMain
                 rslt.sIds = args.sIds
                 ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
             Case WORKERTYPE.PostMessage
-                bw.ReportProgress(0)    'ReportProgressの割り当ては「Postworker_ProgressChanged」なので注意
+                bw.ReportProgress(200)
                 CheckReplyTo(args.status)
                 ret = Twitter.PostStatus(args.status, _reply_to_id)
                 _reply_to_id = 0
                 _reply_to_name = Nothing
-                bw.ReportProgress(100)
+                bw.ReportProgress(300)
             Case WORKERTYPE.Follower
                 bw.ReportProgress(50, My.Resources.UpdateFollowersMenuItem1_ClickText1)
                 ret = Twitter.GetFollowers(False)       ' Followersリストキャッシュ有効
+            Case WORKERTYPE.OpenUri
+                Dim myPath As String = Convert.ToString(args.status)
+
+                Try
+                    If SettingDialog.BrowserPath <> "" Then
+                        Shell(SettingDialog.BrowserPath & " " & myPath)
+                    Else
+                        System.Diagnostics.Process.Start(myPath)
+                    End If
+                Catch ex As Exception
+                    '                MessageBox.Show("ブラウザの起動に失敗、またはタイムアウトしました。" + ex.ToString())
+                End Try
         End Select
 
         'キャンセル要求
@@ -1217,25 +1222,32 @@ Public Class TweenMain
             Next
         End If
         If args.type = WORKERTYPE.Timeline AndAlso Not _initial Then
-            _tlTimestamps.Add(Now, rslt.addCount)
-            Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
-            Dim keys As New List(Of Date)
-            _tlCount = 0
-            For Each key As Date In _tlTimestamps.Keys
-                If key.CompareTo(oneHour) < 0 Then
-                    keys.Add(key)
+            SyncLock _syncObject
+                Dim tm As Date = Now
+                If _tlTimestamps.ContainsKey(tm) Then
+                    _tlTimestamps(tm) += rslt.addCount
                 Else
-                    _tlCount += _tlTimestamps(key)
+                    _tlTimestamps.Add(Now, rslt.addCount)
                 End If
-            Next
-            For Each key As Date In keys
-                _tlTimestamps.Remove(key)
-            Next
-            keys.Clear()
+                Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
+                Dim keys As New List(Of Date)
+                _tlCount = 0
+                For Each key As Date In _tlTimestamps.Keys
+                    If key.CompareTo(oneHour) < 0 Then
+                        keys.Add(key)
+                    Else
+                        _tlCount += _tlTimestamps(key)
+                    End If
+                Next
+                For Each key As Date In keys
+                    _tlTimestamps.Remove(key)
+                Next
+                keys.Clear()
+            End SyncLock
         End If
 
         '終了ステータス
-        bw.ReportProgress(100, MakeStatusMessage(args, True))   'ステータス書き換え、Notifyアイコンアニメーション開始
+        If args.type <> WORKERTYPE.OpenUri Then bw.ReportProgress(100, MakeStatusMessage(args, True)) 'ステータス書き換え、Notifyアイコンアニメーション開始
 
         rslt.retMsg = ret
         rslt.type = args.type
@@ -1298,14 +1310,33 @@ Public Class TweenMain
 
     Private Sub GetTimelineWorker_ProgressChanged(ByVal sender As Object, ByVal e As System.ComponentModel.ProgressChangedEventArgs)
         If _endingFlag Then Exit Sub
-        Dim smsg As String = DirectCast(e.UserState, String)
-        If smsg.Length > 0 Then StatusLabel.Text = smsg
-        If e.ProgressPercentage = 0 Then    '開始
-            TimerRefreshIcon.Enabled = True
-        End If
-        If e.ProgressPercentage = 100 Then  '終了
-            TimerRefreshIcon.Enabled = False
-            NotifyIcon1.Icon = NIconAt
+        If e.ProgressPercentage > 100 Then
+            '発言投稿
+            If e.ProgressPercentage = 200 Then    '開始
+                StatusLabel.Text = "Posting..."
+                StatusText.Enabled = False
+                PostButton.Enabled = False
+                ReplyStripMenuItem.Enabled = False
+                DMStripMenuItem.Enabled = False
+            End If
+            If e.ProgressPercentage = 300 Then  '終了
+                StatusLabel.Text = My.Resources.PostWorker_RunWorkerCompletedText4
+                StatusText.Enabled = True
+                PostButton.Enabled = True
+                ReplyStripMenuItem.Enabled = True
+                DMStripMenuItem.Enabled = True
+                NotifyIcon1.Icon = NIconAt
+            End If
+        Else
+            Dim smsg As String = DirectCast(e.UserState, String)
+            If smsg.Length > 0 Then StatusLabel.Text = smsg
+            If e.ProgressPercentage = 0 Then    '開始
+                TimerRefreshIcon.Enabled = True
+            End If
+            If e.ProgressPercentage = 100 Then  '終了
+                TimerRefreshIcon.Enabled = False
+                NotifyIcon1.Icon = NIconAt
+            End If
         End If
     End Sub
 
@@ -1314,14 +1345,6 @@ Public Class TweenMain
         If _endingFlag OrElse e.Cancelled Then Exit Sub 'キャンセル
 
         Dim nw As Boolean = IsNetworkAvailable()
-        If nw Then
-            NotifyIcon1.Icon = NIconAt
-            'タイマー再始動
-            If SettingDialog.TimelinePeriodInt > 0 AndAlso Not TimerTimeline.Enabled Then TimerTimeline.Enabled = True
-            If SettingDialog.DMPeriodInt > 0 AndAlso Not TimerDM.Enabled Then TimerDM.Enabled = True
-        Else
-            NotifyIcon1.Icon = NIconAtSmoke
-        End If
 
         If e.Error IsNot Nothing Then
             If nw Then NotifyIcon1.Icon = NIconAtRed
@@ -1334,9 +1357,19 @@ Public Class TweenMain
             Exit Sub
         End If
 
-
         Dim rslt As GetWorkerResult = DirectCast(e.Result, GetWorkerResult)
         Dim args As New GetWorkerArg()
+
+        If rslt.type = WORKERTYPE.OpenUri Then Exit Sub
+
+        If nw Then
+            NotifyIcon1.Icon = NIconAt
+            'タイマー再始動
+            If SettingDialog.TimelinePeriodInt > 0 AndAlso Not TimerTimeline.Enabled Then TimerTimeline.Enabled = True
+            If SettingDialog.DMPeriodInt > 0 AndAlso Not TimerDM.Enabled Then TimerDM.Enabled = True
+        Else
+            NotifyIcon1.Icon = NIconAtSmoke
+        End If
 
         'エラー
         If rslt.retMsg.Length > 0 Then
@@ -1465,22 +1498,6 @@ Public Class TweenMain
         args.type = WkType
 
         RunAsync(args)
-
-        If _initial Then Exit Sub
-
-        If WkType = WORKERTYPE.Timeline AndAlso fromPage = 1 AndAlso SettingDialog.CheckReply Then
-            args.type = WORKERTYPE.Reply
-            args.page = 1
-            args.endPage = 1
-            RunAsync(args)
-        End If
-
-        If WkType = WORKERTYPE.DirectMessegeRcv Then
-            args.type = WORKERTYPE.DirectMessegeSnt
-            args.page = 1
-            args.endPage = 1
-            RunAsync(args)
-        End If
     End Sub
 
     Private Function NextPageMessage(ByVal page As Integer) As DialogResult
@@ -2122,7 +2139,6 @@ Public Class TweenMain
         _tabPage.Dispose()
         _listCustom.Dispose()
         _statuses.RemoveTab(TabName)
-        _rclickTabName = ""
 
         SaveConfigs()
     End Sub
@@ -2208,20 +2224,6 @@ Public Class TweenMain
         If PostBrowser.StatusText = "" Then
             SetStatusLabel()
         End If
-    End Sub
-
-    Private Sub ExecWorker_DoWork(ByVal sender As System.Object, ByVal e As System.ComponentModel.DoWorkEventArgs)
-        Dim myPath As String = Convert.ToString(e.Argument)
-
-        Try
-            If SettingDialog.BrowserPath <> "" Then
-                Shell(SettingDialog.BrowserPath & " " & myPath)
-            Else
-                System.Diagnostics.Process.Start(myPath)
-            End If
-        Catch ex As Exception
-            '                MessageBox.Show("ブラウザの起動に失敗、またはタイムアウトしました。" + ex.ToString())
-        End Try
     End Sub
 
     Private Sub StatusText_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles StatusText.KeyUp
@@ -3371,6 +3373,7 @@ RETRY2:
                 End If
             Next
             SaveConfigs()
+            _rclickTabName = newTabText
         End If
     End Sub
 
@@ -3592,7 +3595,7 @@ RETRY2:
 
     Private Sub ContextMenuTabProperty_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuTabProperty.Opening
         '右クリックの場合はタブ名が設定済。アプリケーションキーの場合は現在のタブを対象とする
-        If _rclickTabName = "" Then _rclickTabName = ListTab.SelectedTab.Text
+        If _rclickTabName = "" OrElse ContextMenuTabProperty.OwnerItem IsNot Nothing Then _rclickTabName = ListTab.SelectedTab.Text
 
         Dim tb As TabClass = _statuses.Tabs(_rclickTabName)
 
@@ -3800,26 +3803,6 @@ RETRY2:
 
     Private Sub ReplyAllStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ReplyAllStripMenuItem.Click
         MakeReplyOrDirectStatus(False, True, True)
-    End Sub
-
-    Private Sub PostWorker_ProgressChanged(ByVal sender As Object, ByVal e As System.ComponentModel.ProgressChangedEventArgs)
-        If e.ProgressPercentage = 0 Then    '開始
-            StatusLabel.Text = "Posting..."
-            StatusText.Enabled = False
-            PostButton.Enabled = False
-            ReplyStripMenuItem.Enabled = False
-            DMStripMenuItem.Enabled = False
-            TimerRefreshIcon.Enabled = True
-        End If
-        If e.ProgressPercentage = 100 Then  '終了
-            StatusLabel.Text = My.Resources.PostWorker_RunWorkerCompletedText4
-            StatusText.Enabled = True
-            PostButton.Enabled = True
-            ReplyStripMenuItem.Enabled = True
-            DMStripMenuItem.Enabled = True
-            TimerRefreshIcon.Enabled = False
-            NotifyIcon1.Icon = NIconAt
-        End If
     End Sub
 
     Private Sub IDRuleMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles IDRuleMenuItem.Click
@@ -4579,10 +4562,11 @@ RETRY2:
     End Function
 
     Private Sub OpenUriAsync(ByVal UriString As String)
-        Dim bw As New BackgroundWorker
-        AddHandler bw.DoWork, AddressOf ExecWorker_DoWork
+        Dim args As New GetWorkerArg
+        args.type = WORKERTYPE.OpenUri
+        args.status = UriString
 
-        bw.RunWorkerAsync(UriString)
+        RunAsync(args)
     End Sub
 
     Private Sub ListTab_Selecting(ByVal sender As System.Object, ByVal e As System.Windows.Forms.TabControlCancelEventArgs) Handles ListTab.Selecting
