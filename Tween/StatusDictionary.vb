@@ -669,6 +669,9 @@ Public Class TabInformations
                             tbr.Remove(post.Id)
                     End Select
                 Next
+                For Each _key As String In _tabs.Keys
+                    _tabs(_key).AddSubmit()  '振分確定（各タブに反映）
+                Next
                 For Each id As Long In orgIds
                     Dim hit As Boolean = False
                     For Each tkey As String In _tabs.Keys
@@ -682,9 +685,6 @@ Public Class TabInformations
             End If
         Next
 
-        For Each key As String In _tabs.Keys
-            _tabs(key).AddSubmit()  '振分確定（各タブに反映）
-        Next
         Me.SortPosts()
     End Sub
 
