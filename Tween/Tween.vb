@@ -1984,9 +1984,7 @@ Public Class TweenMain
         _colHd8.Width = 50
         'End If
 
-        If tabName <> "Recent" AndAlso _
-           tabName <> "Reply" AndAlso _
-           tabName <> "Direct" Then
+        If Not IsDefaultTab(tabName) Then
             TabDialog.AddTab(tabName)
         End If
 
@@ -2056,9 +2054,7 @@ Public Class TweenMain
             If ListTab.TabPages(idx).Text = TabName Then Exit For
         Next
 
-        If TabName = "Recent" OrElse _
-           TabName = "Reply" OrElse _
-           TabName = "Direct" Then Exit Sub
+        If IsDefaultTab(TabName) Then Exit Sub
 
         Dim tmp As String = String.Format(My.Resources.RemoveSpecifiedTabText1, Environment.NewLine)
         If MessageBox.Show(tmp, My.Resources.RemoveSpecifiedTabText2, _
@@ -3352,7 +3348,7 @@ RETRY2:
 
     Private Sub Tabs_DoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListTab.MouseDoubleClick
         'タブ名変更
-        If ListTab.SelectedTab.Text = "Recent" OrElse ListTab.SelectedTab.Text = "Reply" OrElse ListTab.SelectedTab.Text = "Direct" Then Exit Sub
+        If IsDefaultTab(ListTab.SelectedTab.Text) Then Exit Sub
         Dim inputName As New InputTabName()
         inputName.TabName = ListTab.SelectedTab.Text
         inputName.ShowDialog()
@@ -3364,17 +3360,13 @@ RETRY2:
             ListTab.SelectedTab.Text = newTabText
             'タブ名のリスト作り直し
             For i As Integer = 0 To ListTab.TabCount - 1
-                If ListTab.TabPages(i).Text <> "Recent" AndAlso _
-                   ListTab.TabPages(i).Text <> "Reply" AndAlso _
-                   ListTab.TabPages(i).Text <> "Direct" AndAlso _
+                If Not IsDefaultTab(ListTab.TabPages(i).Text) AndAlso _
                    ListTab.TabPages(i).Text <> newTabText Then
                     TabDialog.RemoveTab(ListTab.TabPages(i).Text)
                 End If
             Next
             For i As Integer = 0 To ListTab.TabCount - 1
-                If ListTab.TabPages(i).Text <> "Recent" AndAlso _
-                   ListTab.TabPages(i).Text <> "Reply" AndAlso _
-                   ListTab.TabPages(i).Text <> "Direct" Then
+                If Not IsDefaultTab(ListTab.TabPages(i).Text) Then
                     TabDialog.AddTab(ListTab.TabPages(i).Text)
                 End If
             Next
@@ -3615,7 +3607,7 @@ RETRY2:
         If idx = -1 Then idx = 0
         SoundFileComboBox.SelectedIndex = idx
         UreadManageMenuItem.Checked = tb.UnreadManage
-        If _rclickTabName = "Recent" OrElse _rclickTabName = "Reply" OrElse _rclickTabName = "Direct" Then
+        If IsDefaultTab() Then
             FilterEditMenuItem.Enabled = False
             DeleteTabMenuItem.Enabled = False
         Else
@@ -3664,8 +3656,7 @@ RETRY2:
     End Sub
 
     Private Sub FilterEditMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FilterEditMenuItem.Click
-        If _rclickTabName = "" OrElse _rclickTabName = "Recent" _
-                OrElse _rclickTabName = "Reply" OrElse _rclickTabName = "Direct" Then Exit Sub
+        If _rclickTabName = "" OrElse IsDefaultTab() Then Exit Sub
 
         fDialog.SetCurrent(_rclickTabName)
         fDialog.ShowDialog()
@@ -4746,4 +4737,27 @@ RETRY2:
     Private Sub GetFollowersAllToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles GetFollowersAllToolStripMenuItem.Click
         doGetFollowersMenu(True)        ' Followersリストキャッシュ無効
     End Sub
+
+    ' デフォルトタブの判定処理
+
+    Private Overloads ReadOnly Property IsDefaultTab() As Boolean
+        Get
+            If _rclickTabName = "Recent" OrElse _rclickTabName = "Reply" _
+                    OrElse _rclickTabName = "Direct" Then
+                Return True
+            Else
+                Return False
+            End If
+        End Get
+    End Property
+    Private Overloads ReadOnly Property IsDefaultTab(ByVal tabName As String) As Boolean
+        Get
+            If tabName = "Recent" OrElse tabName = "Reply" _
+                    OrElse tabName = "Direct" Then
+                Return True
+            Else
+                Return False
+            End If
+        End Get
+    End Property
 End Class
