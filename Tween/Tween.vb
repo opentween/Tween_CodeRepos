@@ -3610,7 +3610,7 @@ RETRY2:
         If idx = -1 Then idx = 0
         SoundFileComboBox.SelectedIndex = idx
         UreadManageMenuItem.Checked = tb.UnreadManage
-        If IsDefaultTab() Then
+        If IsDefaultTab(_rclickTabName) Then
             FilterEditMenuItem.Enabled = False
             DeleteTabMenuItem.Enabled = False
         Else
@@ -3659,7 +3659,7 @@ RETRY2:
     End Sub
 
     Private Sub FilterEditMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FilterEditMenuItem.Click
-        If _rclickTabName = "" OrElse IsDefaultTab() Then Exit Sub
+        If _rclickTabName = "" OrElse IsDefaultTab(_rclickTabName) Then Exit Sub
 
         fDialog.SetCurrent(_rclickTabName)
         fDialog.ShowDialog()
@@ -4723,25 +4723,12 @@ RETRY2:
     End Sub
 
     ' デフォルトタブの判定処理
-
-    Private Overloads ReadOnly Property IsDefaultTab() As Boolean
-        Get
-            If _rclickTabName = "Recent" OrElse _rclickTabName = "Reply" _
-                    OrElse _rclickTabName = "Direct" Then
-                Return True
-            Else
-                Return False
-            End If
-        End Get
-    End Property
-    Private Overloads ReadOnly Property IsDefaultTab(ByVal tabName As String) As Boolean
-        Get
-            If tabName = "Recent" OrElse tabName = "Reply" _
-                    OrElse tabName = "Direct" Then
-                Return True
-            Else
-                Return False
-            End If
-        End Get
-    End Property
+    Private Function IsDefaultTab(ByVal tabName As String) As Boolean
+        If tabName = "Recent" OrElse tabName = "Reply" _
+                OrElse tabName = "Direct" Then
+            Return True
+        Else
+            Return False
+        End If
+    End Function
 End Class
