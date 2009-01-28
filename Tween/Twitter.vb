@@ -562,13 +562,15 @@ Public Module Twitter
                     End If
 
                     '@先リスト作成
-                    rg = New Regex("@<a href=""\/(?<1>[a-zA-Z0-9_]+)""")
+                    rg = New Regex("@<a href=""\/(?<1>[a-zA-Z0-9_]+)")
                     m = rg.Match(orgData)
                     While m.Success
                         post.ReplyToList.Add(m.Groups(1).Value.ToLower())
                         m = m.NextMatch
                     End While
                     If Not post.IsReply Then post.IsReply = post.ReplyToList.Contains(_uid.ToLower())
+
+                    If gType = WORKERTYPE.Reply Then post.IsReply = True
 
                     'Get Fav
                     pos1 = strPost.IndexOf(_parseStar, pos2, StringComparison.Ordinal)
