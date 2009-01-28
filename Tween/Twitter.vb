@@ -1024,7 +1024,15 @@ Public Module Twitter
         End If
 
         Dim dlgt As New TweenMain.GetImageIndexDelegate(AddressOf _owner.GetImageIndex)
-        post.ImageIndex = DirectCast(_owner.Invoke(dlgt, post), Integer)
+        Try
+            SyncLock LockObj
+                If _endingFlag Then Exit Sub
+            End SyncLock
+            post.ImageIndex = DirectCast(_owner.Invoke(dlgt, post), Integer)
+        Catch ex As Exception
+            Exit Sub
+        End Try
+
         If post.ImageIndex > -1 Then
             TabInformations.GetInstance.AddPost(post)
             Exit Sub
@@ -1046,9 +1054,12 @@ Public Module Twitter
 
         Dim dlgt2 As New TweenMain.SetImageDelegate(AddressOf _owner.SetImage)
         Try
-            If Not _endingFlag Then _owner.Invoke(dlgt2, New Object() {post, img, bmp2})
+            SyncLock LockObj
+                If _endingFlag Then Exit Sub
+            End SyncLock
+            _owner.Invoke(dlgt2, New Object() {post, img, bmp2})
         Catch ex As Exception
-
+            Exit Sub
         End Try
         TabInformations.GetInstance.AddPost(post)
     End Sub
