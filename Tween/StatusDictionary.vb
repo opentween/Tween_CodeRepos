@@ -561,8 +561,8 @@ Public Class TabInformations
 
     Public Sub AddPost(ByVal Item As PostClass)
         SyncLock LockObj
-            If _addedIds Is Nothing Then _addedIds = New List(Of Long) 'タブ追加用IDコレクション準備
             If _statuses.ContainsKey(Item.Id) Then Exit Sub '追加済みなら何もしない
+            If _addedIds Is Nothing Then _addedIds = New List(Of Long) 'タブ追加用IDコレクション準備
             _statuses.Add(Item.Id, Item)    'DMと区別しない？
             _addedIds.Add(Item.Id)
         End SyncLock
@@ -602,6 +602,7 @@ Public Class TabInformations
         End If
     End Sub
 
+
     Public ReadOnly Property Item(ByVal ID As Long) As PostClass
         Get
             Return _statuses(ID)
@@ -613,6 +614,20 @@ Public Class TabInformations
             Return _statuses(_tabs(TabName).GetId(Index))
         End Get
     End Property
+
+    Public ReadOnly Property ItemCount() As Integer
+        Get
+            SyncLock LockObj
+                Return _statuses.Count
+            End SyncLock
+        End Get
+    End Property
+
+    Public Function ContainsKey(ByVal Id As Long) As Boolean
+        SyncLock LockObj
+            Return _statuses.ContainsKey(Id)
+        End SyncLock
+    End Function
 
     Public Sub SetUnreadManage(ByVal Manage As Boolean)
         If Manage Then
