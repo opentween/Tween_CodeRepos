@@ -1025,10 +1025,11 @@ Public Module Twitter
 
         Dim dlgt As New TweenMain.GetImageIndexDelegate(AddressOf _owner.GetImageIndex)
         Try
-            SyncLock LockObj
-                If _endingFlag Then Exit Sub
-            End SyncLock
-            post.ImageIndex = DirectCast(_owner.Invoke(dlgt, post), Integer)
+            If Not _endingFlag Then
+                post.ImageIndex = DirectCast(_owner.Invoke(dlgt, post), Integer)
+            Else
+                Exit Sub
+            End If
         Catch ex As Exception
             Exit Sub
         End Try
@@ -1046,6 +1047,8 @@ Public Module Twitter
             Exit Sub
         End If
 
+        If _endingFlag Then Exit Sub
+
         Dim bmp2 As New Bitmap(_iconSz, _iconSz)
         Using g As Graphics = Graphics.FromImage(bmp2)
             g.InterpolationMode = Drawing2D.InterpolationMode.High
@@ -1054,10 +1057,11 @@ Public Module Twitter
 
         Dim dlgt2 As New TweenMain.SetImageDelegate(AddressOf _owner.SetImage)
         Try
-            SyncLock LockObj
-                If _endingFlag Then Exit Sub
-            End SyncLock
-            _owner.Invoke(dlgt2, New Object() {post, img, bmp2})
+            If Not _endingFlag Then
+                _owner.Invoke(dlgt2, New Object() {post, img, bmp2})
+            Else
+                Exit Sub
+            End If
         Catch ex As Exception
             Exit Sub
         End Try
