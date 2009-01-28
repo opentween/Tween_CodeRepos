@@ -1045,7 +1045,11 @@ Public Module Twitter
         End Using
 
         Dim dlgt2 As New TweenMain.SetImageDelegate(AddressOf _owner.SetImage)
-        _owner.Invoke(dlgt2, New Object() {post, img, bmp2})
+        Try
+            If Not _endingFlag Then _owner.Invoke(dlgt2, New Object() {post, img, bmp2})
+        Catch ex As Exception
+
+        End Try
         TabInformations.GetInstance.AddPost(post)
     End Sub
 

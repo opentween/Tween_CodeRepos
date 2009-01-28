@@ -1076,6 +1076,9 @@ Public Class TweenMain
             NotifyIcon1.Visible = False
 
             Dim flg As Boolean = False
+            For i As Integer = 0 To _bw.Length - 1
+                _bw(i).CancelAsync()
+            Next
             Do
                 flg = True
                 For i As Integer = 0 To _bw.Length - 1
@@ -3310,7 +3313,7 @@ RETRY2:
             Using sw As StreamWriter = New StreamWriter(SaveFileDialog1.FileName, False, Encoding.UTF8)
                 If rslt = Windows.Forms.DialogResult.Yes Then
                     'All
-                    For idx As Integer = 0 To _curList.VirtualListSize
+                    For idx As Integer = 0 To _curList.VirtualListSize - 1
                         Dim post As PostClass = _statuses.Item(_curTab.Text, idx)
                         sw.WriteLine(post.Nickname & vbTab & _
                                  """" & post.Data.Replace(vbLf, "").Replace("""", """""") + """" & vbTab & _
