@@ -24,6 +24,8 @@
 Imports System.Text
 
 Public Module MyCommon
+    Private ReadOnly LockObj As New Object
+
     Public Enum IconSizes
         IconNone = 0
         Icon16 = 1
@@ -94,47 +96,51 @@ Public Module MyCommon
     Public Const Block As Object = Nothing
 
     Public Sub TraceOut(ByVal Message As String)
-        If My.Application.CommandLineArgs.Count = 0 OrElse My.Application.CommandLineArgs.Contains("/d") = False Then Exit Sub
-        Dim now As DateTime = DateTime.Now
-        Dim fileName As String = String.Format("TweenTrace-{0:0000}{1:00}{2:00}-{3:00}{4:00}{5:00}.log", now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second)
+        SyncLock LockObj
+            If My.Application.CommandLineArgs.Count = 0 OrElse My.Application.CommandLineArgs.Contains("/d") = False Then Exit Sub
+            Dim now As DateTime = DateTime.Now
+            Dim fileName As String = String.Format("TweenTrace-{0:0000}{1:00}{2:00}-{3:00}{4:00}{5:00}.log", now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second)
 
-        Using writer As IO.StreamWriter = New IO.StreamWriter(fileName)
-            writer.WriteLine("**** TraceOut: {0} ****", DateTime.Now.ToString())
-            writer.WriteLine(My.Resources.TraceOutText1)
-            writer.WriteLine(My.Resources.TraceOutText2)
-            writer.WriteLine()
-            writer.WriteLine(My.Resources.TraceOutText3)
-            writer.WriteLine(My.Resources.TraceOutText4, Environment.OSVersion.VersionString)
-            writer.WriteLine(My.Resources.TraceOutText5, Environment.Version.ToString())
-            writer.WriteLine(My.Resources.TraceOutText6, My.Application.Info.Version.ToString())
-            writer.WriteLine(Message)
-            writer.WriteLine()
-        End Using
+            Using writer As IO.StreamWriter = New IO.StreamWriter(fileName)
+                writer.WriteLine("**** TraceOut: {0} ****", DateTime.Now.ToString())
+                writer.WriteLine(My.Resources.TraceOutText1)
+                writer.WriteLine(My.Resources.TraceOutText2)
+                writer.WriteLine()
+                writer.WriteLine(My.Resources.TraceOutText3)
+                writer.WriteLine(My.Resources.TraceOutText4, Environment.OSVersion.VersionString)
+                writer.WriteLine(My.Resources.TraceOutText5, Environment.Version.ToString())
+                writer.WriteLine(My.Resources.TraceOutText6, My.Application.Info.Version.ToString())
+                writer.WriteLine(Message)
+                writer.WriteLine()
+            End Using
+        End SyncLock
     End Sub
 
     Public Sub ExceptionOut(ByVal ex As Exception)
-        Dim now As DateTime = DateTime.Now
-        Dim fileName As String = String.Format("Tween-{0:0000}{1:00}{2:00}-{3:00}{4:00}{5:00}.log", now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second)
+        SyncLock LockObj
+            Dim now As DateTime = DateTime.Now
+            Dim fileName As String = String.Format("Tween-{0:0000}{1:00}{2:00}-{3:00}{4:00}{5:00}.log", now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second)
 
-        Using writer As IO.StreamWriter = New IO.StreamWriter(fileName)
-            writer.WriteLine(My.Resources.UnhandledExceptionText1, DateTime.Now.ToString())
-            writer.WriteLine(My.Resources.UnhandledExceptionText2)
-            writer.WriteLine(My.Resources.UnhandledExceptionText3)
-            writer.WriteLine()
-            writer.WriteLine(My.Resources.UnhandledExceptionText4)
-            writer.WriteLine(My.Resources.UnhandledExceptionText5, Environment.OSVersion.VersionString)
-            writer.WriteLine(My.Resources.UnhandledExceptionText6, Environment.Version.ToString())
-            writer.WriteLine(My.Resources.UnhandledExceptionText7, My.Application.Info.Version.ToString())
-            writer.WriteLine(My.Resources.UnhandledExceptionText8, ex.GetType().FullName, ex.Message)
-            writer.WriteLine(ex.StackTrace)
-            writer.WriteLine()
-        End Using
+            Using writer As IO.StreamWriter = New IO.StreamWriter(fileName)
+                writer.WriteLine(My.Resources.UnhandledExceptionText1, DateTime.Now.ToString())
+                writer.WriteLine(My.Resources.UnhandledExceptionText2)
+                writer.WriteLine(My.Resources.UnhandledExceptionText3)
+                writer.WriteLine()
+                writer.WriteLine(My.Resources.UnhandledExceptionText4)
+                writer.WriteLine(My.Resources.UnhandledExceptionText5, Environment.OSVersion.VersionString)
+                writer.WriteLine(My.Resources.UnhandledExceptionText6, Environment.Version.ToString())
+                writer.WriteLine(My.Resources.UnhandledExceptionText7, My.Application.Info.Version.ToString())
+                writer.WriteLine(My.Resources.UnhandledExceptionText8, ex.GetType().FullName, ex.Message)
+                writer.WriteLine(ex.StackTrace)
+                writer.WriteLine()
+            End Using
 
-        If MessageBox.Show(String.Format(My.Resources.UnhandledExceptionText9, fileName, Environment.NewLine), _
-                           My.Resources.UnhandledExceptionText10, MessageBoxButtons.OKCancel, MessageBoxIcon.Error) = DialogResult.OK _
-        Then
-            Diagnostics.Process.Start(fileName)
-        End If
+            If MessageBox.Show(String.Format(My.Resources.UnhandledExceptionText9, fileName, Environment.NewLine), _
+                               My.Resources.UnhandledExceptionText10, MessageBoxButtons.OKCancel, MessageBoxIcon.Error) = DialogResult.OK _
+            Then
+                Diagnostics.Process.Start(fileName)
+            End If
+        End SyncLock
     End Sub
 
     ''' <summary>

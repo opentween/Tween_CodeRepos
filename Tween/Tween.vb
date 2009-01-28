@@ -304,7 +304,7 @@ Public Class TweenMain
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Me.Visible = False
 
-        Twitter.Owner = Me  'Invoke用
+        'Twitter.Owner = Me  'Invoke用
 
         LoadIcons() ' アイコン読み込み
 
@@ -548,11 +548,6 @@ Public Class TweenMain
         '文字カウンタ初期化
         lblLen.Text = "140"
 
-        '発言詳細部のアイコンリスト作成
-        TIconDic = New Dictionary(Of String, Image)
-        'TIconList.ImageSize = New Size(48, 48)
-        'TIconList.ColorDepth = ColorDepth.Depth32Bit
-
         'Twitter用通信クラス初期化
         Twitter.Username = _username
         Twitter.Password = _password
@@ -614,8 +609,18 @@ Public Class TweenMain
         Twitter.TinyUrlResolve = SettingDialog.TinyUrlResolve
 
         '発言詳細部アイコンをリストアイコンにサイズ変更
-        ChangeImageSize()
+        Dim sz As Integer = _iconSz
+        If _iconSz = 0 Then
+            sz = 16
+        End If
+        TIconSmallList = New ImageList
+        TIconSmallList.ImageSize = New Size(sz, sz)
+        TIconSmallList.ColorDepth = ColorDepth.Depth32Bit
+        '発言詳細部のアイコンリスト作成
+        TIconDic = New Dictionary(Of String, Image)
 
+        Twitter.ListIcon = TIconSmallList
+        Twitter.DetailIcon = TIconDic
 
         StatusLabel.Text = My.Resources.Form1_LoadText1       '画面右下の状態表示を変更
         StatusLabelUrl.Text = ""            '画面左下のリンク先URL表示部を初期化
@@ -781,7 +786,8 @@ Public Class TweenMain
                     Else
                         '最上行が表示されていたら、制御しない。最上行が表示されていなかったら、現在表示位置へ強制スクロール
                         Dim _item As ListViewItem
-                        _item = _curList.GetItemAt(0, 25)     '一番上
+
+                        _item = _curList.GetItemAt(0, 10)     '一番上
                         If _item Is Nothing Then _item = _curList.Items(0)
                         If _item.Index = 0 Then
                             smode = -1
@@ -1064,21 +1070,22 @@ Public Class TweenMain
             e.Cancel = True
             Me.Visible = False
         Else
-            SaveConfigs()
-
-            _endingFlag = True
-            'GetTimelineWorker.CancelAsync()
-            Twitter.Ending = True
-
             TimerTimeline.Enabled = False
             TimerDM.Enabled = False
 
+            Me.Visible = False
             NotifyIcon1.Visible = False
 
-            Dim flg As Boolean = False
+            _endingFlag = True
+            Twitter.Ending = True
+
+            SaveConfigs()
+
             For i As Integer = 0 To _bw.Length - 1
-                _bw(i).CancelAsync()
+                If _bw(i) IsNot Nothing Then _bw(i).CancelAsync()
             Next
+
+            Dim flg As Boolean = False
             Do
                 flg = True
                 For i As Integer = 0 To _bw.Length - 1
@@ -1091,7 +1098,6 @@ Public Class TweenMain
                 Application.DoEvents()
             Loop Until flg = True
 
-            Me.Visible = False
         End If
     End Sub
 
@@ -2623,31 +2629,6 @@ RETRY2:
         End If
     End Sub
 
-    Private Sub ChangeImageSize()
-        Dim sz As Integer = DirectCast(IIf(_iconSz = 0, 16, _iconSz), Integer)
-
-        If TIconSmallList IsNot Nothing Then
-            TIconSmallList.Dispose()
-        End If
-        TIconSmallList = New ImageList
-        TIconSmallList.ImageSize = New Size(sz, sz)
-        TIconSmallList.ColorDepth = ColorDepth.Depth32Bit
-
-        If _iconSz = 0 Then Exit Sub
-
-        'If _iconSz <> 48 Then
-        '    For Each key As String In TIconList.Images.Keys
-        '        Using img2 As New Bitmap(sz, sz)
-        '            Using g As Graphics = Graphics.FromImage(img2)
-        '                g.InterpolationMode = Drawing2D.InterpolationMode.Default
-        '                g.DrawImage(TIconList.Images(key), 0, 0, sz, sz)
-        '                TIconSmallList.Images.Add(key, img2)
-        '            End Using
-        '        End Using
-        '    Next
-        'End If
-    End Sub
-
     Private Sub VerUpMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VerUpMenuItem.Click
         CheckNewVersion()
     End Sub
@@ -3989,11 +3970,11 @@ RETRY2:
             _itemCacheIndex = -1
             _curItemIndex = -1
             _curPost = Nothing
-            _curList.VirtualListSize = 0
         End If
         For Each tb As TabPage In ListTab.TabPages
             If tb.Text = _rclickTabName Then
                 tb.ImageIndex = -1
+                DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = 0
                 Exit For
             End If
         Next
@@ -4645,22 +4626,22 @@ RETRY2:
         bw.RunWorkerAsync(args)
     End Sub
 
-    Public Delegate Function GetImageIndexDelegate(ByVal post As PostClass) As Integer
+    'Public Delegate Function GetImageIndexDelegate(ByVal post As PostClass) As Integer
 
-    Public Function GetImageIndex(ByVal post As PostClass) As Integer
-        Return TIconSmallList.Images.IndexOfKey(post.ImageUrl)
-    End Function
+    'Public Function GetImageIndex(ByVal post As PostClass) As Integer
+    '    Return TIconSmallList.Images.IndexOfKey(post.ImageUrl)
+    'End Function
 
-    Public Delegate Sub SetImageDelegate(ByVal post As PostClass, ByVal Img As Image, ByVal ImgBmp As Bitmap)
+    'Public Delegate Sub SetImageDelegate(ByVal post As PostClass, ByVal Img As Image, ByVal ImgBmp As Bitmap)
 
-    Public Sub SetImage(ByVal post As PostClass, ByVal Img As Image, ByVal ImgBmp As Bitmap)
-        post.ImageIndex = GetImageIndex(post)
-        If post.ImageIndex > -1 Then Exit Sub
+    'Public Sub SetImage(ByVal post As PostClass, ByVal Img As Image, ByVal ImgBmp As Bitmap)
+    '    post.ImageIndex = GetImageIndex(post)
+    '    If post.ImageIndex > -1 Then Exit Sub
 
-        TIconDic.Add(post.ImageUrl, Img)  '詳細表示用ディクショナリに追加
-        TIconSmallList.Images.Add(post.ImageUrl, ImgBmp)
-        post.ImageIndex = TIconSmallList.Images.IndexOfKey(post.ImageUrl)
-    End Sub
+    '    TIconDic.Add(post.ImageUrl, Img)  '詳細表示用ディクショナリに追加
+    '    TIconSmallList.Images.Add(post.ImageUrl, ImgBmp)
+    '    post.ImageIndex = TIconSmallList.Images.IndexOfKey(post.ImageUrl)
+    'End Sub
 
     Private Sub TweenMain_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
         If IsNetworkAvailable() Then

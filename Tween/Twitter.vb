@@ -42,7 +42,7 @@ Public Module Twitter
     Private ReadOnly LockObj As New Object
     Private GetTmSemaphore As New Threading.Semaphore(8, 8)
 
-    Private links As New List(Of Long)
+    'Private links As New List(Of Long)
     Private follower As New Collections.Specialized.StringCollection
 
     'プロパティからアクセスされる共通情報
@@ -59,6 +59,8 @@ Public Module Twitter
 
     Private _iconSz As Integer
     Private _getIcon As Boolean
+    Private _lIcon As ImageList
+    Private _dIcon As Dictionary(Of String, Image)
 
     Private _tinyUrlResolve As Boolean
     Private _restrictFavCheck As Boolean
@@ -66,7 +68,7 @@ Public Module Twitter
 
     Private _hubServer As String
 
-    Private _owner As TweenMain
+    'Private _owner As TweenMain
 
     '共通で使用する状態
     Private _authKey As String              'StatusUpdate、発言削除で使用
@@ -250,7 +252,13 @@ Public Module Twitter
             Dim epage As Integer = 0
             Dim dm As Boolean = False
             Dim trslt As String = ""
-            trslt = dlgt(idx).EndInvoke(epage, dm, ar(idx))
+            Try
+                trslt = dlgt(idx).EndInvoke(epage, dm, ar(idx))
+            Catch ex As Exception
+                '最後までendinvoke回す（ゾンビ化回避）
+                ExceptionOut(ex)
+                rslt = "GetTimelineErr"
+            End Try
             If trslt.Length > 0 AndAlso rslt.Length = 0 Then rslt = trslt
             If dm Then getDM = True
         Next
@@ -327,7 +335,7 @@ Public Module Twitter
             Dim intCnt As Integer = 0
             Dim listCnt As Integer = 0
             SyncLock LockObj
-                listCnt = links.Count
+                listCnt = TabInformations.GetInstance.ItemCount
             End SyncLock
             Dim dlgt(20) As GetIconImageDelegate
             Dim ar(20) As IAsyncResult
@@ -416,7 +424,7 @@ Public Module Twitter
 
                     '二重取得回避
                     SyncLock LockObj
-                        If links.Contains(post.Id) Then Continue For
+                        If TabInformations.GetInstance.ContainsKey(post.Id) Then Continue For
                     End SyncLock
 
                     Dim orgData As String = ""
@@ -584,10 +592,6 @@ Public Module Twitter
 
                     If _endingFlag Then Return ""
 
-                    SyncLock LockObj
-                        links.Add(post.Id)
-                    End SyncLock
-
                     post.IsMe = post.Name.Equals(_uid, StringComparison.OrdinalIgnoreCase)
                     SyncLock LockObj
                         If follower.Count > 1 Then
@@ -616,6 +620,7 @@ Public Module Twitter
                                 _getDm = True
                             End If
                         Catch ex As Exception
+                            Return "GetTimeline -> Err: Can't get DM count."
                         End Try
                     End If
                 End If
@@ -623,11 +628,16 @@ Public Module Twitter
             Next
 
             For i As Integer = 0 To arIdx
-                dlgt(i).EndInvoke(ar(i))
+                Try
+                    dlgt(i).EndInvoke(ar(i))
+                Catch ex As Exception
+                    '最後までendinvoke回す（ゾンビ化回避）
+                    ExceptionOut(ex)
+                End Try
             Next
 
             SyncLock LockObj
-                If page = 1 AndAlso (links.Count - listCnt) >= _nextThreshold Then
+                If page = 1 AndAlso (TabInformations.GetInstance.ItemCount - listCnt) >= _nextThreshold Then
                     '新着が閾値の件数以上なら、次のページも念のため読み込み
                     endPage = _nextPages + 1
                 End If
@@ -665,7 +675,13 @@ Public Module Twitter
         Dim rslt As String = ""
         For idx As Integer = 0 To num
             Dim trslt As String = ""
-            trslt = dlgt(idx).EndInvoke(ar(idx))
+            Try
+                trslt = dlgt(idx).EndInvoke(ar(idx))
+            Catch ex As Exception
+                '最後までendinvoke回す（ゾンビ化回避）
+                ExceptionOut(ex)
+                rslt = "GetDirectMessageErr"
+            End Try
             If trslt.Length > 0 AndAlso rslt.Length = 0 Then rslt = trslt
         Next
         Return rslt
@@ -764,7 +780,7 @@ Public Module Twitter
             Dim intCnt As Integer = 0   'カウンタ
             Dim listCnt As Integer = 0
             SyncLock LockObj
-                listCnt = links.Count
+                listCnt = TabInformations.GetInstance.ItemCount
             End SyncLock
             Dim dlgt(20) As GetIconImageDelegate
             Dim ar(20) As IAsyncResult
@@ -811,7 +827,7 @@ Public Module Twitter
                     End Try
 
                     SyncLock LockObj
-                        If links.Contains(post.Id) Then Continue For
+                        If TabInformations.GetInstance.ContainsKey(post.Id) Then Continue For
                     End SyncLock
 
                     'Get ImagePath
@@ -879,7 +895,7 @@ Public Module Twitter
                     Catch ex As Exception
                         _signed = False
                         TraceOut("DM-Date:" + strPost)
-                        Return "GetTimeline -> Err: Can't get date."
+                        Return "GetDirectMessage -> Err: Can't get date."
                     End Try
 
 
@@ -895,10 +911,6 @@ Public Module Twitter
 
 
                     If _endingFlag Then Return ""
-
-                    SyncLock LockObj
-                        links.Add(post.Id)
-                    End SyncLock
 
                     '受信ＤＭかの判定で使用
                     If gType = WORKERTYPE.DirectMessegeRcv Then
@@ -917,9 +929,13 @@ Public Module Twitter
                 End If
             Next
 
-            'For i As Integer = 0 To arIdx
-            '    dlgt(i).EndInvoke(ar(i))
-            'Next
+            For i As Integer = 0 To arIdx
+                Try
+                    dlgt(i).EndInvoke(ar(i))
+                Catch ex As Exception
+                    ExceptionOut(ex)
+                End Try
+            Next
 
             Return ""
 
@@ -1015,24 +1031,25 @@ Public Module Twitter
     End Function
 
     Private Sub GetIconImage(ByVal post As PostClass)
-        If _endingFlag Then Exit Sub
-
         If Not _getIcon Then
             post.ImageIndex = -1
             TabInformations.GetInstance.AddPost(post)
             Exit Sub
         End If
 
-        Dim dlgt As New TweenMain.GetImageIndexDelegate(AddressOf _owner.GetImageIndex)
-        Try
-            If Not _endingFlag Then
-                post.ImageIndex = DirectCast(_owner.Invoke(dlgt, post), Integer)
-            Else
-                Exit Sub
-            End If
-        Catch ex As Exception
-            Exit Sub
-        End Try
+        'Dim dlgt As New TweenMain.GetImageIndexDelegate(AddressOf _owner.GetImageIndex)
+        'Try
+        '    If Not _endingFlag Then
+        '        post.ImageIndex = DirectCast(_owner.Invoke(dlgt, post), Integer)
+        '    Else
+        '        Exit Sub
+        '    End If
+        'Catch ex As Exception
+        '    Exit Sub
+        'End Try
+        SyncLock LockObj
+            post.ImageIndex = _lIcon.Images.IndexOfKey(post.ImageUrl)
+        End SyncLock
 
         If post.ImageIndex > -1 Then
             TabInformations.GetInstance.AddPost(post)
@@ -1055,16 +1072,24 @@ Public Module Twitter
             g.DrawImage(img, 0, 0, _iconSz, _iconSz)
         End Using
 
-        Dim dlgt2 As New TweenMain.SetImageDelegate(AddressOf _owner.SetImage)
-        Try
-            If Not _endingFlag Then
-                _owner.Invoke(dlgt2, New Object() {post, img, bmp2})
-            Else
-                Exit Sub
+        'Dim dlgt2 As New TweenMain.SetImageDelegate(AddressOf _owner.SetImage)
+        'Try
+        '    If Not _endingFlag Then
+        '        _owner.Invoke(dlgt2, New Object() {post, img, bmp2})
+        '    Else
+        '        Exit Sub
+        '    End If
+        'Catch ex As Exception
+        '    Exit Sub
+        'End Try
+        SyncLock LockObj
+            post.ImageIndex = _lIcon.Images.IndexOfKey(post.ImageUrl)
+            If post.ImageIndex = -1 Then
+                _dIcon.Add(post.ImageUrl, img)  '詳細表示用ディクショナリに追加
+                _lIcon.Images.Add(post.ImageUrl, bmp2)
+                post.ImageIndex = _lIcon.Images.IndexOfKey(post.ImageUrl)
             End If
-        Catch ex As Exception
-            Exit Sub
-        End Try
+        End SyncLock
         TabInformations.GetInstance.AddPost(post)
     End Sub
 
@@ -1844,9 +1869,21 @@ Public Module Twitter
         Return New MySocket("UTF-8", _uid, _pwd, _proxyType, _proxyAddress, _proxyPort, _proxyUser, _proxyPassword)
     End Function
 
-    Public WriteOnly Property Owner() As TweenMain
-        Set(ByVal value As TweenMain)
-            _owner = value
+    'Public WriteOnly Property Owner() As TweenMain
+    '    Set(ByVal value As TweenMain)
+    '        _owner = value
+    '    End Set
+    'End Property
+
+    Public WriteOnly Property ListIcon() As ImageList
+        Set(ByVal value As ImageList)
+            _lIcon = value
+        End Set
+    End Property
+
+    Public WriteOnly Property DetailIcon() As Dictionary(Of String, Image)
+        Set(ByVal value As Dictionary(Of String, Image))
+            _dIcon = value
         End Set
     End Property
 
