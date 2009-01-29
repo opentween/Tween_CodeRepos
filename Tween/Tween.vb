@@ -2348,10 +2348,10 @@ Public Class TweenMain
     End Sub
 
     Private Function CreateItem(ByVal Tab As TabPage, ByVal Post As PostClass, ByVal Index As Integer) As ListViewItem
-        Dim mk As String = ""
-        If Post.IsMark Then mk = "♪"
-        If Post.IsProtect Then mk += "Ю"
-        Dim sitem() As String = {"", Post.Nickname, Post.Data, Post.PDate.ToString(), Post.Name, "", mk, Post.Source}
+        Dim mk As StringBuilder = New StringBuilder()
+        If Post.IsMark Then mk.Append("♪")
+        If Post.IsProtect Then mk.Append("Ю")
+        Dim sitem() As String = {"", Post.Nickname, Post.Data, Post.PDate.ToString(), Post.Name, "", mk.ToString(), Post.Source}
         Dim itm As ListViewItem = New ListViewItem(sitem, Post.ImageIndex)
         Dim read As Boolean = Post.IsRead
         '未読管理していなかったら既読として扱う
