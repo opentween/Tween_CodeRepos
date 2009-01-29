@@ -81,14 +81,14 @@ Namespace TweenCustomControl
         Protected Overrides Sub WndProc(ByRef m As System.Windows.Forms.Message)
             Const WM_VSCROLL As Integer = &H115
             Const WM_MOUSEWHEEL As Integer = &H20A
-            Const WM_SETFOCUS As Integer = &H7
+            'Const WM_SETFOCUS As Integer = &H7
 
             If m.Msg = WM_VSCROLL OrElse m.Msg = WM_MOUSEWHEEL Then
                 RaiseEvent Scrolled(Me, New System.EventArgs)
             End If
-            If m.Msg = WM_SETFOCUS Then
-                Return
-            End If
+            'If m.Msg = WM_SETFOCUS Then
+            '    Return
+            'End If
             MyBase.WndProc(m)
         End Sub
 

@@ -43,7 +43,7 @@ Public Class Setting
     Private _MyUnreadManage As Boolean
     Private _MyPlaySound As Boolean
     Private _MyOneWayLove As Boolean
-    'Private _fntUnread As Font  '未使用（バージョン互換性のため残してある）
+    Private _fntUnread As Font  '未使用（バージョン互換性のため残してある）
     Private _clUnread As Color
     Private _fntReaded As Font  'リストフォントとして扱う
     Private _clReaded As Color
@@ -258,7 +258,7 @@ Public Class Setting
             _MyUnreadManage = UReadMng.Checked
             _MyOneWayLove = OneWayLv.Checked
 
-            '_fntUnread = lblListFont.Font     '未使用
+            _fntUnread = lblUnread.Font     '未使用
             '_clUnread = lblUnRead.ForeColor
             _fntReaded = lblListFont.Font     'リストフォントとして使用
             '_clReaded = lblReaded.ForeColor
@@ -391,7 +391,7 @@ Public Class Setting
         OneWayLv.Checked = _MyOneWayLove
 
         lblListFont.Font = _fntReaded
-        'lblUnRead.Font = _fntReaded
+        lblUnRead.Font = _fntUnread
         'lblUnRead.ForeColor = _clUnread
         'lblReaded.Font = _fntReaded
         'lblReaded.ForeColor = _clReaded
@@ -626,7 +626,7 @@ Public Class Setting
         End If
     End Sub
 
-    Private Sub btnFontAndColor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnDetail.Click, btnListFont.Click
+    Private Sub btnFontAndColor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnDetail.Click, btnListFont.Click, btnUnread.Click
         Dim Btn As Button = CType(sender, Button)
         Dim rtn As DialogResult
 
@@ -639,23 +639,21 @@ Public Class Setting
         FontDialog1.ScriptsOnly = False
         FontDialog1.ShowApply = False
         FontDialog1.ShowEffects = True
-        FontDialog1.ShowColor = True
+        FontDialog1.ShowColor = False
 
         Select Case Btn.Name
-            'Case "btnUnread"
-            '    FontDialog1.Color = lblUnRead.ForeColor
-            '    FontDialog1.Font = lblUnRead.Font
-            'Case "btnReaded"
-            '    FontDialog1.Color = lblReaded.ForeColor
-            '    FontDialog1.Font = lblReaded.Font
+            Case "btnUnread"
+                '    FontDialog1.Color = lblUnRead.ForeColor
+                FontDialog1.Font = lblUnread.Font
+                'Case "btnReaded"
+                '    FontDialog1.Color = lblReaded.ForeColor
+                '    FontDialog1.Font = lblReaded.Font
             Case "btnDetail"
                 FontDialog1.Font = lblDetail.Font
-                FontDialog1.ShowColor = False
                 FontDialog1.ShowEffects = False
             Case "btnListFont"
                 'FontDialog1.Color = lblUnRead.ForeColor
                 FontDialog1.Font = lblListFont.Font
-                FontDialog1.ShowColor = False   '色設定不可
         End Select
 
         rtn = FontDialog1.ShowDialog
@@ -663,12 +661,12 @@ Public Class Setting
         If rtn = Windows.Forms.DialogResult.Cancel Then Exit Sub
 
         Select Case Btn.Name
-            'Case "btnUnread"
-            '    lblUnRead.ForeColor = FontDialog1.Color
-            '    lblUnRead.Font = FontDialog1.Font
-            'Case "btnReaded"
-            '    lblReaded.ForeColor = FontDialog1.Color
-            '    lblReaded.Font = FontDialog1.Font
+            Case "btnUnread"
+                '    lblUnRead.ForeColor = FontDialog1.Color
+                lblUnread.Font = FontDialog1.Font
+                'Case "btnReaded"
+                '    lblReaded.ForeColor = FontDialog1.Color
+                '    lblReaded.Font = FontDialog1.Font
             Case "btnDetail"
                 lblDetail.Font = FontDialog1.Font
             Case "btnListFont"
@@ -701,10 +699,10 @@ Public Class Setting
                 ColorDialog1.Color = lblFav.ForeColor
             Case "btnOWL"
                 ColorDialog1.Color = lblOWL.ForeColor
-            Case "btnUnread"
-                'ColorDialog1.Color = lblUnRead.ForeColor
-            Case "btnReaded"
-                'ColorDialog1.Color = lblReaded.ForeColor
+                'Case "btnUnread"
+                '    'ColorDialog1.Color = lblUnRead.ForeColor
+                'Case "btnReaded"
+                '    'ColorDialog1.Color = lblReaded.ForeColor
         End Select
 
         rtn = ColorDialog1.ShowDialog
@@ -726,10 +724,10 @@ Public Class Setting
                 lblFav.ForeColor = ColorDialog1.Color
             Case "btnOWL"
                 lblOWL.ForeColor = ColorDialog1.Color
-            Case "btnUnread"
-                'lblUnRead.ForeColor = ColorDialog1.Color
-            Case "btnReaded"
-                'lblReaded.ForeColor = ColorDialog1.Color
+                'Case "btnUnread"
+                '    'lblUnRead.ForeColor = ColorDialog1.Color
+                'Case "btnReaded"
+                '    'lblReaded.ForeColor = ColorDialog1.Color
         End Select
     End Sub
 
@@ -907,10 +905,10 @@ Public Class Setting
     '''''未使用
     Public Property FontUnread() As Font
         Get
-            Return _fntReaded
+            Return _fntUnread
         End Get
         Set(ByVal value As Font)
-            '_fntUnread = value
+            _fntUnread = value
             '無視
         End Set
     End Property
