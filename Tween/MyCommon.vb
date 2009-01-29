@@ -185,4 +185,14 @@ retry:
 
         values(idx_to) = moved_value
     End Sub
+
+    ' デフォルトタブの判定処理
+    Public Function IsDefaultTab(ByVal tabName As String) As Boolean
+        If tabName = "Recent" OrElse tabName = "Reply" _
+                OrElse tabName = "Direct" Then
+            Return True
+        Else
+            Return False
+        End If
+    End Function
 End Module

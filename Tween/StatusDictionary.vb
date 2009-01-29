@@ -298,9 +298,7 @@ Public Class TabInformations
     End Sub
 
     Public Sub RemoveTab(ByVal TabName As String)
-        If TabName = "Recent" OrElse _
-           TabName = "Reply" OrElse _
-           TabName = "Direct" Then Exit Sub '念のため
+        If IsDefaultTab(TabName) Then Exit Sub '念のため
 
         For idx As Integer = 0 To _tabs(TabName).AllCount - 1
             Dim exist As Boolean = False
