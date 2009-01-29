@@ -298,15 +298,15 @@ Public Class TabInformations
     End Sub
 
     Public Sub RemoveTab(ByVal TabName As String)
-        If TabName.Equals("Recent") OrElse _
-           TabName.Equals("Reply") OrElse _
-           TabName.Equals("Direct") Then Exit Sub '念のため
+        If TabName = "Recent" OrElse _
+           TabName = "Reply" OrElse _
+           TabName = "Direct" Then Exit Sub '念のため
 
         For idx As Integer = 0 To _tabs(TabName).AllCount - 1
             Dim exist As Boolean = False
             Dim Id As Long = _tabs(TabName).GetId(idx)
             For Each key As String In _tabs.Keys
-                If Not key.Equals(TabName) AndAlso Not key.Equals("Direct") Then
+                If Not key = TabName AndAlso Not key = "Direct" Then
                     If _tabs(key).Contains(Id) Then
                         exist = True
                         Exit For
@@ -314,7 +314,7 @@ Public Class TabInformations
                 End If
             Next
             If Not exist Then
-                _tabs("Recent").Add(_tabs(TabName).GetId(idx), _statuses(Id).IsRead)
+                _tabs("Recent").Add(_tabs(TabName).GetId(idx), _statuses(Id).IsRead, False)
             End If
         Next
 
@@ -483,8 +483,8 @@ Public Class TabInformations
     Public Function DistributePosts() As Integer
         SyncLock LockObj
             '戻り値は追加件数
-            If _addedIds Is Nothing Then Exit Function
-            If _addedIds.Count = 0 Then Exit Function
+            If _addedIds Is Nothing Then Return 0
+            If _addedIds.Count = 0 Then Return 0
 
             If _notifyPosts Is Nothing Then _notifyPosts = New List(Of PostClass)
             Me.Distribute()    'タブに仮振分
@@ -535,24 +535,24 @@ Public Class TabInformations
                         If rslt = HITRESULT.CopyAndMark Then post.IsMark = True 'マークあり
                         If rslt = HITRESULT.Move Then mv = True '移動
                         If _tabs(tn).Notify Then add = True '通知あり
-                        If Not _tabs(tn).SoundFile.Equals("") AndAlso _soundFile.Equals("") Then
+                        If Not _tabs(tn).SoundFile = "" AndAlso _soundFile = "" Then
                             _soundFile = _tabs(tn).SoundFile 'wavファイル（未設定の場合のみ）
                         End If
                     End If
                 Next
                 If Not mv Then  '移動されなかったらRecentに追加
-                    _tabs("Recent").Add(post.Id, post.IsRead)
-                    If Not _tabs("Recent").SoundFile.Equals("") AndAlso _soundFile.Equals("") Then _soundFile = _tabs("Recent").SoundFile
+                    _tabs("Recent").Add(post.Id, post.IsRead, True)
+                    If Not _tabs("Recent").SoundFile = "" AndAlso _soundFile = "" Then _soundFile = _tabs("Recent").SoundFile
                     If _tabs("Recent").Notify Then add = True
                 End If
                 If post.IsReply Then    'ReplyだったらReplyタブに追加
-                    _tabs("Reply").Add(post.Id, post.IsRead)
-                    If Not _tabs("Reply").SoundFile.Equals("") Then _soundFile = _tabs("Reply").SoundFile
+                    _tabs("Reply").Add(post.Id, post.IsRead, True)
+                    If Not _tabs("Reply").SoundFile = "" Then _soundFile = _tabs("Reply").SoundFile
                     If _tabs("Reply").Notify Then add = True
                 End If
                 If add Then _notifyPosts.Add(post)
             Else
-                _tabs("Direct").Add(post.Id, post.IsRead)
+                _tabs("Direct").Add(post.Id, post.IsRead, True)
                 If _tabs("Direct").Notify Then _notifyPosts.Add(post)
                 _soundFile = _tabs("Direct").SoundFile
             End If
@@ -576,7 +576,7 @@ Public Class TabInformations
 
         Dim Id As Long = tb.GetId(Index)
 
-        If _statuses(Id).IsRead.Equals(Read) Then Exit Sub '状態変更なければ終了
+        If _statuses(Id).IsRead = Read Then Exit Sub '状態変更なければ終了
 
         _statuses(Id).IsRead = Read '指定の状態に変更
 
@@ -585,7 +585,7 @@ Public Class TabInformations
             Me.SetNextUnreadId(Id, tb)  '次の未読セット
             '他タブの最古未読ＩＤはタブ切り替え時に。
             For Each key As String In _tabs.Keys
-                If Not key.Equals(TabName) AndAlso _tabs(key).UnreadManage AndAlso _tabs(key).Contains(Id) Then
+                If Not key = TabName AndAlso _tabs(key).UnreadManage AndAlso _tabs(key).Contains(Id) Then
                     _tabs(key).UnreadCount -= 1
                     If _tabs(key).OldestUnreadId = Id Then _tabs(key).OldestUnreadId = -1
                 End If
@@ -594,7 +594,7 @@ Public Class TabInformations
             tb.UnreadCount += 1
             If tb.OldestUnreadId > Id OrElse tb.OldestUnreadId = -1 Then tb.OldestUnreadId = Id
             For Each key As String In _tabs.Keys
-                If Not key.Equals(TabName) AndAlso _tabs(key).UnreadManage AndAlso _tabs(key).Contains(Id) Then
+                If Not key = TabName AndAlso _tabs(key).UnreadManage AndAlso _tabs(key).Contains(Id) Then
                     _tabs(key).UnreadCount += 1
                     If _tabs(key).OldestUnreadId > Id Then _tabs(key).OldestUnreadId = Id
                 End If
@@ -695,7 +695,7 @@ Public Class TabInformations
                             Exit For
                         End If
                     Next
-                    If Not hit Then tbr.Add(id, _statuses(id).IsRead)
+                    If Not hit Then tbr.Add(id, _statuses(id).IsRead, False)
                 Next
             End If
         Next
@@ -805,7 +805,7 @@ Public Class TabClass
     End Sub
 
     '無条件に追加
-    Public Sub Add(ByVal ID As Long, ByVal Read As Boolean)
+    Private Sub Add(ByVal ID As Long, ByVal Read As Boolean)
         If Me._ids.Contains(ID) Then Exit Sub
 
         Me._ids.Add(ID)
@@ -817,6 +817,14 @@ Public Class TabClass
             Else
                 If ID < Me._oldestUnreadItem Then Me._oldestUnreadItem = ID
             End If
+        End If
+    End Sub
+    '無条件に追加
+    Public Sub Add(ByVal ID As Long, ByVal Read As Boolean, ByVal Temporary As Boolean)
+        If Temporary Then
+            Me.Add(ID, Read)
+        Else
+            _tmpIds.Add(New TempolaryId(ID, Read))
         End If
     End Sub
 

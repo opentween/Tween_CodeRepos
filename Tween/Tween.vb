@@ -70,7 +70,7 @@ Public Class TweenMain
     Private UrlDialog As New OpenURL()
 
     '表示フォント、色、アイコン
-    'Private _fntUnread As Font            '未読用フォント
+    Private _fntUnread As Font            '未読用フォント
     Private _clUnread As Color            '未読用文字色
     Private _fntReaded As Font            '既読用フォント
     Private _clReaded As Color            '既読用文字色
@@ -352,7 +352,7 @@ Public Class TweenMain
         NewPostPopMenuItem.Checked = _section.NewAllPop     '全新着通知
 
         'フォント＆文字色＆背景色保持
-        '_fntUnread = _section.FontUnread                '未読フォント
+        _fntUnread = _section.FontUnread                '未読フォント
         _clUnread = _section.ColorUnread                '未読文字色
         _fntReaded = _section.FontReaded                '既読フォント
         _clReaded = _section.ColorReaded                '既読文字色
@@ -407,7 +407,7 @@ Public Class TweenMain
         '片思い表示。Trueなら片思い表示する
         SettingDialog.OneWayLove = _section.OneWayLove
         'フォント＆文字色＆背景色
-        'SettingDialog.FontUnread = _fntUnread
+        SettingDialog.FontUnread = _fntUnread
         SettingDialog.ColorUnread = _clUnread
         SettingDialog.FontReaded = _fntReaded
         SettingDialog.ColorReaded = _clReaded
@@ -475,7 +475,7 @@ Public Class TweenMain
             End If
             '新しい設定を反映
             'フォント＆文字色＆背景色保持
-            '_fntUnread = SettingDialog.FontUnread
+            _fntUnread = SettingDialog.FontUnread
             _clUnread = SettingDialog.ColorUnread
             _fntReaded = SettingDialog.FontReaded
             _clReaded = SettingDialog.ColorReaded
@@ -975,7 +975,7 @@ Public Class TweenMain
         Item.ForeColor = cl
     End Sub
 
-    Private Function ColorizeList(ByVal Index As Integer) As Color
+    Private Sub ColorizeList()
         'Index:更新対象のListviewItem.Index。Colorを返す。
         '-1は全キャッシュ。Colorは返さない（ダミーを戻す）
         Dim _post As PostClass
@@ -985,18 +985,38 @@ Public Class TweenMain
             _post = _curPost
         End If
 
-        If _post Is Nothing Then Return System.Drawing.SystemColors.Window '未選択
+        If _post Is Nothing OrElse _itemCache Is Nothing Then Exit Sub
 
-        If Index = -1 Then
-            If _itemCache Is Nothing Then Return System.Drawing.SystemColors.Window
-            For cnt As Integer = 0 To _itemCache.Length - 1
-                _itemCache(cnt).BackColor = JudgeColor(_post, _postCache(cnt))
-            Next
-            Return Color.Black  'ダミーの戻り
+        For cnt As Integer = 0 To _itemCache.Length - 1
+            _itemCache(cnt).BackColor = JudgeColor(_post, _postCache(cnt))
+            If _postCache(cnt).IsRead Then
+                _itemCache(cnt).Font = _fntReaded
+            Else
+                _itemCache(cnt).Font = _fntUnread
+            End If
+        Next
+    End Sub
+
+    Private Sub ColorizeList(ByVal Item As ListViewItem, ByVal Index As Integer)
+        'Index:更新対象のListviewItem.Index。Colorを返す。
+        '-1は全キャッシュ。Colorは返さない（ダミーを戻す）
+        Dim _post As PostClass
+        If _anchorFlag Then
+            _post = _anchorPost
         Else
-            Return JudgeColor(_post, GetCurTabPost(Index))
+            _post = _curPost
         End If
-    End Function
+
+        If _post Is Nothing Then Exit Sub
+
+        Dim tPost As PostClass = GetCurTabPost(Index)
+        Item.BackColor = JudgeColor(_post, tPost)
+        If tPost.IsRead Then
+            Item.Font = _fntReaded
+        Else
+            Item.Font = _fntUnread
+        End If
+    End Sub
 
     Private Function JudgeColor(ByVal BasePost As PostClass, ByVal TargetPost As PostClass) As Color
         Dim cl As Color
@@ -1838,7 +1858,7 @@ Public Class TweenMain
                     ReadedStripMenuItem.Enabled = True
                     UnreadStripMenuItem.Enabled = True
                 End If
-                '_fntUnread = SettingDialog.FontUnread
+                _fntUnread = SettingDialog.FontUnread
                 _clUnread = SettingDialog.ColorUnread
                 _fntReaded = SettingDialog.FontReaded
                 _clReaded = SettingDialog.ColorReaded
@@ -2324,7 +2344,7 @@ Public Class TweenMain
         If Not _statuses.Tabs(Tab.Text).UnreadManage OrElse _
            Not SettingDialog.UnreadManage Then read = True
         ChangeItemStyleRead(read, itm, Post)
-        If Tab.Equals(_curTab) Then itm.BackColor = ColorizeList(Index)
+        If Tab.Equals(_curTab) Then ColorizeList(itm, Index)
         Return itm
     End Function
 
@@ -2338,22 +2358,8 @@ Public Class TweenMain
            iSize = 26 Then
             'アイコンサイズ26,48はオーナードロー（DrawSubItem発生させる）
             e.DrawDefault = False
-        Else
-            'アイコンサイズ16,なしはデフォルト描画
-            e.DrawDefault = True
-        End If
-    End Sub
-
-    Private Sub MyList_DrawSubItem(ByVal sender As Object, ByVal e As DrawListViewSubItemEventArgs)
-        If e.ItemState = 0 Then Exit Sub
-        'If e.ColumnIndex = 0 Then System.Diagnostics.Debug.WriteLine(e.ItemIndex.ToString + "-" + e.ColumnIndex.ToString + ":" + _
-        'e.ItemState.ToString())
-        If e.ColumnIndex > 0 Then
-            'e.DrawDefault = True
-            'アイコン以外の列
+            If e.State = 0 Then Exit Sub
             If Not e.Item.Selected Then     'e.ItemStateでうまく判定できない？？？
-                '選択されていない行
-                '背景色
                 Dim brs2 As SolidBrush = Nothing
                 Select Case e.Item.BackColor
                     Case _clSelf
@@ -2370,6 +2376,28 @@ Public Class TweenMain
                         brs2 = _brsBackColorNone
                 End Select
                 e.Graphics.FillRectangle(brs2, e.Bounds)
+            Else
+                '選択中の行
+                If DirectCast(sender, Windows.Forms.Control).Focused Then
+                    e.Graphics.FillRectangle(_brsHighLight, e.Bounds)
+                Else
+                    e.Graphics.FillRectangle(_brsDeactiveSelection, e.Bounds)
+                End If
+            End If
+            If (e.State And ListViewItemStates.Focused) = ListViewItemStates.Focused Then e.DrawFocusRectangle()
+
+        Else
+            'アイコンサイズ16,なしはデフォルト描画
+            e.DrawDefault = True
+        End If
+    End Sub
+
+    Private Sub MyList_DrawSubItem(ByVal sender As Object, ByVal e As DrawListViewSubItemEventArgs)
+        If e.ItemState = 0 Then Exit Sub
+        If e.ColumnIndex > 0 Then
+            'アイコン以外の列
+            If Not e.Item.Selected Then     'e.ItemStateでうまく判定できない？？？
+                '選択されていない行
                 '文字色
                 Dim brs As SolidBrush = Nothing
                 Select Case e.Item.ForeColor
@@ -2388,19 +2416,15 @@ Public Class TweenMain
             Else
                 '選択中の行
                 If DirectCast(sender, Windows.Forms.Control).Focused Then
-                    e.Graphics.FillRectangle(_brsHighLight, e.Bounds)
                     e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, _brsHighLightText, e.Bounds, sf)
                 Else
-                    e.Graphics.FillRectangle(_brsDeactiveSelection, e.Bounds)
                     e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, _brsForeColorUnread, e.Bounds, sf)
                 End If
             End If
-            If e.ColumnIndex = 2 AndAlso (e.ItemState And ListViewItemStates.Focused) = ListViewItemStates.Focused Then e.DrawFocusRectangle(e.Item.GetBounds(ItemBoundsPortion.Entire))
         Else
             'アイコン列はデフォルト描画
             e.DrawDefault = True
         End If
-        'e.DrawDefault = True
     End Sub
 
     Private Sub DoTabSearch(ByVal _word As String, _
@@ -2702,7 +2726,7 @@ RETRY2:
         TimerColorize.Enabled = False
         TimerColorize.Interval = 100
         'If _itemCache IsNot Nothing Then CreateCache(-1, 0)
-        ColorizeList(-1)
+        ColorizeList()
         If _itemCache IsNot Nothing Then _curList.RedrawItems(_itemCacheIndex, _itemCacheIndex + _itemCache.Length - 1, False)
         DispSelectedPost()
         '件数関連の場合、タイトル即時書き換え
@@ -3164,7 +3188,7 @@ RETRY2:
                 _section.PlaySound = SettingDialog.PlaySound
                 _section.OneWayLove = SettingDialog.OneWayLove
 
-                '_section.FontUnread = _fntUnread
+                _section.FontUnread = _fntUnread
                 _section.ColorUnread = _clUnread
                 _section.FontReaded = _fntReaded
                 _section.ColorReaded = _clReaded
@@ -4390,14 +4414,24 @@ RETRY2:
     Private Sub MyList_CoumnWidthChanging(ByVal sender As System.Object, ByVal e As ColumnWidthChangingEventArgs)
         Dim lst As DetailsListView = DirectCast(sender, DetailsListView)
         If _section Is Nothing Then Exit Sub
-        _section.Width1 = lst.Columns(0).Width
-        _section.Width2 = lst.Columns(1).Width
-        _section.Width3 = lst.Columns(2).Width
-        _section.Width4 = lst.Columns(3).Width
-        _section.Width5 = lst.Columns(4).Width
-        _section.Width6 = lst.Columns(5).Width
-        _section.Width7 = lst.Columns(6).Width
-        _section.Width8 = lst.Columns(7).Width
+        Select Case e.ColumnIndex
+            Case 0
+                _section.Width1 = e.NewWidth
+            Case 1
+                _section.Width2 = e.NewWidth
+            Case 2
+                _section.Width3 = e.NewWidth
+            Case 3
+                _section.Width4 = e.NewWidth
+            Case 4
+                _section.Width5 = e.NewWidth
+            Case 5
+                _section.Width6 = e.NewWidth
+            Case 5
+                _section.Width7 = e.NewWidth
+            Case 7
+                _section.Width8 = e.NewWidth
+        End Select
     End Sub
 
     Private Sub ToolStripMenuItem3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripMenuItem3.Click
