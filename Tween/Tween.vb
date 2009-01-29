@@ -2002,7 +2002,14 @@ Public Class TweenMain
         AddHandler _listCustom.MouseDoubleClick, AddressOf MyList_MouseDoubleClick
         AddHandler _listCustom.ColumnClick, AddressOf MyList_ColumnClick
         AddHandler _listCustom.DrawColumnHeader, AddressOf MyList_DrawColumnHeader
-        AddHandler _listCustom.DrawItem, AddressOf MyList_DrawItem
+
+        Select Case _iconSz
+            Case 26, 48
+                AddHandler _listCustom.DrawItem, AddressOf MyList_DrawItem
+            Case Else
+                AddHandler _listCustom.DrawItem, AddressOf MyList_DrawItemDefault
+        End Select
+
         AddHandler _listCustom.Scrolled, AddressOf Mylist_Scrolled
         AddHandler _listCustom.MouseClick, AddressOf MyList_MouseClick
         AddHandler _listCustom.ColumnReordered, AddressOf MyList_ColumnReordered
@@ -2131,7 +2138,14 @@ Public Class TweenMain
         RemoveHandler _listCustom.MouseDoubleClick, AddressOf MyList_MouseDoubleClick
         RemoveHandler _listCustom.ColumnClick, AddressOf MyList_ColumnClick
         RemoveHandler _listCustom.DrawColumnHeader, AddressOf MyList_DrawColumnHeader
-        RemoveHandler _listCustom.DrawItem, AddressOf MyList_DrawItem
+
+        Select Case _iconSz
+            Case 26, 48
+                RemoveHandler _listCustom.DrawItem, AddressOf MyList_DrawItem
+            Case Else
+                RemoveHandler _listCustom.DrawItem, AddressOf MyList_DrawItemDefault
+        End Select
+
         RemoveHandler _listCustom.Scrolled, AddressOf Mylist_Scrolled
         RemoveHandler _listCustom.MouseClick, AddressOf MyList_MouseClick
         RemoveHandler _listCustom.ColumnReordered, AddressOf MyList_ColumnReordered
@@ -2352,44 +2366,40 @@ Public Class TweenMain
         e.DrawDefault = True
     End Sub
 
-    Private Sub MyList_DrawItem(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DrawListViewItemEventArgs)
-        Static iSize As Integer = _iconSz
-        If iSize = 48 OrElse _
-           iSize = 26 Then
-            'アイコンサイズ26,48はオーナードロー（DrawSubItem発生させる）
-            e.DrawDefault = False
-            If e.State = 0 Then Exit Sub
-            If Not e.Item.Selected Then     'e.ItemStateでうまく判定できない？？？
-                Dim brs2 As SolidBrush = Nothing
-                Select Case e.Item.BackColor
-                    Case _clSelf
-                        brs2 = _brsBackColorMine
-                    Case _clAtSelf
-                        brs2 = _brsBackColorAt
-                    Case _clTarget
-                        brs2 = _brsBackColorYou
-                    Case _clAtTarget
-                        brs2 = _brsBackColorAtYou
-                    Case _clAtFromTarget
-                        brs2 = _brsBackColorAtTo
-                    Case Else
-                        brs2 = _brsBackColorNone
-                End Select
-                e.Graphics.FillRectangle(brs2, e.Bounds)
-            Else
-                '選択中の行
-                If DirectCast(sender, Windows.Forms.Control).Focused Then
-                    e.Graphics.FillRectangle(_brsHighLight, e.Bounds)
-                Else
-                    e.Graphics.FillRectangle(_brsDeactiveSelection, e.Bounds)
-                End If
-            End If
-            If (e.State And ListViewItemStates.Focused) = ListViewItemStates.Focused Then e.DrawFocusRectangle()
+    Private Sub MyList_DrawItemDefault(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DrawListViewItemEventArgs)
+        e.DrawDefault = True
+    End Sub
 
+    Private Sub MyList_DrawItem(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DrawListViewItemEventArgs)
+        'アイコンサイズ26,48はオーナードロー（DrawSubItem発生させる）
+        If e.State = 0 Then Exit Sub
+        e.DrawDefault = False
+        If Not e.Item.Selected Then     'e.ItemStateでうまく判定できない？？？
+            Dim brs2 As SolidBrush = Nothing
+            Select Case e.Item.BackColor
+                Case _clSelf
+                    brs2 = _brsBackColorMine
+                Case _clAtSelf
+                    brs2 = _brsBackColorAt
+                Case _clTarget
+                    brs2 = _brsBackColorYou
+                Case _clAtTarget
+                    brs2 = _brsBackColorAtYou
+                Case _clAtFromTarget
+                    brs2 = _brsBackColorAtTo
+                Case Else
+                    brs2 = _brsBackColorNone
+            End Select
+            e.Graphics.FillRectangle(brs2, e.Bounds)
         Else
-            'アイコンサイズ16,なしはデフォルト描画
-            e.DrawDefault = True
+            '選択中の行
+            If DirectCast(sender, Windows.Forms.Control).Focused Then
+                e.Graphics.FillRectangle(_brsHighLight, e.Bounds)
+            Else
+                e.Graphics.FillRectangle(_brsDeactiveSelection, e.Bounds)
+            End If
         End If
+        If (e.State And ListViewItemStates.Focused) = ListViewItemStates.Focused Then e.DrawFocusRectangle()
     End Sub
 
     Private Sub MyList_DrawSubItem(ByVal sender As Object, ByVal e As DrawListViewSubItemEventArgs)
@@ -4740,13 +4750,4 @@ RETRY2:
         doGetFollowersMenu(True)        ' Followersリストキャッシュ無効
     End Sub
 
-    ' デフォルトタブの判定処理
-    Private Function IsDefaultTab(ByVal tabName As String) As Boolean
-        If tabName = "Recent" OrElse tabName = "Reply" _
-                OrElse tabName = "Direct" Then
-            Return True
-        Else
-            Return False
-        End If
-    End Function
 End Class
