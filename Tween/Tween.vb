@@ -1775,6 +1775,7 @@ Public Class TweenMain
             _statuses.SetRead(True, _curTab.Text, idx)
             ChangeCacheStyleRead(True, idx, _curTab)
         Next
+        ColorizeList()
         _curList.EndUpdate()
         For Each tb As TabPage In ListTab.TabPages
             If _statuses.Tabs(tb.Text).UnreadCount = 0 AndAlso tb.ImageIndex = 0 Then tb.ImageIndex = -1
@@ -1787,6 +1788,7 @@ Public Class TweenMain
             _statuses.SetRead(False, _curTab.Text, idx)
             ChangeCacheStyleRead(False, idx, _curTab)
         Next
+        ColorizeList()
         _curList.EndUpdate()
         For Each tb As TabPage In ListTab.TabPages
             If _statuses.Tabs(tb.Text).UnreadCount > 0 AndAlso tb.ImageIndex = -1 Then tb.ImageIndex = 0
@@ -2736,9 +2738,11 @@ RETRY2:
         TimerColorize.Enabled = False
         TimerColorize.Interval = 100
         'If _itemCache IsNot Nothing Then CreateCache(-1, 0)
+        _curList.BeginUpdate()
         ColorizeList()
         If _itemCache IsNot Nothing Then _curList.RedrawItems(_itemCacheIndex, _itemCacheIndex + _itemCache.Length - 1, False)
         DispSelectedPost()
+        _curList.EndUpdate()
         '件数関連の場合、タイトル即時書き換え
         If SettingDialog.DispLatestPost <> DispTitleEnum.None AndAlso _
            SettingDialog.DispLatestPost <> DispTitleEnum.Post AndAlso _
@@ -2970,6 +2974,7 @@ RETRY2:
             stp = -1
         End If
 
+        _curList.BeginUpdate()
         For idx As Integer = fIdx To toIdx Step stp
             If _statuses.Item(_curTab.Text, idx).IsFav Then
                 SelectListItem(_curList, idx)
@@ -2977,6 +2982,7 @@ RETRY2:
                 Exit For
             End If
         Next
+        _curList.EndUpdate()
     End Sub
 
     Private Sub GoPost(ByVal forward As Boolean)
@@ -2997,6 +3003,7 @@ RETRY2:
             stp = -1
         End If
 
+        _curList.BeginUpdate()
         For idx As Integer = fIdx To toIdx Step stp
             If _statuses.Item(_curTab.Text, idx).Name = _curPost.Name Then
                 SelectListItem(_curList, idx)
@@ -3004,6 +3011,7 @@ RETRY2:
                 Exit For
             End If
         Next
+        _curList.EndUpdate()
     End Sub
 
     Private Sub GoRelPost(ByVal forward As Boolean)
@@ -3029,6 +3037,7 @@ RETRY2:
             _anchorFlag = True
         End If
 
+        _curList.BeginUpdate()
         For idx As Integer = fIdx To toIdx Step stp
             Dim post As PostClass = _statuses.Item(_curTab.Text, idx)
             If post.Name = _anchorPost.Name OrElse _
@@ -3039,6 +3048,7 @@ RETRY2:
                 Exit For
             End If
         Next
+        _curList.EndUpdate()
     End Sub
 
     Private Sub GoAnchor()
@@ -3046,14 +3056,17 @@ RETRY2:
         Dim idx As Integer = _statuses.Tabs(_curTab.Text).GetIndex(_anchorPost.Id)
         If idx = -1 Then Exit Sub
 
+        _curList.BeginUpdate()
         SelectListItem(_curList, idx)
         _curList.EnsureVisible(idx)
+        _curList.EndUpdate()
     End Sub
 
     Private Sub GoTopEnd(ByVal GoTop As Boolean)
         Dim _item As ListViewItem
         Dim idx As Integer
 
+        _curList.BeginUpdate()
         If GoTop Then
             _item = _curList.GetItemAt(0, 25)
             If _item Is Nothing Then
@@ -3070,6 +3083,7 @@ RETRY2:
             End If
         End If
         SelectListItem(_curList, idx)
+        _curList.EndUpdate()
     End Sub
 
     Private Sub GoMiddle()
@@ -3078,6 +3092,7 @@ RETRY2:
         Dim idx2 As Integer
         Dim idx3 As Integer
 
+        _curList.BeginUpdate()
         _item = _curList.GetItemAt(0, 0)
         If _item Is Nothing Then
             idx1 = 0
@@ -3093,11 +3108,13 @@ RETRY2:
         idx3 = (idx1 + idx2) \ 2
 
         SelectListItem(_curList, idx3)
+        _curList.EndUpdate()
     End Sub
 
     Private Sub GoLast()
         If _curList.VirtualListSize = 0 Then Exit Sub
 
+        _curList.BeginUpdate()
         If _statuses.SortOrder = SortOrder.Ascending Then
             SelectListItem(_curList, _curList.VirtualListSize - 1)
             _curList.EnsureVisible(_curList.VirtualListSize - 1)
@@ -3105,10 +3122,12 @@ RETRY2:
             SelectListItem(_curList, 0)
             _curList.EnsureVisible(0)
         End If
+        _curList.EndUpdate()
     End Sub
 
     Private Sub MoveTop()
         If _curList.SelectedIndices.Count = 0 Then Exit Sub
+        _curList.BeginUpdate()
         Dim idx As Integer = _curList.SelectedIndices(0)
         If _statuses.SortOrder = SortOrder.Ascending Then
             _curList.EnsureVisible(_curList.VirtualListSize - 1)
@@ -3116,6 +3135,7 @@ RETRY2:
             _curList.EnsureVisible(0)
         End If
         _curList.EnsureVisible(idx)
+        _curList.EndUpdate()
     End Sub
 
     Private Sub MyList_MouseClick(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs)
