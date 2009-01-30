@@ -957,10 +957,10 @@ Public Class TweenMain
         'Dim fnt As Font
         'フォント
         If Read Then
-            'fnt = _fntReaded
+            'Item.Font = _fntReaded
             Item.SubItems(5).Text = ""
         Else
-            'fnt = _fntUnread
+            'Item.Font = _fntUnread
             Item.SubItems(5).Text = "★"
         End If
         '文字色
@@ -989,10 +989,10 @@ Public Class TweenMain
 
         For cnt As Integer = 0 To _itemCache.Length - 1
             _itemCache(cnt).BackColor = JudgeColor(_post, _postCache(cnt))
-            If _postCache(cnt).IsRead Then
-                _itemCache(cnt).Font = _fntReaded
-            Else
+            If Not _postCache(cnt).IsRead AndAlso SettingDialog.UnreadManage AndAlso _statuses.Tabs(_curTab.Text).UnreadManage Then
                 _itemCache(cnt).Font = _fntUnread
+            Else
+                _itemCache(cnt).Font = _fntReaded
             End If
         Next
     End Sub
@@ -1011,10 +1011,10 @@ Public Class TweenMain
 
         Dim tPost As PostClass = GetCurTabPost(Index)
         Item.BackColor = JudgeColor(_post, tPost)
-        If tPost.IsRead Then
-            Item.Font = _fntReaded
-        Else
+        If Not tPost.IsRead AndAlso SettingDialog.UnreadManage AndAlso _statuses.Tabs(_curTab.Text).UnreadManage Then
             Item.Font = _fntUnread
+        Else
+            Item.Font = _fntReaded
         End If
     End Sub
 
