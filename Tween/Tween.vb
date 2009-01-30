@@ -759,6 +759,7 @@ Public Class TweenMain
         Dim smode As Integer = -1    '-1:制御しない,-2:最新へ,その他:topitem使用
         Dim topId As Long = -1
         Dim befCnt As Integer = _curList.VirtualListSize
+        _curList.BeginUpdate()
         If _curList.VirtualListSize > 0 Then
             If _statuses.SortMode = IdComparerClass.ComparerMode.Id Then
                 If _statuses.SortOrder = SortOrder.Ascending Then
@@ -858,6 +859,8 @@ Public Class TweenMain
                     End If
             End Select
         End If
+
+        _curList.EndUpdate()
 
         '新着通知
         If NewPostPopMenuItem.Checked AndAlso _
@@ -2606,6 +2609,7 @@ RETRY:
         Dim tb As TabClass = _statuses.Tabs(_curTab.Text)
         Dim lst As DetailsListView = _curList
         Dim idx As Integer = 0
+        lst.BeginUpdate()
 RETRY:
         If tb.OldestUnreadId > -1 AndAlso tb.Contains(tb.OldestUnreadId) AndAlso tb.UnreadCount > 0 Then
             '未読アイテムへ
@@ -2649,6 +2653,7 @@ RETRY2:
         End If
         lst.Focus()
         lst.Update()
+        lst.EndUpdate()
     End Sub
 
     Private Sub StatusOpenMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusOpenMenuItem.Click
@@ -3660,6 +3665,7 @@ RETRY2:
     Private Sub UreadManageMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UreadManageMenuItem.Click
         If _rclickTabName = "" Then Exit Sub
 
+        _curList.BeginUpdate()
         _statuses.SetTabUnreadManage(_rclickTabName, UreadManageMenuItem.Checked)
         If _curTab.Text = _rclickTabName Then
             If _statuses.Tabs(_rclickTabName).UnreadCount > 0 Then
@@ -3671,6 +3677,7 @@ RETRY2:
             _postCache = Nothing
             _curList.Refresh()
         End If
+        _curList.EndUpdate()
         SetMainWindowTitle()
         SetStatusLabel()
     End Sub
@@ -3940,6 +3947,7 @@ RETRY2:
     End Sub
 
     Private Sub SelectAllMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SelectAllMenuItem.Click
+        _curList.BeginUpdate()
         If StatusText.Focused Then
             StatusText.SelectAll()
         Else
@@ -3951,6 +3959,7 @@ RETRY2:
                 _curList.Items(i).Selected = True
             Next
         End If
+        _curList.EndUpdate()
     End Sub
 
     Private Sub MoveMiddle()
@@ -3960,6 +3969,7 @@ RETRY2:
 
         If _curList.SelectedIndices.Count = 0 Then Exit Sub
 
+        _curList.BeginUpdate()
         Dim idx As Integer = _curList.SelectedIndices(0)
 
         _item = _curList.GetItemAt(0, 25)
@@ -3980,6 +3990,7 @@ RETRY2:
 
         _curList.EnsureVisible(_curList.VirtualListSize - 1)
         _curList.EnsureVisible(idx)
+        _curList.EndUpdate()
     End Sub
 
     Private Sub WedataMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles WedataMenuItem.Click
