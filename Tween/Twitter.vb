@@ -562,7 +562,7 @@ Public Module Twitter
                     End If
 
                     '@先リスト作成
-                    rg = New Regex("@<a href=""\/(?<1>[a-zA-Z0-9_]+)")
+                    rg = New Regex("@<a href=""\/(?<1>[a-zA-Z0-9_]+)[^a-zA-Z0-9_]")
                     m = rg.Match(orgData)
                     While m.Success
                         post.ReplyToList.Add(m.Groups(1).Value.ToLower())
