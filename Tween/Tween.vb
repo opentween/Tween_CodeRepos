@@ -2859,6 +2859,20 @@ RETRY2:
                 Next
             End If
         End If
+        If Not e.Control AndAlso e.Alt AndAlso Not e.Shift Then
+            ' ALTキーが押されている場合
+            ' 別タブの同じ書き込みへ(ALT+←/→)
+            If e.KeyCode = Keys.Right Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                GoSamePostToAnotherTab(False)
+            End If
+            If e.KeyCode = Keys.Left Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                GoSamePostToAnotherTab(True)
+            End If
+        End If
         If e.Shift AndAlso Not e.Control AndAlso Not e.Alt Then
             ' SHIFTキーが押されている場合
             If e.KeyCode = Keys.H Then
@@ -2988,6 +3002,52 @@ RETRY2:
             End If
         Next
         _curList.EndUpdate()
+    End Sub
+
+    Private Sub GoSamePostToAnotherTab(ByVal left As Boolean)
+        If _curList.VirtualListSize = 0 Then Exit Sub
+        Dim fIdx As Integer = 0
+        Dim toIdx As Integer = 0
+        Dim stp As Integer = 1
+        Dim targetId As Long = 0
+
+        targetId = GetCurTabPost(_curList.SelectedIndices(0)).Id
+
+        If left Then
+            ' 左のタブへ
+            If ListTab.SelectedIndex > 0 Then
+                fIdx = ListTab.SelectedIndex - 1
+            Else
+                Exit Sub
+            End If
+            toIdx = 0
+            stp = -1
+        Else
+            ' 右のタブへ
+            If ListTab.SelectedIndex < ListTab.TabCount - 1 Then
+                fIdx = ListTab.SelectedIndex + 1
+            Else
+                Exit Sub
+            End If
+            toIdx = ListTab.TabCount - 1
+            stp = 1
+        End If
+
+            _curList.BeginUpdate()
+            Dim found As Boolean = False
+            For tabidx As Integer = fIdx To toIdx Step stp
+                For idx As Integer = 0 To DirectCast(ListTab.TabPages(tabidx).Controls(0), DetailsListView).VirtualListSize - 1
+                    If _statuses.Item(ListTab.TabPages(tabidx).Text, idx).Id = targetId Then
+                        ListTab.SelectTab(tabidx)
+                        SelectListItem(_curList, idx)
+                        _curList.EnsureVisible(idx)
+                        found = True
+                        Exit For
+                    End If
+                Next
+                If found Then Exit For
+            Next
+            _curList.EndUpdate()
     End Sub
 
     Private Sub GoPost(ByVal forward As Boolean)
