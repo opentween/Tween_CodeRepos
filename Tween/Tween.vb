@@ -1108,9 +1108,6 @@ Public Class TweenMain
             TimerTimeline.Enabled = False
             TimerDM.Enabled = False
 
-            Me.Visible = False
-            NotifyIcon1.Visible = False
-
             _endingFlag = True
             Twitter.Ending = True
 
@@ -1133,6 +1130,8 @@ Public Class TweenMain
                 Application.DoEvents()
             Loop Until flg = True
 
+            Me.Visible = False
+            NotifyIcon1.Visible = False
         End If
     End Sub
 
