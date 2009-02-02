@@ -790,7 +790,7 @@ Public Class TweenMain
                         _item = _curList.GetItemAt(0, 10)     '一番上
                         If _item Is Nothing Then _item = _curList.Items(0)
                         If _item.Index = 0 Then
-                            smode = -1
+                            smode = -3  '最上行
                         Else
                             topId = _statuses.GetId(_curTab.Text, _curList.TopItem.Index)
                             smode = 0
@@ -845,6 +845,9 @@ Public Class TweenMain
         'スクロール制御後処理
         If befCnt <> _curList.VirtualListSize Then
             Select Case smode
+                Case -3
+                    '最上行
+                    _curList.EnsureVisible(0)
                 Case -2
                     '最下行へ
                     _curList.EnsureVisible(_curList.VirtualListSize - 1)
@@ -985,7 +988,17 @@ Public Class TweenMain
             _post = _curPost
         End If
 
-        If _post Is Nothing OrElse _itemCache Is Nothing Then Exit Sub
+        If _itemCache Is Nothing Then Exit Sub
+
+        For cnt As Integer = 0 To _itemCache.Length - 1
+            If Not _postCache(cnt).IsRead AndAlso SettingDialog.UnreadManage AndAlso _statuses.Tabs(_curTab.Text).UnreadManage Then
+                _itemCache(cnt).Font = _fntUnread
+            Else
+                _itemCache(cnt).Font = _fntReaded
+            End If
+        Next
+
+        If _post Is Nothing Then Exit Sub
 
         For cnt As Integer = 0 To _itemCache.Length - 1
             _itemCache(cnt).BackColor = JudgeColor(_post, _postCache(cnt))
@@ -1007,15 +1020,17 @@ Public Class TweenMain
             _post = _curPost
         End If
 
-        If _post Is Nothing Then Exit Sub
-
         Dim tPost As PostClass = GetCurTabPost(Index)
-        Item.BackColor = JudgeColor(_post, tPost)
+
         If Not tPost.IsRead AndAlso SettingDialog.UnreadManage AndAlso _statuses.Tabs(_curTab.Text).UnreadManage Then
             Item.Font = _fntUnread
         Else
             Item.Font = _fntReaded
         End If
+
+        If _post Is Nothing Then Exit Sub
+
+        Item.BackColor = JudgeColor(_post, tPost)
     End Sub
 
     Private Function JudgeColor(ByVal BasePost As PostClass, ByVal TargetPost As PostClass) As Color
@@ -2746,11 +2761,11 @@ RETRY2:
         TimerColorize.Enabled = False
         TimerColorize.Interval = 100
         'If _itemCache IsNot Nothing Then CreateCache(-1, 0)
-        _curList.BeginUpdate()
+        '_curList.BeginUpdate()
         ColorizeList()
         If _itemCache IsNot Nothing Then _curList.RedrawItems(_itemCacheIndex, _itemCacheIndex + _itemCache.Length - 1, False)
         DispSelectedPost()
-        _curList.EndUpdate()
+        '_curList.EndUpdate()
         '件数関連の場合、タイトル即時書き換え
         If SettingDialog.DispLatestPost <> DispTitleEnum.None AndAlso _
            SettingDialog.DispLatestPost <> DispTitleEnum.Post AndAlso _
@@ -2862,7 +2877,6 @@ RETRY2:
                 Next
             End If
         End If
-#If 0 Then
         If Not e.Control AndAlso e.Alt AndAlso Not e.Shift Then
             ' ALTキーが押されている場合
             ' 別タブの同じ書き込みへ(ALT+←/→)
@@ -2877,7 +2891,6 @@ RETRY2:
                 GoSamePostToAnotherTab(True)
             End If
         End If
-#End If
         If e.Shift AndAlso Not e.Control AndAlso Not e.Alt Then
             ' SHIFTキーが押されている場合
             If e.KeyCode = Keys.H Then
@@ -3006,7 +3019,7 @@ RETRY2:
             End If
         Next
     End Sub
-#If 0 Then
+
     Private Sub GoSamePostToAnotherTab(ByVal left As Boolean)
         If _curList.VirtualListSize = 0 Then Exit Sub
         Dim fIdx As Integer = 0
@@ -3018,7 +3031,7 @@ RETRY2:
         targetId = GetCurTabPost(_curList.SelectedIndices(0)).Id
 
         If left Then
-    ' 左のタブへ
+            ' 左のタブへ
             If ListTab.SelectedIndex = 0 Then
                 Exit Sub
             Else
@@ -3027,7 +3040,7 @@ RETRY2:
             toIdx = 0
             stp = -1
         Else
-    ' 右のタブへ
+            ' 右のタブへ
             If ListTab.SelectedIndex = ListTab.TabCount - 1 Then
                 Exit Sub
             Else
@@ -3037,13 +3050,14 @@ RETRY2:
             stp = 1
         End If
 
-    Dim found As Boolean = False
+        Dim found As Boolean = False
         For tabidx As Integer = fIdx To toIdx Step stp
             If ListTab.TabPages(tabidx).Text = "Direct" Then Continue For ' Directタブは対象外
-            _itemCache = Nothing
-            _postCache = Nothing
+            '_itemCache = Nothing
+            '_postCache = Nothing
             For idx As Integer = 0 To DirectCast(ListTab.TabPages(tabidx).Controls(0), DetailsListView).VirtualListSize - 1
                 If _statuses.Item(ListTab.TabPages(tabidx).Text, idx).Id = targetId Then
+                    ListTab.SelectedIndex = tabidx
                     ListTabSelect(ListTab.TabPages(tabidx))
                     SelectListItem(_curList, idx)
                     _curList.EnsureVisible(idx)
@@ -3053,10 +3067,10 @@ RETRY2:
             Next
             If found Then Exit For
         Next
-        _itemCache = Nothing
-        _postCache = Nothing
+        '_itemCache = Nothing
+        '_postCache = Nothing
     End Sub
-#End If
+
     Private Sub GoPost(ByVal forward As Boolean)
         If _curList.SelectedIndices.Count = 0 OrElse _curPost Is Nothing Then Exit Sub
         Dim fIdx As Integer = 0
