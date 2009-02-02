@@ -1134,6 +1134,11 @@ Public Module Twitter
         Public CreatedAt As String
         Public Id As String
         Public Text As String
+        Public Sub New(ByVal Created As String, ByVal IdStr As String, ByVal txt As String)
+            CreatedAt = Created
+            Id = IdStr
+            Text = txt
+        End Sub
         Public Shadows Function Equals(ByVal dst As PostInfo) As Boolean
             If Me.CreatedAt = dst.CreatedAt AndAlso Me.Id = dst.Id AndAlso Me.Text = dst.Text Then
                 Return True
@@ -1144,16 +1149,8 @@ Public Module Twitter
     End Structure
 
     Private Function IsPostRestricted(ByRef resMsg As String) As Boolean
-        Static _prev As New PostInfo With { _
-                .CreatedAt = "", _
-                .Id = "", _
-                .Text = "" _
-            }
-        Dim _current As New PostInfo With { _
-            .CreatedAt = "", _
-            .Id = "", _
-            .Text = "" _
-        }
+        Static _prev As New PostInfo("", "", "")
+        Dim _current As New PostInfo("", "", "")
 
 
         Dim xd As XmlDocument = New XmlDocument()

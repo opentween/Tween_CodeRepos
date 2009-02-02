@@ -142,6 +142,7 @@ Public Class TweenMain
     Private _waitReply As Boolean = False
     Private _waitDm As Boolean = False
     Private _bw(9) As BackgroundWorker
+    Private cMode As Integer
     '''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 #If DEBUG Then
@@ -705,7 +706,8 @@ Public Class TweenMain
         SetMainWindowTitle()
         SetNotifyIconText()
 
-
+        TimerColorize.Interval = 200
+        TimerColorize.Start()
     End Sub
 
     Private Sub Network_NetworkAvailabilityChanged(ByVal sender As Object, ByVal e As Devices.NetworkAvailableEventArgs)
@@ -931,9 +933,9 @@ Public Class TweenMain
 
         'ColorizeList(-1)    '全キャッシュ更新（背景色）
         'DispSelectedPost()
-        TimerColorize.Stop()
-        TimerColorize.Start()
-
+        ''''TimerColorize.Stop()
+        ''''TimerColorize.Start()
+        cMode = 1
     End Sub
 
     Private Sub ChangeCacheStyleRead(ByVal Read As Boolean, ByVal Index As Integer, ByVal Tab As TabPage)
@@ -2763,10 +2765,18 @@ RETRY2:
     End Sub
 
     Private Sub TimerColorize_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerColorize.Tick
-        If TimerColorize.Enabled = False Then Exit Sub
-        TimerColorize.Stop()
-        TimerColorize.Enabled = False
-        TimerColorize.Interval = 100
+        'If TimerColorize.Enabled = False Then Exit Sub
+        If cMode = 0 Then Exit Sub
+        My.Application.DoEvents()
+        If cMode = 1 Then
+            cMode = 2
+            Exit Sub
+        End If
+        cMode = 0
+
+        'TimerColorize.Stop()
+        'TimerColorize.Enabled = False
+        'TimerColorize.Interval = 100
         'If _itemCache IsNot Nothing Then CreateCache(-1, 0)
         '_curList.BeginUpdate()
         ColorizeList()
@@ -2875,8 +2885,9 @@ RETRY2:
         If e.Control AndAlso Not e.Alt AndAlso Not e.Shift Then
             ' CTRLキーが押されている場合
             If e.KeyCode = Keys.Home OrElse e.KeyCode = Keys.End Then
-                TimerColorize.Stop()
-                TimerColorize.Start()
+                '''TimerColorize.Stop()
+                '''TimerColorize.Start()
+                cMode = 1
             End If
             If e.KeyCode = Keys.A Then
                 For i As Integer = 0 To _curList.VirtualListSize - 1
