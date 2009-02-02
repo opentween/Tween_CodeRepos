@@ -2211,6 +2211,12 @@ Public Class TweenMain
         SaveConfigs()
     End Sub
 
+    Private Sub ListTab_Deselected(ByVal sender As Object, ByVal e As System.Windows.Forms.TabControlEventArgs) Handles ListTab.Deselected
+        _itemCache = Nothing
+        _itemCacheIndex = -1
+        _postCache = Nothing
+    End Sub
+
     Private Sub ListTab_MouseMove(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListTab.MouseMove
         'タブのD&D
         Dim cpos As New Point(e.X, e.Y)
