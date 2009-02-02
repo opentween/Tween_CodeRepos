@@ -1130,6 +1130,52 @@ Public Module Twitter
         Return 0
     End Function
 
+    Private Structure PostInfo
+        Public CreatedAt As String
+        Public Id As String
+        Public Text As String
+        Public Shadows Function Equals(ByVal dst As PostInfo) As Boolean
+            If Me.CreatedAt = dst.CreatedAt AndAlso Me.Id = dst.Id AndAlso Me.Text = dst.Text Then
+                Return True
+            Else
+                Return False
+            End If
+        End Function
+    End Structure
+
+    Private Function IsPostRestricted(ByRef resMsg As String) As Boolean
+        Static _prev As New PostInfo With { _
+                .CreatedAt = "", _
+                .Id = "", _
+                .Text = "" _
+            }
+        Dim _current As New PostInfo With { _
+            .CreatedAt = "", _
+            .Id = "", _
+            .Text = "" _
+        }
+
+
+        Dim xd As XmlDocument = New XmlDocument()
+        Try
+            xd.LoadXml(resMsg)
+            _current.CreatedAt = xd.SelectSingleNode("/status/created_at/text()").Value
+            _current.Id = xd.SelectSingleNode("/status/id/text()").Value
+            _current.Text = xd.SelectSingleNode("/status/text/text()").Value
+
+            If _current.Equals(_prev) Then
+                Return True
+            End If
+            _prev.CreatedAt = _current.CreatedAt
+            _prev.Id = _current.Id
+            _prev.Text = _current.Text
+        Catch ex As XmlException
+            Return False
+        End Try
+
+        Return False
+    End Function
+
     Public Function PostStatus(ByVal postStr As String, ByVal reply_to As Long) As String
 
         If _endingFlag Then Return ""
@@ -1148,10 +1194,9 @@ Public Module Twitter
         Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _statusUpdatePathAPI, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI, dataStr), String)
 
         If resStatus.StartsWith("OK") Then
-            Static _prevpost As String = ""
-            If Not _prevpost.Equals(resMsg) Then
-                _prevpost = resMsg
-            Else
+            If Not postStr.StartsWith("D ", StringComparison.OrdinalIgnoreCase) AndAlso _
+                    Not postStr.StartsWith("DM ", StringComparison.OrdinalIgnoreCase) AndAlso _
+                    IsPostRestricted(resMsg) Then
                 Return "Err:POST規制？"
             End If
             resStatus = Outputz.Post(CreateSocket, postStr.Length)
