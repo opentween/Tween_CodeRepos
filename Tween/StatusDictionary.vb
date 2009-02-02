@@ -298,25 +298,25 @@ Public Class TabInformations
     End Sub
 
     Public Sub RemoveTab(ByVal TabName As String)
-        If IsDefaultTab(TabName) Then Exit Sub '念のため
+        SyncLock LockObj
+            If IsDefaultTab(TabName) Then Exit Sub '念のため
 
-        For idx As Integer = 0 To _tabs(TabName).AllCount - 1
-            Dim exist As Boolean = False
-            Dim Id As Long = _tabs(TabName).GetId(idx)
-            For Each key As String In _tabs.Keys
-                If Not key = TabName AndAlso Not key = "Direct" Then
-                    If _tabs(key).Contains(Id) Then
-                        exist = True
-                        Exit For
+            For idx As Integer = 0 To _tabs(TabName).AllCount - 1
+                Dim exist As Boolean = False
+                Dim Id As Long = _tabs(TabName).GetId(idx)
+                For Each key As String In _tabs.Keys
+                    If Not key = TabName AndAlso Not key = "Direct" Then
+                        If _tabs(key).Contains(Id) Then
+                            exist = True
+                            Exit For
+                        End If
                     End If
-                End If
+                Next
+                If Not exist Then _tabs("Recent").Add(Id, _statuses(Id).IsRead, False)
             Next
-            If Not exist Then
-                _tabs("Recent").Add(_tabs(TabName).GetId(idx), _statuses(Id).IsRead, False)
-            End If
-        Next
 
-        _tabs.Remove(TabName)
+            _tabs.Remove(TabName)
+        End SyncLock
     End Sub
 
     Public Function ContainsTab(ByVal TabText As String) As Boolean
@@ -662,43 +662,45 @@ Public Class TabInformations
     End Sub
 
     Public Sub FilterAll()
-        Dim tbr As TabClass = _tabs("Recent")
-        For Each key As String In _tabs.Keys
-            Dim tb As TabClass = _tabs(key)
-            If tb.FilterModified Then
-                tb.FilterModified = False
-                Dim orgIds() As Long = tb.BackupIds()
-                tb.ClearIDs()
-                ''''''''''''''フィルター前のIDsを退避。どのタブにも含まれないidはrecentへ追加
-                ''''''''''''''moveフィルターにヒットした際、recentに該当あればrecentから削除
-                For Each id As Long In _statuses.Keys
-                    Dim post As PostClass = _statuses.Item(id)
-                    If post.IsDm Then Continue For
-                    Dim rslt As HITRESULT = tb.AddFiltered(post.Id, post.IsRead, post.Name, post.Data, post.OriginalData)
-                    Select Case rslt
-                        Case HITRESULT.CopyAndMark
-                            post.IsMark = True 'マークあり
-                        Case HITRESULT.Move
-                            tbr.Remove(post.Id)
-                    End Select
-                Next
-                For Each _key As String In _tabs.Keys
-                    _tabs(_key).AddSubmit()  '振分確定（各タブに反映）
-                Next
-                For Each id As Long In orgIds
-                    Dim hit As Boolean = False
-                    For Each tkey As String In _tabs.Keys
-                        If _tabs(tkey).Contains(id) Then
-                            hit = True
-                            Exit For
-                        End If
+        SyncLock LockObj
+            Dim tbr As TabClass = _tabs("Recent")
+            For Each key As String In _tabs.Keys
+                Dim tb As TabClass = _tabs(key)
+                If tb.FilterModified Then
+                    tb.FilterModified = False
+                    Dim orgIds() As Long = tb.BackupIds()
+                    tb.ClearIDs()
+                    ''''''''''''''フィルター前のIDsを退避。どのタブにも含まれないidはrecentへ追加
+                    ''''''''''''''moveフィルターにヒットした際、recentに該当あればrecentから削除
+                    For Each id As Long In _statuses.Keys
+                        Dim post As PostClass = _statuses.Item(id)
+                        If post.IsDm Then Continue For
+                        Dim rslt As HITRESULT = tb.AddFiltered(post.Id, post.IsRead, post.Name, post.Data, post.OriginalData)
+                        Select Case rslt
+                            Case HITRESULT.CopyAndMark
+                                post.IsMark = True 'マークあり
+                            Case HITRESULT.Move
+                                tbr.Remove(post.Id)
+                        End Select
                     Next
-                    If Not hit Then tbr.Add(id, _statuses(id).IsRead, False)
-                Next
-            End If
-        Next
+                    For Each _key As String In _tabs.Keys
+                        _tabs(_key).AddSubmit()  '振分確定（各タブに反映）
+                    Next
+                    For Each id As Long In orgIds
+                        Dim hit As Boolean = False
+                        For Each tkey As String In _tabs.Keys
+                            If _tabs(tkey).Contains(id) Then
+                                hit = True
+                                Exit For
+                            End If
+                        Next
+                        If Not hit Then tbr.Add(id, _statuses(id).IsRead, False)
+                    Next
+                End If
+            Next
 
-        Me.SortPosts()
+            Me.SortPosts()
+        End SyncLock
     End Sub
 
     Public Function GetId(ByVal TabName As String, ByVal IndexCollection As ListView.SelectedIndexCollection) As Long()
@@ -819,9 +821,10 @@ Public Class TabClass
     End Sub
     '無条件に追加
     Public Sub Add(ByVal ID As Long, ByVal Read As Boolean, ByVal Temporary As Boolean)
-        If Temporary Then
+        If Not Temporary Then
             Me.Add(ID, Read)
         Else
+            If _tmpIds Is Nothing Then _tmpIds = New List(Of TempolaryId)
             _tmpIds.Add(New TempolaryId(ID, Read))
         End If
     End Sub
