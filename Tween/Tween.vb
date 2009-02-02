@@ -508,6 +508,17 @@ Public Class TweenMain
             detailHtmlFormat = detailHtmlFormat1 + _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3
             '他の設定項目は、随時設定画面で保持している値を読み出して使用
         End If
+
+        'Twitter用通信クラス初期化
+        Twitter.Username = _username
+        Twitter.Password = _password
+        Twitter.ProxyType = SettingDialog.ProxyType
+        Twitter.ProxyAddress = SettingDialog.ProxyAddress
+        Twitter.ProxyPort = SettingDialog.ProxyPort
+        Twitter.ProxyUser = SettingDialog.ProxyUser
+        Twitter.ProxyPassword = SettingDialog.ProxyPassword
+        Twitter.NextThreshold = SettingDialog.NextPageThreshold   '次頁取得閾値
+        Twitter.NextPages = SettingDialog.NextPagesInt    '閾値オーバー時の読み込みページ数（未使用）
         If IsNetworkAvailable() Then
             If SettingDialog.StartupFollowers Then
                 _waitFollower = True
@@ -552,17 +563,6 @@ Public Class TweenMain
         StatusLabel.Text = ""
         '文字カウンタ初期化
         lblLen.Text = "140"
-
-        'Twitter用通信クラス初期化
-        Twitter.Username = _username
-        Twitter.Password = _password
-        Twitter.ProxyType = SettingDialog.ProxyType
-        Twitter.ProxyAddress = SettingDialog.ProxyAddress
-        Twitter.ProxyPort = SettingDialog.ProxyPort
-        Twitter.ProxyUser = SettingDialog.ProxyUser
-        Twitter.ProxyPassword = SettingDialog.ProxyPassword
-        Twitter.NextThreshold = SettingDialog.NextPageThreshold   '次頁取得閾値
-        Twitter.NextPages = SettingDialog.NextPagesInt    '閾値オーバー時の読み込みページ数（未使用）
 
         If SettingDialog.StartupKey Then
             Twitter.GetWedata()
@@ -4817,7 +4817,7 @@ RETRY2:
                 System.Threading.Thread.Sleep(100)
                 My.Application.DoEvents()
                 i += 1
-                If i > 50 Then
+                If i > 20 Then
                     _statuses.DistributePosts()
                     RefreshTimeline()
                     i = 0
