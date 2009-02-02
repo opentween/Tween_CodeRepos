@@ -1147,6 +1147,12 @@ Public Module Twitter
         Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _statusUpdatePathAPI, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI, dataStr), String)
 
         If resStatus.StartsWith("OK") Then
+            Static _prevpost As String = ""
+            If Not _prevpost.Equals(resMsg) Then
+                _prevpost = resMsg
+            Else
+                Return "Err:POST規制？"
+            End If
             resStatus = Outputz.Post(CreateSocket, postStr.Length)
             If resStatus.Length > 0 Then
                 Return "Outputz:" + resStatus
