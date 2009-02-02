@@ -2000,7 +2000,7 @@ Public Module Twitter
         sw.WriteLine("End Module")
 
         sw.Close()
-        MessageBox.Show("解析キー情報定義ファイル AnalyzeKey.vbを生成しました")
+        'MessageBox.Show("解析キー情報定義ファイル AnalyzeKey.vbを生成しました")
 
     End Sub
 #End If
