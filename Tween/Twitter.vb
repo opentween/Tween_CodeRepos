@@ -44,6 +44,7 @@ Public Module Twitter
 
     'Private links As New List(Of Long)
     Private follower As New Collections.Specialized.StringCollection
+    Private tmpFollower As New Collections.Specialized.StringCollection
 
     'プロパティからアクセスされる共通情報
     Private _uid As String
@@ -1285,8 +1286,8 @@ Public Module Twitter
                     If rd.IsStartElement("screen_name") Then
                         Dim tmp As String = rd.ReadElementString("screen_name").ToLower()
                         SyncLock LockObj
-                            If Not follower.Contains(tmp) Then
-                                follower.Add(tmp)
+                            If Not tmpFollower.Contains(tmp) Then
+                                tmpFollower.Add(tmp)
                             End If
                         End SyncLock
                         lc += 1
@@ -1344,34 +1345,34 @@ Public Module Twitter
             Return _FollowersCount
         End If
 
-        Dim serializer As Xml.Serialization.XmlSerializer = New Xml.Serialization.XmlSerializer(follower.GetType())
+        Dim serializer As Xml.Serialization.XmlSerializer = New Xml.Serialization.XmlSerializer(tmpFollower.GetType())
 
         Try
             Using fs As New IO.FileStream(CacheFileName, FileMode.Open)
-                follower = CType(serializer.Deserialize(fs), Specialized.StringCollection)
+                tmpFollower = CType(serializer.Deserialize(fs), Specialized.StringCollection)
             End Using
         Catch ex As XmlException
             ' 不正なxmlの場合は読み直し
-            follower.Clear()
-            follower.Add(_uid.ToLower())
+            tmpFollower.Clear()
+            tmpFollower.Add(_uid.ToLower())
             Return _FollowersCount
         End Try
 
-        If _FollowersCount = -1 Then Return follower.Count
+        If _FollowersCount = -1 Then Return tmpFollower.Count
 
-        If (_FollowersCount + 1) = follower.Count Then
+        If (_FollowersCount + 1) = tmpFollower.Count Then
             '変動がないので読み込みの必要なし
             Return 0
-        ElseIf (_FollowersCount + 1) < follower.Count Then
+        ElseIf (_FollowersCount + 1) < tmpFollower.Count Then
             '減っている場合はどこが抜けているのかわからないので全部破棄して読み直し
-            follower.Clear()
-            follower.Add(_uid.ToLower())
+            tmpFollower.Clear()
+            tmpFollower.Add(_uid.ToLower())
             Return _FollowersCount
         End If
 
         ' 増えた場合は差分だけ読む
 
-        Return _FollowersCount - follower.Count
+        Return _FollowersCount - tmpFollower.Count
 
     End Function
 
@@ -1404,7 +1405,9 @@ Public Module Twitter
         Interlocked.Exchange(threadNum, 0)      ' スレッド数カウンタ初期化
         IsThreadError = False
         follower.Clear()
+        tmpFollower.Clear()
         follower.Add(_uid.ToLower())
+        tmpFollower.Add(_uid.ToLower())
 
         resMsg = DirectCast(CreateSocket.GetWebResponse("https://twitter.com/users/show/" + _uid + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
         Dim xd As XmlDocument = New XmlDocument()
@@ -1417,6 +1420,7 @@ Public Module Twitter
                 Return "NG"
             Else
                 'キャッシュを読み出せたのでキャッシュを使う
+                follower = tmpFollower
                 Return ""
             End If
         End Try
@@ -1438,6 +1442,7 @@ Public Module Twitter
             sw.Stop()
             Console.WriteLine(sw.ElapsedMilliseconds)
 #End If
+            follower = tmpFollower
             Return ""
         End If
 
@@ -1468,6 +1473,7 @@ Public Module Twitter
             Return "NG"
         End If
 
+        follower = tmpFollower
         UpdateCache()
 
 #If DEBUG Then
@@ -1479,13 +1485,13 @@ Public Module Twitter
     End Function
 
     Public Function GetFollowers(ByVal CacheInvalidate As Boolean) As String
-        Dim retMsg As String = ""
-        If _signed = False Then
-            retMsg = SignIn()
-            If retMsg.Length > 0 Then
-                Return retMsg
-            End If
-        End If
+        'Dim retMsg As String = ""
+        'If _signed = False Then
+        '    retMsg = SignIn()
+        '    If retMsg.Length > 0 Then
+        '        Return retMsg
+        '    End If
+        'End If
 
         Return doGetFollowers(CacheInvalidate)
     End Function

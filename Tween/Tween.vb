@@ -508,7 +508,12 @@ Public Class TweenMain
             detailHtmlFormat = detailHtmlFormat1 + _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3
             '他の設定項目は、随時設定画面で保持している値を読み出して使用
         End If
-
+        If IsNetworkAvailable() Then
+            If SettingDialog.StartupFollowers Then
+                _waitFollower = True
+                GetTimeline(WORKERTYPE.Follower, 0, 0)
+            End If
+        End If
 
         'ウィンドウ設定
         Me.ClientSize = _section.FormSize           'サイズ設定
@@ -699,11 +704,6 @@ Public Class TweenMain
         _curList = DirectCast(_curTab.Controls(0), DetailsListView)
         SetMainWindowTitle()
         SetNotifyIconText()
-
-        'バージョンチェック（引数：起動時チェックの場合はTrue･･･チェック結果のメッセージを表示しない）
-        If SettingDialog.StartupVersion Then
-            CheckNewVersion(True)
-        End If
 
 
     End Sub
@@ -1002,11 +1002,6 @@ Public Class TweenMain
 
         For cnt As Integer = 0 To _itemCache.Length - 1
             _itemCache(cnt).BackColor = JudgeColor(_post, _postCache(cnt))
-            If Not _postCache(cnt).IsRead AndAlso SettingDialog.UnreadManage AndAlso _statuses.Tabs(_curTab.Text).UnreadManage Then
-                _itemCache(cnt).Font = _fntUnread
-            Else
-                _itemCache(cnt).Font = _fntReaded
-            End If
         Next
     End Sub
 
@@ -2208,6 +2203,13 @@ Public Class TweenMain
         _statuses.RemoveTab(TabName)
 
         SaveConfigs()
+
+        For Each tp As TabPage In ListTab.TabPages
+            Dim lst As DetailsListView = DirectCast(tp.Controls(0), DetailsListView)
+            If lst.VirtualListSize <> _statuses.Tabs(tp.Text).AllCount Then
+                lst.VirtualListSize = _statuses.Tabs(tp.Text).AllCount
+            End If
+        Next
     End Sub
 
     Private Sub ListTab_Deselected(ByVal sender As Object, ByVal e As System.Windows.Forms.TabControlEventArgs) Handles ListTab.Deselected
@@ -4790,19 +4792,10 @@ RETRY2:
 
     Private Sub TweenMain_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
         If IsNetworkAvailable() Then
-            If SettingDialog.StartupFollowers Then
-                _waitFollower = True
-                GetTimeline(WORKERTYPE.Follower, 0, 0)
-            End If
-            If SettingDialog.ReadPagesDM > 0 Then
-                _waitDm = True
-                GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, SettingDialog.ReadPagesDM)
-            End If
-            Do While _waitFollower AndAlso Not _endingFlag
-                System.Threading.Thread.Sleep(1)
-                My.Application.DoEvents()
-            Loop
-            If _endingFlag Then Exit Sub
+            'If SettingDialog.StartupFollowers Then
+            '    _waitFollower = True
+            '    GetTimeline(WORKERTYPE.Follower, 0, 0)
+            'End If
             If SettingDialog.ReadPages > 0 Then
                 _waitTimeline = True
                 GetTimeline(WORKERTYPE.Timeline, 1, SettingDialog.ReadPages)
@@ -4811,10 +4804,31 @@ RETRY2:
                 _waitReply = True
                 GetTimeline(WORKERTYPE.Reply, 1, SettingDialog.ReadPagesReply)
             End If
-            Do While (_waitTimeline OrElse _waitReply) AndAlso Not _endingFlag
-                System.Threading.Thread.Sleep(1)
+            If SettingDialog.ReadPagesDM > 0 Then
+                _waitDm = True
+                GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, SettingDialog.ReadPagesDM)
+            End If
+            'Do While _waitFollower AndAlso Not _endingFlag
+            '    System.Threading.Thread.Sleep(1)
+            '    My.Application.DoEvents()
+            'Loop
+            Dim i As Integer = 0
+            Do While (_waitTimeline OrElse _waitReply OrElse _waitDm) AndAlso Not _endingFlag
+                System.Threading.Thread.Sleep(100)
                 My.Application.DoEvents()
+                i += 1
+                If i > 50 Then
+                    _statuses.DistributePosts()
+                    RefreshTimeline()
+                    i = 0
+                End If
             Loop
+            If _endingFlag Then Exit Sub
+            'バージョンチェック（引数：起動時チェックの場合はTrue･･･チェック結果のメッセージを表示しない）
+            If SettingDialog.StartupVersion Then
+                CheckNewVersion(True)
+            End If
+
         Else
             TimerRefreshIcon.Enabled = False
             NotifyIcon1.Icon = NIconAtSmoke
