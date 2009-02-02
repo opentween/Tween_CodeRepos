@@ -4805,7 +4805,7 @@ RETRY2:
                 GetTimeline(WORKERTYPE.Reply, 1, SettingDialog.ReadPagesReply)
             End If
             If SettingDialog.ReadPagesDM > 0 Then
-                _waitDm = False
+                _waitDm = True
                 GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, SettingDialog.ReadPagesDM)
             End If
             'Do While _waitFollower AndAlso Not _endingFlag
