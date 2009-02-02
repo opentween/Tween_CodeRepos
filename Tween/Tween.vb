@@ -4805,7 +4805,7 @@ RETRY2:
                 GetTimeline(WORKERTYPE.Reply, 1, SettingDialog.ReadPagesReply)
             End If
             If SettingDialog.ReadPagesDM > 0 Then
-                _waitDm = True
+                _waitDm = False
                 GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, SettingDialog.ReadPagesDM)
             End If
             'Do While _waitFollower AndAlso Not _endingFlag
@@ -4817,7 +4817,7 @@ RETRY2:
                 System.Threading.Thread.Sleep(100)
                 My.Application.DoEvents()
                 i += 1
-                If i > 20 Then
+                If i > 50 Then
                     _statuses.DistributePosts()
                     RefreshTimeline()
                     i = 0
