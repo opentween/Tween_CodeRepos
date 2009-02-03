@@ -938,6 +938,7 @@ Public Class TweenMain
         'DispSelectedPost()
         ''''TimerColorize.Stop()
         ''''TimerColorize.Start()
+        ColorizeList()
         cMode = 1
     End Sub
 
@@ -958,17 +959,17 @@ Public Class TweenMain
             post = _statuses.Item(Tab.Text, Index)
         End If
 
-        ChangeItemStyleRead(Read, itm, post)
+        ChangeItemStyleRead(Read, itm, post, DirectCast(Tab.Controls(0), DetailsListView))
     End Sub
 
-    Private Sub ChangeItemStyleRead(ByVal Read As Boolean, ByVal Item As ListViewItem, ByVal Post As PostClass)
-        'Dim fnt As Font
+    Private Sub ChangeItemStyleRead(ByVal Read As Boolean, ByVal Item As ListViewItem, ByVal Post As PostClass, ByVal DList As DetailsListView)
+        Dim fnt As Font
         'フォント
         If Read Then
-            'Item.Font = _fntReaded
+            fnt = _fntReaded
             Item.SubItems(5).Text = ""
         Else
-            'Item.Font = _fntUnread
+            fnt = _fntUnread
             Item.SubItems(5).Text = "★"
         End If
         '文字色
@@ -980,7 +981,14 @@ Public Class TweenMain
         Else
             cl = System.Drawing.SystemColors.ControlText
         End If
-        Item.ForeColor = cl
+        If DList Is Nothing Then
+            Item.Font = fnt
+            Item.ForeColor = cl
+        Else
+            DList.Update()
+            DList.ChangeItemFontAndColor(Item.Index, cl, fnt)
+            'If _itemCache IsNot Nothing Then DList.RedrawItems(_itemCacheIndex, _itemCacheIndex + _itemCache.Length - 1, False)
+        End If
     End Sub
 
     Private Sub ColorizeList()
@@ -995,18 +1003,19 @@ Public Class TweenMain
 
         If _itemCache Is Nothing Then Exit Sub
 
-        For cnt As Integer = 0 To _itemCache.Length - 1
-            If Not _postCache(cnt).IsRead AndAlso SettingDialog.UnreadManage AndAlso _statuses.Tabs(_curTab.Text).UnreadManage Then
-                _itemCache(cnt).Font = _fntUnread
-            Else
-                _itemCache(cnt).Font = _fntReaded
-            End If
-        Next
+        'For cnt As Integer = 0 To _itemCache.Length - 1
+        '    If Not _postCache(cnt).IsRead AndAlso SettingDialog.UnreadManage AndAlso _statuses.Tabs(_curTab.Text).UnreadManage Then
+        '        _itemCache(cnt).Font = _fntUnread
+        '    Else
+        '        _itemCache(cnt).Font = _fntReaded
+        '    End If
+        'Next
 
         If _post Is Nothing Then Exit Sub
 
         For cnt As Integer = 0 To _itemCache.Length - 1
-            _itemCache(cnt).BackColor = JudgeColor(_post, _postCache(cnt))
+            '_itemCache(cnt).BackColor = JudgeColor(_post, _postCache(cnt))
+            _curList.ChangeItemBackColor(_itemCacheIndex + cnt, JudgeColor(_post, _postCache(cnt)))
         Next
     End Sub
 
@@ -1022,15 +1031,19 @@ Public Class TweenMain
 
         Dim tPost As PostClass = GetCurTabPost(Index)
 
-        If Not tPost.IsRead AndAlso SettingDialog.UnreadManage AndAlso _statuses.Tabs(_curTab.Text).UnreadManage Then
-            Item.Font = _fntUnread
-        Else
-            Item.Font = _fntReaded
-        End If
+        'If Not tPost.IsRead AndAlso SettingDialog.UnreadManage AndAlso _statuses.Tabs(_curTab.Text).UnreadManage Then
+        '    Item.Font = _fntUnread
+        'Else
+        '    Item.Font = _fntReaded
+        'End If
 
         If _post Is Nothing Then Exit Sub
 
-        Item.BackColor = JudgeColor(_post, tPost)
+        If Item.Index = -1 Then
+            Item.BackColor = JudgeColor(_post, tPost)
+        Else
+            _curList.ChangeItemBackColor(Item.Index, JudgeColor(_post, tPost))
+        End If
     End Sub
 
     Private Function JudgeColor(ByVal BasePost As PostClass, ByVal TargetPost As PostClass) As Color
@@ -2345,6 +2358,7 @@ Public Class TweenMain
     End Sub
 
     Private Sub MyList_RetrieveVirtualItem(ByVal sender As System.Object, ByVal e As System.Windows.Forms.RetrieveVirtualItemEventArgs)
+        If e.ItemIndex = 0 Then System.Diagnostics.Debug.WriteLine("0")
         If _itemCache IsNot Nothing AndAlso e.ItemIndex >= _itemCacheIndex AndAlso e.ItemIndex < _itemCacheIndex + _itemCache.Length AndAlso _curList.Equals(sender) Then
             'A cache hit, so get the ListViewItem from the cache instead of making a new one.
             e.Item = _itemCache(e.ItemIndex - _itemCacheIndex)
@@ -2394,7 +2408,7 @@ Public Class TweenMain
         '未読管理していなかったら既読として扱う
         If Not _statuses.Tabs(Tab.Text).UnreadManage OrElse _
            Not SettingDialog.UnreadManage Then read = True
-        ChangeItemStyleRead(read, itm, Post)
+        ChangeItemStyleRead(read, itm, Post, Nothing)
         If Tab.Equals(_curTab) Then ColorizeList(itm, Index)
         Return itm
     End Function
@@ -2670,7 +2684,9 @@ RETRY2:
         End If
 
         If lst.VirtualListSize > 0 AndAlso idx > -1 Then
+            Dim bnd As Rectangle = lst.FocusedItem.GetBounds(ItemBoundsPortion.Entire)
             SelectListItem(lst, idx)
+            lst.Invalidate(bnd)
             If _statuses.SortMode = IdComparerClass.ComparerMode.Id Then
                 If _statuses.SortOrder = SortOrder.Ascending AndAlso lst.Items(idx).Position.Y > lst.ClientSize.Height - _iconSz - 10 OrElse _
                    _statuses.SortOrder = SortOrder.Descending AndAlso lst.Items(idx).Position.Y < _iconSz + 10 Then
@@ -2683,7 +2699,7 @@ RETRY2:
             End If
         End If
         lst.Focus()
-        lst.Update()
+        'lst.Update()
     End Sub
 
     Private Sub StatusOpenMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusOpenMenuItem.Click
@@ -2770,11 +2786,12 @@ RETRY2:
     Private Sub TimerColorize_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerColorize.Tick
         'If TimerColorize.Enabled = False Then Exit Sub
         If cMode = 0 Then Exit Sub
-        My.Application.DoEvents()
-        If cMode = 1 Then
-            cMode = 2
-            Exit Sub
-        End If
+        DispSelectedPost()
+        'My.Application.DoEvents()
+        'If cMode = 1 Then
+        '    cMode = 2
+        '    Exit Sub
+        'End If
         cMode = 0
 
         'TimerColorize.Stop()
@@ -2782,9 +2799,9 @@ RETRY2:
         'TimerColorize.Interval = 100
         'If _itemCache IsNot Nothing Then CreateCache(-1, 0)
         '_curList.BeginUpdate()
-        ColorizeList()
-        If _itemCache IsNot Nothing Then _curList.RedrawItems(_itemCacheIndex, _itemCacheIndex + _itemCache.Length - 1, False)
-        DispSelectedPost()
+        'ColorizeList()
+        'If _itemCache IsNot Nothing Then _curList.RedrawItems(_itemCacheIndex, _itemCacheIndex + _itemCache.Length - 1, False)
+        'DispSelectedPost()
         '_curList.EndUpdate()
         '件数関連の場合、タイトル即時書き換え
         If SettingDialog.DispLatestPost <> DispTitleEnum.None AndAlso _
