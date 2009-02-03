@@ -767,7 +767,10 @@ Public Class TweenMain
                     'Id昇順
                     If ListLockMenuItem.Checked Then
                         '制御しない
-                        smode = -1
+                        'smode = -1
+                        '現在表示位置へ強制スクロール
+                        topId = _statuses.GetId(_curTab.Text, _curList.TopItem.Index)
+                        smode = 0
                     Else
                         '最下行が表示されていたら、最下行へ強制スクロール。最下行が表示されていなかったら制御しない
                         Dim _item As ListViewItem
@@ -1514,7 +1517,7 @@ Public Class TweenMain
                     _hisIdx = _history.Count - 1
                     SetMainWindowTitle()
                 End If
-                GetTimeline(WORKERTYPE.Timeline, 1, 0)
+                If rslt.retMsg.Length = 0 Then GetTimeline(WORKERTYPE.Timeline, 1, 0)
             Case WORKERTYPE.Follower
                 _waitFollower = False
         End Select
@@ -3046,6 +3049,8 @@ RETRY2:
         Dim targetId As Long = 0
 
         If _curTab.Text = "Direct" Then Exit Sub ' Directタブは対象外（見つかるはずがない）
+        If _curList.SelectedIndices.Count = 0 Then Exit Sub '未選択も処理しない
+
         targetId = GetCurTabPost(_curList.SelectedIndices(0)).Id
 
         If left Then
@@ -4743,8 +4748,8 @@ RETRY2:
 
     Private Sub SelectListItem(ByVal LView As DetailsListView, ByVal Index() As Integer, ByVal FocusedIndex As Integer)
         '複数
-        For i As Integer = _curList.SelectedIndices.Count - 1 To 0 Step -1
-            LView.Items(i).Selected = False
+        For i As Integer = LView.SelectedIndices.Count - 1 To 0 Step -1
+            LView.Items(LView.SelectedIndices(i)).Selected = False
         Next
         LView.SelectedIndices.Clear()
         If Index IsNot Nothing Then

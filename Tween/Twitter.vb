@@ -306,9 +306,9 @@ Public Module Twitter
 
             ' tr 要素の class 属性を消去
             Do
-                Dim idx As Integer = retMsg.IndexOf("<tr class=""", StringComparison.Ordinal)
+                Dim idx As Integer = retMsg.IndexOf(" class=""hentry", StringComparison.Ordinal)
                 If idx = -1 Then Exit Do
-                retMsg = retMsg.Remove(idx + 4, retMsg.IndexOf("""", idx + 11 + 1, StringComparison.Ordinal) - idx - 2) ' 11 = "<tr class=""".Length
+                retMsg = retMsg.Remove(idx, retMsg.IndexOf("""", idx + 14, StringComparison.Ordinal) - idx + 1) ' 11 = "<tr class=""".Length
             Loop
 
             If _endingFlag Then Return ""
@@ -661,21 +661,34 @@ Public Module Twitter
             endPage = 1
         End If
         '起動時モード 
-        Dim num As Integer = (endPage - page + 1) * 2 - 1
+        Dim num As Integer = endPage - page
         Dim ar(num) As IAsyncResult
         Dim dlgt(num) As GetDirectMessageDelegate
 
         For idx As Integer = 0 To num
-            If idx Mod 2 = 0 Then
-                gType = WORKERTYPE.DirectMessegeRcv
-            Else
-                gType = WORKERTYPE.DirectMessegeSnt
-            End If
+            gType = WORKERTYPE.DirectMessegeRcv
             dlgt(idx) = New GetDirectMessageDelegate(AddressOf GetDirectMessageThread)
             GetTmSemaphore.WaitOne()
             ar(idx) = dlgt(idx).BeginInvoke(page + idx, read, endPage + idx, gType, Nothing, Nothing)
         Next
         Dim rslt As String = ""
+        For idx As Integer = 0 To num
+            Dim trslt As String = ""
+            Try
+                trslt = dlgt(idx).EndInvoke(ar(idx))
+            Catch ex As Exception
+                '最後までendinvoke回す（ゾンビ化回避）
+                ExceptionOut(ex)
+                rslt = "GetDirectMessageErr"
+            End Try
+            If trslt.Length > 0 AndAlso rslt.Length = 0 Then rslt = trslt
+        Next
+        For idx As Integer = 0 To num
+            gType = WORKERTYPE.DirectMessegeSnt
+            dlgt(idx) = New GetDirectMessageDelegate(AddressOf GetDirectMessageThread)
+            GetTmSemaphore.WaitOne()
+            ar(idx) = dlgt(idx).BeginInvoke(page + idx, read, endPage + idx, gType, Nothing, Nothing)
+        Next
         For idx As Integer = 0 To num
             Dim trslt As String = ""
             Try
@@ -728,9 +741,9 @@ Public Module Twitter
 
             ' tr 要素の class 属性を消去
             Do
-                Dim idx As Integer = retMsg.IndexOf("<tr class=""", StringComparison.Ordinal)
+                Dim idx As Integer = retMsg.IndexOf(" class=""hentry", StringComparison.Ordinal)
                 If idx = -1 Then Exit Do
-                retMsg = retMsg.Remove(idx + 4, retMsg.IndexOf("""", idx + 11 + 1, StringComparison.Ordinal) - idx - 2) ' 11 = "<tr class=""".Length
+                retMsg = retMsg.Remove(idx, retMsg.IndexOf("""", idx + 14, StringComparison.Ordinal) - idx + 1) ' 11 = "<tr class=""".Length
             Loop
 
             If _endingFlag Then Return ""
