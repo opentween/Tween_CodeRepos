@@ -1,10 +1,10 @@
 ﻿Public Module AnalyzeKey
-'    このファイルはデバッグビルドのTweenにより自動作成されました   作成日時  2009/01/21 15:49:28
+'    このファイルはデバッグビルドのTweenにより自動作成されました   作成日時  2009/02/03 11:12:03
 
-    Public _splitPost As String = "<tr id=""status_"
-    Public _splitPostRecent As String = "<tr id=""status_"
+    Public _splitPost As String = "<li id=""status_"
+    Public _splitPostRecent As String = "<li id=""status_"
     Public _statusIdTo As String = """"
-    Public _splitDM As String = "<tr id=""direct_message_"
+    Public _splitDM As String = "<li id=""direct_message_"
     Public _parseName As String = "://twitter.com/"
     Public _parseNameTo As String = """"
     Public _parseNick As String = "<img alt="""
@@ -22,7 +22,7 @@
     Public _getAuthKeyTo As String = """"
     Public _parseStar As String = "<a class="""
     Public _parseStarTo As String = """"
-    Public _parseStarEmpty As String = "non-fav"
+    Public _parseStarEmpty As String = "fav-action non-fav"
     Public _followerList As String = "<select id=""direct_message_user_id"" name=""user[id]""><option value="""" selected=""selected"">"
     Public _followerMbr1 As String = "/option>"
     Public _followerMbr2 As String = """>"

@@ -75,6 +75,7 @@ Public Class MySocket
                 End If
                 'IE設定（システム設定）はデフォルト値なので処理しない
         End Select
+        _proxyType = ProxyType
     End Sub
 
     Public Function GetWebResponse(ByVal url As String, _
@@ -82,7 +83,7 @@ Public Class MySocket
             Optional ByVal reqType As REQ_TYPE = REQ_TYPE.ReqGET, _
             Optional ByVal data As String = "", _
             Optional ByVal referer As String = "", _
-            Optional ByVal timeOut As Integer = 15000, _
+            Optional ByVal timeOut As Integer = 20000, _
             Optional ByVal userAgent As String = "Mozilla/5.0 (Windows; U; Windows NT 5.1; ja; rv:1.9) Gecko/2008051206 Firefox/3.0") As Object
         Dim webReq As HttpWebRequest
         Dim cpolicy As System.Net.Cache.HttpRequestCachePolicy = New Cache.HttpRequestCachePolicy(Cache.HttpRequestCacheLevel.NoCacheNoStore)
@@ -114,7 +115,7 @@ Public Class MySocket
                reqType = REQ_TYPE.ReqPOSTEncodeProtoVer3 OrElse _
                reqType = REQ_TYPE.ReqPOSTAPI Then
                 webReq.Method = "POST"
-                webReq.Timeout = timeout
+                webReq.Timeout = timeOut
                 Dim dataB As Byte() = Encoding.ASCII.GetBytes(data)
                 webReq.ContentLength = dataB.Length
                 Select Case reqType

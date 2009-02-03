@@ -254,7 +254,7 @@ Public Class Setting
             End Select
             _MyStatusText = StatusText.Text
             _MyPlaySound = PlaySnd.Checked
-            TweenMain.PlaySoundMenuItem.Checked = _MyPlaySound
+            TweenMain.PlaySoundMenuItem.Checked = _MyPlaySound  'これは勘弁
             _MyUnreadManage = UReadMng.Checked
             _MyOneWayLove = OneWayLv.Checked
 
