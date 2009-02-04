@@ -128,35 +128,36 @@ Public Module Twitter
 
     '''Wedata対応
     Private Const wedataUrl As String = "http://wedata.net/databases/Tween/items.json"
-    'テーブル
-    Private Const tbGetMsgDM As String = "GetMsgDM"
-    Private Const tbSplitDM As String = "SplitDM"
-    Private Const tbFollower As String = "Follower"
-    Private Const tbGetStar As String = "GetStar"
-    Private Const tbIsReply As String = "IsReply"
-    Private Const tbGetDate As String = "GetDate"
-    Private Const tbGetMsg As String = "GetMsg"
-    Private Const tbIsProtect As String = "IsProtect"
-    Private Const tbGetImagePath As String = "GetImagePath"
-    Private Const tbGetNick As String = "GetNick"
-    Private Const tbGetName As String = "GetName"
-    'Private Const tbGetSiv As String = "GetSiv"
-    Private Const tbStatusID As String = "StatusID"
-    Private Const tbSplitPostRecent As String = "SplitPostRecent"
-    Private Const tbAuthKey As String = "AuthKey"
-    Private Const tbInfoTwitter As String = "InfoTwitter"
-    Private Const tbSplitPostReply As String = "SplitPostReply"
-    Private Const tbGetDMCount As String = "GetDMCount"
-    '属性
-    Private Const tbTagFrom As String = "tagfrom"
-    Private Const tbTagTo As String = "tagto"
-    Private Const tbTag As String = "tag"
-    Private Const tbTagMbrFrom As String = "tagmbrfrom"
-    Private Const tbTagMbrFrom2 As String = "tagmbrfrom2"
-    Private Const tbTagMbrTo As String = "tagmbrto"
-    Private Const tbTagStatus As String = "status"
-    Private Const tbTagJpnFrom As String = "tagjpnfrom"
-    Private Const tbTagEngFrom As String = "tagengfrom"
+    'テーブル（未使用）
+    'Private Const tbGetMsgDM As String = "GetMsgDM"
+    'Private Const tbSplitDM As String = "SplitDM"
+    'Private Const tbFollower As String = "Follower"
+    'Private Const tbGetStar As String = "GetStar"
+    'Private Const tbIsReply As String = "IsReply"
+    'Private Const tbGetDate As String = "GetDate"
+    'Private Const tbGetMsg As String = "GetMsg"
+    'Private Const tbIsProtect As String = "IsProtect"
+    'Private Const tbGetImagePath As String = "GetImagePath"
+    'Private Const tbGetNick As String = "GetNick"
+    'Private Const tbGetName As String = "GetName"
+    ''Private Const tbGetSiv As String = "GetSiv"
+    'Private Const tbStatusID As String = "StatusID"
+    'Private Const tbSplitPostRecent As String = "SplitPostRecent"
+    'Private Const tbAuthKey As String = "AuthKey"
+    'Private Const tbInfoTwitter As String = "InfoTwitter"
+    'Private Const tbSplitPostReply As String = "SplitPostReply"
+    'Private Const tbGetDMCount As String = "GetDMCount"
+    'Private Const tbRemoveClass As String = "RemoveClass"
+    ''属性
+    'Private Const tbTagFrom As String = "tagfrom"
+    'Private Const tbTagTo As String = "tagto"
+    'Private Const tbTag As String = "tag"
+    'Private Const tbTagMbrFrom As String = "tagmbrfrom"
+    'Private Const tbTagMbrFrom2 As String = "tagmbrfrom2"
+    'Private Const tbTagMbrTo As String = "tagmbrto"
+    'Private Const tbTagStatus As String = "status"
+    'Private Const tbTagJpnFrom As String = "tagjpnfrom"
+    'Private Const tbTagEngFrom As String = "tagengfrom"
 
     'Public Sub New(ByVal Username As String, _
     '            ByVal Password As String, _
@@ -306,9 +307,9 @@ Public Module Twitter
 
             ' tr 要素の class 属性を消去
             Do
-                Dim idx As Integer = retMsg.IndexOf(" class=""hentry", StringComparison.Ordinal)
+                Dim idx As Integer = retMsg.IndexOf(_removeClass, StringComparison.Ordinal)
                 If idx = -1 Then Exit Do
-                retMsg = retMsg.Remove(idx, retMsg.IndexOf("""", idx + 14, StringComparison.Ordinal) - idx + 1) ' 11 = "<tr class=""".Length
+                retMsg = retMsg.Remove(idx + 3, retMsg.IndexOf("""", idx + _removeClass.Length, StringComparison.Ordinal) - idx + 1 - 3)
             Loop
 
             If _endingFlag Then Return ""
@@ -741,9 +742,9 @@ Public Module Twitter
 
             ' tr 要素の class 属性を消去
             Do
-                Dim idx As Integer = retMsg.IndexOf(" class=""hentry", StringComparison.Ordinal)
+                Dim idx As Integer = retMsg.IndexOf(_removeClass, StringComparison.Ordinal)
                 If idx = -1 Then Exit Do
-                retMsg = retMsg.Remove(idx, retMsg.IndexOf("""", idx + 14, StringComparison.Ordinal) - idx + 1) ' 11 = "<tr class=""".Length
+                retMsg = retMsg.Remove(idx + 3, retMsg.IndexOf("""", idx + _removeClass.Length, StringComparison.Ordinal) - idx + 1 - 3)
             Loop
 
             If _endingFlag Then Return ""
@@ -1796,6 +1797,10 @@ Public Module Twitter
                                 If ln.StartsWith("      ""tagto"": """) Then
                                     _parseSource2 = ln.Substring(16, ln.Length - 1 - 16).Replace("\", "")
                                 End If
+                            Case "RemoveClass"
+                                If ln.StartsWith("      ""tagfrom"": """) Then
+                                    _removeClass = ln.Substring(18, ln.Length - 1 - 18).Replace("\", "")
+                                End If
                         End Select
                     End If
             End Select
@@ -2007,6 +2012,7 @@ Public Module Twitter
         sw.WriteLine("    Public _parseSourceFrom As String = " + Chr(34) + _parseSourceFrom.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Public _parseSource2 As String = " + Chr(34) + _parseSource2.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Public _parseSourceTo As String = " + Chr(34) + _parseSourceTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _removeClass As String = " + Chr(34) + _removeclass.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("End Module")
 
         sw.Close()

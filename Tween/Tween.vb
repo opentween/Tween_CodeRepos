@@ -840,9 +840,11 @@ Public Class TweenMain
                     _postCache = Nothing
                 End If
                 lst.VirtualListSize = tabInfo.AllCount 'リスト件数更新
-                Me.SelectListItem(lst, _
-                                  _statuses.GetIndex(tab.Text, selId(tab.Text)), _
-                                  _statuses.GetIndex(tab.Text, focusedId(tab.Text)))
+                If lst.Equals(_curList) Then
+                    Me.SelectListItem(lst, _
+                                      _statuses.GetIndex(tab.Text, selId(tab.Text)), _
+                                      _statuses.GetIndex(tab.Text, focusedId(tab.Text)))
+                End If
             End If
             If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
         Next
@@ -2456,6 +2458,8 @@ Public Class TweenMain
     Private Sub MyList_DrawSubItem(ByVal sender As Object, ByVal e As DrawListViewSubItemEventArgs)
         If e.ItemState = 0 Then Exit Sub
         If e.ColumnIndex > 0 Then
+            Dim rct As RectangleF = e.Bounds
+            rct.Width = e.Header.Width
             'アイコン以外の列
             If Not e.Item.Selected Then     'e.ItemStateでうまく判定できない？？？
                 '選択されていない行
@@ -2473,18 +2477,20 @@ Public Class TweenMain
                     Case Else
                         brs = New SolidBrush(e.Item.ForeColor)
                 End Select
-                e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, brs, e.Bounds, sf)
+                If rct.Width > 0 Then e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, brs, rct, sf)
             Else
-                '選択中の行
-                If DirectCast(sender, Windows.Forms.Control).Focused Then
-                    e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, _brsHighLightText, e.Bounds, sf)
-                Else
-                    e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, _brsForeColorUnread, e.Bounds, sf)
+                If rct.Width > 0 Then
+                    '選択中の行
+                    If DirectCast(sender, Windows.Forms.Control).Focused Then
+                        e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, _brsHighLightText, rct, sf)
+                    Else
+                        e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, _brsForeColorUnread, rct, sf)
+                    End If
                 End If
             End If
         Else
-            'アイコン列はデフォルト描画
-            e.DrawDefault = True
+                'アイコン列はデフォルト描画
+                e.DrawDefault = True
         End If
     End Sub
 
@@ -2684,9 +2690,7 @@ RETRY2:
         End If
 
         If lst.VirtualListSize > 0 AndAlso idx > -1 Then
-            Dim bnd As Rectangle = lst.FocusedItem.GetBounds(ItemBoundsPortion.Entire)
             SelectListItem(lst, idx)
-            lst.Invalidate(bnd)
             If _statuses.SortMode = IdComparerClass.ComparerMode.Id Then
                 If _statuses.SortOrder = SortOrder.Ascending AndAlso lst.Items(idx).Position.Y > lst.ClientSize.Height - _iconSz - 10 OrElse _
                    _statuses.SortOrder = SortOrder.Descending AndAlso lst.Items(idx).Position.Y < _iconSz + 10 Then
@@ -4569,7 +4573,7 @@ RETRY2:
                 _section.Width5 = e.NewWidth
             Case 5
                 _section.Width6 = e.NewWidth
-            Case 5
+            Case 6
                 _section.Width7 = e.NewWidth
             Case 7
                 _section.Width8 = e.NewWidth
@@ -4755,28 +4759,43 @@ RETRY2:
 
     Private Sub SelectListItem(ByVal LView As DetailsListView, ByVal Index As Integer)
         '単一
-        For i As Integer = _curList.SelectedIndices.Count - 1 To 0 Step -1
-            LView.Items(i).Selected = False
-        Next
+        Dim bnd As Rectangle
+        Dim flg As Boolean = False
+        If LView.FocusedItem IsNot Nothing Then
+            bnd = LView.FocusedItem.Bounds
+            flg = True
+        End If
+        'For i As Integer = _curList.SelectedIndices.Count - 1 To 0 Step -1
+        '    LView.Items(i).Selected = False
+        'Next
         LView.SelectedIndices.Clear()
         LView.Items(Index).Selected = True
         LView.Items(Index).Focused = True
+        If flg Then LView.Invalidate(bnd)
     End Sub
 
     Private Sub SelectListItem(ByVal LView As DetailsListView, ByVal Index() As Integer, ByVal FocusedIndex As Integer)
         '複数
-        For i As Integer = LView.SelectedIndices.Count - 1 To 0 Step -1
-            LView.Items(LView.SelectedIndices(i)).Selected = False
-        Next
+        Dim bnd As Rectangle
+        Dim flg As Boolean = False
+        If LView.FocusedItem IsNot Nothing Then
+            bnd = LView.FocusedItem.Bounds
+            flg = True
+        End If
+        'For i As Integer = LView.SelectedIndices.Count - 1 To 0 Step -1
+        '    LView.Items(LView.SelectedIndices(i)).Selected = False
+        'Next
         LView.SelectedIndices.Clear()
         If Index IsNot Nothing Then
             For Each idx As Integer In Index
-                LView.Items(idx).Selected = True
+                'LView.Items(idx).Selected = True
+                LView.SelectedIndices.Add(idx)
             Next
         End If
         If FocusedIndex > -1 Then
             LView.Items(FocusedIndex).Focused = True
         End If
+        If flg Then LView.Invalidate(bnd)
     End Sub
 
     Private Sub RunAsync(ByVal args As GetWorkerArg)
