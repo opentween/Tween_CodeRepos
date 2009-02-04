@@ -40,4 +40,5 @@
     Public _parseSourceFrom As String = "<span>from <a href="
     Public _parseSource2 As String = """>"
     Public _parseSourceTo As String = "</a>"
+    Public _removeClass As String = "<li class=""hentry"
 End Module
