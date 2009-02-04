@@ -448,6 +448,7 @@ Public Class TweenMain
         SettingDialog.OutputzEnabled = _section.Outputz
         SettingDialog.OutputzKey = _section.OutputzKey
         SettingDialog.OutputzUrlmode = _section.OutputzUrlmode
+        SettingDialog.UseUnreadStyle = _section.UseUnreadStyle
 
         Outputz.key = SettingDialog.OutputzKey
         Outputz.Enabled = SettingDialog.OutputzEnabled
@@ -812,17 +813,26 @@ Public Class TweenMain
         End If
 
         '現在の選択状態を退避
-        Dim selId As New Dictionary(Of String, Long())
-        Dim focusedId As New Dictionary(Of String, Long)
-        For Each tab As TabPage In ListTab.TabPages
-            Dim lst As DetailsListView = DirectCast(tab.Controls(0), DetailsListView)
-            selId.Add(tab.Text, _statuses.GetId(tab.Text, lst.SelectedIndices))
-            If lst.FocusedItem IsNot Nothing Then
-                focusedId.Add(tab.Text, _statuses.GetId(tab.Text, lst.FocusedItem.Index))
-            Else
-                focusedId.Add(tab.Text, -1)
-            End If
-        Next
+        'Dim selId As New Dictionary(Of String, Long())
+        Dim selId() As Long = Nothing
+        'Dim focusedId As New Dictionary(Of String, Long)
+        Dim focusedId As Long
+        'For Each tab As TabPage In ListTab.TabPages
+        'Dim lst As DetailsListView = DirectCast(TAB.Controls(0), DetailsListView)
+        'selId.Add(TAB.Text, _statuses.GetId(TAB.Text, lst.SelectedIndices))
+        If _curList.SelectedIndices.Count < 31 Then
+            selId = _statuses.GetId(_curTab.Text, _curList.SelectedIndices)
+        Else
+            selId = New Long(0) {-1}
+        End If
+        If _curList.FocusedItem IsNot Nothing Then
+            'focusedId.Add(TAB.Text, _statuses.GetId(TAB.Text, lst.FocusedItem.Index))
+            focusedId = _statuses.GetId(_curTab.Text, _curList.FocusedItem.Index)
+        Else
+            'focusedId.Add(TAB.Text, -1)
+            focusedId = -1
+        End If
+        'Next
 
         '更新確定
         Dim notifyPosts() As PostClass = Nothing
@@ -842,8 +852,8 @@ Public Class TweenMain
                 lst.VirtualListSize = tabInfo.AllCount 'リスト件数更新
                 If lst.Equals(_curList) Then
                     Me.SelectListItem(lst, _
-                                      _statuses.GetIndex(tab.Text, selId(tab.Text)), _
-                                      _statuses.GetIndex(tab.Text, focusedId(tab.Text)))
+                                      _statuses.GetIndex(tab.Text, selId), _
+                                      _statuses.GetIndex(tab.Text, focusedId))
                 End If
             End If
             If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
@@ -938,10 +948,10 @@ Public Class TweenMain
 
         'ColorizeList(-1)    '全キャッシュ更新（背景色）
         'DispSelectedPost()
-        ''''TimerColorize.Stop()
-        ''''TimerColorize.Start()
         ColorizeList()
-        cMode = 1
+        TimerColorize.Stop()
+        TimerColorize.Start()
+        'cMode = 1
     End Sub
 
     Private Sub ChangeCacheStyleRead(ByVal Read As Boolean, ByVal Index As Integer, ByVal Tab As TabPage)
@@ -980,15 +990,23 @@ Public Class TweenMain
             cl = _clFav
         ElseIf Post.IsOwl AndAlso SettingDialog.OneWayLove Then
             cl = _clOWL
+        ElseIf Read OrElse Not SettingDialog.UseUnreadStyle Then
+            cl = _clReaded
         Else
-            cl = System.Drawing.SystemColors.ControlText
+            cl = _clUnread
         End If
-        If DList Is Nothing Then
-            Item.Font = fnt
+        If DList Is Nothing OrElse Item.Index = -1 Then
             Item.ForeColor = cl
+            If SettingDialog.UseUnreadStyle Then
+                Item.Font = fnt
+            End If
         Else
             DList.Update()
-            DList.ChangeItemFontAndColor(Item.Index, cl, fnt)
+            If SettingDialog.UseUnreadStyle Then
+                DList.ChangeItemFontAndColor(Item.Index, cl, fnt)
+            Else
+                DList.ChangeItemForeColor(Item.Index, cl)
+            End If
             'If _itemCache IsNot Nothing Then DList.RedrawItems(_itemCacheIndex, _itemCacheIndex + _itemCache.Length - 1, False)
         End If
     End Sub
@@ -1441,7 +1459,14 @@ Public Class TweenMain
         End If
 
         'リストに反映
-        RefreshTimeline()
+        Dim busy As Boolean = False
+        For Each bw As BackgroundWorker In _bw
+            If bw IsNot Nothing AndAlso bw.IsBusy Then
+                busy = True
+                Exit For
+            End If
+        Next
+        If Not busy Then RefreshTimeline() 'background処理なければ、リスト反映
 
         Select Case rslt.type
             Case WORKERTYPE.Timeline
@@ -2360,7 +2385,6 @@ Public Class TweenMain
     End Sub
 
     Private Sub MyList_RetrieveVirtualItem(ByVal sender As System.Object, ByVal e As System.Windows.Forms.RetrieveVirtualItemEventArgs)
-        If e.ItemIndex = 0 Then System.Diagnostics.Debug.WriteLine("0")
         If _itemCache IsNot Nothing AndAlso e.ItemIndex >= _itemCacheIndex AndAlso e.ItemIndex < _itemCacheIndex + _itemCache.Length AndAlso _curList.Equals(sender) Then
             'A cache hit, so get the ListViewItem from the cache instead of making a new one.
             e.Item = _itemCache(e.ItemIndex - _itemCacheIndex)
@@ -2404,7 +2428,7 @@ Public Class TweenMain
         Dim mk As StringBuilder = New StringBuilder()
         If Post.IsMark Then mk.Append("♪")
         If Post.IsProtect Then mk.Append("Ю")
-        Dim sitem() As String = {"", Post.Nickname, Post.Data, Post.PDate.ToString(), Post.Name, "", mk.ToString(), Post.Source}
+        Dim sitem() As String = {"", Post.Nickname, Post.Data, Post.PDate.ToString("hh:mm:ss"), Post.Name, "", mk.ToString(), Post.Source}
         Dim itm As ListViewItem = New ListViewItem(sitem, Post.ImageIndex)
         Dim read As Boolean = Post.IsRead
         '未読管理していなかったら既読として扱う
@@ -2788,24 +2812,23 @@ RETRY2:
     End Sub
 
     Private Sub TimerColorize_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerColorize.Tick
-        'If TimerColorize.Enabled = False Then Exit Sub
-        If cMode = 0 Then Exit Sub
-        DispSelectedPost()
+        If TimerColorize.Enabled = False Then Exit Sub
+        'If cMode = 0 Then Exit Sub
         'My.Application.DoEvents()
         'If cMode = 1 Then
         '    cMode = 2
         '    Exit Sub
         'End If
-        cMode = 0
+        'cMode = 0
 
-        'TimerColorize.Stop()
-        'TimerColorize.Enabled = False
-        'TimerColorize.Interval = 100
+        TimerColorize.Stop()
+        TimerColorize.Enabled = False
+        TimerColorize.Interval = 200
         'If _itemCache IsNot Nothing Then CreateCache(-1, 0)
         '_curList.BeginUpdate()
         'ColorizeList()
         'If _itemCache IsNot Nothing Then _curList.RedrawItems(_itemCacheIndex, _itemCacheIndex + _itemCache.Length - 1, False)
-        'DispSelectedPost()
+        DispSelectedPost()
         '_curList.EndUpdate()
         '件数関連の場合、タイトル即時書き換え
         If SettingDialog.DispLatestPost <> DispTitleEnum.None AndAlso _
@@ -2909,9 +2932,9 @@ RETRY2:
         If e.Control AndAlso Not e.Alt AndAlso Not e.Shift Then
             ' CTRLキーが押されている場合
             If e.KeyCode = Keys.Home OrElse e.KeyCode = Keys.End Then
-                '''TimerColorize.Stop()
-                '''TimerColorize.Start()
-                cMode = 1
+                TimerColorize.Stop()
+                TimerColorize.Start()
+                'cMode = 1
             End If
             If e.KeyCode = Keys.A Then
                 For i As Integer = 0 To _curList.VirtualListSize - 1
@@ -3376,6 +3399,7 @@ RETRY2:
                 _section.Outputz = SettingDialog.OutputzEnabled
                 _section.OutputzKey = SettingDialog.OutputzKey
                 _section.OutputzUrlmode = SettingDialog.OutputzUrlmode
+                _section.UseUnreadStyle = SettingDialog.UseUnreadStyle
                 'Try
                 '    _section.DisplayIndex1 = _curList.Columns(0).DisplayIndex
                 '    _section.DisplayIndex2 = _curList.Columns(1).DisplayIndex
@@ -4785,12 +4809,15 @@ RETRY2:
         'For i As Integer = LView.SelectedIndices.Count - 1 To 0 Step -1
         '    LView.Items(LView.SelectedIndices(i)).Selected = False
         'Next
-        LView.SelectedIndices.Clear()
+
         If Index IsNot Nothing Then
-            For Each idx As Integer In Index
-                'LView.Items(idx).Selected = True
-                LView.SelectedIndices.Add(idx)
-            Next
+            If Index(0) > -1 Then
+                LView.SelectedIndices.Clear()
+                For Each idx As Integer In Index
+                    'LView.Items(idx).Selected = True
+                    LView.SelectedIndices.Add(idx)
+                Next
+            End If
         End If
         If FocusedIndex > -1 Then
             LView.Items(FocusedIndex).Focused = True

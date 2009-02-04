@@ -84,6 +84,7 @@ Public Class Setting
     Private _MyOutputz As Boolean
     Private _MyOutputzKey As String
     Private _MyOutputzUrlmode As OutputzUrlmode
+    Private _MyUnreadStyle As Boolean
 
     ''''Private _MyWidth8 As Integer
     ''''Private _MyWidth9 As Integer
@@ -259,9 +260,9 @@ Public Class Setting
             _MyOneWayLove = OneWayLv.Checked
 
             _fntUnread = lblUnread.Font     '未使用
-            '_clUnread = lblUnRead.ForeColor
+            _clUnread = lblUnread.ForeColor
             _fntReaded = lblListFont.Font     'リストフォントとして使用
-            '_clReaded = lblReaded.ForeColor
+            _clReaded = lblListFont.ForeColor
             _clFav = lblFav.ForeColor
             _clOWL = lblOWL.ForeColor
             _fntDetail = lblDetail.Font
@@ -336,6 +337,9 @@ Public Class Setting
                     _MyOutputzUrlmode = OutputzUrlmode.twittercomWithUsername
                     Outputz.url = "http://twitter.com/" + _MyuserID
             End Select
+
+            _MyUnreadStyle = chkUnreadStyle.Checked
+
             'TweenMain.SetMainWindowTitle()
             'TweenMain.SetNotifyIconText()
 
@@ -392,9 +396,10 @@ Public Class Setting
 
         lblListFont.Font = _fntReaded
         lblUnRead.Font = _fntUnread
-        'lblUnRead.ForeColor = _clUnread
+        lblUnread.ForeColor = _clUnread
         'lblReaded.Font = _fntReaded
         'lblReaded.ForeColor = _clReaded
+        lblListFont.ForeColor = _clReaded
         lblFav.ForeColor = _clFav
         lblOWL.ForeColor = _clOWL
         lblDetail.Font = _fntDetail
@@ -481,6 +486,9 @@ Public Class Setting
             Case OutputzUrlmode.twittercomWithUsername
                 ComboBoxOutputzUrlmode.SelectedIndex = 1
         End Select
+
+        chkUnreadStyle.Checked = _MyUnreadStyle
+
         'TweenMain.SetMainWindowTitle()
         'TweenMain.SetNotifyIconText()
 
@@ -639,11 +647,11 @@ Public Class Setting
         FontDialog1.ScriptsOnly = False
         FontDialog1.ShowApply = False
         FontDialog1.ShowEffects = True
-        FontDialog1.ShowColor = False
+        FontDialog1.ShowColor = True
 
         Select Case Btn.Name
             Case "btnUnread"
-                '    FontDialog1.Color = lblUnRead.ForeColor
+                FontDialog1.Color = lblUnread.ForeColor
                 FontDialog1.Font = lblUnread.Font
                 'Case "btnReaded"
                 '    FontDialog1.Color = lblReaded.ForeColor
@@ -651,8 +659,9 @@ Public Class Setting
             Case "btnDetail"
                 FontDialog1.Font = lblDetail.Font
                 FontDialog1.ShowEffects = False
+                FontDialog1.ShowColor = False
             Case "btnListFont"
-                'FontDialog1.Color = lblUnRead.ForeColor
+                FontDialog1.Color = lblListFont.ForeColor
                 FontDialog1.Font = lblListFont.Font
         End Select
 
@@ -662,7 +671,7 @@ Public Class Setting
 
         Select Case Btn.Name
             Case "btnUnread"
-                '    lblUnRead.ForeColor = FontDialog1.Color
+                lblUnread.ForeColor = FontDialog1.Color
                 lblUnread.Font = FontDialog1.Font
                 'Case "btnReaded"
                 '    lblReaded.ForeColor = FontDialog1.Color
@@ -670,6 +679,7 @@ Public Class Setting
             Case "btnDetail"
                 lblDetail.Font = FontDialog1.Font
             Case "btnListFont"
+                lblListFont.ForeColor = FontDialog1.Color
                 lblListFont.Font = FontDialog1.Font
         End Select
 
@@ -1274,6 +1284,15 @@ Public Class Setting
         End Get
         Set(ByVal value As OutputzUrlmode)
             _MyOutputzUrlmode = value
+        End Set
+    End Property
+
+    Public Property UseUnreadStyle() As Boolean
+        Get
+            Return _MyUnreadStyle
+        End Get
+        Set(ByVal value As Boolean)
+            _MyUnreadStyle = value
         End Set
     End Property
 

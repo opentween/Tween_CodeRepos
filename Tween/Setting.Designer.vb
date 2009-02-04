@@ -156,6 +156,8 @@ Partial Class Setting
         Me.Label50 = New System.Windows.Forms.Label
         Me.Button3 = New System.Windows.Forms.Button
         Me.TabPage3 = New System.Windows.Forms.TabPage
+        Me.Label17 = New System.Windows.Forms.Label
+        Me.chkUnreadStyle = New System.Windows.Forms.CheckBox
         Me.TabPage4 = New System.Windows.Forms.TabPage
         Me.TabPage5 = New System.Windows.Forms.TabPage
         Me.GroupBox2 = New System.Windows.Forms.GroupBox
@@ -1476,6 +1478,8 @@ Partial Class Setting
         Me.TabPage3.AccessibleName = Nothing
         resources.ApplyResources(Me.TabPage3, "TabPage3")
         Me.TabPage3.BackgroundImage = Nothing
+        Me.TabPage3.Controls.Add(Me.Label17)
+        Me.TabPage3.Controls.Add(Me.chkUnreadStyle)
         Me.TabPage3.Controls.Add(Me.Label10)
         Me.TabPage3.Controls.Add(Me.ComboDispTitle)
         Me.TabPage3.Controls.Add(Me.Label47)
@@ -1495,6 +1499,24 @@ Partial Class Setting
         Me.TabPage3.Font = Nothing
         Me.TabPage3.Name = "TabPage3"
         Me.TabPage3.UseVisualStyleBackColor = True
+        '
+        'Label17
+        '
+        Me.Label17.AccessibleDescription = Nothing
+        Me.Label17.AccessibleName = Nothing
+        resources.ApplyResources(Me.Label17, "Label17")
+        Me.Label17.Font = Nothing
+        Me.Label17.Name = "Label17"
+        '
+        'chkUnreadStyle
+        '
+        Me.chkUnreadStyle.AccessibleDescription = Nothing
+        Me.chkUnreadStyle.AccessibleName = Nothing
+        resources.ApplyResources(Me.chkUnreadStyle, "chkUnreadStyle")
+        Me.chkUnreadStyle.BackgroundImage = Nothing
+        Me.chkUnreadStyle.Font = Nothing
+        Me.chkUnreadStyle.Name = "chkUnreadStyle"
+        Me.chkUnreadStyle.UseVisualStyleBackColor = True
         '
         'TabPage4
         '
@@ -1903,4 +1925,6 @@ Partial Class Setting
     Friend WithEvents btnUnread As System.Windows.Forms.Button
     Friend WithEvents lblUnread As System.Windows.Forms.Label
     Friend WithEvents Label20 As System.Windows.Forms.Label
+    Friend WithEvents Label17 As System.Windows.Forms.Label
+    Friend WithEvents chkUnreadStyle As System.Windows.Forms.CheckBox
 End Class

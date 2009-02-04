@@ -1299,6 +1299,16 @@ Public Property CloseToExit() As Boolean
         End Set
     End Property
 
+    <ConfigurationProperty("useunreadstyle", DefaultValue:=True)> _
+    Public Property UseUnreadStyle() As Boolean
+        Get
+            Return CBool(Me("useunreadstyle"))
+        End Get
+        Set(ByVal value As Boolean)
+            Me("useunreadstyle") = value
+        End Set
+    End Property
+
     Private Shared Function EncryptString(ByVal str As String) As String
         '文字列をバイト型配列にする
         Dim bytesIn As Byte() = System.Text.Encoding.UTF8.GetBytes(str)
