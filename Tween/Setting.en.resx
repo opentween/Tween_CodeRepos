@@ -221,7 +221,7 @@
     <value>Colorize One-way following</value>
   </data>
   <data name="btnUnread.Text" xml:space="preserve">
-    <value>Font...</value>
+    <value>Font&amp;&amp;Fore...</value>
   </data>
   <data name="Label20.Size" type="System.Drawing.Size, System.Drawing">
     <value>76, 12</value>
@@ -329,7 +329,7 @@
     <value>Favorited</value>
   </data>
   <data name="btnListFont.Text" xml:space="preserve">
-    <value>Font...</value>
+    <value>Font&amp;&amp;Fore...</value>
   </data>
   <data name="Label61.Size" type="System.Drawing.Size, System.Drawing">
     <value>94, 12</value>
@@ -338,7 +338,7 @@
     <value>Font of tweet list</value>
   </data>
   <data name="GroupBox1.Text" xml:space="preserve">
-    <value>Font &amp; Color</value>
+    <value>Font &amp;&amp; Color</value>
   </data>
   <data name="cmbNameBalloon.Items" xml:space="preserve">
     <value>None</value>
@@ -637,6 +637,18 @@
   </data>
   <data name="TabPage2.Text" xml:space="preserve">
     <value>Behavior</value>
+  </data>
+  <data name="Label17.Size" type="System.Drawing.Size, System.Drawing">
+    <value>162, 12</value>
+  </data>
+  <data name="Label17.Text" xml:space="preserve">
+    <value>Unread styles(Font&amp;&amp;Forecolor)</value>
+  </data>
+  <data name="chkUnreadStyle.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 16</value>
+  </data>
+  <data name="chkUnreadStyle.Text" xml:space="preserve">
+    <value>Enable</value>
   </data>
   <data name="TabPage3.Text" xml:space="preserve">
     <value>View</value>
