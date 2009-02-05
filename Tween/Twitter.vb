@@ -1479,10 +1479,16 @@ Public Module Twitter
         Catch ex As XmlException
             If CacheInvalidate OrElse ValidateCache(-1) < 0 Then
                 ' FollowersカウントがAPIで取得できず、なおかつキャッシュから読めなかった
+                SyncLock LockObj
+                    follower.Clear()
+                    follower.Add(_uid.ToLower())
+                End SyncLock
                 Return "NG"
             Else
                 'キャッシュを読み出せたのでキャッシュを使う
-                follower = tmpFollower
+                SyncLock LockObj
+                    follower = tmpFollower
+                End SyncLock
                 Return ""
             End If
         End Try
@@ -1504,7 +1510,9 @@ Public Module Twitter
             sw.Stop()
             Console.WriteLine(sw.ElapsedMilliseconds)
 #End If
-            follower = tmpFollower
+            SyncLock LockObj
+                follower = tmpFollower
+            End SyncLock
             Return ""
         End If
 
