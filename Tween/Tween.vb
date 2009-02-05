@@ -943,7 +943,7 @@ Public Class TweenMain
 
         _curItemIndex = _curList.SelectedIndices(0)
         _curPost = GetCurTabPost(_curItemIndex)
-        _statuses.SetRead(True, _curTab.Text, _curItemIndex)
+        If SettingDialog.UnreadManage Then _statuses.SetRead(True, _curTab.Text, _curItemIndex)
         'MyList.RedrawItems(MyList.SelectedIndices(0), MyList.SelectedIndices(0), False)   'RetrieveVirtualItemが発生することを期待
         'キャッシュの書き換え
         ChangeCacheStyleRead(True, _curItemIndex, _curTab)   '既読へ（フォント、文字色）
@@ -1493,7 +1493,7 @@ Public Class TweenMain
                 End If
             Case WORKERTYPE.Reply
                 _waitReply = False
-                If rslt.newDM Then
+                If rslt.newDM AndAlso Not _initial Then
                     GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
                 End If
             Case WORKERTYPE.DirectMessegeRcv
@@ -1835,8 +1835,12 @@ Public Class TweenMain
 
     Private Sub ReadedStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ReadedStripMenuItem.Click
         _curList.BeginUpdate()
+        If SettingDialog.UnreadManage Then
+            For Each idx As Integer In _curList.SelectedIndices
+                _statuses.SetRead(True, _curTab.Text, idx)
+            Next
+        End If
         For Each idx As Integer In _curList.SelectedIndices
-            _statuses.SetRead(True, _curTab.Text, idx)
             ChangeCacheStyleRead(True, idx, _curTab)
         Next
         ColorizeList()
@@ -1848,8 +1852,12 @@ Public Class TweenMain
 
     Private Sub UnreadStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UnreadStripMenuItem.Click
         _curList.BeginUpdate()
+        If SettingDialog.UnreadManage Then
+            For Each idx As Integer In _curList.SelectedIndices
+                _statuses.SetRead(False, _curTab.Text, idx)
+            Next
+        End If
         For Each idx As Integer In _curList.SelectedIndices
-            _statuses.SetRead(False, _curTab.Text, idx)
             ChangeCacheStyleRead(False, idx, _curTab)
         Next
         ColorizeList()
@@ -2430,7 +2438,7 @@ Public Class TweenMain
         Dim mk As StringBuilder = New StringBuilder()
         If Post.IsMark Then mk.Append("♪")
         If Post.IsProtect Then mk.Append("Ю")
-        Dim sitem() As String = {"", Post.Nickname, Post.Data, Post.PDate.ToString("hh:mm:ss"), Post.Name, "", mk.ToString(), Post.Source}
+        Dim sitem() As String = {"", Post.Nickname, Post.Data, Post.PDate.ToString("dd HH:mm:ss"), Post.Name, "", mk.ToString(), Post.Source}
         Dim itm As ListViewItem = New ListViewItem(sitem, Post.ImageIndex)
         Dim read As Boolean = Post.IsRead
         '未読管理していなかったら既読として扱う
@@ -2928,6 +2936,11 @@ RETRY2:
                 e.Handled = True
                 e.SuppressKeyPress = True
                 MoveTop()
+            End If
+            If e.KeyCode = Keys.R Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                DoRefresh()
             End If
         End If
         _anchorFlag = False
