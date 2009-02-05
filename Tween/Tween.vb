@@ -4952,7 +4952,7 @@ RETRY2:
         Try
             StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText1
             My.Application.DoEvents()
-            Me.Cursor =     
+            Me.Cursor = Cursors.WaitCursor
             Dim ret As String
             ret = Twitter.GetFollowers(CacheInvalidate)
             If ret <> "" Then
