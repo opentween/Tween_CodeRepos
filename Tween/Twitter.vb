@@ -1406,6 +1406,12 @@ Public Module Twitter
         Try
             Using fs As New IO.FileStream(CacheFileName, FileMode.Open)
                 tmpFollower = CType(serializer.Deserialize(fs), Specialized.StringCollection)
+                If tmpFollower(0).Equals(_uid.ToLower()) Then
+                    ' 別IDの場合はキャッシュ破棄して読み直し
+                    tmpFollower.Clear()
+                    tmpFollower.Add(_uid.ToLower())
+                    Return _FollowersCount
+                End If
             End Using
         Catch ex As XmlException
             ' 不正なxmlの場合は読み直し
