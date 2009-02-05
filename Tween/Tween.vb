@@ -1796,41 +1796,43 @@ Public Class TweenMain
               MessageBoxButtons.OKCancel, _
               MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then Exit Sub
 
-        Me.Cursor = Cursors.WaitCursor
+        Try
+            Me.Cursor = Cursors.WaitCursor
 
-        Dim rslt As Boolean = True
-        For Each idx As Integer In _curList.SelectedIndices
-            Dim Id As Long = GetCurTabPost(idx).Id
-            Dim rtn As String = ""
-            If _curTab.Text = "Direct" Then
-                rtn = Twitter.RemoveDirectMessage(Id)
+            Dim rslt As Boolean = True
+            For Each idx As Integer In _curList.SelectedIndices
+                Dim Id As Long = GetCurTabPost(idx).Id
+                Dim rtn As String = ""
+                If _curTab.Text = "Direct" Then
+                    rtn = Twitter.RemoveDirectMessage(Id)
+                Else
+                    rtn = Twitter.RemoveStatus(Id)
+                End If
+                If rtn.Length > 0 Then
+                    'エラー
+                    rslt = False
+                Else
+                    _statuses.RemovePost(Id)
+                End If
+            Next
+
+            If Not rslt Then
+                StatusLabel.Text = My.Resources.DeleteStripMenuItem_ClickText3  '失敗
             Else
-                rtn = Twitter.RemoveStatus(Id)
+                StatusLabel.Text = My.Resources.DeleteStripMenuItem_ClickText4  '成功
             End If
-            If rtn.Length > 0 Then
-                'エラー
-                rslt = False
-            Else
-                _statuses.RemovePost(Id)
-            End If
-        Next
 
-        If Not rslt Then
-            StatusLabel.Text = My.Resources.DeleteStripMenuItem_ClickText3  '失敗
-        Else
-            StatusLabel.Text = My.Resources.DeleteStripMenuItem_ClickText4  '成功
-        End If
-
-        _itemCache = Nothing    'キャッシュ破棄
-        _postCache = Nothing
-        _curPost = Nothing
-        _curItemIndex = -1
-        For Each tb As TabPage In ListTab.TabPages
-            DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
-            If _statuses.Tabs(tb.Text).UnreadCount = 0 AndAlso tb.ImageIndex = 0 Then tb.ImageIndex = -1
-        Next
-
-        Me.Cursor = Cursors.Default
+            _itemCache = Nothing    'キャッシュ破棄
+            _postCache = Nothing
+            _curPost = Nothing
+            _curItemIndex = -1
+            For Each tb As TabPage In ListTab.TabPages
+                DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
+                If _statuses.Tabs(tb.Text).UnreadCount = 0 AndAlso tb.ImageIndex = 0 Then tb.ImageIndex = -1
+            Next
+        Finally
+            Me.Cursor = Cursors.Default
+        End Try
     End Sub
 
     Private Sub ReadedStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ReadedStripMenuItem.Click
@@ -3859,21 +3861,24 @@ RETRY2:
         SaveConfigs()
         Me.TopMost = SettingDialog.AlwaysTop
 
-        Me.Cursor = Cursors.WaitCursor
-        _itemCache = Nothing
-        _postCache = Nothing
-        _curPost = Nothing
-        _curItemIndex = -1
-        _statuses.FilterAll()
-        For Each tb As TabPage In ListTab.TabPages
-            DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
-            If _statuses.Tabs(tb.Text).UnreadCount > 0 Then
-                tb.ImageIndex = 0
-            Else
-                tb.ImageIndex = -1
-            End If
-        Next
-        Me.Cursor = Cursors.Default
+        Try
+            Me.Cursor = Cursors.WaitCursor
+            _itemCache = Nothing
+            _postCache = Nothing
+            _curPost = Nothing
+            _curItemIndex = -1
+            _statuses.FilterAll()
+            For Each tb As TabPage In ListTab.TabPages
+                DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
+                If _statuses.Tabs(tb.Text).UnreadCount > 0 Then
+                    tb.ImageIndex = 0
+                Else
+                    tb.ImageIndex = -1
+                End If
+            Next
+        Finally
+            Me.Cursor = Cursors.Default
+        End Try
     End Sub
 
     Private Sub AddTabMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AddTabMenuItem.Click
@@ -3937,21 +3942,24 @@ RETRY2:
             Me.TopMost = SettingDialog.AlwaysTop
         Next
 
-        Me.Cursor = Cursors.WaitCursor
-        _itemCache = Nothing
-        _postCache = Nothing
-        _curPost = Nothing
-        _curItemIndex = -1
-        _statuses.FilterAll()
-        For Each tb As TabPage In ListTab.TabPages
-            DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
-            If _statuses.Tabs(tb.Text).UnreadCount > 0 Then
-                tb.ImageIndex = 0
-            Else
-                tb.ImageIndex = -1
-            End If
-        Next
-        Me.Cursor = Cursors.Default
+        Try
+            Me.Cursor = Cursors.WaitCursor
+            _itemCache = Nothing
+            _postCache = Nothing
+            _curPost = Nothing
+            _curItemIndex = -1
+            _statuses.FilterAll()
+            For Each tb As TabPage In ListTab.TabPages
+                DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
+                If _statuses.Tabs(tb.Text).UnreadCount > 0 Then
+                    tb.ImageIndex = 0
+                Else
+                    tb.ImageIndex = -1
+                End If
+            Next
+        Finally
+            Me.Cursor = Cursors.Default
+        End Try
     End Sub
 
     Protected Overrides Function ProcessDialogKey( _
@@ -4069,21 +4077,24 @@ RETRY2:
             End If
         Next
 
-        Me.Cursor = Cursors.WaitCursor
-        _itemCache = Nothing
-        _postCache = Nothing
-        _curPost = Nothing
-        _curItemIndex = -1
-        _statuses.FilterAll()
-        For Each tb As TabPage In ListTab.TabPages
-            DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
-            If _statuses.Tabs(tb.Text).UnreadCount > 0 Then
-                tb.ImageIndex = 0
-            Else
-                tb.ImageIndex = -1
-            End If
-        Next
-        Me.Cursor = Cursors.Default
+        Try
+            Me.Cursor = Cursors.WaitCursor
+            _itemCache = Nothing
+            _postCache = Nothing
+            _curPost = Nothing
+            _curItemIndex = -1
+            _statuses.FilterAll()
+            For Each tb As TabPage In ListTab.TabPages
+                DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
+                If _statuses.Tabs(tb.Text).UnreadCount > 0 Then
+                    tb.ImageIndex = 0
+                Else
+                    tb.ImageIndex = -1
+                End If
+            Next
+        Finally
+            Me.Cursor = Cursors.Default
+        End Try
     End Sub
 
     Private Sub CopySTOTMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CopySTOTMenuItem.Click
@@ -4938,17 +4949,20 @@ RETRY2:
     End Sub
 
     Private Sub doGetFollowersMenu(ByVal CacheInvalidate As Boolean)
-        StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText1
-        My.Application.DoEvents()
-        Me.Cursor = Cursors.WaitCursor
-        Dim ret As String
-        ret = Twitter.GetFollowers(CacheInvalidate)
-        If ret <> "" Then
-            StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText2 & ret
-            Exit Sub
-        End If
-        StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText3
-        Me.Cursor = Cursors.Default
+        Try
+            StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText1
+            My.Application.DoEvents()
+            Me.Cursor =     
+            Dim ret As String
+            ret = Twitter.GetFollowers(CacheInvalidate)
+            If ret <> "" Then
+                StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText2 & ret
+                Exit Sub
+            End If
+            StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText3
+        Finally
+            Me.Cursor = Cursors.Default
+        End Try
     End Sub
 
     Private Sub GetFollowersDiffToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles GetFollowersDiffToolStripMenuItem.Click
