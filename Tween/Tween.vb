@@ -844,6 +844,7 @@ Public Class TweenMain
         For Each tab As TabPage In ListTab.TabPages
             Dim lst As DetailsListView = DirectCast(tab.Controls(0), DetailsListView)
             Dim tabInfo As TabClass = _statuses.Tabs(tab.Text)
+            lst.BeginUpdate()
             If lst.VirtualListSize <> tabInfo.AllCount Then
                 If lst.Equals(_curList) Then
                     _itemCache = Nothing
@@ -856,6 +857,7 @@ Public Class TweenMain
                                       _statuses.GetIndex(tab.Text, focusedId))
                 End If
             End If
+            lst.EndUpdate()
             If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
         Next
 
