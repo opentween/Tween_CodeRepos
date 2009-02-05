@@ -2089,7 +2089,7 @@ Public Class TweenMain
         AddHandler _listCustom.Scrolled, AddressOf Mylist_Scrolled
         AddHandler _listCustom.MouseClick, AddressOf MyList_MouseClick
         AddHandler _listCustom.ColumnReordered, AddressOf MyList_ColumnReordered
-        AddHandler _listCustom.ColumnWidthChanging, AddressOf MyList_CoumnWidthChanging
+        AddHandler _listCustom.ColumnWidthChanged, AddressOf MyList_ColumnWidthChanged
         AddHandler _listCustom.CacheVirtualItems, AddressOf MyList_CacheVirtualItems
         AddHandler _listCustom.RetrieveVirtualItem, AddressOf MyList_RetrieveVirtualItem
         AddHandler _listCustom.DrawSubItem, AddressOf MyList_DrawSubItem
@@ -2225,7 +2225,7 @@ Public Class TweenMain
         RemoveHandler _listCustom.Scrolled, AddressOf Mylist_Scrolled
         RemoveHandler _listCustom.MouseClick, AddressOf MyList_MouseClick
         RemoveHandler _listCustom.ColumnReordered, AddressOf MyList_ColumnReordered
-        RemoveHandler _listCustom.ColumnWidthChanging, AddressOf MyList_CoumnWidthChanging
+        RemoveHandler _listCustom.ColumnWidthChanged, AddressOf MyList_ColumnWidthChanged
         RemoveHandler _listCustom.CacheVirtualItems, AddressOf MyList_CacheVirtualItems
         RemoveHandler _listCustom.RetrieveVirtualItem, AddressOf MyList_RetrieveVirtualItem
         RemoveHandler _listCustom.DrawSubItem, AddressOf MyList_DrawSubItem
@@ -4607,26 +4607,26 @@ RETRY2:
         '_columnChangeFlag = True
     End Sub
 
-    Private Sub MyList_CoumnWidthChanging(ByVal sender As System.Object, ByVal e As ColumnWidthChangingEventArgs)
+    Private Sub MyList_ColumnWidthChanged(ByVal sender As System.Object, ByVal e As ColumnWidthChangedEventArgs)
         Dim lst As DetailsListView = DirectCast(sender, DetailsListView)
         If _section Is Nothing Then Exit Sub
         Select Case e.ColumnIndex
             Case 0
-                _section.Width1 = e.NewWidth
+                _section.Width1 = lst.Columns(e.ColumnIndex).Width
             Case 1
-                _section.Width2 = e.NewWidth
+                _section.Width2 = lst.Columns(e.ColumnIndex).Width
             Case 2
-                _section.Width3 = e.NewWidth
+                _section.Width3 = lst.Columns(e.ColumnIndex).Width
             Case 3
-                _section.Width4 = e.NewWidth
+                _section.Width4 = lst.Columns(e.ColumnIndex).Width
             Case 4
-                _section.Width5 = e.NewWidth
+                _section.Width5 = lst.Columns(e.ColumnIndex).Width
             Case 5
-                _section.Width6 = e.NewWidth
+                _section.Width6 = lst.Columns(e.ColumnIndex).Width
             Case 6
-                _section.Width7 = e.NewWidth
+                _section.Width7 = lst.Columns(e.ColumnIndex).Width
             Case 7
-                _section.Width8 = e.NewWidth
+                _section.Width8 = lst.Columns(e.ColumnIndex).Width
         End Select
     End Sub
 
