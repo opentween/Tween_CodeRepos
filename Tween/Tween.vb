@@ -2440,7 +2440,7 @@ Public Class TweenMain
         Dim mk As StringBuilder = New StringBuilder()
         If Post.IsMark Then mk.Append("♪")
         If Post.IsProtect Then mk.Append("Ю")
-        Dim sitem() As String = {"", Post.Nickname, Post.Data, Post.PDate.ToString("dd HH:mm:ss"), Post.Name, "", mk.ToString(), Post.Source}
+        Dim sitem() As String = {"", Post.Nickname, Post.Data, Post.PDate.ToString(), Post.Name, "", mk.ToString(), Post.Source}
         Dim itm As ListViewItem = New ListViewItem(sitem, Post.ImageIndex)
         Dim read As Boolean = Post.IsRead
         '未読管理していなかったら既読として扱う
