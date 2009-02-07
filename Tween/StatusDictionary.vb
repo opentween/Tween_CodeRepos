@@ -801,7 +801,7 @@ Public Class TabClass
     End Sub
 
     Public Sub Sort(ByVal Sorter As IdComparerClass)
-        _ids.Sort(Sorter)
+        _ids.Sort(Sorter.CmpMethod)
     End Sub
 
     '無条件に追加
@@ -1229,32 +1229,9 @@ Public Class IdComparerClass
         Source
     End Enum
 
-    'Private _column As Integer
     Private _order As SortOrder
     Private _mode As ComparerMode
     Private _statuses As TabInformations
-    'Private _columnModes() As ComparerMode
-
-    '''' <summary>
-    '''' 並び替えるListView列の番号
-    '''' </summary>
-    'Public Property Column() As Integer
-    '    Get
-    '        Return _column
-    '    End Get
-    '    Set(ByVal Value As Integer)
-    '        If _column = Value Then
-    '            If _order = SortOrder.Ascending Then
-    '                _order = SortOrder.Descending
-    '            Else
-    '                If _order = SortOrder.Descending Then
-    '                    _order = SortOrder.Ascending
-    '                End If
-    '            End If
-    '        End If
-    '        _column = Value
-    '    End Set
-    'End Property
 
     ''' <summary>
     ''' 昇順か降順か
@@ -1265,6 +1242,7 @@ Public Class IdComparerClass
         End Get
         Set(ByVal Value As SortOrder)
             _order = Value
+            SetCmpMethod(_mode, _order)
         End Set
     End Property
 
@@ -1277,17 +1255,9 @@ Public Class IdComparerClass
         End Get
         Set(ByVal Value As ComparerMode)
             _mode = Value
+            SetCmpMethod(_mode, _order)
         End Set
     End Property
-
-    '''' <summary>
-    '''' 列ごとの並び替えの方法
-    '''' </summary>
-    'Public WriteOnly Property ColumnModes() As ComparerMode()
-    '    Set(ByVal Value As ComparerMode())
-    '        _columnModes = Value
-    '    End Set
-    'End Property
 
     ''' <summary>
     ''' ListViewItemComparerクラスのコンストラクタ（引数付は未使用）
@@ -1298,48 +1268,154 @@ Public Class IdComparerClass
     Public Sub New(ByVal ord As SortOrder, ByVal SortMode As ComparerMode)
         _order = ord
         _mode = SortMode
+        SetCmpMethod(_mode, _order)
     End Sub
 
-    'Public Sub New()
-    '    _order = SortOrder.Ascending
-    '    _mode = ComparerMode.Id
-    'End Sub
+    ' 指定したソートモードとソートオーダーに従い使用する比較関数のアドレスを返す
+    Public Overloads ReadOnly Property CmpMethod(ByVal _sortmode As ComparerMode, ByVal _sortorder As SortOrder) As Comparison(Of Long)
+        Get
+            Dim _method As Comparison(Of Long) = Nothing
+            If _sortorder = SortOrder.Ascending Then
+                Select Case _sortmode
+                    Case ComparerMode.Data
+                        _method = AddressOf Compare_ModeData_Ascending
+                    Case ComparerMode.Id
+                        _method = AddressOf Compare_ModeId_Ascending
+                    Case ComparerMode.Name
+                        _method = AddressOf Compare_ModeName_Ascending
+                    Case ComparerMode.Nickname
+                        _method = AddressOf Compare_ModeNickName_Ascending
+                    Case ComparerMode.Source
+                        _method = AddressOf Compare_ModeSource_Ascending
+                End Select
+            Else
+                Select Case _sortmode
+                    Case ComparerMode.Data
+                        _method = AddressOf Compare_ModeData_Descending
+                    Case ComparerMode.Id
+                        _method = AddressOf Compare_ModeId_Descending
+                    Case ComparerMode.Name
+                        _method = AddressOf Compare_ModeName_Descending
+                    Case ComparerMode.Nickname
+                        _method = AddressOf Compare_ModeNickName_Descending
+                    Case ComparerMode.Source
+                        _method = AddressOf Compare_ModeSource_Descending
+                End Select
+            End If
+            Return _method
+        End Get
+    End Property
+
+    ' 指定したソートモードとソートオーダーに従い使用する比較関数のアドレスを返す
+    ' (overload 現在の使用中の比較関数のアドレスを返す)
+    Public Overloads ReadOnly Property CmpMethod() As Comparison(Of Long)
+        Get
+            Dim _method As Comparison(Of Long) = Nothing
+            If _order = SortOrder.Ascending Then
+                Select Case _mode
+                    Case ComparerMode.Data
+                        _method = AddressOf Compare_ModeData_Ascending
+                    Case ComparerMode.Id
+                        _method = AddressOf Compare_ModeId_Ascending
+                    Case ComparerMode.Name
+                        _method = AddressOf Compare_ModeName_Ascending
+                    Case ComparerMode.Nickname
+                        _method = AddressOf Compare_ModeNickName_Ascending
+                    Case ComparerMode.Source
+                        _method = AddressOf Compare_ModeSource_Ascending
+                End Select
+            Else
+                Select Case _mode
+                    Case ComparerMode.Data
+                        _method = AddressOf Compare_ModeData_Descending
+                    Case ComparerMode.Id
+                        _method = AddressOf Compare_ModeId_Descending
+                    Case ComparerMode.Name
+                        _method = AddressOf Compare_ModeName_Descending
+                    Case ComparerMode.Nickname
+                        _method = AddressOf Compare_ModeNickName_Descending
+                    Case ComparerMode.Source
+                        _method = AddressOf Compare_ModeSource_Descending
+                End Select
+            End If
+            Return _method
+        End Get
+    End Property
+
+    ' ソートモードとソートオーダーに従い比較関数のアドレスを切り替え
+
+    Private Sub SetCmpMethod(ByVal mode As ComparerMode, ByVal order As SortOrder)
+        _CmpMethod = Me.CmpMethod(mode, order)
+    End Sub
 
     Public Sub New(ByVal TabInf As TabInformations)
         _order = SortOrder.Ascending
         _mode = ComparerMode.Id
         _statuses = TabInf
+        SetCmpMethod(_mode, _order)
     End Sub
 
+    Private _CmpMethod As Comparison(Of Long)
+
     'xがyより小さいときはマイナスの数、大きいときはプラスの数、
-    '同じときは0を返す
+    '同じときは0を返す (一応比較関数群呼び出しの形のまま残しておく)
     Public Function Compare(ByVal x As Long, ByVal y As Long) _
             As Integer Implements IComparer(Of Long).Compare
-        Dim result As Integer = 0
+        Return _CmpMethod(x, y)
+    End Function
 
-        Select Case _mode
-            Case ComparerMode.Data
-                result = String.Compare(_statuses.Item(x).Data, _statuses.Item(y).Data)
-            Case ComparerMode.Id
-                If x < y Then
-                    result = -1
-                ElseIf x = y Then
-                    result = 0
-                Else
-                    result = 1
-                End If
-            Case ComparerMode.Name
-                result = String.Compare(_statuses.Item(x).Name, _statuses.Item(y).Name)
-            Case ComparerMode.Nickname
-                result = String.Compare(_statuses.Item(x).Nickname, _statuses.Item(y).Nickname)
-            Case ComparerMode.Source
-                result = String.Compare(_statuses.Item(x).Source, _statuses.Item(y).Source)
-        End Select
-        '降順の時は結果を+-逆にする
-        If _order = SortOrder.Descending Then
-            result = -result
-        End If
+    ' 比較用関数群
+
+    Public Function Compare_ModeData_Ascending(ByVal x As Long, ByVal y As Long) As Integer
+        Dim result As Integer = String.Compare(_statuses.Item(x).Data, _statuses.Item(y).Data)
+        If result = 0 Then result = CType(x - y, Integer)
         Return result
+    End Function
 
+    Public Function Compare_ModeData_Descending(ByVal x As Long, ByVal y As Long) As Integer
+        Dim result As Integer = String.Compare(_statuses.Item(y).Data, _statuses.Item(x).Data)
+        If result = 0 Then result = CType(y - x, Integer)
+        Return result
+    End Function
+
+    Public Function Compare_ModeId_Ascending(ByVal x As Long, ByVal y As Long) As Integer
+        Return CType(x - y, Integer)
+    End Function
+
+    Public Function Compare_ModeId_Descending(ByVal x As Long, ByVal y As Long) As Integer
+        Return CType(y - x, Integer)
+    End Function
+    Public Function Compare_ModeName_Ascending(ByVal x As Long, ByVal y As Long) As Integer
+        Dim result As Integer = String.Compare(_statuses.Item(x).Name, _statuses.Item(y).Name)
+        If result = 0 Then result = CType(x - y, Integer)
+        Return result
+    End Function
+
+    Public Function Compare_ModeName_Descending(ByVal x As Long, ByVal y As Long) As Integer
+        Dim result As Integer = String.Compare(_statuses.Item(y).Name, _statuses.Item(x).Name)
+        If result = 0 Then result = CType(y - x, Integer)
+        Return result
+    End Function
+    Public Function Compare_ModeNickName_Ascending(ByVal x As Long, ByVal y As Long) As Integer
+        Dim result As Integer = String.Compare(_statuses.Item(x).Nickname, _statuses.Item(y).Nickname)
+        If result = 0 Then result = CType(x - y, Integer)
+        Return result
+    End Function
+
+    Public Function Compare_ModeNickName_Descending(ByVal x As Long, ByVal y As Long) As Integer
+        Dim result As Integer = String.Compare(_statuses.Item(y).Nickname, _statuses.Item(x).Nickname)
+        If result = 0 Then result = CType(y - x, Integer)
+        Return result
+    End Function
+    Public Function Compare_ModeSource_Ascending(ByVal x As Long, ByVal y As Long) As Integer
+        Dim result As Integer = String.Compare(_statuses.Item(x).Source, _statuses.Item(y).Source)
+        If result = 0 Then result = CType(x - y, Integer)
+        Return result
+    End Function
+
+    Public Function Compare_ModeSource_Descending(ByVal x As Long, ByVal y As Long) As Integer
+        Dim result As Integer = String.Compare(_statuses.Item(y).Source, _statuses.Item(x).Source)
+        If result = 0 Then result = CType(y - x, Integer)
+        Return result
     End Function
 End Class
