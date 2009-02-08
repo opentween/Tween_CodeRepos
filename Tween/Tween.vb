@@ -449,6 +449,7 @@ Public Class TweenMain
         SettingDialog.OutputzKey = _section.OutputzKey
         SettingDialog.OutputzUrlmode = _section.OutputzUrlmode
         SettingDialog.UseUnreadStyle = _section.UseUnreadStyle
+        'SettingDialog.DateTimeFormat = _section.DateTimeFormat
 
         Outputz.key = SettingDialog.OutputzKey
         Outputz.Enabled = SettingDialog.OutputzEnabled
