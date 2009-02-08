@@ -85,6 +85,7 @@ Public Class Setting
     Private _MyOutputzKey As String
     Private _MyOutputzUrlmode As OutputzUrlmode
     Private _MyUnreadStyle As Boolean
+    Private _MyDateTimeFormat As String
 
     ''''Private _MyWidth8 As Integer
     ''''Private _MyWidth9 As Integer
@@ -339,9 +340,7 @@ Public Class Setting
             End Select
 
             _MyUnreadStyle = chkUnreadStyle.Checked
-
-            'TweenMain.SetMainWindowTitle()
-            'TweenMain.SetNotifyIconText()
+            _MyDateTimeFormat = CmbDateTimeFormat.Text
 
         Catch ex As Exception
             MessageBox.Show(My.Resources.Save_ClickText3)
@@ -488,6 +487,7 @@ Public Class Setting
         End Select
 
         chkUnreadStyle.Checked = _MyUnreadStyle
+        CmbDateTimeFormat.Text = _MyDateTimeFormat
 
         'TweenMain.SetMainWindowTitle()
         'TweenMain.SetNotifyIconText()
@@ -1296,6 +1296,15 @@ Public Class Setting
         End Set
     End Property
 
+    Public Property DateTimeFormat() As String
+        Get
+            Return _MyDateTimeFormat
+        End Get
+        Set(ByVal value As String)
+            _MyDateTimeFormat = value
+        End Set
+    End Property
+
     Private Sub Button3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button3.Click
         Dim filedlg As New OpenFileDialog()
 
@@ -1464,5 +1473,30 @@ Public Class Setting
     ''''        End If
     ''''        Return newBytes
     ''''    End Function
+
+    Private Sub CreateDateTimeFormatSample()
+        Try
+            LabelDateTimeFormatApplied.Text = DateTime.Now.ToString(CmbDateTimeFormat.Text)
+        Catch ex As FormatException
+            LabelDateTimeFormatApplied.Text = "無効な書式です"
+        End Try
+    End Sub
+
+    Private Sub CmbDateTimeFormat_TextUpdate(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CmbDateTimeFormat.TextUpdate
+        CreateDateTimeFormatSample()
+    End Sub
+
+    Private Sub CmbDateTimeFormat_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CmbDateTimeFormat.SelectedIndexChanged
+        CreateDateTimeFormatSample()
+    End Sub
+
+    Private Sub CmbDateTimeFormat_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles CmbDateTimeFormat.Validating
+        Try
+            LabelDateTimeFormatApplied.Text = DateTime.Now.ToString(CmbDateTimeFormat.Text)
+        Catch ex As FormatException
+            MessageBox.Show("無効な日付指定書式です")
+            e.Cancel = True
+        End Try
+    End Sub
 End Class
 
