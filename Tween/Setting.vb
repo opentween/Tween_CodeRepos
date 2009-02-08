@@ -1498,5 +1498,9 @@ Public Class Setting
             e.Cancel = True
         End Try
     End Sub
+
+    Private Sub LabelDateTimeFormatApplied_Layout(ByVal sender As System.Object, ByVal e As System.Windows.Forms.LayoutEventArgs) Handles LabelDateTimeFormatApplied.Layout
+        CreateDateTimeFormatSample()
+    End Sub
 End Class
 
