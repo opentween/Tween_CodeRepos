@@ -763,7 +763,6 @@ Public Class TweenMain
         Dim topId As Long = -1
         Dim befCnt As Integer = _curList.VirtualListSize
 
-        _curList.BeginUpdate()
         If _curList.VirtualListSize > 0 Then
             If _statuses.SortMode = IdComparerClass.ComparerMode.Id Then
                 If _statuses.SortOrder = SortOrder.Ascending Then
@@ -846,6 +845,7 @@ Public Class TweenMain
         For Each tab As TabPage In ListTab.TabPages
             Dim lst As DetailsListView = DirectCast(tab.Controls(0), DetailsListView)
             Dim tabInfo As TabClass = _statuses.Tabs(tab.Text)
+            lst.BeginUpdate()
             If lst.VirtualListSize <> tabInfo.AllCount Then
                 If lst.Equals(_curList) Then
                     _itemCache = Nothing
@@ -859,6 +859,7 @@ Public Class TweenMain
                 End If
             End If
             If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
+            lst.EndUpdate()
         Next
 
         'スクロール制御後処理
@@ -881,7 +882,6 @@ Public Class TweenMain
             End Select
         End If
 
-        _curList.EndUpdate()
         '新着通知
         If NewPostPopMenuItem.Checked AndAlso _
            notifyPosts IsNot Nothing AndAlso notifyPosts.Length > 0 AndAlso _
