@@ -1232,9 +1232,10 @@ Public Class IdComparerClass
     Private _order As SortOrder
     Private _mode As ComparerMode
     Private _statuses As TabInformations
+    Private _CmpMethod As Comparison(Of Long)
 
     ''' <summary>
-    ''' 昇順か降順か
+    ''' 昇順か降順か Setの際は同時に比較関数の切り替えを行う
     ''' </summary>
     Public Property Order() As SortOrder
         Get
@@ -1247,7 +1248,7 @@ Public Class IdComparerClass
     End Property
 
     ''' <summary>
-    ''' 並び替えの方法
+    ''' 並び替えの方法 Setの際は同時に比較関数の切り替えを行う
     ''' </summary>
     Public Property Mode() As ComparerMode
         Get
@@ -1271,83 +1272,6 @@ Public Class IdComparerClass
         SetCmpMethod(_mode, _order)
     End Sub
 
-    ' 指定したソートモードとソートオーダーに従い使用する比較関数のアドレスを返す
-    Public Overloads ReadOnly Property CmpMethod(ByVal _sortmode As ComparerMode, ByVal _sortorder As SortOrder) As Comparison(Of Long)
-        Get
-            Dim _method As Comparison(Of Long) = Nothing
-            If _sortorder = SortOrder.Ascending Then
-                Select Case _sortmode
-                    Case ComparerMode.Data
-                        _method = AddressOf Compare_ModeData_Ascending
-                    Case ComparerMode.Id
-                        _method = AddressOf Compare_ModeId_Ascending
-                    Case ComparerMode.Name
-                        _method = AddressOf Compare_ModeName_Ascending
-                    Case ComparerMode.Nickname
-                        _method = AddressOf Compare_ModeNickName_Ascending
-                    Case ComparerMode.Source
-                        _method = AddressOf Compare_ModeSource_Ascending
-                End Select
-            Else
-                Select Case _sortmode
-                    Case ComparerMode.Data
-                        _method = AddressOf Compare_ModeData_Descending
-                    Case ComparerMode.Id
-                        _method = AddressOf Compare_ModeId_Descending
-                    Case ComparerMode.Name
-                        _method = AddressOf Compare_ModeName_Descending
-                    Case ComparerMode.Nickname
-                        _method = AddressOf Compare_ModeNickName_Descending
-                    Case ComparerMode.Source
-                        _method = AddressOf Compare_ModeSource_Descending
-                End Select
-            End If
-            Return _method
-        End Get
-    End Property
-
-    ' 指定したソートモードとソートオーダーに従い使用する比較関数のアドレスを返す
-    ' (overload 現在の使用中の比較関数のアドレスを返す)
-    Public Overloads ReadOnly Property CmpMethod() As Comparison(Of Long)
-        Get
-            Dim _method As Comparison(Of Long) = Nothing
-            If _order = SortOrder.Ascending Then
-                Select Case _mode
-                    Case ComparerMode.Data
-                        _method = AddressOf Compare_ModeData_Ascending
-                    Case ComparerMode.Id
-                        _method = AddressOf Compare_ModeId_Ascending
-                    Case ComparerMode.Name
-                        _method = AddressOf Compare_ModeName_Ascending
-                    Case ComparerMode.Nickname
-                        _method = AddressOf Compare_ModeNickName_Ascending
-                    Case ComparerMode.Source
-                        _method = AddressOf Compare_ModeSource_Ascending
-                End Select
-            Else
-                Select Case _mode
-                    Case ComparerMode.Data
-                        _method = AddressOf Compare_ModeData_Descending
-                    Case ComparerMode.Id
-                        _method = AddressOf Compare_ModeId_Descending
-                    Case ComparerMode.Name
-                        _method = AddressOf Compare_ModeName_Descending
-                    Case ComparerMode.Nickname
-                        _method = AddressOf Compare_ModeNickName_Descending
-                    Case ComparerMode.Source
-                        _method = AddressOf Compare_ModeSource_Descending
-                End Select
-            End If
-            Return _method
-        End Get
-    End Property
-
-    ' ソートモードとソートオーダーに従い比較関数のアドレスを切り替え
-
-    Private Sub SetCmpMethod(ByVal mode As ComparerMode, ByVal order As SortOrder)
-        _CmpMethod = Me.CmpMethod(mode, order)
-    End Sub
-
     Public Sub New(ByVal TabInf As TabInformations)
         _order = SortOrder.Ascending
         _mode = ComparerMode.Id
@@ -1355,64 +1279,125 @@ Public Class IdComparerClass
         SetCmpMethod(_mode, _order)
     End Sub
 
-    Private _CmpMethod As Comparison(Of Long)
+    ' 指定したソートモードとソートオーダーに従い使用する比較関数のアドレスを返す
+    Public Overloads ReadOnly Property CmpMethod(ByVal _sortmode As ComparerMode, ByVal _sortorder As SortOrder) As Comparison(Of Long)
+        Get
+            Dim _method As Comparison(Of Long) = Nothing
+            If _sortorder = SortOrder.Ascending Then
+                ' 昇順
+                Select Case _sortmode
+                    Case ComparerMode.Data
+                        _method = AddressOf Compare_ModeData_Ascending
+                    Case ComparerMode.Id
+                        _method = AddressOf Compare_ModeId_Ascending
+                    Case ComparerMode.Name
+                        _method = AddressOf Compare_ModeName_Ascending
+                    Case ComparerMode.Nickname
+                        _method = AddressOf Compare_ModeNickName_Ascending
+                    Case ComparerMode.Source
+                        _method = AddressOf Compare_ModeSource_Ascending
+                End Select
+            Else
+                ' 降順
+                Select Case _sortmode
+                    Case ComparerMode.Data
+                        _method = AddressOf Compare_ModeData_Descending
+                    Case ComparerMode.Id
+                        _method = AddressOf Compare_ModeId_Descending
+                    Case ComparerMode.Name
+                        _method = AddressOf Compare_ModeName_Descending
+                    Case ComparerMode.Nickname
+                        _method = AddressOf Compare_ModeNickName_Descending
+                    Case ComparerMode.Source
+                        _method = AddressOf Compare_ModeSource_Descending
+                End Select
+            End If
+            Return _method
+        End Get
+    End Property
+
+    ' ソートモードとソートオーダーに従い使用する比較関数のアドレスを返す
+    ' (overload 現在の使用中の比較関数のアドレスを返す)
+    Public Overloads ReadOnly Property CmpMethod() As Comparison(Of Long)
+        Get
+            Return _CmpMethod
+        End Get
+    End Property
+
+    ' ソートモードとソートオーダーに従い比較関数のアドレスを切り替え
+    Private Sub SetCmpMethod(ByVal mode As ComparerMode, ByVal order As SortOrder)
+        _CmpMethod = Me.CmpMethod(mode, order)
+    End Sub
 
     'xがyより小さいときはマイナスの数、大きいときはプラスの数、
-    '同じときは0を返す (一応比較関数群呼び出しの形のまま残しておく)
+    '同じときは0を返す (こちらは未使用 一応比較関数群呼び出しの形のまま残しておく)
     Public Function Compare(ByVal x As Long, ByVal y As Long) _
             As Integer Implements IComparer(Of Long).Compare
         Return _CmpMethod(x, y)
     End Function
 
-    ' 比較用関数群
-
+    ' 比較用関数群 いずれもステータスIDの順序を考慮する
+    ' 注：ID比較でCTypeを使用しているが、abs(x-y)がInteger(Int32)に収まらないことはあり得ないのでこれでよい
+    ' 本文比較　昇順
     Public Function Compare_ModeData_Ascending(ByVal x As Long, ByVal y As Long) As Integer
         Dim result As Integer = String.Compare(_statuses.Item(x).Data, _statuses.Item(y).Data)
         If result = 0 Then result = CType(x - y, Integer)
         Return result
     End Function
 
+    ' 本文比較　降順
     Public Function Compare_ModeData_Descending(ByVal x As Long, ByVal y As Long) As Integer
         Dim result As Integer = String.Compare(_statuses.Item(y).Data, _statuses.Item(x).Data)
         If result = 0 Then result = CType(y - x, Integer)
         Return result
     End Function
 
+    ' ステータスID比較　昇順
     Public Function Compare_ModeId_Ascending(ByVal x As Long, ByVal y As Long) As Integer
         Return CType(x - y, Integer)
     End Function
 
+    ' ステータスID比較　降順
     Public Function Compare_ModeId_Descending(ByVal x As Long, ByVal y As Long) As Integer
         Return CType(y - x, Integer)
     End Function
+
+    ' 表示名比較　昇順
     Public Function Compare_ModeName_Ascending(ByVal x As Long, ByVal y As Long) As Integer
         Dim result As Integer = String.Compare(_statuses.Item(x).Name, _statuses.Item(y).Name)
         If result = 0 Then result = CType(x - y, Integer)
         Return result
     End Function
 
+    ' 表示名比較　降順
     Public Function Compare_ModeName_Descending(ByVal x As Long, ByVal y As Long) As Integer
         Dim result As Integer = String.Compare(_statuses.Item(y).Name, _statuses.Item(x).Name)
         If result = 0 Then result = CType(y - x, Integer)
         Return result
     End Function
+
+    ' ユーザー名比較　昇順
     Public Function Compare_ModeNickName_Ascending(ByVal x As Long, ByVal y As Long) As Integer
         Dim result As Integer = String.Compare(_statuses.Item(x).Nickname, _statuses.Item(y).Nickname)
         If result = 0 Then result = CType(x - y, Integer)
         Return result
     End Function
 
+    ' ユーザー名比較　降順
     Public Function Compare_ModeNickName_Descending(ByVal x As Long, ByVal y As Long) As Integer
         Dim result As Integer = String.Compare(_statuses.Item(y).Nickname, _statuses.Item(x).Nickname)
         If result = 0 Then result = CType(y - x, Integer)
         Return result
     End Function
+
+    ' Source比較　昇順
     Public Function Compare_ModeSource_Ascending(ByVal x As Long, ByVal y As Long) As Integer
         Dim result As Integer = String.Compare(_statuses.Item(x).Source, _statuses.Item(y).Source)
         If result = 0 Then result = CType(x - y, Integer)
         Return result
     End Function
 
+    ' Source比較　降順
     Public Function Compare_ModeSource_Descending(ByVal x As Long, ByVal y As Long) As Integer
         Dim result As Integer = String.Compare(_statuses.Item(y).Source, _statuses.Item(x).Source)
         If result = 0 Then result = CType(y - x, Integer)
