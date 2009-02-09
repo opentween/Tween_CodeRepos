@@ -795,7 +795,9 @@ Public Class TweenMain
                         If _item.Index = _curList.Items.Count - 1 Then
                             smode = -2
                         Else
-                            smode = -1
+                            'smode = -1
+                            topId = _statuses.GetId(_curTab.Text, _curList.TopItem.Index)
+                            smode = 0
                         End If
                     End If
                 Else
@@ -848,9 +850,7 @@ Public Class TweenMain
             focusedId = -1
         End If
         'Next
-        _curList.EndUpdate()
-
-        '更新確定
+        _curList.EndUpdate()        _curList.EndUpdate()        '更新確定
         Dim notifyPosts() As PostClass = Nothing
         Dim soundFile As String = ""
         Dim addCount As Integer = 0
@@ -860,7 +860,6 @@ Public Class TweenMain
         For Each tab As TabPage In ListTab.TabPages
             Dim lst As DetailsListView = DirectCast(tab.Controls(0), DetailsListView)
             Dim tabInfo As TabClass = _statuses.Tabs(tab.Text)
-            lst.BeginUpdate()
             If lst.VirtualListSize <> tabInfo.AllCount Then
                 If lst.Equals(_curList) Then
                     _itemCache = Nothing
@@ -874,7 +873,6 @@ Public Class TweenMain
                 End If
             End If
             If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
-            lst.EndUpdate()
         Next
 
         'スクロール制御後処理
@@ -2403,7 +2401,7 @@ Public Class TweenMain
     Private Sub MyList_CacheVirtualItems(ByVal sender As System.Object, ByVal e As System.Windows.Forms.CacheVirtualItemsEventArgs)
         If _itemCache IsNot Nothing AndAlso _
            e.StartIndex >= _itemCacheIndex AndAlso _
-           e.EndIndex <= _itemCacheIndex + _itemCache.Length AndAlso _
+           e.EndIndex < _itemCacheIndex + _itemCache.Length AndAlso _
            _curList.Equals(sender) Then
             'If the newly requested cache is a subset of the old cache, 
             'no need to rebuild everything, so do nothing.
@@ -2430,6 +2428,13 @@ Public Class TweenMain
     Private Sub CreateCache(ByVal StartIndex As Integer, ByVal EndIndex As Integer)
         Dim length As Integer = 0
         If StartIndex > -1 Then
+            If _curList.VirtualListSize <> _statuses.Tabs(_curTab.Text).AllCount Then
+                'フィルタ操作後に不一致発生（スレッド関係？）のため対処
+                _postCache = Nothing
+                _itemCache = Nothing
+                _curList.VirtualListSize = _statuses.Tabs(_curTab.Text).AllCount
+                Exit Sub
+            End If
             'キャッシュ要求（要求範囲±30を作成）
             StartIndex -= 30
             If StartIndex < 0 Then StartIndex = 0
@@ -2718,6 +2723,11 @@ RETRY:
 RETRY:
         If tb.OldestUnreadId > -1 AndAlso tb.Contains(tb.OldestUnreadId) AndAlso tb.UnreadCount > 0 Then
             '未読アイテムへ
+            If _statuses.Item(tb.OldestUnreadId).IsRead Then
+                '状態不整合
+                _statuses.SetNextUnreadId(-1, tb)
+                GoTo RETRY
+            End If
             idx = tb.GetIndex(tb.OldestUnreadId)
         Else
 RETRY2:

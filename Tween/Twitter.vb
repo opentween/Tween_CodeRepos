@@ -1572,6 +1572,7 @@ Public Module Twitter
         End Get
         Set(ByVal value As String)
             _uid = value
+            _signed = False
         End Set
     End Property
 
@@ -1581,6 +1582,7 @@ Public Module Twitter
         End Get
         Set(ByVal value As String)
             _pwd = value
+            _signed = False
         End Set
     End Property
 

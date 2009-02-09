@@ -683,9 +683,7 @@ Public Class TabInformations
                                 tbr.Remove(post.Id)
                         End Select
                     Next
-                    For Each _key As String In _tabs.Keys
-                        _tabs(_key).AddSubmit()  '振分確定（各タブに反映）
-                    Next
+                    tb.AddSubmit()  '振分確定
                     For Each id As Long In orgIds
                         Dim hit As Boolean = False
                         For Each tkey As String In _tabs.Keys
@@ -819,7 +817,7 @@ Public Class TabClass
             End If
         End If
     End Sub
-    '無条件に追加
+
     Public Sub Add(ByVal ID As Long, ByVal Read As Boolean, ByVal Temporary As Boolean)
         If Not Temporary Then
             Me.Add(ID, Read)
