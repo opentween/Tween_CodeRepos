@@ -2602,25 +2602,37 @@
     <value>Top, Bottom, Left, Right</value>
   </data>
   <data name="CmbDateTimeFormat.Items" xml:space="preserve">
-    <value>yy/M/d H:mm:ss</value>
+    <value>yyyy/MM/dd H:mm:ss</value>
   </data>
   <data name="CmbDateTimeFormat.Items1" xml:space="preserve">
-    <value>H:mm:ss yy/M/d</value>
+    <value>yy/M/d H:mm:ss</value>
   </data>
   <data name="CmbDateTimeFormat.Items2" xml:space="preserve">
-    <value>M/d H:mm:ss</value>
+    <value>H:mm:ss yy/M/d</value>
   </data>
   <data name="CmbDateTimeFormat.Items3" xml:space="preserve">
-    <value>H:mm:ss M/d</value>
+    <value>M/d H:mm:ss</value>
   </data>
   <data name="CmbDateTimeFormat.Items4" xml:space="preserve">
-    <value>H:mm:ss</value>
+    <value>M/d H:mm</value>
   </data>
   <data name="CmbDateTimeFormat.Items5" xml:space="preserve">
-    <value>H:mm</value>
+    <value>H:mm:ss M/d</value>
   </data>
   <data name="CmbDateTimeFormat.Items6" xml:space="preserve">
+    <value>H:mm:ss</value>
+  </data>
+  <data name="CmbDateTimeFormat.Items7" xml:space="preserve">
+    <value>H:mm</value>
+  </data>
+  <data name="CmbDateTimeFormat.Items8" xml:space="preserve">
     <value>tt h:mm</value>
+  </data>
+  <data name="CmbDateTimeFormat.Items9" xml:space="preserve">
+    <value>M/d tt h:mm:ss</value>
+  </data>
+  <data name="CmbDateTimeFormat.Items10" xml:space="preserve">
+    <value>M/d tt h:mm</value>
   </data>
   <data name="CmbDateTimeFormat.Location" type="System.Drawing.Point, System.Drawing">
     <value>197, 80</value>
