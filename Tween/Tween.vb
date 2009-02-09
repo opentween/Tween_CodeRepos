@@ -449,7 +449,19 @@ Public Class TweenMain
         SettingDialog.OutputzKey = _section.OutputzKey
         SettingDialog.OutputzUrlmode = _section.OutputzUrlmode
         SettingDialog.UseUnreadStyle = _section.UseUnreadStyle
-        'SettingDialog.DateTimeFormat = _section.DateTimeFormat
+
+        SettingDialog.DateTimeFormat = _section.DateTimeFormat
+        '書式指定文字列エラーチェック
+        Try
+            If DateTime.Now.ToString(SettingDialog.DateTimeFormat).Length = 0 Then
+                ' このブロックは絶対に実行されないはず
+                ' 変換が成功した場合にLengthが0にならない
+                SettingDialog.DateTimeFormat = ""
+            End If
+        Catch ex As FormatException
+            ' FormatExceptionが発生したらクリア (=Gとみなされる)
+            SettingDialog.DateTimeFormat = ""
+        End Try
 
         Outputz.key = SettingDialog.OutputzKey
         Outputz.Enabled = SettingDialog.OutputzEnabled
@@ -2442,7 +2454,7 @@ Public Class TweenMain
         Dim mk As StringBuilder = New StringBuilder()
         If Post.IsMark Then mk.Append("♪")
         If Post.IsProtect Then mk.Append("Ю")
-        Dim sitem() As String = {"", Post.Nickname, Post.Data, Post.PDate.ToString(), Post.Name, "", mk.ToString(), Post.Source}
+        Dim sitem() As String = {"", Post.Nickname, Post.Data, Post.PDate.ToString(SettingDialog.DateTimeFormat), Post.Name, "", mk.ToString(), Post.Source}
         Dim itm As ListViewItem = New ListViewItem(sitem, Post.ImageIndex)
         Dim read As Boolean = Post.IsRead
         '未読管理していなかったら既読として扱う
@@ -3419,25 +3431,8 @@ RETRY2:
                 _section.OutputzKey = SettingDialog.OutputzKey
                 _section.OutputzUrlmode = SettingDialog.OutputzUrlmode
                 _section.UseUnreadStyle = SettingDialog.UseUnreadStyle
-                'Try
-                '    _section.DisplayIndex1 = _curList.Columns(0).DisplayIndex
-                '    _section.DisplayIndex2 = _curList.Columns(1).DisplayIndex
-                '    _section.DisplayIndex3 = _curList.Columns(2).DisplayIndex
-                '    _section.DisplayIndex4 = _curList.Columns(3).DisplayIndex
-                '    _section.DisplayIndex5 = _curList.Columns(4).DisplayIndex
-                '    _section.DisplayIndex6 = _curList.Columns(5).DisplayIndex
-                '    _section.DisplayIndex7 = _curList.Columns(6).DisplayIndex
-                '    _section.DisplayIndex8 = _curList.Columns(7).DisplayIndex
-                '    _section.Width1 = _curList.Columns(0).Width
-                '    _section.Width2 = _curList.Columns(1).Width
-                '    _section.Width3 = _curList.Columns(2).Width
-                '    _section.Width4 = _curList.Columns(3).Width
-                '    _section.Width5 = _curList.Columns(4).Width
-                '    _section.Width6 = _curList.Columns(5).Width
-                '    _section.Width7 = _curList.Columns(6).Width
-                '    _section.Width8 = _curList.Columns(7).Width
-                'Catch ex As ArgumentOutOfRangeException
-                'End Try
+                _section.DateTimeFormat = SettingDialog.DateTimeFormat
+
                 _section.SortOrder = _statuses.SortOrder
                 Select Case _statuses.SortMode
                     Case IdComparerClass.ComparerMode.Nickname  'ニックネーム

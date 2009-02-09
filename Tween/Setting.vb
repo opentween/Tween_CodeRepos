@@ -1474,13 +1474,15 @@ Public Class Setting
     ''''        Return newBytes
     ''''    End Function
 
-    Private Sub CreateDateTimeFormatSample()
+    Private Function CreateDateTimeFormatSample() As Boolean
         Try
             LabelDateTimeFormatApplied.Text = DateTime.Now.ToString(CmbDateTimeFormat.Text)
         Catch ex As FormatException
-            LabelDateTimeFormatApplied.Text = "無効な書式です"
+            LabelDateTimeFormatApplied.Text = My.Resources.CreateDateTimeFormatSampleText1
+            Return False
         End Try
-    End Sub
+        Return True
+    End Function
 
     Private Sub CmbDateTimeFormat_TextUpdate(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CmbDateTimeFormat.TextUpdate
         CreateDateTimeFormatSample()
@@ -1491,12 +1493,10 @@ Public Class Setting
     End Sub
 
     Private Sub CmbDateTimeFormat_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles CmbDateTimeFormat.Validating
-        Try
-            LabelDateTimeFormatApplied.Text = DateTime.Now.ToString(CmbDateTimeFormat.Text)
-        Catch ex As FormatException
-            MessageBox.Show("無効な日付指定書式です")
+        If Not CreateDateTimeFormatSample() Then
+            MessageBox.Show(My.Resources.CmbDateTimeFormat_Validating)
             e.Cancel = True
-        End Try
+        End If
     End Sub
 
     Private Sub LabelDateTimeFormatApplied_Layout(ByVal sender As System.Object, ByVal e As System.Windows.Forms.LayoutEventArgs) Handles LabelDateTimeFormatApplied.Layout
