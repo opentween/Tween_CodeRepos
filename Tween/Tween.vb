@@ -776,6 +776,7 @@ Public Class TweenMain
         Dim topId As Long = -1
         Dim befCnt As Integer = _curList.VirtualListSize
 
+        _curList.BeginUpdate()
         If _curList.VirtualListSize > 0 Then
             If _statuses.SortMode = IdComparerClass.ComparerMode.Id Then
                 If _statuses.SortOrder = SortOrder.Ascending Then
@@ -847,6 +848,7 @@ Public Class TweenMain
             focusedId = -1
         End If
         'Next
+        _curList.EndUpdate()
 
         '更新確定
         Dim notifyPosts() As PostClass = Nothing
@@ -876,6 +878,7 @@ Public Class TweenMain
         Next
 
         'スクロール制御後処理
+        _curList.BeginUpdate()
         If befCnt <> _curList.VirtualListSize Then
             Select Case smode
                 Case -3
@@ -894,6 +897,7 @@ Public Class TweenMain
                     End If
             End Select
         End If
+        _curList.EndUpdate()
 
         '新着通知
         If NewPostPopMenuItem.Checked AndAlso _
