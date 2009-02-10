@@ -1134,11 +1134,11 @@ Public Class TweenMain
         End If
 
         Dim regex As New Regex("^[+\-\[\]\s\\.,*/(){}^~|='&%$#""<>?]*(get|g|fav|follow|f|on|off|stop|quit|leave|l|whois|w|nudge|n|stats|invite|track|untrack|tracks|tracking|\*)([+\-\[\]\s\\.,*/(){}^~|='&%$#""<>?]+|$)", RegexOptions.IgnoreCase)
-        Dim regex2 As New Regex("https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+")
-        Dim mc2 As Match = regex2.Match(args.status)
+        'Dim regex2 As New Regex("https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+")
+        'Dim mc2 As Match = regex2.Match(args.status)
 
         If regex.IsMatch(args.status) AndAlso args.status.EndsWith(" .") = False Then args.status += " ."
-        If mc2.Success Then args.status = regex2.Replace(args.status, "$& ")
+        'If mc2.Success Then args.status = regex2.Replace(args.status, "$& ")
 
         RunAsync(args)
 
