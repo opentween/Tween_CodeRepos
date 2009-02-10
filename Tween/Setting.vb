@@ -22,10 +22,11 @@
 ' Boston, MA 02110-1301, USA.
 
 Imports System.Xml
+Imports System.Xml.Serialization
+Imports System.Xml.Schema
+Imports System.IO
 
 Public Class Setting
-    Private _xrootElement As XmlElement
-
     Private _MyuserID As String
     Private _Mypassword As String
     Private _MytimelinePeriod As Integer
@@ -105,106 +106,6 @@ Public Class Setting
 
     '''''タブのリスト
     '''''フィルターのリスト
-
-    Public Function GetValue(ByVal path As String, ByVal defaultValue As String) As String
-        Dim xnode As XmlNode = Me._xrootElement.SelectSingleNode("/tween-configuration/" + path)
-        If xnode Is Nothing Then
-            Me.SetValue(path, defaultValue)
-            Return defaultValue
-        Else
-            Return xnode.Value
-        End If
-    End Function
-
-    Public Function GetValue(ByVal path As String, ByVal defaultValue As Integer) As Integer
-        Dim xnode As XmlNode = Me._xrootElement.SelectSingleNode("/tween-configuration/" + path)
-        If xnode Is Nothing Then
-            Me.SetValue(path, defaultValue)
-            Return defaultValue
-        Else
-            Return Integer.Parse(xnode.InnerXml)
-        End If
-    End Function
-
-    Public Function GetValue(ByVal path As String, ByVal defaultValue As Boolean) As Boolean
-        Dim xnode As XmlNode = Me._xrootElement.SelectSingleNode("/tween-configuration/" + path)
-        If xnode Is Nothing Then
-            Me.SetValue(path, defaultValue)
-            Return defaultValue
-        Else
-            Return Boolean.Parse(xnode.InnerXml)
-        End If
-    End Function
-
-    Public Function GetValue(ByVal path As String, ByVal defaultValue As Date) As Date
-        Dim xnode As XmlNode = Me._xrootElement.SelectSingleNode("/tween-configuration/" + path)
-        If xnode Is Nothing Then
-            Me.SetValue(path, defaultValue)
-            Return defaultValue
-        Else
-            Return Date.Parse(xnode.InnerXml)
-        End If
-    End Function
-
-    Public Function GetElement(ByVal path As String) As XmlElement
-        Dim xnode As XmlNode = Me._xrootElement.SelectSingleNode("/tween-configuration/" + path)
-        If xnode Is Nothing Then
-            Me.RetrievePath(path)
-            Return Nothing
-        Else
-            Return DirectCast(xnode, XmlElement)
-        End If
-    End Function
-
-    Public Sub SetValue(ByVal path As String, ByVal value As String)
-        Me.RetrievePath(path).SetValue(value)
-    End Sub
-
-    Public Sub SetValue(ByVal path As String, ByVal value As Integer)
-        Me.RetrievePath(path).SetValue(value.ToString())
-    End Sub
-
-    Public Sub SetValue(ByVal path As String, ByVal value As Boolean)
-        Me.RetrievePath(path).SetValue(value.ToString())
-    End Sub
-
-    Public Sub SetValue(ByVal path As String, ByVal value As DateTime)
-        Me.RetrievePath(path).SetValue(value.ToString())
-    End Sub
-
-    Public Sub SetElement(ByVal path As String, ByVal xelement As XmlElement)
-        Me.RetrievePath(path).ReplaceSelf(xelement.ToString())
-    End Sub
-
-    Public Sub LoadConfiguration(ByVal fileName As String)
-        Dim xdocument As XmlDocument = New XmlDocument()
-        If IO.File.Exists(fileName) Then
-            xdocument.Load(fileName)
-        Else
-            xdocument.AppendChild(xdocument.CreateXmlDeclaration("1.0", "utf-8", Nothing))
-            xdocument.AppendChild(xdocument.CreateComment(My.Resources.LoadConfigurationText1))
-            xdocument.AppendChild(xdocument.CreateElement("tween-configuration"))
-            xdocument.Save(fileName)
-        End If
-        Me._xrootElement = xdocument.DocumentElement
-    End Sub
-
-    Public Sub SaveConfiguration(ByVal fileName As String)
-        Me._xrootElement.OwnerDocument.Save(fileName)
-        Me.LoadConfiguration(fileName)
-    End Sub
-
-    Private Function RetrievePath(ByVal path As String) As XPath.XPathNavigator
-        Dim xnav As XPath.XPathNavigator = Me._xrootElement.OwnerDocument.CreateNavigator()
-        xnav = xnav.SelectSingleNode("/tween-configuration")
-        For Each fragment As String In path.Split(New Char() {"/"c}, StringSplitOptions.RemoveEmptyEntries)
-            If (xnav.SelectSingleNode(fragment) Is Nothing) Then
-                xnav.AppendChildElement("", fragment, Nothing, Nothing)
-            End If
-            xnav = xnav.SelectSingleNode(fragment)
-        Next
-        Return xnav
-    End Function
 
     Private Sub Save_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Save.Click
         If Username.Text.Trim = "" Or _
@@ -394,7 +295,7 @@ Public Class Setting
         OneWayLv.Checked = _MyOneWayLove
 
         lblListFont.Font = _fntReaded
-        lblUnRead.Font = _fntUnread
+        lblUnread.Font = _fntUnread
         lblUnread.ForeColor = _clUnread
         'lblReaded.Font = _fntReaded
         'lblReaded.ForeColor = _clReaded
@@ -1504,3 +1405,107 @@ Public Class Setting
     End Sub
 End Class
 
+<XmlRoot(ElementName:="configuration")> _
+    Public NotInheritable Class XmlConfiguration
+    Inherits Dictionary(Of String, List(Of Object))
+    Implements IXmlSerializable
+
+    Public Overloads Sub Add(ByVal key As String)
+        MyBase.Add(key, New List(Of Object))
+    End Sub
+
+    Public Function GetSchema() As XmlSchema Implements IXmlSerializable.GetSchema
+        Return Nothing
+    End Function
+
+    Public Function GetValue(Of T)(ByVal key As String) As T
+        If Me.Item(key).Count <> 1 Then
+            Throw New InvalidOperationException("Value is not single, or empty")
+        Else
+            Return DirectCast(Me.Item(key)(0), T)
+        End If
+    End Function
+
+    Public Function GetValue(ByVal key As String) As Object
+        Return Me.GetValue(Of Object)(key)
+    End Function
+
+    Public Function GetValueOrDefault(ByVal key As String) As Object
+        Return Me.GetValueOrDefault(Of Object)(key)
+    End Function
+
+    Public Function GetValueOrDefault(Of T)(ByVal key As String) As T
+        Return Me.GetValueOrDefault(Of T)(key, CType(Nothing, T))
+    End Function
+
+    Public Function GetValueOrDefault(Of T)(ByVal key As String, ByVal defaultValue As T) As T
+        If MyBase.ContainsKey(key) Then
+            Return Me.GetValue(Of T)(key)
+        End If
+        Me.Add(key, New List(Of Object)(New Object() {defaultValue}))
+        Return defaultValue
+    End Function
+
+    Public Function GetValueOrDefault(ByVal key As String, ByVal defaultValue As Object) As Object
+        Return Me.GetValueOrDefault(Of Object)(key, defaultValue)
+    End Function
+
+    Public Function GetValues(ByVal key As String) As IEnumerable(Of Object)
+        Return Me.Item(key)
+    End Function
+
+    Public Function GetValuesOrDefault(ByVal key As String) As IEnumerable(Of Object)
+        Return Me.GetValuesOrDefault(key, Nothing)
+    End Function
+
+    Public Function GetValuesOrDefault(ByVal key As String, ByVal ParamArray defaultValues As Object()) As IEnumerable(Of Object)
+        If MyBase.ContainsKey(key) Then
+            Return Me.GetValues(key)
+        End If
+        MyBase.Add(key, New List(Of Object)(defaultValues))
+        Return defaultValues
+    End Function
+
+    Public Shared Function Load(ByVal path As String) As XmlConfiguration
+        Return TryCast(New XmlSerializer(GetType(XmlConfiguration)).Deserialize(XmlReader.Create(path)), XmlConfiguration)
+    End Function
+
+    Public Sub ReadXml(ByVal reader As XmlReader) Implements IXmlSerializable.ReadXml
+        Dim xdoc As XmlDocument = New XmlDocument()
+        xdoc.Load(reader)
+        For Each xentry As XmlElement In xdoc.SelectNodes("//entry")
+            Dim values As New List(Of Object)
+            For Each xvalue As XmlElement In xentry.GetElementsByTagName("*")
+                Dim serializer As XmlSerializer = New XmlSerializer(GetType(Object))
+                values.Add(serializer.Deserialize(New XmlNodeReader(xvalue)))
+            Next
+            Me.Add(xentry.GetAttribute("key"), values)
+        Next
+    End Sub
+
+    Public Sub Save(ByVal path As String)
+        Dim serializer As XmlSerializer = New XmlSerializer(GetType(XmlConfiguration))
+        serializer.Serialize(XmlWriter.Create(path), Me)
+    End Sub
+
+    Public Sub WriteXml(ByVal writer As XmlWriter) Implements IXmlSerializable.WriteXml
+        Dim xdoc As XmlDocument = New XmlDocument()
+        Dim xentry As XmlElement
+        For Each entry As KeyValuePair(Of String, List(Of Object)) In Me
+            xentry = xdoc.CreateElement("entry")
+            xentry.SetAttributeNode("key", Nothing)
+            xentry.SetAttribute("key", entry.Key)
+            For Each value As Object In entry.Value
+                Using stream As MemoryStream = New MemoryStream
+                    Dim serializer As XmlSerializer = New XmlSerializer(value.GetType())
+                    serializer.Serialize(DirectCast(stream, Stream), value)
+                    stream.Seek(0, SeekOrigin.Begin)
+                    Dim xserialized As XmlDocument = New XmlDocument()
+                    xserialized.Load(stream)
+                    xentry.AppendChild(xserialized.DocumentElement)
+                End Using
+            Next
+            xentry.WriteTo(writer)
+        Next
+    End Sub
+End Class
