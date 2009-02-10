@@ -263,10 +263,8 @@ Public NotInheritable Class TabInformations
     Private _addedIds As List(Of Long)
     'Private _editMode As EDITMODE
 
-    '発言の追加は4段階
-    'BeginUpdate -> AddPost(複数回) -> EndUpdate          -> SubmitUpdate
-    '準備        -> 発言Dicに追加   -> 仮振分・Notify決定 -> 振分確定(UIと整合とる)
-    '（EndUpdateまでは裏スレッドで処理）
+    '発言の追加
+    'AddPost(複数回) -> DistributePosts          -> SubmitUpdate
 
     'トランザクション用
     Private _addCount As Integer
@@ -610,6 +608,17 @@ Public NotInheritable Class TabInformations
     Public ReadOnly Property Item(ByVal TabName As String, ByVal Index As Integer) As PostClass
         Get
             Return _statuses(_tabs(TabName).GetId(Index))
+        End Get
+    End Property
+
+    Public ReadOnly Property Item(ByVal TabName As String, ByVal StartIndex As Integer, ByVal EndIndex As Integer) As PostClass()
+        Get
+            Dim length As Integer = EndIndex - StartIndex + 1
+            Dim posts() As PostClass = New PostClass(length - 1) {}
+            For i As Integer = 0 To length - 1
+                posts(i) = _statuses(_tabs(TabName).GetId(StartIndex + i))
+            Next i
+            Return posts
         End Get
     End Property
 

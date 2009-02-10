@@ -1453,7 +1453,7 @@ Public Class TweenMain
             _waitReply = False
             _waitFollower = False
             _waitDm = False
-            _initial = False
+            '_initial = False
             Exit Sub
         End If
 
@@ -1479,7 +1479,7 @@ Public Class TweenMain
             _waitReply = False
             _waitFollower = False
             _waitDm = False
-            _initial = False    '起動時モード終了
+            '_initial = False    '起動時モード終了
         End If
 
         'リストに反映
@@ -2432,44 +2432,32 @@ Public Class TweenMain
     End Sub
 
     Private Sub CreateCache(ByVal StartIndex As Integer, ByVal EndIndex As Integer)
-        Dim length As Integer = 0
-        If StartIndex > -1 Then
-            If _curList.VirtualListSize <> _statuses.Tabs(_curTab.Text).AllCount Then
-                'フィルタ操作後に不一致発生（スレッド関係？）のため対処
-                _postCache = Nothing
-                _itemCache = Nothing
-                _curList.VirtualListSize = _statuses.Tabs(_curTab.Text).AllCount
-                Exit Sub
-            End If
-            'キャッシュ要求（要求範囲±30を作成）
-            StartIndex -= 30
-            If StartIndex < 0 Then StartIndex = 0
-            EndIndex += 30
-            If EndIndex >= _curList.VirtualListSize Then EndIndex = _curList.VirtualListSize - 1
-            length = EndIndex - StartIndex + 1  'indexes are inclusive
-            _itemCacheIndex = StartIndex
-        Else
-            'リフレッシュ
-            StartIndex = _itemCacheIndex
-            length = _itemCache.Length
-            EndIndex = StartIndex + length - 1
+        If _curList.VirtualListSize <> _statuses.Tabs(_curTab.Text).AllCount Then
+            'フィルタ操作後に不一致発生（スレッド関係？）のため対処
+            _postCache = Nothing
+            _itemCache = Nothing
+            _curList.VirtualListSize = _statuses.Tabs(_curTab.Text).AllCount
+            Exit Sub
         End If
+        'キャッシュ要求（要求範囲±30を作成）
+        StartIndex -= 30
+        If StartIndex < 0 Then StartIndex = 0
+        EndIndex += 30
+        If EndIndex >= _statuses.Tabs(_curTab.Text).AllCount Then EndIndex = _statuses.Tabs(_curTab.Text).AllCount - 1
+        _postCache = _statuses.Item(_curTab.Text, StartIndex, EndIndex) '配列で取得
+        _itemCacheIndex = StartIndex
 
-        'Diagnostics.Debug.WriteLine("Cache " + _itemCacheIndex.ToString + "-" + length.ToString)
-
-        _itemCache = New ListViewItem(length - 1) {}
-        _postCache = New PostClass(length - 1) {}
-        For i As Integer = 0 To length - 1
-            _postCache(i) = _statuses.Item(_curTab.Text, StartIndex + i)
+        _itemCache = New ListViewItem(_postCache.Length - 1) {}
+        For i As Integer = 0 To _postCache.Length - 1
             _itemCache(i) = CreateItem(_curTab, _postCache(i), StartIndex + i)
         Next i
     End Sub
 
     Private Function CreateItem(ByVal Tab As TabPage, ByVal Post As PostClass, ByVal Index As Integer) As ListViewItem
-        Dim mk As StringBuilder = New StringBuilder()
-        If Post.IsMark Then mk.Append("♪")
-        If Post.IsProtect Then mk.Append("Ю")
-        Dim sitem() As String = {"", Post.Nickname, Post.Data, Post.PDate.ToString(SettingDialog.DateTimeFormat), Post.Name, "", mk.ToString(), Post.Source}
+        Dim mk As String = ""
+        If Post.IsMark Then mk += "♪"
+        If Post.IsProtect Then mk += "Ю"
+        Dim sitem() As String = {"", Post.Nickname, Post.Data, Post.PDate.ToString(SettingDialog.DateTimeFormat), Post.Name, "", mk, Post.Source}
         Dim itm As ListViewItem = New ListViewItem(sitem, Post.ImageIndex)
         Dim read As Boolean = Post.IsRead
         '未読管理していなかったら既読として扱う
@@ -4736,7 +4724,6 @@ RETRY2:
 
     Private Sub TweenMain_DragOver(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DragEventArgs) Handles MyBase.DragOver
         Dim data As String = TryCast(e.Data.GetData(DataFormats.StringFormat, True), String)
-        Console.WriteLine(data)
         If data IsNot Nothing Then
             e.Effect = DragDropEffects.Copy
         Else
@@ -4945,6 +4932,10 @@ RETRY2:
                     i = 0
                 End If
             Loop
+
+            _statuses.DistributePosts()
+            RefreshTimeline()
+
             If _endingFlag Then Exit Sub
             'バージョンチェック（引数：起動時チェックの場合はTrue･･･チェック結果のメッセージを表示しない）
             If SettingDialog.StartupVersion Then
