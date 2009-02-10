@@ -26,7 +26,7 @@ Imports System.Net
 Imports System.Text
 Imports System.IO.Compression
 
-Public Class MySocket
+Public NotInheritable Class MySocket
     Private _enc As Encoding
     Private Shared _version As String = My.Application.Info.Version.ToString
     Private _cre As String

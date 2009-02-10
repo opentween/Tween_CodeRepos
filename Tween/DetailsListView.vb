@@ -36,7 +36,7 @@ Namespace TweenCustomControl
     End Class
 
 
-    Public Class DetailsListView
+    Public NotInheritable Class DetailsListView
 
         Private changeBounds As Rectangle
         Private multiSelected As Boolean
@@ -83,7 +83,7 @@ Namespace TweenCustomControl
         End Sub
 
         Public Sub ChangeItemFontAndColor(ByVal index As Integer, ByVal foreColor As Color, ByVal fnt As Font)
-            ChangeSubItemStyles(index, 0, backColor, foreColor, fnt)
+            ChangeSubItemStyles(index, 0, BackColor, foreColor, fnt)
         End Sub
 
         Public Sub ChangeItemStyles(ByVal index As Integer, ByVal backColor As Color, ByVal foreColor As Color, ByVal fnt As Font)

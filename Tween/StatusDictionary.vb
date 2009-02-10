@@ -26,7 +26,7 @@ Imports System.Collections.ObjectModel
 Imports Tween.TweenCustomControl
 
 
-Public Class PostClass
+Public NotInheritable Class PostClass
     Private _Nick As String
     Private _Data As String
     Private _ImageUrl As String
@@ -255,7 +255,7 @@ Public Class PostClass
     End Property
 End Class
 
-Public Class TabInformations
+Public NotInheritable Class TabInformations
     '個別タブの情報をDictionaryで保持
     Private _sorter As IdComparerClass
     Private _tabs As New Dictionary(Of String, TabClass)
@@ -767,7 +767,7 @@ Public Class TabInformations
     End Sub
 End Class
 
-Public Class TabClass
+Public NotInheritable Class TabClass
     '自分のタブ名は分からない
     Private _unreadManage As Boolean
     Private _notify As Boolean
@@ -1020,7 +1020,7 @@ Public Class TabClass
     End Function
 End Class
 
-Public Class FiltersClass
+Public NotInheritable Class FiltersClass
     Private _name As String
     Private _body As New List(Of String)
     Private _searchBoth As Boolean
@@ -1213,7 +1213,7 @@ Public Class FiltersClass
 End Class
 
 'ソート比較クラス：ID比較のみ
-Public Class IdComparerClass
+Public NotInheritable Class IdComparerClass
     Implements IComparer(Of Long)
 
     ''' <summary>

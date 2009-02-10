@@ -143,6 +143,7 @@ Public Class TweenMain
     Private _waitDm As Boolean = False
     Private _bw(9) As BackgroundWorker
     Private cMode As Integer
+    Private StatusLabel As New ToolStripLabelHistory
     '''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 #If DEBUG Then
@@ -240,6 +241,7 @@ Public Class TweenMain
         If _brsBackColorAtTo IsNot Nothing Then _brsBackColorAtTo.Dispose()
         If _brsBackColorNone IsNot Nothing Then _brsBackColorNone.Dispose()
         If _brsDeactiveSelection IsNot Nothing Then _brsDeactiveSelection.Dispose()
+        StatusLabel.Dispose()
         sf.Dispose()
     End Sub
 
@@ -305,7 +307,7 @@ Public Class TweenMain
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Me.Visible = False
 
-        'Twitter.Owner = Me  'Invoke用
+        Me.StatusStrip1.Items.Add(StatusLabel)
 
         LoadIcons() ' アイコン読み込み
 
@@ -776,7 +778,7 @@ Public Class TweenMain
         Dim topId As Long = -1
         Dim befCnt As Integer = _curList.VirtualListSize
 
-        _curList.BeginUpdate()
+        '_curList.BeginUpdate()
         If _curList.VirtualListSize > 0 Then
             If _statuses.SortMode = IdComparerClass.ComparerMode.Id Then
                 If _statuses.SortOrder = SortOrder.Ascending Then
@@ -830,27 +832,19 @@ Public Class TweenMain
         End If
 
         '現在の選択状態を退避
-        'Dim selId As New Dictionary(Of String, Long())
         Dim selId() As Long = Nothing
-        'Dim focusedId As New Dictionary(Of String, Long)
         Dim focusedId As Long
-        'For Each tab As TabPage In ListTab.TabPages
-        'Dim lst As DetailsListView = DirectCast(TAB.Controls(0), DetailsListView)
-        'selId.Add(TAB.Text, _statuses.GetId(TAB.Text, lst.SelectedIndices))
         If _curList.SelectedIndices.Count < 31 Then
             selId = _statuses.GetId(_curTab.Text, _curList.SelectedIndices)
         Else
             selId = New Long(0) {-1}
         End If
         If _curList.FocusedItem IsNot Nothing Then
-            'focusedId.Add(TAB.Text, _statuses.GetId(TAB.Text, lst.FocusedItem.Index))
             focusedId = _statuses.GetId(_curTab.Text, _curList.FocusedItem.Index)
         Else
-            'focusedId.Add(TAB.Text, -1)
             focusedId = -1
         End If
-        'Next
-        _curList.EndUpdate()
+        '_curList.EndUpdate()
 
         '更新確定
         Dim notifyPosts() As PostClass = Nothing
@@ -865,6 +859,7 @@ Public Class TweenMain
             lst.BeginUpdate()
             If lst.VirtualListSize <> tabInfo.AllCount Then
                 If lst.Equals(_curList) Then
+                    '_curList.BeginUpdate()
                     _itemCache = Nothing
                     _postCache = Nothing
                 End If
@@ -873,6 +868,7 @@ Public Class TweenMain
                     Me.SelectListItem(lst, _
                                       _statuses.GetIndex(tab.Text, selId), _
                                       _statuses.GetIndex(tab.Text, focusedId))
+                    '_curList.EndUpdate()
                 End If
             End If
             lst.EndUpdate()
@@ -880,7 +876,7 @@ Public Class TweenMain
         Next
 
         'スクロール制御後処理
-        _curList.BeginUpdate()
+        '_curList.BeginUpdate()
         If befCnt <> _curList.VirtualListSize Then
             Select Case smode
                 Case -3
@@ -899,7 +895,7 @@ Public Class TweenMain
                     End If
             End Select
         End If
-        _curList.EndUpdate()
+        '_curList.EndUpdate()
 
         '新着通知
         If NewPostPopMenuItem.Checked AndAlso _
@@ -1432,8 +1428,14 @@ Public Class TweenMain
                 TimerRefreshIcon.Enabled = True
             End If
             If e.ProgressPercentage = 100 Then  '終了
-                TimerRefreshIcon.Enabled = False
-                NotifyIcon1.Icon = NIconAt
+                Dim cnt As Integer = 0
+                For Each bw As BackgroundWorker In _bw
+                    If bw IsNot Nothing AndAlso bw.IsBusy Then cnt += 1
+                Next
+                If cnt < 2 Then
+                    TimerRefreshIcon.Enabled = False
+                    NotifyIcon1.Icon = NIconAt
+                End If
             End If
         End If
     End Sub
@@ -2552,8 +2554,8 @@ Public Class TweenMain
                 End If
             End If
         Else
-                'アイコン列はデフォルト描画
-                e.DrawDefault = True
+            'アイコン列はデフォルト描画
+            e.DrawDefault = True
         End If
     End Sub
 
