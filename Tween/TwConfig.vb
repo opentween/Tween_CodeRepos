@@ -1309,7 +1309,7 @@ Public Property CloseToExit() As Boolean
         End Set
     End Property
 
-    <ConfigurationProperty("datetimeformat", DefaultValue:="")> _
+    <ConfigurationProperty("datetimeformat", DefaultValue:="yyyy/MM/dd H:mm:ss")> _
     Public Property DateTimeFormat() As String
         Get
             Return Me("datetimeformat").ToString
