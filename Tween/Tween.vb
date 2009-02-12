@@ -832,18 +832,23 @@ Public Class TweenMain
         End If
 
         '現在の選択状態を退避
-        Dim selId() As Long = Nothing
-        Dim focusedId As Long
-        If _curList.SelectedIndices.Count < 31 Then
-            selId = _statuses.GetId(_curTab.Text, _curList.SelectedIndices)
-        Else
-            selId = New Long(0) {-1}
-        End If
-        If _curList.FocusedItem IsNot Nothing Then
-            focusedId = _statuses.GetId(_curTab.Text, _curList.FocusedItem.Index)
-        Else
-            focusedId = -1
-        End If
+        Dim selId As New Dictionary(Of String, Long())
+        Dim focusedId As New Dictionary(Of String, Long)
+        If _endingFlag Then Exit Sub
+        For Each tab As TabPage In ListTab.TabPages
+            Dim lst As DetailsListView = DirectCast(tab.Controls(0), DetailsListView)
+            If lst.SelectedIndices.Count < 31 Then
+                selId.Add(tab.Text, _statuses.GetId(tab.Text, lst.SelectedIndices))
+            Else
+                selId.Add(tab.Text, New Long(0) {-1})
+            End If
+            If lst.FocusedItem IsNot Nothing Then
+                focusedId.Add(tab.Text, _statuses.GetId(tab.Text, lst.FocusedItem.Index))
+            Else
+                focusedId.Add(tab.Text, -1)
+            End If
+        Next
+
         '_curList.EndUpdate()
 
         '更新確定
@@ -865,12 +870,12 @@ Public Class TweenMain
                     _postCache = Nothing
                 End If
                 lst.VirtualListSize = tabInfo.AllCount 'リスト件数更新
-                If lst.Equals(_curList) Then
-                    Me.SelectListItem(lst, _
-                                      _statuses.GetIndex(tab.Text, selId), _
-                                      _statuses.GetIndex(tab.Text, focusedId))
-                    '_curList.EndUpdate()
-                End If
+                'If lst.Equals(_curList) Then
+                Me.SelectListItem(lst, _
+                                  _statuses.GetIndex(tab.Text, selId(tab.Text)), _
+                                  _statuses.GetIndex(tab.Text, focusedId(tab.Text)))
+                '_curList.EndUpdate()
+                'End If
             End If
             lst.EndUpdate()
             If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
@@ -1287,6 +1292,7 @@ Public Class TweenMain
             Case WORKERTYPE.Follower
                 bw.ReportProgress(50, My.Resources.UpdateFollowersMenuItem1_ClickText1)
                 ret = Twitter.GetFollowers(False)       ' Followersリストキャッシュ有効
+                Twitter.RefreshOwl()    '洗い換え
             Case WORKERTYPE.OpenUri
                 Dim myPath As String = Convert.ToString(args.status)
 
@@ -1476,10 +1482,10 @@ Public Class TweenMain
         If rslt.retMsg.Length > 0 Then
             If nw Then NotifyIcon1.Icon = NIconAtRed
             StatusLabel.Text = rslt.retMsg
-            _waitTimeline = False
-            _waitReply = False
-            _waitFollower = False
-            _waitDm = False
+            '_waitTimeline = False
+            '_waitReply = False
+            '_waitFollower = False
+            '_waitDm = False
             '_initial = False    '起動時モード終了
         End If
 
@@ -1585,6 +1591,9 @@ Public Class TweenMain
                 If rslt.retMsg.Length = 0 Then GetTimeline(WORKERTYPE.Timeline, 1, 0)
             Case WORKERTYPE.Follower
                 _waitFollower = False
+                _itemCache = Nothing
+                _postCache = Nothing
+                _curList.Refresh()
         End Select
 
     End Sub
@@ -4853,14 +4862,12 @@ RETRY2:
         '    LView.Items(LView.SelectedIndices(i)).Selected = False
         'Next
 
-        If Index IsNot Nothing Then
-            If Index(0) > -1 Then
-                LView.SelectedIndices.Clear()
-                For Each idx As Integer In Index
-                    'LView.Items(idx).Selected = True
-                    LView.SelectedIndices.Add(idx)
-                Next
-            End If
+        If Index IsNot Nothing AndAlso Index(0) > -1 Then
+            LView.SelectedIndices.Clear()
+            For Each idx As Integer In Index
+                'LView.Items(idx).Selected = True
+                LView.SelectedIndices.Add(idx)
+            Next
         End If
         If FocusedIndex > -1 Then
             LView.Items(FocusedIndex).Focused = True

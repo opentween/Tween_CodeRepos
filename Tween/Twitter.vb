@@ -1555,16 +1555,12 @@ Public Module Twitter
     End Function
 
     Public Function GetFollowers(ByVal CacheInvalidate As Boolean) As String
-        'Dim retMsg As String = ""
-        'If _signed = False Then
-        '    retMsg = SignIn()
-        '    If retMsg.Length > 0 Then
-        '        Return retMsg
-        '    End If
-        'End If
-
         Return doGetFollowers(CacheInvalidate)
     End Function
+
+    Public Sub RefreshOwl()
+        If follower.Count > 1 Then TabInformations.GetInstance.RefreshOwl(follower)
+    End Sub
 
     Public Property Username() As String
         Get
