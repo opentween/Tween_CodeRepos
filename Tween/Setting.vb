@@ -153,7 +153,7 @@ Public Class Setting
                 Case 3
                     _MyIconSize = IconSizes.Icon48
                 Case 4
-                    _MyIconSize = IconSizes.Icon48  '廃止
+                    _MyIconSize = IconSizes.Icon48_2
             End Select
             _MyStatusText = StatusText.Text
             _MyPlaySound = PlaySnd.Checked
@@ -281,7 +281,7 @@ Public Class Setting
             Case IconSizes.Icon48
                 IconSize.SelectedIndex = 3
             Case IconSizes.Icon48_2
-                IconSize.SelectedIndex = 3  '廃止
+                IconSize.SelectedIndex = 4
         End Select
         StatusText.Text = _MyStatusText
         UReadMng.Checked = _MyUnreadManage
