@@ -1827,13 +1827,16 @@ Public Class TweenMain
             Me.Cursor = Cursors.WaitCursor
 
             Dim rslt As Boolean = True
-            For Each idx As Integer In _curList.SelectedIndices
-                Dim Id As Long = GetCurTabPost(idx).Id
+            For Each Id As Long In _statuses.GetId(_curTab.Text, _curList.SelectedIndices)
                 Dim rtn As String = ""
                 If _curTab.Text = "Direct" Then
                     rtn = Twitter.RemoveDirectMessage(Id)
                 Else
-                    rtn = Twitter.RemoveStatus(Id)
+                    If _statuses.Item(Id).IsMe Then
+                        rtn = Twitter.RemoveStatus(Id)
+                    Else
+                        Continue For
+                    End If
                 End If
                 If rtn.Length > 0 Then
                     'エラー
