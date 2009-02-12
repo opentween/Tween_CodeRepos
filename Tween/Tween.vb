@@ -458,11 +458,11 @@ Public Class TweenMain
             If DateTime.Now.ToString(SettingDialog.DateTimeFormat).Length = 0 Then
                 ' このブロックは絶対に実行されないはず
                 ' 変換が成功した場合にLengthが0にならない
-                SettingDialog.DateTimeFormat = ""
+                SettingDialog.DateTimeFormat = "yyyy/MM/dd H:mm:ss"
             End If
         Catch ex As FormatException
-            ' FormatExceptionが発生したらクリア (=Gとみなされる)
-            SettingDialog.DateTimeFormat = ""
+            ' FormatExceptionが発生したら初期値を設定 (=yyyy/MM/dd H:mm:ssとみなされる)
+            SettingDialog.DateTimeFormat = "yyyy/MM/dd H:mm:ss"
         End Try
 
         Outputz.key = SettingDialog.OutputzKey
