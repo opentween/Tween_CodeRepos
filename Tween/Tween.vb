@@ -853,6 +853,7 @@ Public Class TweenMain
         addCount = _statuses.SubmitUpdate(soundFile, notifyPosts)
 
         'リストに反映＆選択状態復元
+        If _endingFlag Then Exit Sub
         For Each tab As TabPage In ListTab.TabPages
             Dim lst As DetailsListView = DirectCast(tab.Controls(0), DetailsListView)
             Dim tabInfo As TabClass = _statuses.Tabs(tab.Text)
@@ -2163,8 +2164,8 @@ Public Class TweenMain
             If _iconCol Then
                 _listCustom.Columns(0).Width = _section.Width1
                 _listCustom.Columns(1).Width = _section.Width3
-                _listCustom.Columns(0).DisplayIndex = _section.DisplayIndex1
-                _listCustom.Columns(1).DisplayIndex = _section.DisplayIndex3
+                _listCustom.Columns(0).DisplayIndex = 0
+                _listCustom.Columns(1).DisplayIndex = 1
             Else
                 For i As Integer = 0 To 7
                     If _section.DisplayIndex1 = i Then
@@ -4580,28 +4581,40 @@ RETRY2:
 
     Private Sub MyList_ColumnReordered(ByVal sender As System.Object, ByVal e As ColumnReorderedEventArgs)
         Dim lst As DetailsListView = DirectCast(sender, DetailsListView)
-        'Dim darr(lst.Columns.Count - 1) As Integer
-        'For i As Integer = 0 To lst.Columns.Count - 1
-        '    darr(lst.Columns(i).DisplayIndex) = i
-        'Next
-        'MoveArrayItem(darr, e.OldDisplayIndex, e.NewDisplayIndex)
-
         If _section Is Nothing Then Exit Sub
 
         If _iconCol Then
             _section.Width1 = lst.Columns(0).Width
             _section.Width3 = lst.Columns(1).Width
-            _section.DisplayIndex1 = lst.Columns(0).DisplayIndex
-            _section.DisplayIndex3 = lst.Columns(1).DisplayIndex
+            '_section.DisplayIndex1 = lst.Columns(0).DisplayIndex
+            '_section.DisplayIndex3 = lst.Columns(1).DisplayIndex
         Else
-            _section.DisplayIndex1 = lst.Columns(0).DisplayIndex
-            _section.DisplayIndex2 = lst.Columns(1).DisplayIndex
-            _section.DisplayIndex3 = lst.Columns(2).DisplayIndex
-            _section.DisplayIndex4 = lst.Columns(3).DisplayIndex
-            _section.DisplayIndex5 = lst.Columns(4).DisplayIndex
-            _section.DisplayIndex6 = lst.Columns(5).DisplayIndex
-            _section.DisplayIndex7 = lst.Columns(6).DisplayIndex
-            _section.DisplayIndex8 = lst.Columns(7).DisplayIndex
+            Dim darr(lst.Columns.Count - 1) As Integer
+            For i As Integer = 0 To lst.Columns.Count - 1
+                darr(lst.Columns(i).DisplayIndex) = i
+            Next
+            MoveArrayItem(darr, e.OldDisplayIndex, e.NewDisplayIndex)
+
+            For i As Integer = 0 To lst.Columns.Count - 1
+                Select Case darr(i)
+                    Case 0
+                        _section.DisplayIndex1 = i
+                    Case 1
+                        _section.DisplayIndex2 = i
+                    Case 2
+                        _section.DisplayIndex3 = i
+                    Case 3
+                        _section.DisplayIndex4 = i
+                    Case 4
+                        _section.DisplayIndex5 = i
+                    Case 5
+                        _section.DisplayIndex6 = i
+                    Case 6
+                        _section.DisplayIndex7 = i
+                    Case 7
+                        _section.DisplayIndex8 = i
+                End Select
+            Next
             _section.Width1 = lst.Columns(0).Width
             _section.Width2 = lst.Columns(1).Width
             _section.Width3 = lst.Columns(2).Width
