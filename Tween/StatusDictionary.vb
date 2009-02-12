@@ -774,6 +774,14 @@ Public NotInheritable Class TabInformations
         End If
         tb.UnreadManage = Manage
     End Sub
+
+    Public Sub RefreshOwl(ByVal follower As System.Collections.Specialized.StringCollection)
+        For Each id As Long In _statuses.Keys
+            SyncLock LockObj
+                _statuses(id).IsOwl = Not follower.Contains(_statuses(id).Name.ToLower())
+            End SyncLock
+        Next
+    End Sub
 End Class
 
 Public NotInheritable Class TabClass
