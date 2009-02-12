@@ -42,7 +42,7 @@ Public Class TweenMain
     Private _mySpDis As Integer         '区切り位置
     Private _mySpDis2 As Integer        '発言欄区切り位置
     Private _iconSz As Integer            'アイコンサイズ（現在は16、24、48の3種類。将来直接数字指定可能とする 注：24x24の場合に26と指定しているのはMSゴシック系フォントのための仕様）
-    'Private _iconCol As Boolean           '1列表示の時True（48サイズのとき）
+    Private _iconCol As Boolean           '1列表示の時True（48サイズのとき）
 
     '雑多なフラグ類
     Private _initial As Boolean         'True:起動時処理中
@@ -617,8 +617,8 @@ Public Class TweenMain
             Case IconSizes.Icon48
                 _iconSz = 48
             Case IconSizes.Icon48_2
-                _iconSz = 48    '廃止予定
-                '_iconCol = True
+                _iconSz = 48
+                _iconCol = True
         End Select
         If _iconSz = 0 Then
             Twitter.GetIcon = False
@@ -1745,21 +1745,25 @@ Public Class TweenMain
     Private Sub MyList_ColumnClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.ColumnClickEventArgs)
         If SettingDialog.SortOrderLock Then Exit Sub
         Dim mode As IdComparerClass.ComparerMode
-        Select Case e.Column
-            Case 0, 5, 6    '0:アイコン,5:未読マーク,6:プロテクト・フィルターマーク
-                'ソートしない
-                Exit Sub
-            Case 1  'ニックネーム
-                mode = IdComparerClass.ComparerMode.Nickname
-            Case 2  '本文
-                mode = IdComparerClass.ComparerMode.Data
-            Case 3  '時刻=発言Id
-                mode = IdComparerClass.ComparerMode.Id
-            Case 4  '名前
-                mode = IdComparerClass.ComparerMode.Name
-            Case 7  'Source
-                mode = IdComparerClass.ComparerMode.Source
-        End Select
+        If _iconCol Then
+            mode = IdComparerClass.ComparerMode.Id
+        Else
+            Select Case e.Column
+                Case 0, 5, 6    '0:アイコン,5:未読マーク,6:プロテクト・フィルターマーク
+                    'ソートしない
+                    Exit Sub
+                Case 1  'ニックネーム
+                    mode = IdComparerClass.ComparerMode.Nickname
+                Case 2  '本文
+                    mode = IdComparerClass.ComparerMode.Data
+                Case 3  '時刻=発言Id
+                    mode = IdComparerClass.ComparerMode.Id
+                Case 4  '名前
+                    mode = IdComparerClass.ComparerMode.Name
+                Case 7  'Source
+                    mode = IdComparerClass.ComparerMode.Source
+            End Select
+        End If
         _statuses.ToggleSortOrder(mode)
         _itemCache = Nothing
         _postCache = Nothing
@@ -2075,11 +2079,11 @@ Public Class TweenMain
         _tabPage.UseVisualStyleBackColor = True
 
         _listCustom.AllowColumnReorder = True
-        'If Not _iconCol Then
-        _listCustom.Columns.AddRange(New ColumnHeader() {_colHd1, _colHd2, _colHd3, _colHd4, _colHd5, _colHd6, _colHd7, _colHd8})
-        'Else
-        '_listCustom.Columns.Add(_colHd1)
-        'End If
+        If Not _iconCol Then
+            _listCustom.Columns.AddRange(New ColumnHeader() {_colHd1, _colHd2, _colHd3, _colHd4, _colHd5, _colHd6, _colHd7, _colHd8})
+        Else
+            _listCustom.Columns.AddRange(New ColumnHeader() {_colHd1, _colHd3})
+        End If
         _listCustom.ContextMenuStrip = Me.ContextMenuStrip2
         _listCustom.Dock = DockStyle.Fill
         _listCustom.FullRowSelect = True
@@ -2141,51 +2145,58 @@ Public Class TweenMain
 
         _listCustom.SmallImageList = TIconSmallList
         '_listCustom.ListViewItemSorter = listViewItemSorter
-        Dim dispOrder(8) As Integer
+        Dim dispOrder(7) As Integer
         If Not startup Then
-            For i As Integer = 0 To 7
-                For j As Integer = 0 To 7
+            For i As Integer = 0 To _curList.Columns.Count - 1
+                For j As Integer = 0 To _curList.Columns.Count - 1
                     If _curList.Columns(j).DisplayIndex = i Then
                         dispOrder(i) = j
                         Exit For
                     End If
                 Next
             Next
-            For i As Integer = 0 To 7
+            For i As Integer = 0 To _curList.Columns.Count - 1
                 _listCustom.Columns(i).Width = _curList.Columns(i).Width
                 _listCustom.Columns(dispOrder(i)).DisplayIndex = i
             Next
         Else
-            For i As Integer = 0 To 7
-                If _section.DisplayIndex1 = i Then
-                    dispOrder(i) = 0
-                ElseIf _section.DisplayIndex2 = i Then
-                    dispOrder(i) = 1
-                ElseIf _section.DisplayIndex3 = i Then
-                    dispOrder(i) = 2
-                ElseIf _section.DisplayIndex4 = i Then
-                    dispOrder(i) = 3
-                ElseIf _section.DisplayIndex5 = i Then
-                    dispOrder(i) = 4
-                ElseIf _section.DisplayIndex6 = i Then
-                    dispOrder(i) = 5
-                ElseIf _section.DisplayIndex7 = i Then
-                    dispOrder(i) = 6
-                ElseIf _section.DisplayIndex8 = i Then
-                    dispOrder(i) = 7
-                End If
-            Next
-            _listCustom.Columns(0).Width = _section.Width1
-            _listCustom.Columns(1).Width = _section.Width2
-            _listCustom.Columns(2).Width = _section.Width3
-            _listCustom.Columns(3).Width = _section.Width4
-            _listCustom.Columns(4).Width = _section.Width5
-            _listCustom.Columns(5).Width = _section.Width6
-            _listCustom.Columns(6).Width = _section.Width7
-            _listCustom.Columns(7).Width = _section.Width8
-            For i As Integer = 0 To 7
-                _listCustom.Columns(dispOrder(i)).DisplayIndex = i
-            Next
+            If _iconCol Then
+                _listCustom.Columns(0).Width = _section.Width1
+                _listCustom.Columns(1).Width = _section.Width3
+                _listCustom.Columns(0).DisplayIndex = _section.DisplayIndex1
+                _listCustom.Columns(1).DisplayIndex = _section.DisplayIndex3
+            Else
+                For i As Integer = 0 To 7
+                    If _section.DisplayIndex1 = i Then
+                        dispOrder(i) = 0
+                    ElseIf _section.DisplayIndex2 = i Then
+                        dispOrder(i) = 1
+                    ElseIf _section.DisplayIndex3 = i Then
+                        dispOrder(i) = 2
+                    ElseIf _section.DisplayIndex4 = i Then
+                        dispOrder(i) = 3
+                    ElseIf _section.DisplayIndex5 = i Then
+                        dispOrder(i) = 4
+                    ElseIf _section.DisplayIndex6 = i Then
+                        dispOrder(i) = 5
+                    ElseIf _section.DisplayIndex7 = i Then
+                        dispOrder(i) = 6
+                    ElseIf _section.DisplayIndex8 = i Then
+                        dispOrder(i) = 7
+                    End If
+                Next
+                _listCustom.Columns(0).Width = _section.Width1
+                _listCustom.Columns(1).Width = _section.Width2
+                _listCustom.Columns(2).Width = _section.Width3
+                _listCustom.Columns(3).Width = _section.Width4
+                _listCustom.Columns(4).Width = _section.Width5
+                _listCustom.Columns(5).Width = _section.Width6
+                _listCustom.Columns(6).Width = _section.Width7
+                _listCustom.Columns(7).Width = _section.Width8
+                For i As Integer = 0 To 7
+                    _listCustom.Columns(dispOrder(i)).DisplayIndex = i
+                Next
+            End If
         End If
 
         _tabPage.ResumeLayout(False)
@@ -2346,9 +2357,9 @@ Public Class TweenMain
         '削除などで見つからない場合は処理せず
         If _curList Is Nothing Then Exit Sub
 
-        Dim dispOrder(8) As Integer
-        For i As Integer = 0 To 7
-            For j As Integer = 0 To 7
+        Dim dispOrder(_curList.Columns.Count - 1) As Integer
+        For i As Integer = 0 To _curList.Columns.Count - 1
+            For j As Integer = 0 To _curList.Columns.Count - 1
                 If _curList.Columns(j).DisplayIndex = i Then
                     dispOrder(i) = j
                     Exit For
@@ -2530,14 +2541,28 @@ Public Class TweenMain
                     Case Else
                         brs = New SolidBrush(e.Item.ForeColor)
                 End Select
-                If rct.Width > 0 Then e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, brs, rct, sf)
+                If rct.Width > 0 Then
+                    If _iconCol Then
+                        e.Graphics.DrawString(e.Item.SubItems(4).Text + "/" + e.Item.SubItems(1).Text + " (" + e.Item.SubItems(3).Text + ") <" + e.Item.SubItems(5).Text + e.Item.SubItems(6).Text + "> from " + e.Item.SubItems(7).Text + System.Environment.NewLine + e.Item.SubItems(2).Text, e.Item.Font, brs, rct, sf)
+                    Else
+                        e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, brs, rct, sf)
+                    End If
+                End If
             Else
                 If rct.Width > 0 Then
                     '選択中の行
                     If DirectCast(sender, Windows.Forms.Control).Focused Then
-                        e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, _brsHighLightText, rct, sf)
+                        If _iconCol Then
+                            e.Graphics.DrawString(e.Item.SubItems(4).Text + "/" + e.Item.SubItems(1).Text + " (" + e.Item.SubItems(3).Text + ") <" + e.Item.SubItems(5).Text + e.Item.SubItems(6).Text + "> from " + e.Item.SubItems(7).Text + System.Environment.NewLine + e.Item.SubItems(2).Text, e.Item.Font, _brsHighLightText, rct, sf)
+                        Else
+                            e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, _brsHighLightText, rct, sf)
+                        End If
                     Else
-                        e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, _brsForeColorUnread, rct, sf)
+                        If _iconCol Then
+                            e.Graphics.DrawString(e.Item.SubItems(4).Text + "/" + e.Item.SubItems(1).Text + " (" + e.Item.SubItems(3).Text + ") <" + e.Item.SubItems(5).Text + e.Item.SubItems(6).Text + "> from " + e.Item.SubItems(7).Text + System.Environment.NewLine + e.Item.SubItems(2).Text, e.Item.Font, _brsForeColorUnread, rct, sf)
+                        Else
+                            e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, _brsForeColorUnread, rct, sf)
+                        End If
                     End If
                 End If
             End If
@@ -4555,84 +4580,56 @@ RETRY2:
 
     Private Sub MyList_ColumnReordered(ByVal sender As System.Object, ByVal e As ColumnReorderedEventArgs)
         Dim lst As DetailsListView = DirectCast(sender, DetailsListView)
-        Dim darr(lst.Columns.Count - 1) As Integer
-        For i As Integer = 0 To lst.Columns.Count - 1
-            darr(lst.Columns(i).DisplayIndex) = i
-        Next
-        MoveArrayItem(darr, e.OldDisplayIndex, e.NewDisplayIndex)
+        'Dim darr(lst.Columns.Count - 1) As Integer
+        'For i As Integer = 0 To lst.Columns.Count - 1
+        '    darr(lst.Columns(i).DisplayIndex) = i
+        'Next
+        'MoveArrayItem(darr, e.OldDisplayIndex, e.NewDisplayIndex)
 
         If _section Is Nothing Then Exit Sub
 
-        For i As Integer = 0 To lst.Columns.Count - 1
-            Select Case darr(i)
-                Case 0
-                    _section.DisplayIndex1 = i
-                Case 1
-                    _section.DisplayIndex2 = i
-                Case 2
-                    _section.DisplayIndex3 = i
-                Case 3
-                    _section.DisplayIndex4 = i
-                Case 4
-                    _section.DisplayIndex5 = i
-                Case 5
-                    _section.DisplayIndex6 = i
-                Case 6
-                    _section.DisplayIndex7 = i
-                Case 7
-                    _section.DisplayIndex8 = i
-            End Select
-        Next
-        _section.Width1 = lst.Columns(0).Width
-        _section.Width2 = lst.Columns(1).Width
-        _section.Width3 = lst.Columns(2).Width
-        _section.Width4 = lst.Columns(3).Width
-        _section.Width5 = lst.Columns(4).Width
-        _section.Width6 = lst.Columns(5).Width
-        _section.Width7 = lst.Columns(6).Width
-        _section.Width8 = lst.Columns(7).Width
+        If _iconCol Then
+            _section.Width1 = lst.Columns(0).Width
+            _section.Width3 = lst.Columns(1).Width
+            _section.DisplayIndex1 = lst.Columns(0).DisplayIndex
+            _section.DisplayIndex3 = lst.Columns(1).DisplayIndex
+        Else
+            _section.DisplayIndex1 = lst.Columns(0).DisplayIndex
+            _section.DisplayIndex2 = lst.Columns(1).DisplayIndex
+            _section.DisplayIndex3 = lst.Columns(2).DisplayIndex
+            _section.DisplayIndex4 = lst.Columns(3).DisplayIndex
+            _section.DisplayIndex5 = lst.Columns(4).DisplayIndex
+            _section.DisplayIndex6 = lst.Columns(5).DisplayIndex
+            _section.DisplayIndex7 = lst.Columns(6).DisplayIndex
+            _section.DisplayIndex8 = lst.Columns(7).DisplayIndex
+            _section.Width1 = lst.Columns(0).Width
+            _section.Width2 = lst.Columns(1).Width
+            _section.Width3 = lst.Columns(2).Width
+            _section.Width4 = lst.Columns(3).Width
+            _section.Width5 = lst.Columns(4).Width
+            _section.Width6 = lst.Columns(5).Width
+            _section.Width7 = lst.Columns(6).Width
+            _section.Width8 = lst.Columns(7).Width
+        End If
 
-        'If e.Header.Text = "" Then
-        '    _columnIdx = e.NewDisplayIndex
-        'Else
-        '    Dim cIdx As Integer = 0
-        '    For Each clm As ColumnHeader In _curList.Columns
-        '        If clm.Text = "" Then
-        '            cIdx = clm.DisplayIndex
-        '            If cIdx >= e.NewDisplayIndex AndAlso cIdx < e.OldDisplayIndex Then
-        '                _columnIdx = cIdx + 1
-        '            ElseIf cIdx <= e.NewDisplayIndex AndAlso cIdx > e.OldDisplayIndex Then
-        '                _columnIdx = cIdx - 1
-        '            End If
-        '            Exit For
-        '        End If
-        '    Next
-        'End If
-
-        '_columnChangeFlag = True
     End Sub
 
     Private Sub MyList_ColumnWidthChanged(ByVal sender As System.Object, ByVal e As ColumnWidthChangedEventArgs)
         Dim lst As DetailsListView = DirectCast(sender, DetailsListView)
         If _section Is Nothing Then Exit Sub
-        Select Case e.ColumnIndex
-            Case 0
-                _section.Width1 = lst.Columns(e.ColumnIndex).Width
-            Case 1
-                _section.Width2 = lst.Columns(e.ColumnIndex).Width
-            Case 2
-                _section.Width3 = lst.Columns(e.ColumnIndex).Width
-            Case 3
-                _section.Width4 = lst.Columns(e.ColumnIndex).Width
-            Case 4
-                _section.Width5 = lst.Columns(e.ColumnIndex).Width
-            Case 5
-                _section.Width6 = lst.Columns(e.ColumnIndex).Width
-            Case 6
-                _section.Width7 = lst.Columns(e.ColumnIndex).Width
-            Case 7
-                _section.Width8 = lst.Columns(e.ColumnIndex).Width
-        End Select
+        If _iconCol Then
+            _section.Width1 = lst.Columns(0).Width
+            _section.Width3 = lst.Columns(1).Width
+        Else
+            _section.Width1 = lst.Columns(0).Width
+            _section.Width2 = lst.Columns(1).Width
+            _section.Width3 = lst.Columns(2).Width
+            _section.Width4 = lst.Columns(3).Width
+            _section.Width5 = lst.Columns(4).Width
+            _section.Width6 = lst.Columns(5).Width
+            _section.Width7 = lst.Columns(6).Width
+            _section.Width8 = lst.Columns(7).Width
+        End If
     End Sub
 
     Private Sub ToolStripMenuItem3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripMenuItem3.Click
