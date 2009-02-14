@@ -712,6 +712,8 @@ Public Class TweenMain
             _statuses.AddTab(name, tb)
         Next
 
+        JumpUnreadMenuItem.ShortcutKeyDisplayString = "Space"
+
         AddHandler My.Computer.Network.NetworkAvailabilityChanged, AddressOf Network_NetworkAvailabilityChanged
         If SettingDialog.MinimizeToTray = False OrElse Me.WindowState <> FormWindowState.Minimized Then
             Me.Visible = True
