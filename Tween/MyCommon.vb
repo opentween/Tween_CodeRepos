@@ -158,11 +158,13 @@ Public Module MyCommon
 retry:
         For Each c As Char In input
             If Convert.ToInt32(c) > 255 Then
+                'Unicodeの場合(1charが複数のバイトで構成されている）
                 uri = New Uri(input)
-                input = uri.AbsoluteUri
+                input = uri.EscapeUriString(input)
                 sb.Length = 0
                 GoTo retry
             ElseIf Convert.ToInt32(c) > 127 Then
+                ' UTF-8の場合
                 sb.Append("%" + Convert.ToInt16(c).ToString("X2"))
             Else
                 sb.Append(c)
