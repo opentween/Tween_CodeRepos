@@ -3780,13 +3780,13 @@ RETRY2:
                     For cnt As Integer = 0 To _curList.SelectedIndices.Count - 1
                         Dim post As PostClass = _statuses.Item(_curTab.Text, _curList.SelectedIndices(cnt))
                         If Not ids.Contains("@" + post.Name + " ") AndAlso _
-                           post.Name <> _username Then
+                           Not post.Name.Equals(_username, StringComparison.CurrentCultureIgnoreCase) Then
                             ids += "@" + post.Name + " "
                         End If
                         If isAll Then
                             For Each nm As String In post.ReplyToList
                                 If Not ids.Contains("@" + nm + " ") AndAlso _
-                                   nm <> _username Then
+                                   Not nm.Equals(_username, StringComparison.CurrentCultureIgnoreCase) Then
                                     ids += "@" + nm + " "
                                 End If
                             Next
