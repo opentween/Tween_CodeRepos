@@ -451,6 +451,7 @@ Public Class TweenMain
         SettingDialog.OutputzKey = _section.OutputzKey
         SettingDialog.OutputzUrlmode = _section.OutputzUrlmode
         SettingDialog.UseUnreadStyle = _section.UseUnreadStyle
+        SettingDialog.DefaultTimeOut = _section.DefaultTimeOut
 
         SettingDialog.DateTimeFormat = _section.DateTimeFormat
         '書式指定文字列エラーチェック
@@ -536,6 +537,7 @@ Public Class TweenMain
         Twitter.ProxyPassword = SettingDialog.ProxyPassword
         Twitter.NextThreshold = SettingDialog.NextPageThreshold   '次頁取得閾値
         Twitter.NextPages = SettingDialog.NextPagesInt    '閾値オーバー時の読み込みページ数（未使用）
+        Twitter.DefaultTimeOut = SettingDialog.DefaultTimeOut
         If IsNetworkAvailable() Then
             If SettingDialog.StartupFollowers Then
                 _waitFollower = True
@@ -3461,6 +3463,7 @@ RETRY2:
                 _section.OutputzUrlmode = SettingDialog.OutputzUrlmode
                 _section.UseUnreadStyle = SettingDialog.UseUnreadStyle
                 _section.DateTimeFormat = SettingDialog.DateTimeFormat
+                _section.DefaultTimeOut = SettingDialog.DefaultTimeOut
 
                 _section.SortOrder = _statuses.SortOrder
                 Select Case _statuses.SortMode

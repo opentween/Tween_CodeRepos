@@ -68,6 +68,7 @@ Public Module Twitter
     Private _useAPI As Boolean
 
     Private _hubServer As String
+    Private _defaultTimeOut As Integer
 
     'Private _owner As TweenMain
 
@@ -1956,7 +1957,7 @@ Public Module Twitter
     End Function
 
     Private Function CreateSocket() As MySocket
-        Return New MySocket("UTF-8", _uid, _pwd, _proxyType, _proxyAddress, _proxyPort, _proxyUser, _proxyPassword)
+        Return New MySocket("UTF-8", _uid, _pwd, _proxyType, _proxyAddress, _proxyPort, _proxyUser, _proxyPassword, _defaultTimeOut)
     End Function
 
     'Public WriteOnly Property Owner() As TweenMain
@@ -1974,6 +1975,20 @@ Public Module Twitter
     Public WriteOnly Property DetailIcon() As Dictionary(Of String, Image)
         Set(ByVal value As Dictionary(Of String, Image))
             _dIcon = value
+        End Set
+    End Property
+
+    Public Property DefaultTimeOut() As Integer
+        Get
+            Return _defaultTimeOut
+        End Get
+        Set(ByVal value As Integer)
+            If value < 0 OrElse value > 120 Then
+                ' 範囲外ならデフォルト値設定
+                _defaultTimeOut = 20 * 1000
+            Else
+                _defaultTimeOut = value * 1000
+            End If
         End Set
     End Property
 

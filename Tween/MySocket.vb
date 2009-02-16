@@ -34,6 +34,7 @@ Public NotInheritable Class MySocket
     Private _proxyType As ProxyTypeEnum
     Private Shared cCon As New System.Net.CookieContainer()
     Private Shared ReadOnly cConLock As New Object
+    Private _defaultTimeOut As Integer = 20 * 1000
 
     Public Enum REQ_TYPE
         ReqGET
@@ -59,7 +60,8 @@ Public NotInheritable Class MySocket
             ByVal ProxyAddress As String, _
             ByVal ProxyPort As Integer, _
             ByVal ProxyUser As String, _
-            ByVal ProxyPassword As String)
+            ByVal ProxyPassword As String, _
+            ByVal TimeOut As Integer)
         _enc = Encoding.GetEncoding(EncodeType)
         ServicePointManager.Expect100Continue = False
         If Username <> "" Then
@@ -76,6 +78,7 @@ Public NotInheritable Class MySocket
                 'IE設定（システム設定）はデフォルト値なので処理しない
         End Select
         _proxyType = ProxyType
+        DefaultTimeOut = TimeOut
     End Sub
 
     Public Function GetWebResponse(ByVal url As String, _
@@ -83,7 +86,7 @@ Public NotInheritable Class MySocket
             Optional ByVal reqType As REQ_TYPE = REQ_TYPE.ReqGET, _
             Optional ByVal data As String = "", _
             Optional ByVal referer As String = "", _
-            Optional ByVal timeOut As Integer = 20000, _
+            Optional ByVal timeOut As Integer = 20 * 1000, _
             Optional ByVal userAgent As String = "Mozilla/5.0 (Windows; U; Windows NT 5.1; ja; rv:1.9) Gecko/2008051206 Firefox/3.0") As Object
         Dim webReq As HttpWebRequest
         Dim cpolicy As System.Net.Cache.HttpRequestCachePolicy = New Cache.HttpRequestCachePolicy(Cache.HttpRequestCacheLevel.NoCacheNoStore)
@@ -91,7 +94,16 @@ Public NotInheritable Class MySocket
         Try
             webReq = _
                 CType(WebRequest.Create(url), HttpWebRequest)
-            webReq.Timeout = timeOut
+
+            If DefaultTimeOut = 0 Then
+                ' 0 : TimeOut.Infiniteへ読み替え
+                webReq.Timeout = Threading.Timeout.Infinite
+            ElseIf DefaultTimeOut = timeOut Then
+                webReq.Timeout = DefaultTimeOut
+            Else
+                webReq.Timeout = timeOut
+            End If
+
             If reqType <> REQ_TYPE.ReqPOSTAPI And reqType <> REQ_TYPE.ReqGetAPI Then
                 webReq.CookieContainer = cCon
                 webReq.AutomaticDecompression = DecompressionMethods.Deflate Or DecompressionMethods.GZip
@@ -115,7 +127,16 @@ Public NotInheritable Class MySocket
                reqType = REQ_TYPE.ReqPOSTEncodeProtoVer3 OrElse _
                reqType = REQ_TYPE.ReqPOSTAPI Then
                 webReq.Method = "POST"
-                webReq.Timeout = timeOut
+
+                If DefaultTimeOut = 0 Then
+                    ' 0 : TimeOut.Infiniteへ読み替え
+                    webReq.Timeout = Threading.Timeout.Infinite
+                ElseIf DefaultTimeOut = timeOut Then
+                    webReq.Timeout = DefaultTimeOut
+                Else
+                    webReq.Timeout = timeOut
+                End If
+
                 Dim dataB As Byte() = Encoding.ASCII.GetBytes(data)
                 webReq.ContentLength = dataB.Length
                 Select Case reqType
@@ -321,4 +342,18 @@ Public NotInheritable Class MySocket
             cCon = New System.Net.CookieContainer()
         End SyncLock
     End Sub
+
+    Public Property DefaultTimeOut() As Integer
+        Get
+            Return _defaultTimeOut
+        End Get
+        Set(ByVal value As Integer)
+            If value < 0 OrElse value > 120 Then
+                ' 範囲外ならデフォルト値設定
+                _defaultTimeOut = 20 * 1000
+            Else
+                _defaultTimeOut = value * 1000
+            End If
+        End Set
+    End Property
 End Class

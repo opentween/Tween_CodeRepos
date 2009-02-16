@@ -1318,6 +1318,15 @@ Public Property CloseToExit() As Boolean
             Me("datetimeformat") = value
         End Set
     End Property
+    <ConfigurationProperty("defaulttimeout", DefaultValue:=20)> _
+    Public Property DefaultTimeOut() As Integer
+        Get
+            Return CInt(Me("defaulttimeout"))
+        End Get
+        Set(ByVal value As Integer)
+            Me("defaulttimeout") = value
+        End Set
+    End Property
 
     Private Shared Function EncryptString(ByVal str As String) As String
         '文字列をバイト型配列にする
