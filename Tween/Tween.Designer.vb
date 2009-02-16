@@ -146,6 +146,7 @@ Partial Class TweenMain
         Me.SaveFileDialog1 = New System.Windows.Forms.SaveFileDialog
         Me.TimerRefreshIcon = New System.Windows.Forms.Timer(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog
+        Me.ReTweetStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripContainer1.BottomToolStripPanel.SuspendLayout()
         Me.ToolStripContainer1.ContentPanel.SuspendLayout()
         Me.ToolStripContainer1.TopToolStripPanel.SuspendLayout()
@@ -232,7 +233,6 @@ Partial Class TweenMain
         '
         Me.ContextMenuTabProperty.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AddTabMenuItem, Me.ToolStripSeparator20, Me.UreadManageMenuItem, Me.NotifyDispMenuItem, Me.SoundFileComboBox, Me.ToolStripSeparator18, Me.FilterEditMenuItem, Me.ToolStripSeparator19, Me.ClearTabMenuItem, Me.ToolStripSeparator11, Me.DeleteTabMenuItem})
         Me.ContextMenuTabProperty.Name = "ContextMenuStrip3"
-        Me.ContextMenuTabProperty.OwnerItem = Me.MenuItemTab
         Me.ContextMenuTabProperty.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
         resources.ApplyResources(Me.ContextMenuTabProperty, "ContextMenuTabProperty")
         '
@@ -478,7 +478,6 @@ Partial Class TweenMain
         '
         Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SettingStripMenuItem, Me.ToolStripSeparator9, Me.SaveLogMenuItem, Me.ToolStripSeparator17, Me.NewPostPopMenuItem, Me.PlaySoundMenuItem, Me.ListLockMenuItem, Me.ToolStripSeparator15, Me.MultiLineMenuItem, Me.ToolStripSeparator21, Me.EndToolStripMenuItem})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip1.OwnerItem = Me.MenuItemFile
         Me.ContextMenuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
         Me.ContextMenuStrip1.ShowCheckMargin = True
         Me.ContextMenuStrip1.ShowImageMargin = False
@@ -588,8 +587,9 @@ Partial Class TweenMain
         '
         'ContextMenuStrip2
         '
-        Me.ContextMenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ReplyStripMenuItem, Me.ReplyAllStripMenuItem, Me.DMStripMenuItem, Me.ToolStripSeparator2, Me.FavAddToolStripMenuItem, Me.FavRemoveToolStripMenuItem, Me.ToolStripMenuItem6, Me.ToolStripMenuItem7, Me.ToolStripSeparator4, Me.ToolStripMenuItem11, Me.JumpUnreadMenuItem, Me.ToolStripSeparator10, Me.SelectAllMenuItem, Me.DeleteStripMenuItem, Me.RefreshStripMenuItem})
+        Me.ContextMenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ReplyStripMenuItem, Me.ReplyAllStripMenuItem, Me.DMStripMenuItem, Me.ReTweetStripMenuItem, Me.ToolStripSeparator2, Me.FavAddToolStripMenuItem, Me.FavRemoveToolStripMenuItem, Me.ToolStripMenuItem6, Me.ToolStripMenuItem7, Me.ToolStripSeparator4, Me.ToolStripMenuItem11, Me.JumpUnreadMenuItem, Me.ToolStripSeparator10, Me.SelectAllMenuItem, Me.DeleteStripMenuItem, Me.RefreshStripMenuItem})
         Me.ContextMenuStrip2.Name = "ContextMenuStrip2"
+        Me.ContextMenuStrip2.OwnerItem = Me.MenuItemOperate
         Me.ContextMenuStrip2.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
         resources.ApplyResources(Me.ContextMenuStrip2, "ContextMenuStrip2")
         '
@@ -865,6 +865,11 @@ Partial Class TweenMain
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
         '
+        'ReTweetStripMenuItem
+        '
+        Me.ReTweetStripMenuItem.Name = "ReTweetStripMenuItem"
+        resources.ApplyResources(Me.ReTweetStripMenuItem, "ReTweetStripMenuItem")
+        '
         'TweenMain
         '
         Me.AllowDrop = True
@@ -1023,5 +1028,6 @@ Partial Class TweenMain
     Friend WithEvents FavRemoveToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripMenuItem10 As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents BlackFavAddToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ReTweetStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class

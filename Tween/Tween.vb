@@ -4982,4 +4982,11 @@ RETRY2:
         doGetFollowersMenu(True)        ' Followersリストキャッシュ無効
     End Sub
 
+    Private Sub ReTweetStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ReTweetStripMenuItem.Click
+        'ReTweet:内容[@id]
+        If _curPost IsNot Nothing Then
+            Dim post As PostClass = _statuses.Item(_curTab.Text, _curItemIndex)
+            StatusText.Text = "ReTweet: " + post.Data + " [@" + post.Name + "]"
+        End If
+    End Sub
 End Class
