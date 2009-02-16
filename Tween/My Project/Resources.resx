@@ -682,4 +682,7 @@
   <data name="CreateDateTimeFormatSampleText1" xml:space="preserve">
     <value>無効な日時書式指定文字列です</value>
   </data>
+  <data name="ConnectionTimeOut_ValidatingText1" xml:space="preserve">
+    <value>タイムアウトまでの時間には数値（0～120）を指定してください。</value>
+  </data>
 </root>

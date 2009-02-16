@@ -87,6 +87,7 @@ Public Class Setting
     Private _MyOutputzUrlmode As OutputzUrlmode
     Private _MyUnreadStyle As Boolean
     Private _MyDateTimeFormat As String
+    Private _MyDefaultTimeOut As Integer
 
     ''''Private _MyWidth8 As Integer
     ''''Private _MyWidth9 As Integer
@@ -242,6 +243,7 @@ Public Class Setting
 
             _MyUnreadStyle = chkUnreadStyle.Checked
             _MyDateTimeFormat = CmbDateTimeFormat.Text
+            _MyDefaultTimeOut = CType(ConnectionTimeOut.Text, Integer)      ' 0の場合はGetWebResponse()側でTimeOut.Infiniteへ読み替える
 
         Catch ex As Exception
             MessageBox.Show(My.Resources.Save_ClickText3)
@@ -389,6 +391,7 @@ Public Class Setting
 
         chkUnreadStyle.Checked = _MyUnreadStyle
         CmbDateTimeFormat.Text = _MyDateTimeFormat
+        ConnectionTimeOut.Text = _MyDefaultTimeOut.ToString
 
         'TweenMain.SetMainWindowTitle()
         'TweenMain.SetNotifyIconText()
@@ -1206,6 +1209,15 @@ Public Class Setting
         End Set
     End Property
 
+    Public Property DefaultTimeOut() As Integer
+        Get
+            Return _MyDefaultTimeOut
+        End Get
+        Set(ByVal value As Integer)
+            _MyDefaultTimeOut = value
+        End Set
+    End Property
+
     Private Sub Button3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button3.Click
         Dim filedlg As New OpenFileDialog()
 
@@ -1402,6 +1414,22 @@ Public Class Setting
 
     Private Sub LabelDateTimeFormatApplied_Layout(ByVal sender As System.Object, ByVal e As System.Windows.Forms.LayoutEventArgs) Handles LabelDateTimeFormatApplied.Layout
         CreateDateTimeFormatSample()
+    End Sub
+
+    Private Sub ConnectionTimeOut_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ConnectionTimeOut.Validating
+        Dim tm As Integer
+        Try
+            tm = CInt(ConnectionTimeOut.Text)
+        Catch ex As Exception
+            MessageBox.Show(My.Resources.ConnectionTimeOut_ValidatingText1)
+            e.Cancel = True
+            Exit Sub
+        End Try
+
+        If tm < 0 OrElse tm > 120 Then
+            MessageBox.Show(My.Resources.ConnectionTimeOut_ValidatingText1)
+            e.Cancel = True
+        End If
     End Sub
 End Class
 
