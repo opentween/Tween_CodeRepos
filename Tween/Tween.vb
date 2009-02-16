@@ -4779,11 +4779,6 @@ RETRY2:
 
         RunAsync(args)
     End Sub
-    ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
-
-    Private Sub BlackFavRemoveToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BlackFavRemoveToolStripMenuItem.Click
-        ' STUB
-    End Sub
 
     Private Function IsNetworkAvailable() As Boolean
         Dim nw As Boolean = True

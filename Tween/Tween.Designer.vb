@@ -42,7 +42,6 @@ Partial Class TweenMain
         Me.ClearTabMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator11 = New System.Windows.Forms.ToolStripSeparator
         Me.DeleteTabMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.MenuItemTab = New System.Windows.Forms.ToolStripMenuItem
         Me.TabImage = New System.Windows.Forms.ImageList(Me.components)
         Me.SplitContainer2 = New System.Windows.Forms.SplitContainer
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel
@@ -97,29 +96,26 @@ Partial Class TweenMain
         Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator
         Me.FavAddToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.FavRemoveToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.ToolStripSeparator22 = New System.Windows.Forms.ToolStripSeparator
-        Me.BlackFavAddToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.BlackFavRemoveToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator
+        Me.ToolStripMenuItem6 = New System.Windows.Forms.ToolStripMenuItem
         Me.MoveToHomeToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.MoveToFavToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.StatusOpenMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.RepliedStatusOpenMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.FavorareMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.OpenURLMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator
+        Me.ToolStripMenuItem7 = New System.Windows.Forms.ToolStripMenuItem
         Me.TabMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.IDRuleMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator4 = New System.Windows.Forms.ToolStripSeparator
+        Me.ToolStripMenuItem11 = New System.Windows.Forms.ToolStripMenuItem
         Me.ReadedStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.UnreadStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.JumpUnreadMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator
         Me.SelectAllMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator
         Me.DeleteStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.ToolStripSeparator8 = New System.Windows.Forms.ToolStripSeparator
         Me.RefreshStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.MenuItemTab = New System.Windows.Forms.ToolStripMenuItem
         Me.MenuItemCommand = New System.Windows.Forms.ToolStripMenuItem
         Me.TinyUrlConvertToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.UrlConvertAutoToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
@@ -129,6 +125,8 @@ Partial Class TweenMain
         Me.UpdateFollowersMenuItem1 = New System.Windows.Forms.ToolStripMenuItem
         Me.GetFollowersDiffToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.GetFollowersAllToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.ToolStripMenuItem10 = New System.Windows.Forms.ToolStripMenuItem
+        Me.BlackFavAddToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.MenuItemHelp = New System.Windows.Forms.ToolStripMenuItem
         Me.MatomeMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator12 = New System.Windows.Forms.ToolStripSeparator
@@ -296,12 +294,6 @@ Partial Class TweenMain
         '
         Me.DeleteTabMenuItem.Name = "DeleteTabMenuItem"
         resources.ApplyResources(Me.DeleteTabMenuItem, "DeleteTabMenuItem")
-        '
-        'MenuItemTab
-        '
-        Me.MenuItemTab.DropDown = Me.ContextMenuTabProperty
-        Me.MenuItemTab.Name = "MenuItemTab"
-        resources.ApplyResources(Me.MenuItemTab, "MenuItemTab")
         '
         'TabImage
         '
@@ -590,7 +582,7 @@ Partial Class TweenMain
         '
         'ContextMenuStrip2
         '
-        Me.ContextMenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ReplyStripMenuItem, Me.ReplyAllStripMenuItem, Me.DMStripMenuItem, Me.ToolStripSeparator2, Me.FavAddToolStripMenuItem, Me.FavRemoveToolStripMenuItem, Me.ToolStripSeparator22, Me.BlackFavAddToolStripMenuItem, Me.BlackFavRemoveToolStripMenuItem, Me.ToolStripSeparator1, Me.MoveToHomeToolStripMenuItem, Me.MoveToFavToolStripMenuItem, Me.StatusOpenMenuItem, Me.RepliedStatusOpenMenuItem, Me.FavorareMenuItem, Me.OpenURLMenuItem, Me.ToolStripSeparator3, Me.TabMenuItem, Me.IDRuleMenuItem, Me.ToolStripSeparator4, Me.ReadedStripMenuItem, Me.UnreadStripMenuItem, Me.JumpUnreadMenuItem, Me.ToolStripSeparator10, Me.SelectAllMenuItem, Me.ToolStripSeparator5, Me.DeleteStripMenuItem, Me.ToolStripSeparator8, Me.RefreshStripMenuItem})
+        Me.ContextMenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ReplyStripMenuItem, Me.ReplyAllStripMenuItem, Me.DMStripMenuItem, Me.ToolStripSeparator2, Me.FavAddToolStripMenuItem, Me.FavRemoveToolStripMenuItem, Me.ToolStripMenuItem6, Me.ToolStripMenuItem7, Me.ToolStripSeparator4, Me.ToolStripMenuItem11, Me.JumpUnreadMenuItem, Me.ToolStripSeparator10, Me.SelectAllMenuItem, Me.DeleteStripMenuItem, Me.RefreshStripMenuItem})
         Me.ContextMenuStrip2.Name = "ContextMenuStrip2"
         Me.ContextMenuStrip2.OwnerItem = Me.MenuItemOperate
         Me.ContextMenuStrip2.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
@@ -626,25 +618,11 @@ Partial Class TweenMain
         Me.FavRemoveToolStripMenuItem.Name = "FavRemoveToolStripMenuItem"
         resources.ApplyResources(Me.FavRemoveToolStripMenuItem, "FavRemoveToolStripMenuItem")
         '
-        'ToolStripSeparator22
+        'ToolStripMenuItem6
         '
-        Me.ToolStripSeparator22.Name = "ToolStripSeparator22"
-        resources.ApplyResources(Me.ToolStripSeparator22, "ToolStripSeparator22")
-        '
-        'BlackFavAddToolStripMenuItem
-        '
-        Me.BlackFavAddToolStripMenuItem.Name = "BlackFavAddToolStripMenuItem"
-        resources.ApplyResources(Me.BlackFavAddToolStripMenuItem, "BlackFavAddToolStripMenuItem")
-        '
-        'BlackFavRemoveToolStripMenuItem
-        '
-        resources.ApplyResources(Me.BlackFavRemoveToolStripMenuItem, "BlackFavRemoveToolStripMenuItem")
-        Me.BlackFavRemoveToolStripMenuItem.Name = "BlackFavRemoveToolStripMenuItem"
-        '
-        'ToolStripSeparator1
-        '
-        Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
-        resources.ApplyResources(Me.ToolStripSeparator1, "ToolStripSeparator1")
+        Me.ToolStripMenuItem6.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MoveToHomeToolStripMenuItem, Me.MoveToFavToolStripMenuItem, Me.StatusOpenMenuItem, Me.RepliedStatusOpenMenuItem, Me.FavorareMenuItem, Me.OpenURLMenuItem})
+        Me.ToolStripMenuItem6.Name = "ToolStripMenuItem6"
+        resources.ApplyResources(Me.ToolStripMenuItem6, "ToolStripMenuItem6")
         '
         'MoveToHomeToolStripMenuItem
         '
@@ -676,10 +654,11 @@ Partial Class TweenMain
         Me.OpenURLMenuItem.Name = "OpenURLMenuItem"
         resources.ApplyResources(Me.OpenURLMenuItem, "OpenURLMenuItem")
         '
-        'ToolStripSeparator3
+        'ToolStripMenuItem7
         '
-        Me.ToolStripSeparator3.Name = "ToolStripSeparator3"
-        resources.ApplyResources(Me.ToolStripSeparator3, "ToolStripSeparator3")
+        Me.ToolStripMenuItem7.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TabMenuItem, Me.IDRuleMenuItem})
+        Me.ToolStripMenuItem7.Name = "ToolStripMenuItem7"
+        resources.ApplyResources(Me.ToolStripMenuItem7, "ToolStripMenuItem7")
         '
         'TabMenuItem
         '
@@ -695,6 +674,12 @@ Partial Class TweenMain
         '
         Me.ToolStripSeparator4.Name = "ToolStripSeparator4"
         resources.ApplyResources(Me.ToolStripSeparator4, "ToolStripSeparator4")
+        '
+        'ToolStripMenuItem11
+        '
+        Me.ToolStripMenuItem11.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ReadedStripMenuItem, Me.UnreadStripMenuItem})
+        Me.ToolStripMenuItem11.Name = "ToolStripMenuItem11"
+        resources.ApplyResources(Me.ToolStripMenuItem11, "ToolStripMenuItem11")
         '
         'ReadedStripMenuItem
         '
@@ -721,29 +706,25 @@ Partial Class TweenMain
         Me.SelectAllMenuItem.Name = "SelectAllMenuItem"
         resources.ApplyResources(Me.SelectAllMenuItem, "SelectAllMenuItem")
         '
-        'ToolStripSeparator5
-        '
-        Me.ToolStripSeparator5.Name = "ToolStripSeparator5"
-        resources.ApplyResources(Me.ToolStripSeparator5, "ToolStripSeparator5")
-        '
         'DeleteStripMenuItem
         '
         Me.DeleteStripMenuItem.Name = "DeleteStripMenuItem"
         resources.ApplyResources(Me.DeleteStripMenuItem, "DeleteStripMenuItem")
-        '
-        'ToolStripSeparator8
-        '
-        Me.ToolStripSeparator8.Name = "ToolStripSeparator8"
-        resources.ApplyResources(Me.ToolStripSeparator8, "ToolStripSeparator8")
         '
         'RefreshStripMenuItem
         '
         Me.RefreshStripMenuItem.Name = "RefreshStripMenuItem"
         resources.ApplyResources(Me.RefreshStripMenuItem, "RefreshStripMenuItem")
         '
+        'MenuItemTab
+        '
+        Me.MenuItemTab.DropDown = Me.ContextMenuTabProperty
+        Me.MenuItemTab.Name = "MenuItemTab"
+        resources.ApplyResources(Me.MenuItemTab, "MenuItemTab")
+        '
         'MenuItemCommand
         '
-        Me.MenuItemCommand.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TinyUrlConvertToolStripMenuItem, Me.UpdateFollowersMenuItem1})
+        Me.MenuItemCommand.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TinyUrlConvertToolStripMenuItem, Me.UpdateFollowersMenuItem1, Me.ToolStripMenuItem10})
         Me.MenuItemCommand.Name = "MenuItemCommand"
         resources.ApplyResources(Me.MenuItemCommand, "MenuItemCommand")
         '
@@ -788,6 +769,17 @@ Partial Class TweenMain
         '
         Me.GetFollowersAllToolStripMenuItem.Name = "GetFollowersAllToolStripMenuItem"
         resources.ApplyResources(Me.GetFollowersAllToolStripMenuItem, "GetFollowersAllToolStripMenuItem")
+        '
+        'ToolStripMenuItem10
+        '
+        Me.ToolStripMenuItem10.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BlackFavAddToolStripMenuItem})
+        Me.ToolStripMenuItem10.Name = "ToolStripMenuItem10"
+        resources.ApplyResources(Me.ToolStripMenuItem10, "ToolStripMenuItem10")
+        '
+        'BlackFavAddToolStripMenuItem
+        '
+        Me.BlackFavAddToolStripMenuItem.Name = "BlackFavAddToolStripMenuItem"
+        resources.ApplyResources(Me.BlackFavAddToolStripMenuItem, "BlackFavAddToolStripMenuItem")
         '
         'MenuItemHelp
         '
@@ -916,21 +908,10 @@ Partial Class TweenMain
     Friend WithEvents ContextMenuStrip1 As System.Windows.Forms.ContextMenuStrip
     Friend WithEvents EndToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ContextMenuStrip2 As System.Windows.Forms.ContextMenuStrip
-    Friend WithEvents FavAddToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents FavRemoveToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents MoveToHomeToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents MoveToFavToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents ReplyStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents DMStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents ToolStripSeparator3 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents DeleteStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents TimerDM As System.Windows.Forms.Timer
-    Friend WithEvents ReadedStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents UnreadStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents ToolStripSeparator5 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents ToolStripSeparator8 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents RefreshStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents SettingStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator9 As System.Windows.Forms.ToolStripSeparator
@@ -938,11 +919,8 @@ Partial Class TweenMain
     Friend WithEvents NewPostPopMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ListLockMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents JumpUnreadMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents StatusOpenMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents FavorareMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator15 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents TimerColorize As System.Windows.Forms.Timer
-    Friend WithEvents TabMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator4 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents SaveLogMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator17 As System.Windows.Forms.ToolStripSeparator
@@ -958,15 +936,11 @@ Partial Class TweenMain
     Friend WithEvents ToolStripSeparator19 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents AddTabMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator20 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents ReplyAllStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents IDRuleMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator10 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents SelectAllMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents OpenURLMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ClearTabMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator11 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents PlaySoundMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents RepliedStatusOpenMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents OpenFileDialog1 As System.Windows.Forms.OpenFileDialog
     Friend WithEvents ContextMenuStrip3 As System.Windows.Forms.ContextMenuStrip
     Friend WithEvents IconNameToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
@@ -1029,10 +1003,26 @@ Partial Class TweenMain
     Friend WithEvents SearchItem4ToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents CurrentTabToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripMenuItem4 As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents ToolStripSeparator22 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents BlackFavAddToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents BlackFavRemoveToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents GetFollowersDiffToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents GetFollowersAllToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripMenuItem6 As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents MoveToHomeToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents MoveToFavToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents StatusOpenMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents RepliedStatusOpenMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents FavorareMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents OpenURLMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripMenuItem7 As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents TabMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents IDRuleMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripMenuItem11 As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ReadedStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents UnreadStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ReplyStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ReplyAllStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents FavAddToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents FavRemoveToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripMenuItem10 As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents BlackFavAddToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class
