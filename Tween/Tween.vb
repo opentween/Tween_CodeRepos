@@ -3082,19 +3082,6 @@ RETRY2:
                 SendKeys.Send("{UP}")
             End If
         End If
-        If e.KeyCode = Keys.C Then
-            Dim clstr As String = ""
-            If e.Control AndAlso Not e.Alt AndAlso Not e.Shift Then
-                e.Handled = True
-                e.SuppressKeyPress = True
-                CopyStot()
-            End If
-            If e.Control AndAlso e.Shift AndAlso Not e.Alt Then
-                e.Handled = True
-                e.SuppressKeyPress = True
-                CopyIdUri()
-            End If
-        End If
     End Sub
 
     Private Sub CopyStot()
