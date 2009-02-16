@@ -1148,13 +1148,15 @@ Public Module Twitter
         Public CreatedAt As String
         Public Id As String
         Public Text As String
-        Public Sub New(ByVal Created As String, ByVal IdStr As String, ByVal txt As String)
+        Public UserId As String
+        Public Sub New(ByVal Created As String, ByVal IdStr As String, ByVal txt As String, ByVal uid As String)
             CreatedAt = Created
             Id = IdStr
             Text = txt
+            UserId = uid
         End Sub
         Public Shadows Function Equals(ByVal dst As PostInfo) As Boolean
-            If Me.CreatedAt = dst.CreatedAt AndAlso Me.Id = dst.Id AndAlso Me.Text = dst.Text Then
+            If Me.CreatedAt = dst.CreatedAt AndAlso Me.Id = dst.Id AndAlso Me.Text = dst.Text AndAlso Me.UserId = dst.UserId Then
                 Return True
             Else
                 Return False
@@ -1163,8 +1165,8 @@ Public Module Twitter
     End Structure
 
     Private Function IsPostRestricted(ByRef resMsg As String) As Boolean
-        Static _prev As New PostInfo("", "", "")
-        Dim _current As New PostInfo("", "", "")
+        Static _prev As New PostInfo("", "", "", "")
+        Dim _current As New PostInfo("", "", "", "")
 
 
         Dim xd As XmlDocument = New XmlDocument()
@@ -1173,6 +1175,7 @@ Public Module Twitter
             _current.CreatedAt = xd.SelectSingleNode("/status/created_at/text()").Value
             _current.Id = xd.SelectSingleNode("/status/id/text()").Value
             _current.Text = xd.SelectSingleNode("/status/text/text()").Value
+            _current.UserId = xd.SelectSingleNode("/status/user/id/text()").Value
 
             If _current.Equals(_prev) Then
                 Return True
@@ -1180,6 +1183,7 @@ Public Module Twitter
             _prev.CreatedAt = _current.CreatedAt
             _prev.Id = _current.Id
             _prev.Text = _current.Text
+            _prev.UserId = _current.UserId
         Catch ex As XmlException
             Return False
         End Try
