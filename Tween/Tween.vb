@@ -3015,11 +3015,6 @@ RETRY2:
                 TimerColorize.Start()
                 'cMode = 1
             End If
-            If e.KeyCode = Keys.A Then
-                For i As Integer = 0 To _curList.VirtualListSize - 1
-                    _curList.SelectedIndices.Add(i)
-                Next
-            End If
         End If
         If Not e.Control AndAlso e.Alt AndAlso Not e.Shift Then
             ' ALTキーが押されている場合
@@ -4152,14 +4147,12 @@ RETRY2:
 
     Private Sub SelectAllMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SelectAllMenuItem.Click
         If StatusText.Focused Then
+            ' 発言欄でのCtrl+A
             StatusText.SelectAll()
         Else
-            For i As Integer = _curList.SelectedIndices.Count - 1 To 0 Step -1
-                _curList.Items(i).Selected = False
-            Next
-            _curList.SelectedIndices.Clear()
+            ' ListView上でのCtrl+A
             For i As Integer = 0 To _curList.VirtualListSize - 1
-                _curList.Items(i).Selected = True
+                _curList.SelectedIndices.Add(i)
             Next
         End If
     End Sub
@@ -4949,16 +4942,21 @@ RETRY2:
                 My.Application.DoEvents()
                 i += 1
                 If i > 50 Then
-                    _statuses.DistributePosts()
-                    RefreshTimeline()
+                    If Not _endingFlag Then
+                        _statuses.DistributePosts()
+                        RefreshTimeline()
+                    Else
+                        Exit Sub
+                    End If
                     i = 0
                 End If
             Loop
 
+            If _endingFlag Then Exit Sub
+
             _statuses.DistributePosts()
             RefreshTimeline()
 
-            If _endingFlag Then Exit Sub
             'バージョンチェック（引数：起動時チェックの場合はTrue･･･チェック結果のメッセージを表示しない）
             If SettingDialog.StartupVersion Then
                 CheckNewVersion(True)
