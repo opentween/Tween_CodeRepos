@@ -2458,25 +2458,24 @@ Public Class TweenMain
     End Sub
 
     Private Sub CreateCache(ByVal StartIndex As Integer, ByVal EndIndex As Integer)
-        If _curList.VirtualListSize <> _statuses.Tabs(_curTab.Text).AllCount Then
-            'フィルタ操作後に不一致発生（スレッド関係？）のため対処
+        Try
+            'キャッシュ要求（要求範囲±30を作成）
+            StartIndex -= 30
+            If StartIndex < 0 Then StartIndex = 0
+            EndIndex += 30
+            If EndIndex >= _statuses.Tabs(_curTab.Text).AllCount Then EndIndex = _statuses.Tabs(_curTab.Text).AllCount - 1
+            _postCache = _statuses.Item(_curTab.Text, StartIndex, EndIndex) '配列で取得
+            _itemCacheIndex = StartIndex
+
+            _itemCache = New ListViewItem(_postCache.Length - 1) {}
+            For i As Integer = 0 To _postCache.Length - 1
+                _itemCache(i) = CreateItem(_curTab, _postCache(i), StartIndex + i)
+            Next i
+        Catch ex As Exception
+            'キャッシュ要求が実データとずれるため（イベントの遅延？）
             _postCache = Nothing
             _itemCache = Nothing
-            _curList.VirtualListSize = _statuses.Tabs(_curTab.Text).AllCount
-            Exit Sub
-        End If
-        'キャッシュ要求（要求範囲±30を作成）
-        StartIndex -= 30
-        If StartIndex < 0 Then StartIndex = 0
-        EndIndex += 30
-        If EndIndex >= _statuses.Tabs(_curTab.Text).AllCount Then EndIndex = _statuses.Tabs(_curTab.Text).AllCount - 1
-        _postCache = _statuses.Item(_curTab.Text, StartIndex, EndIndex) '配列で取得
-        _itemCacheIndex = StartIndex
-
-        _itemCache = New ListViewItem(_postCache.Length - 1) {}
-        For i As Integer = 0 To _postCache.Length - 1
-            _itemCache(i) = CreateItem(_curTab, _postCache(i), StartIndex + i)
-        Next i
+        End Try
     End Sub
 
     Private Function CreateItem(ByVal Tab As TabPage, ByVal Post As PostClass, ByVal Index As Integer) As ListViewItem
