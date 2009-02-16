@@ -153,24 +153,43 @@ Public Module MyCommon
     ''' <returns>マルチバイト文字の部分をUTF-8/%xx形式でエンコードした文字列を返します。</returns>
 
     Public Function urlEncodeMultibyteChar(ByVal input As String) As String
-        Dim uri As Uri
+        Dim uri As Uri = Nothing
         Dim sb As StringBuilder = New StringBuilder(256)
+        Dim result As String = ""
 retry:
         For Each c As Char In input
             If Convert.ToInt32(c) > 255 Then
-                'Unicodeの場合(1charが複数のバイトで構成されている）
-                uri = New Uri(input)
-                input = uri.EscapeUriString(input)
-                sb.Length = 0
-                GoTo retry
+                ' Unicodeの場合(1charが複数のバイトで構成されている）
+                ' UriクラスをNewして再構成し、入力をPathAndQueryのみとしてやり直す
+                If uri Is Nothing Then
+                    uri = New Uri(input)
+                    input = uri.PathAndQuery
+                    sb.Length = 0
+                    GoTo retry
+                End If
             ElseIf Convert.ToInt32(c) > 127 Then
                 ' UTF-8の場合
-                sb.Append("%" + Convert.ToInt16(c).ToString("X2"))
+                ' UriクラスをNewして再構成し、入力をPathAndQueryのみとしてやり直す
+                If uri Is Nothing Then
+                    uri = New Uri(input)
+                    input = uri.PathAndQuery
+                    sb.Length = 0
+                    GoTo retry
+                Else
+                    sb.Append("%" + Convert.ToInt16(c).ToString("X2"))
+                End If
             Else
                 sb.Append(c)
             End If
         Next
-        Return sb.ToString()
+
+        If uri Is Nothing Then
+            result = sb.ToString()
+        Else
+            result = uri.GetLeftPart(UriPartial.Authority) + sb.ToString()
+        End If
+
+        Return result
     End Function
 
     Public Sub MoveArrayItem(ByVal values() As Integer, ByVal idx_fr As Integer, ByVal idx_to As Integer)
