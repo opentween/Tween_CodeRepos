@@ -382,19 +382,21 @@ Public NotInheritable Class TabInformations
     End Sub
 
     Public Sub RemovePost(ByVal Id As Long)
-        Dim post As PostClass = _statuses(Id)
-        '各タブから該当ID削除
-        For Each key As String In _tabs.Keys
-            Dim tab As TabClass = _tabs(key)
-            If tab.Contains(Id) Then
-                If tab.UnreadManage AndAlso Not post.IsRead Then    '未読管理
-                    tab.UnreadCount -= 1
-                    Me.SetNextUnreadId(Id, tab)
+        SyncLock LockObj
+            Dim post As PostClass = _statuses(Id)
+            '各タブから該当ID削除
+            For Each key As String In _tabs.Keys
+                Dim tab As TabClass = _tabs(key)
+                If tab.Contains(Id) Then
+                    If tab.UnreadManage AndAlso Not post.IsRead Then    '未読管理
+                        tab.UnreadCount -= 1
+                        Me.SetNextUnreadId(Id, tab)
+                    End If
+                    tab.Remove(Id)
                 End If
-                tab.Remove(Id)
-            End If
-        Next
-        _statuses.Remove(Id)
+            Next
+            _statuses.Remove(Id)
+        End SyncLock
     End Sub
 
     Public Sub SetNextUnreadId(ByVal CurrentId As Long, ByVal Tab As TabClass)
@@ -776,11 +778,11 @@ Public NotInheritable Class TabInformations
     End Sub
 
     Public Sub RefreshOwl(ByVal follower As System.Collections.Specialized.StringCollection)
-        For Each id As Long In _statuses.Keys
-            SyncLock LockObj
+        SyncLock LockObj
+            For Each id As Long In _statuses.Keys
                 _statuses(id).IsOwl = Not follower.Contains(_statuses(id).Name.ToLower())
-            End SyncLock
-        Next
+            Next
+        End SyncLock
     End Sub
 End Class
 
