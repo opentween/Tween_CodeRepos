@@ -94,6 +94,7 @@ Partial Class TweenMain
         Me.ReplyStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ReplyAllStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.DMStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.ReTweetStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator
         Me.FavAddToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.FavRemoveToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
@@ -146,7 +147,6 @@ Partial Class TweenMain
         Me.SaveFileDialog1 = New System.Windows.Forms.SaveFileDialog
         Me.TimerRefreshIcon = New System.Windows.Forms.Timer(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog
-        Me.ReTweetStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripContainer1.BottomToolStripPanel.SuspendLayout()
         Me.ToolStripContainer1.ContentPanel.SuspendLayout()
         Me.ToolStripContainer1.TopToolStripPanel.SuspendLayout()
@@ -233,6 +233,7 @@ Partial Class TweenMain
         '
         Me.ContextMenuTabProperty.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AddTabMenuItem, Me.ToolStripSeparator20, Me.UreadManageMenuItem, Me.NotifyDispMenuItem, Me.SoundFileComboBox, Me.ToolStripSeparator18, Me.FilterEditMenuItem, Me.ToolStripSeparator19, Me.ClearTabMenuItem, Me.ToolStripSeparator11, Me.DeleteTabMenuItem})
         Me.ContextMenuTabProperty.Name = "ContextMenuStrip3"
+        Me.ContextMenuTabProperty.OwnerItem = Me.MenuItemTab
         Me.ContextMenuTabProperty.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
         resources.ApplyResources(Me.ContextMenuTabProperty, "ContextMenuTabProperty")
         '
@@ -478,6 +479,7 @@ Partial Class TweenMain
         '
         Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SettingStripMenuItem, Me.ToolStripSeparator9, Me.SaveLogMenuItem, Me.ToolStripSeparator17, Me.NewPostPopMenuItem, Me.PlaySoundMenuItem, Me.ListLockMenuItem, Me.ToolStripSeparator15, Me.MultiLineMenuItem, Me.ToolStripSeparator21, Me.EndToolStripMenuItem})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
+        Me.ContextMenuStrip1.OwnerItem = Me.MenuItemFile
         Me.ContextMenuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
         Me.ContextMenuStrip1.ShowCheckMargin = True
         Me.ContextMenuStrip1.ShowImageMargin = False
@@ -607,6 +609,11 @@ Partial Class TweenMain
         '
         Me.DMStripMenuItem.Name = "DMStripMenuItem"
         resources.ApplyResources(Me.DMStripMenuItem, "DMStripMenuItem")
+        '
+        'ReTweetStripMenuItem
+        '
+        Me.ReTweetStripMenuItem.Name = "ReTweetStripMenuItem"
+        resources.ApplyResources(Me.ReTweetStripMenuItem, "ReTweetStripMenuItem")
         '
         'ToolStripSeparator2
         '
@@ -864,11 +871,6 @@ Partial Class TweenMain
         'OpenFileDialog1
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
-        '
-        'ReTweetStripMenuItem
-        '
-        Me.ReTweetStripMenuItem.Name = "ReTweetStripMenuItem"
-        resources.ApplyResources(Me.ReTweetStripMenuItem, "ReTweetStripMenuItem")
         '
         'TweenMain
         '
