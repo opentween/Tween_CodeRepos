@@ -452,6 +452,7 @@ Public Class TweenMain
         SettingDialog.OutputzUrlmode = _section.OutputzUrlmode
         SettingDialog.UseUnreadStyle = _section.UseUnreadStyle
         SettingDialog.DefaultTimeOut = _section.DefaultTimeOut
+        SettingDialog.ProtectNotInclude = _section.ProtectNotInclude
 
         SettingDialog.DateTimeFormat = _section.DateTimeFormat
         '書式指定文字列エラーチェック
@@ -3091,6 +3092,7 @@ RETRY2:
         Dim sb As New StringBuilder()
         For Each idx As Integer In _curList.SelectedIndices
             Dim post As PostClass = _statuses.Item(_curTab.Text, idx)
+            If post.IsProtect AndAlso SettingDialog.ProtectNotInclude Then Continue For
             sb.AppendFormat("{0}:{1} [http://twitter.com/{0}/statuses/{2}]{3}", post.Name, post.Data, post.Id, Environment.NewLine)
         Next
         If sb.Length > 0 Then
@@ -3464,6 +3466,7 @@ RETRY2:
                 _section.UseUnreadStyle = SettingDialog.UseUnreadStyle
                 _section.DateTimeFormat = SettingDialog.DateTimeFormat
                 _section.DefaultTimeOut = SettingDialog.DefaultTimeOut
+                _section.ProtectNotInclude = SettingDialog.ProtectNotInclude
 
                 _section.SortOrder = _statuses.SortOrder
                 Select Case _statuses.SortMode
@@ -4988,8 +4991,8 @@ RETRY2:
     Private Sub ReTweetStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ReTweetStripMenuItem.Click
         'ReTweet:内容[@id]
         If _curPost IsNot Nothing Then
-            Dim post As PostClass = _statuses.Item(_curTab.Text, _curItemIndex)
-            StatusText.Text = "ReTweet: " + post.Data + " [@" + post.Name + "]"
+            If SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Then Exit Sub
+            StatusText.Text = "ReTweet: " + _curPost.Data + " [@" + _curPost.Name + "]"
         End If
     End Sub
 End Class

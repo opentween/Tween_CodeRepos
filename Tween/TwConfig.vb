@@ -1328,6 +1328,16 @@ Public Property CloseToExit() As Boolean
         End Set
     End Property
 
+    <ConfigurationProperty("protectnotinclude", DefaultValue:=False)> _
+    Public Property ProtectNotInclude() As Boolean
+        Get
+            Return CBool(Me("protectnotinclude"))
+        End Get
+        Set(ByVal value As Boolean)
+            Me("protectnotinclude") = value
+        End Set
+    End Property
+
     Private Shared Function EncryptString(ByVal str As String) As String
         '文字列をバイト型配列にする
         Dim bytesIn As Byte() = System.Text.Encoding.UTF8.GetBytes(str)
