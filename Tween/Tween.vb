@@ -716,6 +716,8 @@ Public Class TweenMain
         Next
 
         JumpUnreadMenuItem.ShortcutKeyDisplayString = "Space"
+        CopySTOTMenuItem.ShortcutKeyDisplayString = "Ctrl+C"
+        CopyURLMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+C"
 
         AddHandler My.Computer.Network.NetworkAvailabilityChanged, AddressOf Network_NetworkAvailabilityChanged
         If SettingDialog.MinimizeToTray = False OrElse Me.WindowState <> FormWindowState.Minimized Then
@@ -3083,6 +3085,19 @@ RETRY2:
                 e.Handled = True
                 e.SuppressKeyPress = True
                 SendKeys.Send("{UP}")
+            End If
+        End If
+        If e.KeyCode = Keys.C Then
+            Dim clstr As String = ""
+            If e.Control AndAlso Not e.Alt AndAlso Not e.Shift Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                CopyStot()
+            End If
+            If e.Control AndAlso e.Shift AndAlso Not e.Alt Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                CopyIdUri()
             End If
         End If
     End Sub
