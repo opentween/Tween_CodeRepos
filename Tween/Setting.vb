@@ -1431,7 +1431,7 @@ Public Class Setting
             Exit Sub
         End Try
 
-        If tm < 0 OrElse tm > 120 Then
+        If tm < HttpTimeOut.MinValue OrElse tm > HttpTimeOut.MaxValue Then
             MessageBox.Show(My.Resources.ConnectionTimeOut_ValidatingText1)
             e.Cancel = True
         End If

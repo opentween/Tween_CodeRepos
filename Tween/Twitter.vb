@@ -68,7 +68,7 @@ Public Module Twitter
     Private _useAPI As Boolean
 
     Private _hubServer As String
-    Private _defaultTimeOut As Integer
+    Private _defaultTimeOut As Integer      ' MySocketクラスへ渡すタイムアウト待ち時間（秒単位　ミリ秒への換算はMySocketクラス側で行う）
 
     'Private _owner As TweenMain
 
@@ -1983,12 +1983,7 @@ Public Module Twitter
             Return _defaultTimeOut
         End Get
         Set(ByVal value As Integer)
-            If value < 0 OrElse value > 120 Then
-                ' 範囲外ならデフォルト値設定
-                _defaultTimeOut = 20 * 1000
-            Else
-                _defaultTimeOut = value * 1000
-            End If
+            _defaultTimeOut = value
         End Set
     End Property
 
