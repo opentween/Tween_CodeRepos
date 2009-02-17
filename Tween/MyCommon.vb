@@ -25,6 +25,7 @@ Imports System.Text
 
 Public Module MyCommon
     Private ReadOnly LockObj As New Object
+    Public _endingFlag As Boolean        '終了フラグ
 
     Public Enum IconSizes
         IconNone = 0
