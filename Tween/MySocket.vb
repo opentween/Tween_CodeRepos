@@ -34,7 +34,7 @@ Public NotInheritable Class MySocket
     Private _proxyType As ProxyTypeEnum
     Private Shared cCon As New System.Net.CookieContainer()
     Private Shared ReadOnly cConLock As New Object
-    Private _defaultTimeOut As Integer = 20 * 1000
+    Private _defaultTimeOut As Integer = HttpTimeOut.DefaultValue * 1000
 
     Public Enum REQ_TYPE
         ReqGET
@@ -95,10 +95,7 @@ Public NotInheritable Class MySocket
             webReq = _
                 CType(WebRequest.Create(url), HttpWebRequest)
 
-            If DefaultTimeOut = 0 Then
-                ' 0 : TimeOut.Infiniteへ読み替え
-                webReq.Timeout = Threading.Timeout.Infinite
-            ElseIf DefaultTimeOut = timeOut Then
+            If DefaultTimeOut = timeOut Then
                 webReq.Timeout = DefaultTimeOut
             Else
                 webReq.Timeout = timeOut
@@ -128,10 +125,7 @@ Public NotInheritable Class MySocket
                reqType = REQ_TYPE.ReqPOSTAPI Then
                 webReq.Method = "POST"
 
-                If DefaultTimeOut = 0 Then
-                    ' 0 : TimeOut.Infiniteへ読み替え
-                    webReq.Timeout = Threading.Timeout.Infinite
-                ElseIf DefaultTimeOut = timeOut Then
+                If DefaultTimeOut = timeOut Then
                     webReq.Timeout = DefaultTimeOut
                 Else
                     webReq.Timeout = timeOut
@@ -348,9 +342,9 @@ Public NotInheritable Class MySocket
             Return _defaultTimeOut
         End Get
         Set(ByVal value As Integer)
-            If value < 0 OrElse value > 120 Then
+            If value < HttpTimeOut.MinValue OrElse value > HttpTimeOut.MaxValue Then
                 ' 範囲外ならデフォルト値設定
-                _defaultTimeOut = 20 * 1000
+                _defaultTimeOut = HttpTimeOut.DefaultValue * 1000
             Else
                 _defaultTimeOut = value * 1000
             End If

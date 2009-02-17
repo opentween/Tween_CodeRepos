@@ -79,6 +79,12 @@ Public Module MyCommon
         Move
     End Enum
 
+    Public Enum HttpTimeOut
+        MinValue = 10
+        MaxValue = 120
+        DefaultValue = 20
+    End Enum
+
     'Backgroundworkerへ処理種別を通知するための引数用Enum
     Public Enum WORKERTYPE
         Timeline                'タイムライン取得
