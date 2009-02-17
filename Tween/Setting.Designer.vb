@@ -121,10 +121,6 @@ Partial Class Setting
         Me.CheckCloseToExit = New System.Windows.Forms.CheckBox
         Me.Label41 = New System.Windows.Forms.Label
         Me.CheckMinimizeToTray = New System.Windows.Forms.CheckBox
-        Me.Label42 = New System.Windows.Forms.Label
-        Me.CheckUseAPI = New System.Windows.Forms.CheckBox
-        Me.HubServerDomain = New System.Windows.Forms.TextBox
-        Me.Label43 = New System.Windows.Forms.Label
         Me.BrowserPathText = New System.Windows.Forms.TextBox
         Me.Label44 = New System.Windows.Forms.Label
         Me.CheckboxReply = New System.Windows.Forms.CheckBox
@@ -142,9 +138,9 @@ Partial Class Setting
         Me.Label51 = New System.Windows.Forms.Label
         Me.CheckStartupVersion = New System.Windows.Forms.CheckBox
         Me.CheckPeriodAdjust = New System.Windows.Forms.CheckBox
-        Me.MaxPost = New System.Windows.Forms.TextBox
-        Me.Label52 = New System.Windows.Forms.Label
         Me.TabPage2 = New System.Windows.Forms.TabPage
+        Me.CheckProtectNotInclude = New System.Windows.Forms.CheckBox
+        Me.Label42 = New System.Windows.Forms.Label
         Me.CheckAutoConvertUrl = New System.Windows.Forms.CheckBox
         Me.Label29 = New System.Windows.Forms.Label
         Me.CheckAlwaysTop = New System.Windows.Forms.CheckBox
@@ -763,27 +759,6 @@ Partial Class Setting
         Me.CheckMinimizeToTray.Name = "CheckMinimizeToTray"
         Me.CheckMinimizeToTray.UseVisualStyleBackColor = True
         '
-        'Label42
-        '
-        resources.ApplyResources(Me.Label42, "Label42")
-        Me.Label42.Name = "Label42"
-        '
-        'CheckUseAPI
-        '
-        resources.ApplyResources(Me.CheckUseAPI, "CheckUseAPI")
-        Me.CheckUseAPI.Name = "CheckUseAPI"
-        Me.CheckUseAPI.UseVisualStyleBackColor = True
-        '
-        'HubServerDomain
-        '
-        resources.ApplyResources(Me.HubServerDomain, "HubServerDomain")
-        Me.HubServerDomain.Name = "HubServerDomain"
-        '
-        'Label43
-        '
-        resources.ApplyResources(Me.Label43, "Label43")
-        Me.Label43.Name = "Label43"
-        '
         'BrowserPathText
         '
         resources.ApplyResources(Me.BrowserPathText, "BrowserPathText")
@@ -851,8 +826,6 @@ Partial Class Setting
         Me.TabPage1.Controls.Add(Me.Label51)
         Me.TabPage1.Controls.Add(Me.CheckStartupVersion)
         Me.TabPage1.Controls.Add(Me.CheckPeriodAdjust)
-        Me.TabPage1.Controls.Add(Me.MaxPost)
-        Me.TabPage1.Controls.Add(Me.Label52)
         Me.TabPage1.Controls.Add(Me.Label1)
         Me.TabPage1.Controls.Add(Me.Label2)
         Me.TabPage1.Controls.Add(Me.Username)
@@ -921,18 +894,10 @@ Partial Class Setting
         Me.CheckPeriodAdjust.Name = "CheckPeriodAdjust"
         Me.CheckPeriodAdjust.UseVisualStyleBackColor = True
         '
-        'MaxPost
-        '
-        resources.ApplyResources(Me.MaxPost, "MaxPost")
-        Me.MaxPost.Name = "MaxPost"
-        '
-        'Label52
-        '
-        resources.ApplyResources(Me.Label52, "Label52")
-        Me.Label52.Name = "Label52"
-        '
         'TabPage2
         '
+        Me.TabPage2.Controls.Add(Me.CheckProtectNotInclude)
+        Me.TabPage2.Controls.Add(Me.Label42)
         Me.TabPage2.Controls.Add(Me.CheckAutoConvertUrl)
         Me.TabPage2.Controls.Add(Me.Label29)
         Me.TabPage2.Controls.Add(Me.CheckAlwaysTop)
@@ -953,13 +918,9 @@ Partial Class Setting
         Me.TabPage2.Controls.Add(Me.UReadMng)
         Me.TabPage2.Controls.Add(Me.Label44)
         Me.TabPage2.Controls.Add(Me.CheckCloseToExit)
-        Me.TabPage2.Controls.Add(Me.HubServerDomain)
         Me.TabPage2.Controls.Add(Me.Label40)
-        Me.TabPage2.Controls.Add(Me.Label43)
         Me.TabPage2.Controls.Add(Me.CheckMinimizeToTray)
-        Me.TabPage2.Controls.Add(Me.Label42)
         Me.TabPage2.Controls.Add(Me.Label41)
-        Me.TabPage2.Controls.Add(Me.CheckUseAPI)
         Me.TabPage2.Controls.Add(Me.Label27)
         Me.TabPage2.Controls.Add(Me.Label39)
         Me.TabPage2.Controls.Add(Me.CheckPostCtrlEnter)
@@ -970,6 +931,17 @@ Partial Class Setting
         resources.ApplyResources(Me.TabPage2, "TabPage2")
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.UseVisualStyleBackColor = True
+        '
+        'CheckProtectNotInclude
+        '
+        resources.ApplyResources(Me.CheckProtectNotInclude, "CheckProtectNotInclude")
+        Me.CheckProtectNotInclude.Name = "CheckProtectNotInclude"
+        Me.CheckProtectNotInclude.UseVisualStyleBackColor = True
+        '
+        'Label42
+        '
+        resources.ApplyResources(Me.Label42, "Label42")
+        Me.Label42.Name = "Label42"
         '
         'CheckAutoConvertUrl
         '
@@ -1354,10 +1326,6 @@ Partial Class Setting
     Friend WithEvents CheckCloseToExit As System.Windows.Forms.CheckBox
     Friend WithEvents Label41 As System.Windows.Forms.Label
     Friend WithEvents CheckMinimizeToTray As System.Windows.Forms.CheckBox
-    Friend WithEvents Label42 As System.Windows.Forms.Label
-    Friend WithEvents CheckUseAPI As System.Windows.Forms.CheckBox
-    Friend WithEvents HubServerDomain As System.Windows.Forms.TextBox
-    Friend WithEvents Label43 As System.Windows.Forms.Label
     Friend WithEvents BrowserPathText As System.Windows.Forms.TextBox
     Friend WithEvents Label44 As System.Windows.Forms.Label
     Friend WithEvents CheckboxReply As System.Windows.Forms.CheckBox
@@ -1391,8 +1359,6 @@ Partial Class Setting
     Friend WithEvents TextProxyUser As System.Windows.Forms.TextBox
     Friend WithEvents LabelProxyUser As System.Windows.Forms.Label
     Friend WithEvents Label55 As System.Windows.Forms.Label
-    Friend WithEvents MaxPost As System.Windows.Forms.TextBox
-    Friend WithEvents Label52 As System.Windows.Forms.Label
     Friend WithEvents CheckPeriodAdjust As System.Windows.Forms.CheckBox
     Friend WithEvents Label53 As System.Windows.Forms.Label
     Friend WithEvents CheckStartupKey As System.Windows.Forms.CheckBox
@@ -1426,4 +1392,6 @@ Partial Class Setting
     Friend WithEvents Label63 As System.Windows.Forms.Label
     Friend WithEvents Label64 As System.Windows.Forms.Label
     Friend WithEvents ConnectionTimeOut As System.Windows.Forms.TextBox
+    Friend WithEvents CheckProtectNotInclude As System.Windows.Forms.CheckBox
+    Friend WithEvents Label42 As System.Windows.Forms.Label
 End Class

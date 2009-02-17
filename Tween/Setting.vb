@@ -88,6 +88,7 @@ Public Class Setting
     Private _MyUnreadStyle As Boolean
     Private _MyDateTimeFormat As String
     Private _MyDefaultTimeOut As Integer
+    Private _MyProtectNotInclude As Boolean
 
     ''''Private _MyWidth8 As Integer
     ''''Private _MyWidth9 As Integer
@@ -127,7 +128,7 @@ Public Class Setting
             _MyDMPeriod = CType(DMPeriod.Text, Integer)
             _MynextThreshold = CType(NextThreshold.Text, Integer)
             _MyNextPages = CType(NextPages.Text, Integer)
-            _MyMaxPostNum = CType(MaxPost.Text, Integer)
+            _MyMaxPostNum = 125
 
             '_MyLogDays = CType(ReadLogDays.Text, Integer)
             'Select Case ReadLogUnit.SelectedIndex
@@ -183,8 +184,8 @@ Public Class Setting
                     _MyNameBalloon = NameBalloonEnum.NickName
             End Select
             _MyPostCtrlEnter = CheckPostCtrlEnter.Checked
-            _useAPI = CheckUseAPI.Checked
-            _hubServer = HubServerDomain.Text.Trim
+            _useAPI = True
+            _hubServer = "twitter.com"
             _browserpath = BrowserPathText.Text.Trim
             _MyCheckReply = CheckboxReply.Checked
             _MyUseRecommendStatus = CheckUseRecommendStatus.Checked
@@ -244,6 +245,7 @@ Public Class Setting
             _MyUnreadStyle = chkUnreadStyle.Checked
             _MyDateTimeFormat = CmbDateTimeFormat.Text
             _MyDefaultTimeOut = CType(ConnectionTimeOut.Text, Integer)      ' 0の場合はGetWebResponse()側でTimeOut.Infiniteへ読み替える
+            _MyProtectNotInclude = CheckProtectNotInclude.Checked
 
         Catch ex As Exception
             MessageBox.Show(My.Resources.Save_ClickText3)
@@ -259,7 +261,7 @@ Public Class Setting
         DMPeriod.Text = _MyDMPeriod.ToString()
         NextThreshold.Text = _MynextThreshold.ToString()
         NextPages.Text = _MyNextPages.ToString()
-        MaxPost.Text = _MyMaxPostNum.ToString()
+        'MaxPost.Text = _MyMaxPostNum.ToString()
         'ReadLogDays.Text = _MyLogDays.ToString()
         'Select Case _MyLogUnit
         '    Case LogUnitEnum.Minute
@@ -321,8 +323,8 @@ Public Class Setting
         End Select
 
         CheckPostCtrlEnter.Checked = _MyPostCtrlEnter
-        CheckUseAPI.Checked = _useAPI
-        HubServerDomain.Text = _hubServer
+        'CheckUseAPI.Checked = _useAPI
+        'HubServerDomain.Text = _hubServer
         BrowserPathText.Text = _browserpath
         CheckboxReply.Checked = _MyCheckReply
         CheckUseRecommendStatus.Checked = _MyUseRecommendStatus
@@ -392,6 +394,7 @@ Public Class Setting
         chkUnreadStyle.Checked = _MyUnreadStyle
         CmbDateTimeFormat.Text = _MyDateTimeFormat
         ConnectionTimeOut.Text = _MyDefaultTimeOut.ToString
+        CheckProtectNotInclude.Checked = _MyProtectNotInclude
 
         'TweenMain.SetMainWindowTitle()
         'TweenMain.SetNotifyIconText()
@@ -1017,13 +1020,6 @@ Public Class Setting
         End Set
     End Property
 
-    Private Sub HubServerDomain_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles HubServerDomain.Validating
-        If HubServerDomain.Text.Trim = "" Then
-            MessageBox.Show("空欄にはできません。デフォルト値「twitter.com」が設定されます。", "ドメイン指定", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            HubServerDomain.Text = "twitter.com"
-        End If
-    End Sub
-
     Public Property BrowserPath() As String
         Get
             Return _browserpath
@@ -1215,6 +1211,15 @@ Public Class Setting
         End Get
         Set(ByVal value As Integer)
             _MyDefaultTimeOut = value
+        End Set
+    End Property
+
+    Public Property ProtectNotInclude() As Boolean
+        Get
+            Return _MyProtectNotInclude
+        End Get
+        Set(ByVal value As Boolean)
+            _MyProtectNotInclude = value
         End Set
     End Property
 
@@ -1431,6 +1436,7 @@ Public Class Setting
             e.Cancel = True
         End If
     End Sub
+
 End Class
 
 <XmlRoot(ElementName:="configuration")> _
