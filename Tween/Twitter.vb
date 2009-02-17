@@ -1525,6 +1525,7 @@ Public Module Twitter
         semaphore = New System.Threading.Semaphore(threadMax, threadMax) 'スレッド最大数
 
         For cnt As Integer = 0 To i
+            If _endingFlag Then Exit For
             semaphore.WaitOne()                     'セマフォ取得 threadMax以上ならここでブロックされる
             Interlocked.Increment(threadNum)        'スレッド数カウンタを+1
             DelegateInstance.BeginInvoke(cnt + 1, New System.AsyncCallback(AddressOf GetFollowersCallback), DelegateInstance)
@@ -1536,6 +1537,8 @@ Public Module Twitter
         Loop Until Interlocked.Add(threadNum, 0) = 0
 
         semaphore.Close()
+
+        If _endingFlag Then Return ""
 
         ' エラーが発生しているならFollowersリストクリア
 
@@ -1549,7 +1552,7 @@ Public Module Twitter
         End If
 
         follower = tmpFollower
-        UpdateCache()
+        If Not _endingFlag Then UpdateCache()
 
 #If DEBUG Then
         sw.Stop()

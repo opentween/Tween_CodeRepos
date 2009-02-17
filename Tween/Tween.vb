@@ -46,7 +46,6 @@ Public Class TweenMain
 
     '雑多なフラグ類
     Private _initial As Boolean         'True:起動時処理中
-    Private _endingFlag As Boolean        '終了フラグ
     'Private listViewItemSorter As ListViewItemComparer      'リストソート用カスタムクラス
     Private _tabDrag As Boolean           'タブドラッグ中フラグ（DoDragDropを実行するかの判定用）
     Private _rclickTabName As String      '右クリックしたタブの名前（Tabコントロール機能不足対応）
