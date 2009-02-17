@@ -1417,10 +1417,6 @@ Public Class Setting
         End If
     End Sub
 
-    Private Sub LabelDateTimeFormatApplied_Layout(ByVal sender As System.Object, ByVal e As System.Windows.Forms.LayoutEventArgs) Handles LabelDateTimeFormatApplied.Layout
-        CreateDateTimeFormatSample()
-    End Sub
-
     Private Sub ConnectionTimeOut_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ConnectionTimeOut.Validating
         Dim tm As Integer
         Try
@@ -1437,6 +1433,9 @@ Public Class Setting
         End If
     End Sub
 
+    Private Sub LabelDateTimeFormatApplied_VisibleChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles LabelDateTimeFormatApplied.VisibleChanged
+        CreateDateTimeFormatSample()
+    End Sub
 End Class
 
 <XmlRoot(ElementName:="configuration")> _
