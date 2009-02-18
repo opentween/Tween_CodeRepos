@@ -1172,7 +1172,6 @@ Public Class TweenMain
             TimerDM.Enabled = False
 
             _endingFlag = True
-            Twitter.Ending = True
 
             SaveConfigs()
 

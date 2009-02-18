@@ -76,7 +76,6 @@ Public Module Twitter
     Private _authKey As String              'StatusUpdate、発言削除で使用
     Private _authKeyDM As String              'DM送信、DM削除で使用
     Private _signed As Boolean
-    Private _endingFlag As Boolean
     Private _infoTwitter As String = ""
     Private _dmCount As Integer
     Private _getDm As Boolean
@@ -286,6 +285,8 @@ Public Module Twitter
                 End If
             End If
 
+            If _endingFlag Then Return ""
+
             'リクエストメッセージを作成する
             Dim pageQuery As String
 
@@ -310,7 +311,8 @@ Public Module Twitter
             Do
                 Dim idx As Integer = retMsg.IndexOf(_removeClass, StringComparison.Ordinal)
                 If idx = -1 Then Exit Do
-                retMsg = retMsg.Remove(idx + 3, retMsg.IndexOf("""", idx + _removeClass.Length, StringComparison.Ordinal) - idx + 1 - 3)
+                Dim idx2 As Integer = retMsg.IndexOf("""", idx + _removeClass.Length, StringComparison.Ordinal) - idx + 1 - 3
+                If idx2 > 0 Then retMsg = retMsg.Remove(idx + 3, idx2)
             Loop
 
             If _endingFlag Then Return ""
@@ -745,7 +747,8 @@ Public Module Twitter
             Do
                 Dim idx As Integer = retMsg.IndexOf(_removeClass, StringComparison.Ordinal)
                 If idx = -1 Then Exit Do
-                retMsg = retMsg.Remove(idx + 3, retMsg.IndexOf("""", idx + _removeClass.Length, StringComparison.Ordinal) - idx + 1 - 3)
+                Dim idx2 As Integer = retMsg.IndexOf("""", idx + _removeClass.Length, StringComparison.Ordinal) - idx + 1 - 3
+                If idx2 > 0 Then retMsg = retMsg.Remove(idx + 3, idx2)
             Loop
 
             If _endingFlag Then Return ""
@@ -1605,15 +1608,6 @@ Public Module Twitter
         End Get
         Set(ByVal value As Integer)
             _nextPages = value
-        End Set
-    End Property
-
-    Public Property Ending() As Boolean
-        Get
-            Return _endingFlag
-        End Get
-        Set(ByVal value As Boolean)
-            _endingFlag = value
         End Set
     End Property
 
