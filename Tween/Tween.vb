@@ -2937,7 +2937,42 @@ RETRY2:
         If _curPost.IsOwl AndAlso (SettingDialog.OneWayLove OrElse _curTab.Text = "Direct") Then NameLabel.ForeColor = _clOWL
         If _curPost.IsFav Then NameLabel.ForeColor = _clFav
 
-        If PostBrowser.DocumentText <> dTxt Then
+        If DumpPostClassToolStripMenuItem.Checked Then
+            Dim sb As New StringBuilder(512)
+
+            sb.Append("-----Start PostClass Dump<br>")
+            sb.AppendFormat("Data           : {0}<br>", _curPost.Data)
+            sb.AppendFormat("(PlainText)    : <xmp>{0}</xmp><br>", _curPost.Data)
+            sb.AppendFormat("Id             : {0}<br>", _curPost.Id.ToString)
+            sb.AppendFormat("ImageIndex     : {0}<br>", _curPost.ImageIndex.ToString)
+            sb.AppendFormat("ImageUrl       : {0}<br>", _curPost.ImageUrl)
+            sb.AppendFormat("InReplyToId    : {0}<br>", _curPost.InReplyToId.ToString)
+            sb.AppendFormat("InReplyToUser  : {0}<br>", _curPost.InReplyToUser)
+            sb.AppendFormat("IsDM           : {0}<br>", _curPost.IsDm.ToString)
+            sb.AppendFormat("IsFav          : {0}<br>", _curPost.IsFav.ToString)
+            sb.AppendFormat("IsMark         : {0}<br>", _curPost.IsMark.ToString)
+            sb.AppendFormat("IsMe           : {0}<br>", _curPost.IsMe.ToString)
+            sb.AppendFormat("IsOwl          : {0}<br>", _curPost.IsOwl.ToString)
+            sb.AppendFormat("IsProtect      : {0}<br>", _curPost.IsProtect.ToString)
+            sb.AppendFormat("IsRead         : {0}<br>", _curPost.IsRead.ToString)
+            sb.AppendFormat("IsReply        : {0}<br>", _curPost.IsReply.ToString)
+
+            For Each nm As String In _curPost.ReplyToList
+                sb.AppendFormat("ReplyToList    : {0}<br>", nm)
+            Next
+
+            sb.AppendFormat("Name           : {0}<br>", _curPost.Name)
+            sb.AppendFormat("NickName       : {0}<br>", _curPost.Nickname)
+            sb.AppendFormat("OriginalData   : {0}<br>", _curPost.OriginalData)
+            sb.AppendFormat("(PlainText)    : <xmp>{0}</xmp><br>", _curPost.OriginalData)
+            sb.AppendFormat("PDate          : {0}<br>", _curPost.PDate.ToString)
+            sb.AppendFormat("Source         : {0}<br>", _curPost.Source)
+            sb.Append("-----End PostClass Dump<br>")
+
+            PostBrowser.Visible = False
+            PostBrowser.DocumentText = detailHtmlFormat + sb.ToString + detailHtmlFormat4
+            PostBrowser.Visible = True
+        ElseIf PostBrowser.DocumentText <> dTxt Then
             PostBrowser.Visible = False
             PostBrowser.DocumentText = dTxt
             PostBrowser.Visible = True
@@ -5011,39 +5046,7 @@ RETRY2:
 
     Private Sub DumpPostClassToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DumpPostClassToolStripMenuItem.Click
         If _curPost IsNot Nothing Then
-            Dim sb As New StringBuilder(512)
-
-            sb.Append("-----Start PostClass Dump<br>")
-            sb.AppendFormat("Data           : {0}<br>", _curPost.Data)
-            sb.AppendFormat("(PlainText)    : <xmp>{0}</xmp><br>", _curPost.Data)
-            sb.AppendFormat("Id             : {0}<br>", _curPost.Id.ToString)
-            sb.AppendFormat("ImageIndex     : {0}<br>", _curPost.ImageIndex.ToString)
-            sb.AppendFormat("ImageUrl       : {0}<br>", _curPost.ImageUrl)
-            sb.AppendFormat("InReplyToId    : {0}<br>", _curPost.InReplyToId.ToString)
-            sb.AppendFormat("InReplyToUser  : {0}<br>", _curPost.InReplyToUser)
-            sb.AppendFormat("IsDM           : {0}<br>", _curPost.IsDm.ToString)
-            sb.AppendFormat("IsFav          : {0}<br>", _curPost.IsFav.ToString)
-            sb.AppendFormat("IsMark         : {0}<br>", _curPost.IsMark.ToString)
-            sb.AppendFormat("IsMe           : {0}<br>", _curPost.IsMe.ToString)
-            sb.AppendFormat("IsOwl          : {0}<br>", _curPost.IsOwl.ToString)
-            sb.AppendFormat("IsProtect      : {0}<br>", _curPost.IsProtect.ToString)
-            sb.AppendFormat("IsRead         : {0}<br>", _curPost.IsRead.ToString)
-            sb.AppendFormat("IsReply        : {0}<br>", _curPost.IsReply.ToString)
-
-            For Each nm As String In _curPost.ReplyToList
-                sb.AppendFormat("ReplyToList    : {0}<br>", nm)
-            Next
-
-            sb.AppendFormat("Name           : {0}<br>", _curPost.Name)
-            sb.AppendFormat("NickName       : {0}<br>", _curPost.Nickname)
-            sb.AppendFormat("OriginalData   : {0}<br>", _curPost.OriginalData)
-            sb.AppendFormat("(PlainText)    : <xmp>{0}</xmp><br>", _curPost.OriginalData)
-            sb.AppendFormat("PDate          : {0}<br>", _curPost.PDate.ToString)
-            sb.AppendFormat("Source         : {0}<br>", _curPost.Source)
-            sb.Append("-----End PostClass Dump<br>")
-
-            PostBrowser.DocumentText = detailHtmlFormat + sb.ToString + detailHtmlFormat4
-
+            DispSelectedPost()
         End If
     End Sub
 
