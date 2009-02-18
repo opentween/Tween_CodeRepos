@@ -851,6 +851,7 @@ Partial Class TweenMain
         '
         'DumpPostClassToolStripMenuItem
         '
+        Me.DumpPostClassToolStripMenuItem.CheckOnClick = True
         Me.DumpPostClassToolStripMenuItem.Name = "DumpPostClassToolStripMenuItem"
         resources.ApplyResources(Me.DumpPostClassToolStripMenuItem, "DumpPostClassToolStripMenuItem")
         '
