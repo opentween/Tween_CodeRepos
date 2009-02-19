@@ -1899,6 +1899,11 @@ Public Module Twitter
                     If SrcUrl.StartsWith("http://tinyurl.com/") Then
                         Return "Can't convert"
                     End If
+                    If "http://tinyurl.com/xxxxxx".Length > src.Length Then
+                        ' 明らかに長くなると推測できる場合は圧縮しない
+                        ret = src
+                        Exit Select
+                    End If
                     Try
                         ret = DirectCast(CreateSocket.GetWebResponse("http://tinyurl.com/api-create.php?url=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
                     Catch ex As Exception
@@ -1912,6 +1917,11 @@ Public Module Twitter
                 If SrcUrl.StartsWith("http") Then
                     If SrcUrl.StartsWith("http://is.gd/") Then
                         Return "Can't convert"
+                    End If
+                    If "http://is.gd/xxxx".Length > src.Length Then
+                        ' 明らかに長くなると推測できる場合は圧縮しない
+                        ret = src
+                        Exit Select
                     End If
                     Try
                         ret = DirectCast(CreateSocket.GetWebResponse("http://is.gd/api.php?longurl=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
