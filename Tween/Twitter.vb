@@ -1884,6 +1884,7 @@ Public Module Twitter
     Public Function MakeShortUrl(ByVal ConverterType As UrlConverter, ByVal SrcUrl As String) As String
         Dim ret As String = ""
         Dim resStatus As String = ""
+        Dim src As String = SrcUrl
 
         For Each svc As String In _ShortUrlService
             If SrcUrl.StartsWith(svc) Then
@@ -1923,6 +1924,7 @@ Public Module Twitter
                 End If
         End Select
 
+        If src.Length < ret.Length Then ret = src ' 圧縮の結果逆に長くなった場合は圧縮前のURLを返す
         Return ret
     End Function
 
