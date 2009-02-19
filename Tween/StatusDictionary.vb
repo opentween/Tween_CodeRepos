@@ -47,6 +47,15 @@ Public NotInheritable Class PostClass
     Private _IsMe As Boolean
     Private _ImageIndex As Integer
     Private _IsDm As Boolean
+    Private _statuses As Statuses = Statuses.None
+
+    <FlagsAttribute()> _
+    Private Enum Statuses
+        None = 0
+        Protect = 1
+        Mark = 2
+        Read = 4
+    End Enum
 
     Public Sub New(ByVal Nickname As String, _
             ByVal Data As String, _
@@ -162,6 +171,11 @@ Public NotInheritable Class PostClass
             Return _IsRead
         End Get
         Set(ByVal value As Boolean)
+            If value Then
+                _statuses = _statuses Or Statuses.Read
+            Else
+                _statuses = _statuses And Not Statuses.Read
+            End If
             _IsRead = value
         End Set
     End Property
@@ -178,6 +192,11 @@ Public NotInheritable Class PostClass
             Return _IsProtect
         End Get
         Set(ByVal value As Boolean)
+            If value Then
+                _statuses = _statuses Or Statuses.Protect
+            Else
+                _statuses = _statuses And Not Statuses.Protect
+            End If
             _IsProtect = value
         End Set
     End Property
@@ -194,6 +213,11 @@ Public NotInheritable Class PostClass
             Return _IsMark
         End Get
         Set(ByVal value As Boolean)
+            If value Then
+                _statuses = _statuses Or Statuses.Mark
+            Else
+                _statuses = _statuses And Not Statuses.Mark
+            End If
             _IsMark = value
         End Set
     End Property
@@ -252,6 +276,11 @@ Public NotInheritable Class PostClass
         Set(ByVal value As Boolean)
             _IsDm = value
         End Set
+    End Property
+    Public ReadOnly Property StatusIndex() As Integer
+        Get
+            Return _statuses
+        End Get
     End Property
 End Class
 
