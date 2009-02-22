@@ -4356,18 +4356,31 @@ RETRY2:
 
     Friend Sub CheckReplyTo(ByVal StatusText As String)
         ' 本当にリプライ先指定すべきかどうかの判定
-        Dim id As New Regex("@[a-zA-Z0-9_]+")
+        Dim id As New Regex("@[a-zA-Z0-9_]+")                           '通常判定用
+        Dim rt As New Regex("^RT:.*\(via @(?<id>[a-zA-Z0-9_]+)\)")      'ReTweet判定用
         Dim m As MatchCollection
 
+        ' リプライ先ステータスIDの指定がない場合は指定しない
         If _reply_to_id = 0 Then Exit Sub
 
+        ' リプライ先ユーザー名がない場合も指定しない
         If _reply_to_name Is Nothing Then
             _reply_to_id = 0
             Exit Sub
         End If
 
+        ' ReTweet対応
+        ' 行頭が「RT:」で始まり (via @id)を含んでおり、@idが元書き込みと一致する場合は指定する
+        If rt.Match(StatusText).Groups.Item(1).Value = _reply_to_name Then
+            Exit Sub
+        End If
+
         m = id.Matches(StatusText)
 
+        ' 通常Reply
+        ' 次の条件を満たす場合に指定
+        ' 1. @idが文中に1つ含まれる 2. リプライ先ステータスIDが設定されている(リストをダブルクリックで返信している)
+        ' 3. 文中に含まれた@idがリプライ先のポスト者のIDと一致する
         If m IsNot Nothing AndAlso m.Count = 1 AndAlso m.Item(0).Value = "@" + _reply_to_name AndAlso Not StatusText.StartsWith(". ") Then
             Exit Sub
         End If
@@ -5037,10 +5050,12 @@ RETRY2:
     End Sub
 
     Private Sub ReTweetStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ReTweetStripMenuItem.Click
-        'ReTweet:内容[@id]
+        'RT:内容 (via @id)
         If _curPost IsNot Nothing Then
             If SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Then Exit Sub
-            StatusText.Text = "ReTweet: " + _curPost.Data + " [@" + _curPost.Name + "]"
+            StatusText.Text = "RT:" + _curPost.Data + " (via @" + _curPost.Name + ")"
+            _reply_to_id = _curPost.Id
+            _reply_to_name = _curPost.Name
         End If
     End Sub
 
