@@ -1571,7 +1571,7 @@ Public NotInheritable Class XmlConfiguration
 
 #Region "IEnumerable<KeyValuePair<string,object>> メンバ"
 
-    Public Function GetUntypedEnumerator() As IEnumerator(Of KeyValuePair(Of String, Object)) _
+    Public Function GetEnumerator() As IEnumerator(Of KeyValuePair(Of String, Object)) _
         Implements IEnumerable(Of KeyValuePair(Of String, Object)).GetEnumerator
 
         Dim list As List(Of KeyValuePair(Of String, Object)) = New List(Of KeyValuePair(Of String, Object))(Me.Count)
@@ -1585,7 +1585,7 @@ Public NotInheritable Class XmlConfiguration
 
 #Region "IEnumerable メンバ"
 
-    Private Function GetEnumerator() As IEnumerator _
+    Private Function GetUntypedEnumerator() As IEnumerator _
         Implements IEnumerable.GetEnumerator
 
         Return Me.GetEnumerator()
@@ -1622,15 +1622,20 @@ Public NotInheritable Class XmlConfiguration
 
         Dim xdoc As XmlDocument = New XmlDocument()
         For Each entry As KeyValuePair(Of String, Object) In Me
-            Dim xentry As XmlElement = xdoc.CreateElement("entry")
-            xentry.SetAttributeNode("key", entry.Key)
+            Dim xentry As XmlElement = xdoc.CreateElement("entry", String.Empty)
+            xentry.SetAttributeNode("key", Nothing)
+            xentry.SetAttribute("key", entry.Key)
+            xentry.SetAttributeNode("type", Nothing)
+            xentry.SetAttribute("type", entry.Value.GetType().AssemblyQualifiedName)
             Using stream As MemoryStream = New MemoryStream()
                 Dim serializer As XmlSerializer = New XmlSerializer(entry.Value.GetType())
                 serializer.Serialize(stream, entry.Value)
                 stream.Seek(0, SeekOrigin.Begin)
-                Dim xserialized As XmlDocument = New XmlDocument()
-                xserialized.Load(stream)
-                xentry.AppendChild(xserialized.DocumentElement)
+                Dim reader As XmlReader = XmlReader.Create(stream)
+                ' HACK: ルート要素に移動する
+                reader.MoveToContent()
+                xentry.AppendChild(xdoc.ReadNode(reader.ReadSubtree()))
+                xentry.WriteTo(writer)
             End Using
         Next
     End Sub
