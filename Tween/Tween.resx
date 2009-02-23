@@ -921,20 +921,11 @@
   <metadata name="ContextMenuStripPostMode.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>120, 0</value>
   </metadata>
-  <data name="ContextMenuStripPostMode.Size" type="System.Drawing.Size, System.Drawing">
-    <value>245, 70</value>
-  </data>
-  <data name="&gt;&gt;ContextMenuStripPostMode.Name" xml:space="preserve">
-    <value>ContextMenuStripPostMode</value>
-  </data>
-  <data name="&gt;&gt;ContextMenuStripPostMode.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ContextMenuStrip, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="ToolStripMenuItemUrlMultibyteSplit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>244, 22</value>
+    <value>256, 22</value>
   </data>
   <data name="ToolStripMenuItemUrlMultibyteSplit.Text" xml:space="preserve">
-    <value>URLからの全角文字の切り離し</value>
+    <value>URLからの全角文字列の切り離し</value>
   </data>
   <data name="ToolStripMenuItemApiCommandEvasion.Size" type="System.Drawing.Size, System.Drawing">
     <value>244, 22</value>
@@ -947,6 +938,15 @@
   </data>
   <data name="ToolStripMenuItemUrlAutoShorten.Text" xml:space="preserve">
     <value>自動的にURLを短縮する</value>
+  </data>
+  <data name="ContextMenuStripPostMode.Size" type="System.Drawing.Size, System.Drawing">
+    <value>257, 92</value>
+  </data>
+  <data name="&gt;&gt;ContextMenuStripPostMode.Name" xml:space="preserve">
+    <value>ContextMenuStripPostMode</value>
+  </data>
+  <data name="&gt;&gt;ContextMenuStripPostMode.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ContextMenuStrip, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <metadata name="ContextMenuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>763, 0</value>
