@@ -1145,12 +1145,18 @@ Public Class TweenMain
             args.status = StatusText.Text.Trim() + " " + SettingDialog.Status.Trim()
         End If
 
-        Dim regex As New Regex("^[+\-\[\]\s\\.,*/(){}^~|='&%$#""<>?]*(get|g|fav|follow|f|on|off|stop|quit|leave|l|whois|w|nudge|n|stats|invite|track|untrack|tracks|tracking|\*)([+\-\[\]\s\\.,*/(){}^~|='&%$#""<>?]+|$)", RegexOptions.IgnoreCase)
-        'Dim regex2 As New Regex("https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+")
-        'Dim mc2 As Match = regex2.Match(args.status)
+        If ToolStripMenuItemApiCommandEvasion.Checked Then
+            ' APIコマンド回避
+            Dim regex As New Regex("^[+\-\[\]\s\\.,*/(){}^~|='&%$#""<>?]*(get|g|fav|follow|f|on|off|stop|quit|leave|l|whois|w|nudge|n|stats|invite|track|untrack|tracks|tracking|\*)([+\-\[\]\s\\.,*/(){}^~|='&%$#""<>?]+|$)", RegexOptions.IgnoreCase)
+            If regex.IsMatch(args.status) AndAlso args.status.EndsWith(" .") = False Then args.status += " ."
+        End If
 
-        If regex.IsMatch(args.status) AndAlso args.status.EndsWith(" .") = False Then args.status += " ."
-        'If mc2.Success Then args.status = regex2.Replace(args.status, "$& ")
+        If ToolStripMenuItemUrlMultibyteSplit.Checked Then
+            ' URLと全角文字の切り離し
+            Dim regex2 As New Regex("https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+")
+            Dim mc2 As Match = regex2.Match(args.status)
+            If mc2.Success Then args.status = regex2.Replace(args.status, "$& ")
+        End If
 
         RunAsync(args)
 
@@ -5075,5 +5081,13 @@ RETRY2:
 
     Private Sub ButtonPostMode_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonPostMode.Click
         ContextMenuStripPostMode.Show(ButtonPostMode, position:=New Point(0, ButtonPostMode.Height))
+    End Sub
+
+    Private Sub ToolStripMenuItemUrlAutoShorten_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripMenuItemUrlAutoShorten.CheckedChanged
+        SettingDialog.UrlConvertAuto = ToolStripMenuItemUrlAutoShorten.Checked
+    End Sub
+
+    Private Sub ContextMenuStripPostMode_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuStripPostMode.Opening
+        ToolStripMenuItemUrlAutoShorten.Checked = SettingDialog.UrlConvertAuto
     End Sub
 End Class
