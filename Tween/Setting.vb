@@ -1444,7 +1444,7 @@ Public NotInheritable Class XmlConfiguration
     Implements IDictionary(Of String, Object),  _
                IXmlSerializable
 
-    Private ReadOnly _dictionary As Dictionary(Of String, KeyValuePair(Of Type, Object)) = New Dictionary(Of String, KeyValuePair(Of Type, Object))
+    Private ReadOnly _dictionary As Dictionary(Of String, KeyValuePair(Of Type, Object))
 
     Private _filePath As String
 
