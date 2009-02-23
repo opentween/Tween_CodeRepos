@@ -25,6 +25,7 @@ Imports System.Xml
 Imports System.Xml.Serialization
 Imports System.Xml.Schema
 Imports System.IO
+Imports System.Runtime.InteropServices
 
 Public Class Setting
     Private _MyuserID As String
@@ -1438,107 +1439,281 @@ Public Class Setting
     End Sub
 End Class
 
-<XmlRoot(ElementName:="configuration")> _
-    Public NotInheritable Class XmlConfiguration
-    Inherits Dictionary(Of String, List(Of Object))
-    Implements IXmlSerializable
+<XmlRoot(ElementName:="configuration", Namespace:="urn:XSpect.Configuration.XmlConfiguration")> _
+Public NotInheritable Class XmlConfiguration
+    Implements IDictionary(Of String, Object),  _
+               IXmlSerializable
 
-    Public Overloads Sub Add(ByVal key As String)
-        MyBase.Add(key, New List(Of Object))
+    Private ReadOnly _dictionary As Dictionary(Of String, KeyValuePair(Of Type, Object)) = New Dictionary(Of String, KeyValuePair(Of Type, Object))
+
+    Private _filePath As String
+
+    Private ReadOnly Property _dictionaryCollection() As ICollection(Of KeyValuePair(Of String, KeyValuePair(Of Type, Object)))
+        Get
+            Return Me._dictionary
+        End Get
+    End Property
+
+#Region "IDictionary<string,object> メンバ"
+
+    Public Sub Add(ByVal key As String, ByVal value As Object) _
+        Implements IDictionary(Of String, Object).Add
+
+        Me._dictionary.Add(key, Me.GetInternalValue(value))
     End Sub
 
-    Public Function GetSchema() As XmlSchema Implements IXmlSerializable.GetSchema
+    Public Function ContainsKey(ByVal key As String) As Boolean _
+        Implements IDictionary(Of String, Object).ContainsKey
+
+        Return Me._dictionary.ContainsKey(key)
+    End Function
+
+    Public ReadOnly Property Keys() As ICollection(Of String) _
+        Implements IDictionary(Of String, Object).Keys
+
+        Get
+            Return Me._dictionary.Keys
+        End Get
+    End Property
+
+    Public Function Remove(ByVal key As String) As Boolean _
+        Implements IDictionary(Of String, Object).Remove
+
+        Return Me._dictionary.Remove(key)
+    End Function
+
+    Public Function TryGetValue(ByVal key As String, <Out()> ByRef value As Object) As Boolean _
+        Implements IDictionary(Of String, Object).TryGetValue
+
+        Return Me.TryGetValue(Of Object)(key, value)
+    End Function
+
+    Public ReadOnly Property Values() As ICollection(Of Object) _
+        Implements IDictionary(Of String, Object).Values
+
+        Get
+            Dim list As List(Of Object) = New List(Of Object)(Me._dictionary.Values.Count)
+
+            For Each p As KeyValuePair(Of Type, Object) In Me._dictionary.Values
+                list.Add(p.Value)
+            Next
+            Return list
+        End Get
+    End Property
+
+    Default Public Property Item(ByVal key As String) As Object _
+        Implements IDictionary(Of String, Object).Item
+
+        Get
+            Return Me.GetValue(key)
+        End Get
+        Set(ByVal value As Object)
+            Me.SetValue(key, value)
+        End Set
+    End Property
+
+#End Region
+
+#Region "ICollection<KeyValuePair<string,object>> メンバ"
+
+    Public Sub Add(ByVal item As KeyValuePair(Of String, Object)) _
+        Implements ICollection(Of KeyValuePair(Of String, Object)).Add
+
+        Me._dictionaryCollection.Add(Me.GetInternalValue(item))
+    End Sub
+
+    Public Sub Clear() _
+        Implements ICollection(Of KeyValuePair(Of String, Object)).Clear
+
+        Me._dictionary.Clear()
+    End Sub
+
+    Public Function Contains(ByVal item As KeyValuePair(Of String, Object)) As Boolean _
+        Implements ICollection(Of KeyValuePair(Of String, Object)).Contains
+
+        Return Me._dictionaryCollection.Contains(Me.GetInternalValue(item))
+    End Function
+
+    Public Sub CopyTo(ByVal array As KeyValuePair(Of String, Object)(), ByVal arrayIndex As Integer) _
+        Implements ICollection(Of KeyValuePair(Of String, Object)).CopyTo
+
+        Dim list As List(Of KeyValuePair(Of String, KeyValuePair(Of Type, Object))) _
+            = New List(Of KeyValuePair(Of String, KeyValuePair(Of Type, Object)))(array.Length)
+
+        For Each p As KeyValuePair(Of String, Object) In array
+            list.Add(Me.GetInternalValue(p))
+        Next
+        Me._dictionaryCollection.CopyTo(list.ToArray(), arrayIndex)
+    End Sub
+
+    Public ReadOnly Property Count() As Integer _
+        Implements ICollection(Of KeyValuePair(Of String, Object)).Count
+        Get
+            Return Me._dictionary.Count
+        End Get
+    End Property
+
+    Public ReadOnly Property IsReadOnly() As Boolean _
+        Implements ICollection(Of KeyValuePair(Of String, Object)).IsReadOnly
+
+        Get
+            Return Me._dictionaryCollection.IsReadOnly
+        End Get
+    End Property
+
+    Public Function Remove(ByVal item As KeyValuePair(Of String, Object)) As Boolean _
+        Implements ICollection(Of KeyValuePair(Of String, Object)).Remove
+
+        Return Me._dictionaryCollection.Remove(Me.GetInternalValue(item))
+    End Function
+
+#End Region
+
+#Region "IEnumerable<KeyValuePair<string,object>> メンバ"
+
+    Public Function GetUntypedEnumerator() As IEnumerator(Of KeyValuePair(Of String, Object)) _
+        Implements IEnumerable(Of KeyValuePair(Of String, Object)).GetEnumerator
+
+        Dim list As List(Of KeyValuePair(Of String, Object)) = New List(Of KeyValuePair(Of String, Object))(Me.Count)
+        For Each p As KeyValuePair(Of String, KeyValuePair(Of Type, Object)) In Me._dictionary
+            list.Add(New KeyValuePair(Of String, Object)(p.Key, p.Value.Value))
+        Next
+        Return list.GetEnumerator()
+    End Function
+
+#End Region
+
+#Region "IEnumerable メンバ"
+
+    Private Function GetEnumerator() As IEnumerator _
+        Implements IEnumerable.GetEnumerator
+
+        Return Me.GetEnumerator()
+    End Function
+
+#End Region
+
+#Region "IXmlSerializable メンバ"
+
+    Public Function GetSchema() As XmlSchema _
+        Implements IXmlSerializable.GetSchema
+
         Return Nothing
     End Function
 
+    Public Sub ReadXml(ByVal reader As XmlReader) _
+        Implements IXmlSerializable.ReadXml
+
+        Dim xdoc As XmlDocument = New XmlDocument()
+
+        xdoc.Load(reader)
+        For Each xentryNode As XmlNode In xdoc.SelectNodes("//entry")
+            Dim xentry As XmlElement = CType(xentryNode, XmlElement)
+            Me.Add( _
+                xentry.Attributes.ItemOf("key").Value, _
+                New XmlSerializer(Type.GetType(xentry.Attributes.ItemOf("type").Value)) _
+                    .Deserialize(New XmlNodeReader(xentry.GetElementsByTagName("*").Item(0))) _
+            )
+        Next
+    End Sub
+
+    Public Sub WriteXml(ByVal writer As XmlWriter) _
+        Implements IXmlSerializable.WriteXml
+
+        Dim xdoc As XmlDocument = New XmlDocument()
+        For Each entry As KeyValuePair(Of String, Object) In Me
+            Dim xentry As XmlElement = xdoc.CreateElement("entry")
+            xentry.SetAttributeNode("key", entry.Key)
+            Using stream As MemoryStream = New MemoryStream()
+                Dim serializer As XmlSerializer = New XmlSerializer(entry.Value.GetType())
+                serializer.Serialize(stream, entry.Value)
+                stream.Seek(0, SeekOrigin.Begin)
+                Dim xserialized As XmlDocument = New XmlDocument()
+                xserialized.Load(stream)
+                xentry.AppendChild(xserialized.DocumentElement)
+            End Using
+        Next
+    End Sub
+
+#End Region
+
+    Public Sub New()
+        Me._dictionary = New Dictionary(Of String, KeyValuePair(Of Type, Object))()
+    End Sub
+
+    Public Shared Function Load(ByVal path As String) As XmlConfiguration
+        Dim config As XmlConfiguration = DirectCast(New XmlSerializer(GetType(XmlConfiguration)).Deserialize(XmlReader.Create(path)), XmlConfiguration)
+        config._filePath = path
+        Return config
+    End Function
+
+    Public Sub Save(ByVal path As String)
+        Using stream As MemoryStream = New MemoryStream()
+            Dim serializer As XmlSerializer = New XmlSerializer(GetType(XmlConfiguration))
+            serializer.Serialize(XmlWriter.Create(stream), Me)
+            stream.Seek(0, SeekOrigin.Begin)
+            Dim xdoc As XmlDocument = New XmlDocument()
+            xdoc.Load(stream)
+            xdoc.Save(path)
+        End Using
+
+        Me._filePath = path
+    End Sub
+
+    Public Sub Save()
+        Me.Save(Me._filePath)
+    End Sub
+
+    Private Function GetInternalValue(ByVal value As Object) As KeyValuePair(Of Type, Object)
+        Return New KeyValuePair(Of Type, Object)(value.GetType, value)
+    End Function
+
+    Private Function GetInternalValue(ByVal item As KeyValuePair(Of String, Object)) As KeyValuePair(Of String, KeyValuePair(Of Type, Object))
+        Return New KeyValuePair(Of String, KeyValuePair(Of Type, Object))(item.Key, Me.GetInternalValue(item.Value))
+    End Function
+
     Public Function GetValue(Of T)(ByVal key As String) As T
-        If Me.Item(key).Count <> 1 Then
-            Throw New InvalidOperationException("Value is not single, or empty")
-        Else
-            Return DirectCast(Me.Item(key)(0), T)
-        End If
+        Return DirectCast(Me._dictionary.Item(key).Value, T)
     End Function
 
     Public Function GetValue(ByVal key As String) As Object
         Return Me.GetValue(Of Object)(key)
     End Function
 
-    Public Function GetValueOrDefault(ByVal key As String) As Object
-        Return Me.GetValueOrDefault(Of Object)(key)
+    Public Sub SetValue(Of T)(ByVal key As String, ByVal value As T)
+        Me._dictionary.Item(key) = Me.GetInternalValue(value)
+    End Sub
+
+    Public Sub SetValue(ByVal key As String, ByVal value As Object)
+        Me.SetValue(Of Object)(key, value)
+    End Sub
+
+    Public Function TryGetValue(Of T)(ByVal key As String, <Out()> ByRef value As T) As Boolean
+        Dim outValue As KeyValuePair(Of Type, Object)
+        Dim result As Boolean = Me._dictionary.TryGetValue(key, outValue)
+        value = DirectCast(outValue.Value, T)
+        Return result
+    End Function
+
+    Public Function GetValueOrDefault(Of T)(ByVal key As String, ByVal defaultValue As T) As T
+        Dim value As T
+        If Me.TryGetValue(Of T)(key, value) Then
+            Return value
+        End If
+        Me.Add(key, defaultValue)
+        Return defaultValue
     End Function
 
     Public Function GetValueOrDefault(Of T)(ByVal key As String) As T
         Return Me.GetValueOrDefault(Of T)(key, CType(Nothing, T))
     End Function
 
-    Public Function GetValueOrDefault(Of T)(ByVal key As String, ByVal defaultValue As T) As T
-        If MyBase.ContainsKey(key) Then
-            Return Me.GetValue(Of T)(key)
-        End If
-        Me.Add(key, New List(Of Object)(New Object() {defaultValue}))
-        Return defaultValue
-    End Function
-
     Public Function GetValueOrDefault(ByVal key As String, ByVal defaultValue As Object) As Object
         Return Me.GetValueOrDefault(Of Object)(key, defaultValue)
     End Function
 
-    Public Function GetValues(ByVal key As String) As IEnumerable(Of Object)
-        Return Me.Item(key)
+    Public Function GetValueOrDefault(ByVal key As String) As Object
+        Return Me.GetValueOrDefault(Of Object)(key)
     End Function
 
-    Public Function GetValuesOrDefault(ByVal key As String) As IEnumerable(Of Object)
-        Return Me.GetValuesOrDefault(key, Nothing)
-    End Function
-
-    Public Function GetValuesOrDefault(ByVal key As String, ByVal ParamArray defaultValues As Object()) As IEnumerable(Of Object)
-        If MyBase.ContainsKey(key) Then
-            Return Me.GetValues(key)
-        End If
-        MyBase.Add(key, New List(Of Object)(defaultValues))
-        Return defaultValues
-    End Function
-
-    Public Shared Function Load(ByVal path As String) As XmlConfiguration
-        Return TryCast(New XmlSerializer(GetType(XmlConfiguration)).Deserialize(XmlReader.Create(path)), XmlConfiguration)
-    End Function
-
-    Public Sub ReadXml(ByVal reader As XmlReader) Implements IXmlSerializable.ReadXml
-        Dim xdoc As XmlDocument = New XmlDocument()
-        xdoc.Load(reader)
-        For Each xentry As XmlElement In xdoc.SelectNodes("//entry")
-            Dim values As New List(Of Object)
-            For Each xvalue As XmlElement In xentry.GetElementsByTagName("*")
-                Dim serializer As XmlSerializer = New XmlSerializer(GetType(Object))
-                values.Add(serializer.Deserialize(New XmlNodeReader(xvalue)))
-            Next
-            Me.Add(xentry.GetAttribute("key"), values)
-        Next
-    End Sub
-
-    Public Sub Save(ByVal path As String)
-        Dim serializer As XmlSerializer = New XmlSerializer(GetType(XmlConfiguration))
-        serializer.Serialize(XmlWriter.Create(path), Me)
-    End Sub
-
-    Public Sub WriteXml(ByVal writer As XmlWriter) Implements IXmlSerializable.WriteXml
-        Dim xdoc As XmlDocument = New XmlDocument()
-        Dim xentry As XmlElement
-        For Each entry As KeyValuePair(Of String, List(Of Object)) In Me
-            xentry = xdoc.CreateElement("entry")
-            xentry.SetAttributeNode("key", Nothing)
-            xentry.SetAttribute("key", entry.Key)
-            For Each value As Object In entry.Value
-                Using stream As MemoryStream = New MemoryStream
-                    Dim serializer As XmlSerializer = New XmlSerializer(value.GetType())
-                    serializer.Serialize(DirectCast(stream, Stream), value)
-                    stream.Seek(0, SeekOrigin.Begin)
-                    Dim xserialized As XmlDocument = New XmlDocument()
-                    xserialized.Load(stream)
-                    xentry.AppendChild(xserialized.DocumentElement)
-                End Using
-            Next
-            xentry.WriteTo(writer)
-        Next
-    End Sub
 End Class
