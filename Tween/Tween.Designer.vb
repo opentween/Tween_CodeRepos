@@ -472,7 +472,6 @@ Partial Class TweenMain
         '
         'ButtonPostMode
         '
-        Me.ButtonPostMode.ContextMenuStrip = Me.ContextMenuStripPostMode
         resources.ApplyResources(Me.ButtonPostMode, "ButtonPostMode")
         Me.ButtonPostMode.Name = "ButtonPostMode"
         Me.ButtonPostMode.UseVisualStyleBackColor = True
