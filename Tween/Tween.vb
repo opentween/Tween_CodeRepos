@@ -5072,4 +5072,8 @@ RETRY2:
             DumpPostClassToolStripMenuItem.Visible = False
         End If
     End Sub
+
+    Private Sub ButtonPostMode_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonPostMode.Click
+        ContextMenuStripPostMode.Show(ButtonPostMode, position:=New Point(0, ButtonPostMode.Height))
+    End Sub
 End Class
