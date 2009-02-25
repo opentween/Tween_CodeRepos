@@ -224,7 +224,7 @@ Public Class FilterDialog
     Private Sub ButtonOK_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonOK.Click
         'チェック
         If RadioAND.Checked Then
-            MSG1.Text = MSG1.Text.Replace("　", " ").Trim()
+            If Not CheckRegex.Checked Then MSG1.Text = MSG1.Text.Replace("　", " ").Trim()
             UID.Text = UID.Text.Trim()
             If UID.Text = "" AndAlso MSG1.Text = "" Then
                 MessageBox.Show(My.Resources.ButtonOK_ClickText1, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
@@ -239,7 +239,7 @@ Public Class FilterDialog
                 End Try
             End If
         Else
-            MSG2.Text = MSG2.Text.Replace("　", " ").Trim()
+            If Not CheckRegex.Checked Then MSG2.Text = MSG2.Text.Replace("　", " ").Trim()
             If MSG2.Text.Trim = "" Then
                 MessageBox.Show(My.Resources.ButtonOK_ClickText1, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 Exit Sub
@@ -264,20 +264,22 @@ Public Class FilterDialog
         If RadioAND.Checked Then
             ft.NameFilter = UID.Text
             ft.SearchBoth = True
+        Else
+            ft.NameFilter = ""
+            ft.SearchBoth = False
+        End If
+
+        If CheckRegex.Checked Then
+            ft.BodyFilter.Add(MSG1.Text)
+        Else
             Dim bf() As String = MSG1.Text.Trim.Split(Chr(32))
             For Each bfs As String In bf
                 If bfs <> "" Then ft.BodyFilter.Add(bfs.Trim)
             Next
-        Else
-            ft.NameFilter = ""
-            ft.SearchBoth = False
-            Dim bf() As String = MSG2.Text.Trim.Split(Chr(32))
-            For Each bfs As String In bf
-                If bfs <> "" Then ft.BodyFilter.Add(bfs.Trim)
-            Next
         End If
+
         ft.UseRegex = CheckRegex.Checked
-        ft.SearchURL = CheckURL.Checked
+        ft.SearchUrl = CheckURL.Checked
 
         If _mode = EDITMODE.AddNew Then
             _sts.Tabs(ComboTabs.SelectedItem.ToString()).AddFilter(ft)
