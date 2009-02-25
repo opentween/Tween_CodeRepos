@@ -3552,7 +3552,11 @@ RETRY2:
                         For Each fc As FiltersClass In tab.GetFilters
                             Dim bf As String = ""
                             For Each bfs As String In fc.BodyFilter
-                                bf += " " + bfs
+                                If bf.Equals("") Then
+                                    bf = bfs
+                                Else
+                                    bf += " " + bfs
+                                End If
                             Next
                             Dim su As New SelectedUser(cnt.ToString)
                             cnt += 1
