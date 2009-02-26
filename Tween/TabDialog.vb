@@ -261,18 +261,21 @@ Public Class FilterDialog
         ft.MoveFrom = OptMove.Checked
         ft.SetMark = OptMark.Checked
 
+        Dim bdy As String = ""
         If RadioAND.Checked Then
             ft.NameFilter = UID.Text
             ft.SearchBoth = True
+            bdy = MSG1.Text
         Else
             ft.NameFilter = ""
             ft.SearchBoth = False
+            bdy = MSG2.Text
         End If
 
         If CheckRegex.Checked Then
-            ft.BodyFilter.Add(MSG1.Text)
+            ft.BodyFilter.Add(bdy)
         Else
-            Dim bf() As String = MSG1.Text.Trim.Split(Chr(32))
+            Dim bf() As String = bdy.Trim.Split(Chr(32))
             For Each bfs As String In bf
                 If bfs <> "" Then ft.BodyFilter.Add(bfs.Trim)
             Next
