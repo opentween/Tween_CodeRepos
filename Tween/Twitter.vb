@@ -98,7 +98,8 @@ Public Module Twitter
             "http://twurl.nl/", _
             "http://cli.gs/", _
             "http://rubyurl.com/", _
-            "http://budurl.com/" _
+            "http://budurl.com/", _
+            "http://ff.im/" _
         }
 
     Private Const _baseUrlStr As String = "twitter.com"
