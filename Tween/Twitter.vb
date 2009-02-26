@@ -1899,7 +1899,7 @@ Public Module Twitter
                     If SrcUrl.StartsWith("http://tinyurl.com/") Then
                         Return "Can't convert"
                     End If
-                    If "http://tinyurl.com/xxxxxx".Length > src.Length Then
+                    If "http://tinyurl.com/xxxxxx".Length > src.Length AndAlso Not src.Contains("?") AndAlso Not src.Contains("#") Then
                         ' 明らかに長くなると推測できる場合は圧縮しない
                         ret = src
                         Exit Select
@@ -1918,7 +1918,7 @@ Public Module Twitter
                     If SrcUrl.StartsWith("http://is.gd/") Then
                         Return "Can't convert"
                     End If
-                    If "http://is.gd/xxxx".Length > src.Length Then
+                    If "http://is.gd/xxxx".Length > src.Length AndAlso Not src.Contains("?") AndAlso Not src.Contains("#") Then
                         ' 明らかに長くなると推測できる場合は圧縮しない
                         ret = src
                         Exit Select
