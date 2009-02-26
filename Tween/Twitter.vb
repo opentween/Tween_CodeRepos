@@ -531,6 +531,7 @@ Public Module Twitter
                     If ImgTag.IsMatch(post.Data) Then post.Data = ImgTag.Replace(post.Data, "<img>")
 
                     'Get Date
+#If 0 Then
                     Try
                         pos1 = strPost.IndexOf(_parseDate, pos2, StringComparison.Ordinal)
                         pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length, StringComparison.Ordinal)
@@ -540,6 +541,11 @@ Public Module Twitter
                         TraceOut("TM-Date:" + strPost)
                         Return "GetTimeline -> Err: Can't get date."
                     End Try
+#Else
+                    '取得できなくなったため暫定対応(2/26)
+                    post.PDate = Now()
+#End If
+
 
                     'from Sourceの取得
                     Try
@@ -908,6 +914,7 @@ Public Module Twitter
                         Return "GetDirectMessage -> Err: Can't parse links"
                     End Try
 
+#If 0 Then
                     'Get Date
                     Try
                         pos1 = strPost.IndexOf(_parseDate, pos2, StringComparison.Ordinal)
@@ -918,7 +925,10 @@ Public Module Twitter
                         TraceOut("DM-Date:" + strPost)
                         Return "GetDirectMessage -> Err: Can't get date."
                     End Try
-
+#Else
+                    '取得できなくなったため暫定対応(2/26)
+                    post.PDate = Now()
+#End If
 
                     'Get Fav
                     'pos1 = strPost.IndexOf(_parseStar, pos2)
