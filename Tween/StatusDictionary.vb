@@ -809,7 +809,7 @@ Public NotInheritable Class TabInformations
     Public Sub RefreshOwl(ByVal follower As System.Collections.Specialized.StringCollection)
         SyncLock LockObj
             For Each id As Long In _statuses.Keys
-                _statuses(id).IsOwl = Not follower.Contains(_statuses(id).Name.ToLower())
+                If Not _statuses(id).IsDm Then _statuses(id).IsOwl = Not follower.Contains(_statuses(id).Name.ToLower())
             Next
         End SyncLock
     End Sub
