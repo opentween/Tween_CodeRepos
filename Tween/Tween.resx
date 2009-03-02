@@ -126,7 +126,7 @@
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="StatusLabelUrl.Size" type="System.Drawing.Size, System.Drawing">
-    <value>453, 17</value>
+    <value>446, 17</value>
   </data>
   <data name="StatusLabelUrl.Text" xml:space="preserve">
     <value>ToolStripStatusLabel1</value>
@@ -138,7 +138,7 @@
     <value>0, 0</value>
   </data>
   <data name="StatusStrip1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>468, 22</value>
+    <value>461, 22</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="StatusStrip1.TabIndex" type="System.Int32, mscorlib">
@@ -274,7 +274,7 @@
     <value>0, 0, 0, 0</value>
   </data>
   <data name="ListTab.Size" type="System.Drawing.Size, System.Drawing">
-    <value>464, 154</value>
+    <value>457, 175</value>
   </data>
   <data name="ListTab.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
@@ -478,7 +478,7 @@
     <value>58, 17</value>
   </data>
   <data name="PostBrowser.Size" type="System.Drawing.Size, System.Drawing">
-    <value>403, 63</value>
+    <value>396, 79</value>
   </data>
   <data name="PostBrowser.TabIndex" type="System.Int32, mscorlib">
     <value>12</value>
@@ -499,7 +499,7 @@
     <value>Top, Right</value>
   </data>
   <data name="DateTimeLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>337, 3</value>
+    <value>330, 3</value>
   </data>
   <data name="DateTimeLabel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 3, 3, 0</value>
@@ -538,7 +538,7 @@
     <value>2</value>
   </data>
   <data name="TableLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>464, 83</value>
+    <value>457, 99</value>
   </data>
   <data name="TableLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
     <value>20</value>
@@ -580,7 +580,7 @@
     <value>0, 0</value>
   </data>
   <data name="StatusText.Size" type="System.Drawing.Size, System.Drawing">
-    <value>352, 19</value>
+    <value>354, 19</value>
   </data>
   <data name="StatusText.TabIndex" type="System.Int32, mscorlib">
     <value>25</value>
@@ -601,7 +601,7 @@
     <value>Right</value>
   </data>
   <data name="lblLen.Location" type="System.Drawing.Point, System.Drawing">
-    <value>352, 0</value>
+    <value>354, 0</value>
   </data>
   <data name="lblLen.Size" type="System.Drawing.Size, System.Drawing">
     <value>44, 21</value>
@@ -631,10 +631,10 @@
     <value>Right</value>
   </data>
   <data name="PostButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>396, 0</value>
+    <value>398, 0</value>
   </data>
   <data name="PostButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>50, 21</value>
+    <value>44, 21</value>
   </data>
   <data name="PostButton.TabIndex" type="System.Int32, mscorlib">
     <value>23</value>
@@ -658,13 +658,13 @@
     <value>Right</value>
   </data>
   <data name="ButtonPostMode.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Marlett, 8.25pt, style=Bold</value>
+    <value>Marlett, 6.75pt, style=Bold</value>
   </data>
   <data name="ButtonPostMode.Location" type="System.Drawing.Point, System.Drawing">
-    <value>446, 0</value>
+    <value>442, 0</value>
   </data>
   <data name="ButtonPostMode.Size" type="System.Drawing.Size, System.Drawing">
-    <value>18, 21</value>
+    <value>15, 21</value>
   </data>
   <data name="ButtonPostMode.TabIndex" type="System.Int32, mscorlib">
     <value>26</value>
@@ -700,10 +700,10 @@
     <value>19</value>
   </data>
   <data name="SplitContainer2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>464, 106</value>
+    <value>457, 122</value>
   </data>
   <data name="SplitContainer2.SplitterDistance" type="System.Int32, mscorlib">
-    <value>83</value>
+    <value>99</value>
   </data>
   <data name="SplitContainer2.SplitterWidth" type="System.Int32, mscorlib">
     <value>2</value>
@@ -739,10 +739,10 @@
     <value>23</value>
   </data>
   <data name="SplitContainer1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>468, 270</value>
+    <value>461, 307</value>
   </data>
   <data name="SplitContainer1.SplitterDistance" type="System.Int32, mscorlib">
-    <value>158</value>
+    <value>179</value>
   </data>
   <data name="SplitContainer1.SplitterWidth" type="System.Int32, mscorlib">
     <value>2</value>
@@ -763,7 +763,7 @@
     <value>0</value>
   </data>
   <data name="ToolStripContainer1.ContentPanel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>468, 270</value>
+    <value>461, 307</value>
   </data>
   <data name="&gt;&gt;ToolStripContainer1.ContentPanel.Name" xml:space="preserve">
     <value>ToolStripContainer1.ContentPanel</value>
@@ -808,7 +808,7 @@
     <value>2</value>
   </data>
   <data name="ToolStripContainer1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>468, 316</value>
+    <value>461, 353</value>
   </data>
   <data name="ToolStripContainer1.TabIndex" type="System.Int32, mscorlib">
     <value>11</value>
@@ -1234,10 +1234,10 @@
     <value>BlackFav</value>
   </data>
   <data name="MenuItemCommand.Size" type="System.Drawing.Size, System.Drawing">
-    <value>88, 20</value>
+    <value>72, 20</value>
   </data>
   <data name="MenuItemCommand.Text" xml:space="preserve">
-    <value>その他機能(&amp;C)</value>
+    <value>その他機能</value>
   </data>
   <data name="MatomeMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>F1</value>
@@ -1315,7 +1315,7 @@
     <value>0, 0</value>
   </data>
   <data name="MenuStrip1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>468, 24</value>
+    <value>461, 24</value>
   </data>
   <data name="MenuStrip1.TabIndex" type="System.Int32, mscorlib">
     <value>10</value>
@@ -1426,7 +1426,7 @@
     <value>6, 12</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>468, 316</value>
+    <value>461, 353</value>
   </data>
   <data name="$this.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>Off</value>

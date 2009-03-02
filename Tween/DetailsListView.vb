@@ -70,6 +70,28 @@ Namespace TweenCustomControl
             DoubleBuffered = True
         End Sub
 
+        <System.ComponentModel.DefaultValue(0), _
+         System.ComponentModel.RefreshProperties(System.ComponentModel.RefreshProperties.Repaint)> _
+        Public Shadows Property VirtualListSize() As Integer
+            Get
+                Return MyBase.VirtualListSize
+            End Get
+            Set(ByVal value As Integer)
+                If value = MyBase.VirtualListSize Then Exit Property
+                If MyBase.VirtualListSize > 0 Then
+                    Dim topIndex As Integer = 0
+                    If Me.TopItem Is Nothing Then
+                        topIndex = 0
+                    Else
+                        topIndex = Me.TopItem.Index
+                    End If
+                    topIndex = Math.Min(topIndex, Math.Abs(value - 1))
+                    Me.TopItem = Me.Items(topIndex)
+                End If
+                MyBase.VirtualListSize = value
+            End Set
+        End Property
+
         Public Sub ChangeItemBackColor(ByVal index As Integer, ByVal backColor As Color)
             ChangeSubItemBackColor(index, 0, backColor)
         End Sub
