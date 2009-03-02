@@ -57,8 +57,7 @@ Public Class TweenMain
     Private detailHtmlFormat As String
 
     '設定ファイル関連
-    Private _config As Configuration    'アプリケーション構成ファイルクラス
-    Private _section As ListSection     '構成ファイル中のユーザー定義ListSectionクラス
+    Private _cfg As SettingBase
 
     'サブ画面インスタンス
     Private SettingDialog As New Setting()       '設定画面インスタンス
@@ -336,36 +335,64 @@ Public Class TweenMain
         '_columnChangeFlag = True
 
         '<<<<<<<<<設定関連>>>>>>>>>
-        '設定読み出し
-        _config = ConfigurationManager.OpenExeConfiguration(Application.ExecutablePath)
-        _section = DirectCast(_config.GetSection("TwitterSetting"), ListSection)
+        '設定コンバージョン
+        ConvertConfig()
+        _cfg = New SettingBase
+        _cfg.Load()
+
+
+        ''設定読み出し
+        '_config = ConfigurationManager.OpenExeConfiguration(Application.ExecutablePath)
+        '_section = DirectCast(_config.GetSection("TwitterSetting"), ListSection)
         '初回起動時で設定ファイルがない場合、"TwitterSetting"セクションを作成。構成要素も作成することで他の要素もデフォルト値での取得が可能
-        If _section Is Nothing Then
-            _section = New ListSection()
-            _config.Sections.Add("TwitterSetting", _section)
-            _section = DirectCast(_config.GetSection("TwitterSetting"), ListSection)
-            _section.SectionInformation.ForceSave = True
-            _section.ListElement = New ListElementCollection("Recent")
+        If _cfg.Tabs.Count = 0 Then
+            _cfg.Tabs.Add("Recent", New TabClass)
+            _cfg.Tabs.Add("Reply", New TabClass)
+            _cfg.Tabs.Add("Direct", New TabClass)
         End If
+        'If _section Is Nothing Then
+        '    _section = New ListSection()
+        '    _config.Sections.Add("TwitterSetting", _section)
+        '    _section = DirectCast(_config.GetSection("TwitterSetting"), ListSection)
+        '    _section.SectionInformation.ForceSave = True
+        '    _section.ListElement = New ListElementCollection("Recent")
+        'End If
         'ユーザー名とパスワードの取得
-        _username = _section.UserName
-        _password = _section.Password
+        _username = _cfg.UserName
+        _password = _cfg.Password
+        '_username = _section.UserName
+        '_password = _section.Password
         '新着バルーン通知のチェック状態設定
-        NewPostPopMenuItem.Checked = _section.NewAllPop     '全新着通知
+        NewPostPopMenuItem.Checked = _cfg.NewAllPop
+        'NewPostPopMenuItem.Checked = _section.NewAllPop     '全新着通知
 
         'フォント＆文字色＆背景色保持
-        _fntUnread = _section.FontUnread                '未読フォント
-        _clUnread = _section.ColorUnread                '未読文字色
-        _fntReaded = _section.FontReaded                '既読フォント
-        _clReaded = _section.ColorReaded                '既読文字色
-        _clFav = _section.ColorFav                      'Fav文字色
-        _clOWL = _section.ColorOWL                      '片思い文字色
-        _fntDetail = _section.FontDetail                '詳細部フォント
-        _clSelf = _section.ColorSelf                    '自発言背景色
-        _clAtSelf = _section.ColorAtSelf                '自分宛返信背景色
-        _clTarget = _section.ColorTarget                '選択発言者の他の発言背景色
-        _clAtTarget = _section.ColorAtTarget            '選択発言の＠先
-        _clAtFromTarget = _section.ColorAtFromTarget    '選択発言者への＠
+        _fntUnread = _cfg.FontUnread
+        _clUnread = _cfg.ColorUnread
+        _fntReaded = _cfg.FontRead
+        _clReaded = _cfg.ColorRead
+        _clFav = _cfg.ColorFav
+        _clOWL = _cfg.ColorOWL
+        _fntDetail = _cfg.FontDetail
+        _clSelf = _cfg.ColorSelf
+        _clAtSelf = _cfg.ColorAtSelf
+        _clTarget = _cfg.ColorTarget
+        _clAtTarget = _cfg.ColorAtTarget
+        _clAtFromTarget = _cfg.ColorAtFromTarget
+
+        '_fntUnread = _section.FontUnread                '未読フォント
+        '_clUnread = _section.ColorUnread                '未読文字色
+        '_fntReaded = _section.FontReaded                '既読フォント
+        '_clReaded = _section.ColorReaded                '既読文字色
+        '_clFav = _section.ColorFav                      'Fav文字色
+        '_clOWL = _section.ColorOWL                      '片思い文字色
+        '_fntDetail = _section.FontDetail                '詳細部フォント
+        '_clSelf = _section.ColorSelf                    '自発言背景色
+        '_clAtSelf = _section.ColorAtSelf                '自分宛返信背景色
+        '_clTarget = _section.ColorTarget                '選択発言者の他の発言背景色
+        '_clAtTarget = _section.ColorAtTarget            '選択発言の＠先
+        '_clAtFromTarget = _section.ColorAtFromTarget    '選択発言者への＠
+
         _brsForeColorUnread = New SolidBrush(_clUnread)
         _brsForeColorReaded = New SolidBrush(_clReaded)
         _brsForeColorFav = New SolidBrush(_clFav)
@@ -385,29 +412,46 @@ Public Class TweenMain
         '設定画面への反映
         SettingDialog.UserID = _username                                'ユーザ名
         SettingDialog.PasswordStr = _password                           'パスワード
-        SettingDialog.TimelinePeriodInt = _section.TimelinePeriod       'Recent&Reply取得間隔
-        SettingDialog.DMPeriodInt = _section.DMPeriod                   'DM取得間隔
-        SettingDialog.NextPageThreshold = _section.NextPageThreshold    '次頁以降を取得するための新着件数閾値
-        SettingDialog.NextPagesInt = _section.NextPages                 '閾値を超えた場合の取得ページ数
-        SettingDialog.MaxPostNum = _section.MaxPostNum                  '時間当たりPOST回数最大値
+        SettingDialog.TimelinePeriodInt = _cfg.TimelinePeriod
+        SettingDialog.DMPeriodInt = _cfg.DMPeriod
+        SettingDialog.NextPageThreshold = _cfg.NextPageThreshold
+        SettingDialog.NextPagesInt = _cfg.NextPages
+        SettingDialog.MaxPostNum = _cfg.MaxPostNum
+
+        'SettingDialog.TimelinePeriodInt = _section.TimelinePeriod       'Recent&Reply取得間隔
+        'SettingDialog.DMPeriodInt = _section.DMPeriod                   'DM取得間隔
+        'SettingDialog.NextPageThreshold = _section.NextPageThreshold    '次頁以降を取得するための新着件数閾値
+        'SettingDialog.NextPagesInt = _section.NextPages                 '閾値を超えた場合の取得ページ数
+        'SettingDialog.MaxPostNum = _section.MaxPostNum                  '時間当たりPOST回数最大値
         '起動時読み込みページ数
-        SettingDialog.ReadPages = _section.ReadPages            'Recent
-        SettingDialog.ReadPagesReply = _section.ReadPagesReply  'Reply
-        SettingDialog.ReadPagesDM = _section.ReadPagesDM        'DM
+        SettingDialog.ReadPages = _cfg.ReadPages
+        SettingDialog.ReadPagesReply = _cfg.ReadPagesReply
+        SettingDialog.ReadPagesDM = _cfg.ReadPagesDM
+
+        'SettingDialog.ReadPages = _section.ReadPages            'Recent
+        'SettingDialog.ReadPagesReply = _section.ReadPagesReply  'Reply
+        'SettingDialog.ReadPagesDM = _section.ReadPagesDM        'DM
         '起動時読み込み分を既読にするか。Trueなら既読として処理
-        SettingDialog.Readed = _section.Readed
+        SettingDialog.Readed = _cfg.Read
+        'SettingDialog.Readed = _section.Readed
         '新着取得時のリストスクロールをするか。Trueならスクロールしない
-        ListLockMenuItem.Checked = _section.ListLock
-        SettingDialog.IconSz = _section.IconSize
+        ListLockMenuItem.Checked = _cfg.ListLock
+        SettingDialog.IconSz = _cfg.IconSize
+        'ListLockMenuItem.Checked = _section.ListLock
+        'SettingDialog.IconSz = _section.IconSize
         '文末ステータス
-        SettingDialog.Status = _section.StatusText
+        SettingDialog.Status = _cfg.StatusText
+        'SettingDialog.Status = _section.StatusText
         '未読管理。Trueなら未読管理する
-        SettingDialog.UnreadManage = _section.UnreadManage
+        SettingDialog.UnreadManage = _cfg.UnreadManage
+        'SettingDialog.UnreadManage = _section.UnreadManage
         'サウンド再生（タブ別設定より優先）
-        SettingDialog.PlaySound = _section.PlaySound
+        SettingDialog.PlaySound = _cfg.PlaySound
+        'SettingDialog.PlaySound = _section.PlaySound
         PlaySoundMenuItem.Checked = SettingDialog.PlaySound
         '片思い表示。Trueなら片思い表示する
-        SettingDialog.OneWayLove = _section.OneWayLove
+        SettingDialog.OneWayLove = _cfg.OneWayLove
+        'SettingDialog.OneWayLove = _section.OneWayLove
         'フォント＆文字色＆背景色
         SettingDialog.FontUnread = _fntUnread
         SettingDialog.ColorUnread = _clUnread
@@ -421,39 +465,73 @@ Public Class TweenMain
         SettingDialog.ColorTarget = _clTarget
         SettingDialog.ColorAtTarget = _clAtTarget
         SettingDialog.ColorAtFromTarget = _clAtFromTarget
-        SettingDialog.NameBalloon = _section.NameBalloon
-        SettingDialog.PostCtrlEnter = _section.PostCtrlEnter
+        SettingDialog.NameBalloon = _cfg.NameBalloon
+        SettingDialog.PostCtrlEnter = _cfg.PostCtrlEnter
+        'SettingDialog.NameBalloon = _section.NameBalloon
+        'SettingDialog.PostCtrlEnter = _section.PostCtrlEnter
         SettingDialog.UseAPI = True
-        SettingDialog.HubServer = _section.HubServer
-        SettingDialog.BrowserPath = _section.BrowserPath
-        SettingDialog.CheckReply = _section.CheckReply
-        SettingDialog.UseRecommendStatus = _section.UseRecommendStatus
-        SettingDialog.DispUsername = _section.DispUsername
-        SettingDialog.CloseToExit = _section.CloseToExit
-        SettingDialog.MinimizeToTray = _section.MinimizeToTray
-        SettingDialog.DispLatestPost = _section.DispLatestPost
-        SettingDialog.SortOrderLock = _section.SortOrderLock
-        SettingDialog.TinyUrlResolve = _section.TinyURLResolve
-        SettingDialog.ProxyType = _section.ProxyType
-        SettingDialog.ProxyAddress = _section.ProxyAddress
-        SettingDialog.ProxyPort = _section.ProxyPort
-        SettingDialog.ProxyUser = _section.ProxyUser
-        SettingDialog.ProxyPassword = _section.ProxyPassword
-        SettingDialog.PeriodAdjust = _section.PeriodAdjust
-        SettingDialog.StartupVersion = _section.StartupVersion
-        SettingDialog.StartupKey = _section.StartupKey
-        SettingDialog.StartupFollowers = _section.StartupFollowers
-        SettingDialog.RestrictFavCheck = _section.RestrictFavCheck
-        SettingDialog.AlwaysTop = _section.AlwaysTop
-        SettingDialog.UrlConvertAuto = _section.UrlConvertAuto
-        SettingDialog.OutputzEnabled = _section.Outputz
-        SettingDialog.OutputzKey = _section.OutputzKey
-        SettingDialog.OutputzUrlmode = _section.OutputzUrlmode
-        SettingDialog.UseUnreadStyle = _section.UseUnreadStyle
-        SettingDialog.DefaultTimeOut = _section.DefaultTimeOut
-        SettingDialog.ProtectNotInclude = _section.ProtectNotInclude
+        SettingDialog.HubServer = _cfg.HubServer
+        SettingDialog.BrowserPath = _cfg.BrowserPath
+        SettingDialog.CheckReply = _cfg.CheckReply
+        SettingDialog.UseRecommendStatus = _cfg.UseRecommendStatus
+        SettingDialog.DispUsername = _cfg.DispUsername
+        SettingDialog.CloseToExit = _cfg.CloseToExit
+        SettingDialog.MinimizeToTray = _cfg.MinimizeToTray
+        SettingDialog.DispLatestPost = _cfg.DispLatestPost
+        SettingDialog.SortOrderLock = _cfg.SortOrderLock
+        SettingDialog.TinyUrlResolve = _cfg.TinyURLResolve
+        SettingDialog.ProxyType = _cfg.ProxyType
+        SettingDialog.ProxyAddress = _cfg.ProxyAddress
+        SettingDialog.ProxyPort = _cfg.ProxyPort
+        SettingDialog.ProxyUser = _cfg.ProxyUser
+        SettingDialog.ProxyPassword = _cfg.ProxyPassword
+        SettingDialog.PeriodAdjust = _cfg.PeriodAdjust
+        SettingDialog.StartupVersion = _cfg.StartupVersion
+        SettingDialog.StartupKey = _cfg.StartupKey
+        SettingDialog.StartupFollowers = _cfg.StartupFollowers
+        SettingDialog.RestrictFavCheck = _cfg.RestrictFavCheck
+        SettingDialog.AlwaysTop = _cfg.AlwaysTop
+        SettingDialog.UrlConvertAuto = _cfg.UrlConvertAuto
+        SettingDialog.OutputzEnabled = _cfg.Outputz
+        SettingDialog.OutputzKey = _cfg.OutputzKey
+        SettingDialog.OutputzUrlmode = _cfg.OutputzUrlmode
+        SettingDialog.UseUnreadStyle = _cfg.UseUnreadStyle
+        SettingDialog.DefaultTimeOut = _cfg.DefaultTimeOut
+        SettingDialog.ProtectNotInclude = _cfg.ProtectNotInclude
 
-        SettingDialog.DateTimeFormat = _section.DateTimeFormat
+        SettingDialog.DateTimeFormat = _cfg.DateTimeFormat
+
+
+        'SettingDialog.HubServer = _section.HubServer
+        'SettingDialog.BrowserPath = _section.BrowserPath
+        'SettingDialog.CheckReply = _section.CheckReply
+        'SettingDialog.UseRecommendStatus = _section.UseRecommendStatus
+        'SettingDialog.DispUsername = _section.DispUsername
+        'SettingDialog.CloseToExit = _section.CloseToExit
+        'SettingDialog.MinimizeToTray = _section.MinimizeToTray
+        'SettingDialog.DispLatestPost = _section.DispLatestPost
+        'SettingDialog.SortOrderLock = _section.SortOrderLock
+        'SettingDialog.TinyUrlResolve = _section.TinyURLResolve
+        'SettingDialog.ProxyType = _section.ProxyType
+        'SettingDialog.ProxyAddress = _section.ProxyAddress
+        'SettingDialog.ProxyPort = _section.ProxyPort
+        'SettingDialog.ProxyUser = _section.ProxyUser
+        'SettingDialog.ProxyPassword = _section.ProxyPassword
+        'SettingDialog.PeriodAdjust = _section.PeriodAdjust
+        'SettingDialog.StartupVersion = _section.StartupVersion
+        'SettingDialog.StartupKey = _section.StartupKey
+        'SettingDialog.StartupFollowers = _section.StartupFollowers
+        'SettingDialog.RestrictFavCheck = _section.RestrictFavCheck
+        'SettingDialog.AlwaysTop = _section.AlwaysTop
+        'SettingDialog.UrlConvertAuto = _section.UrlConvertAuto
+        'SettingDialog.OutputzEnabled = _section.Outputz
+        'SettingDialog.OutputzKey = _section.OutputzKey
+        'SettingDialog.OutputzUrlmode = _section.OutputzUrlmode
+        'SettingDialog.UseUnreadStyle = _section.UseUnreadStyle
+        'SettingDialog.DefaultTimeOut = _section.DefaultTimeOut
+        'SettingDialog.ProtectNotInclude = _section.ProtectNotInclude
+
+        'SettingDialog.DateTimeFormat = _section.DateTimeFormat
         '書式指定文字列エラーチェック
         Try
             If DateTime.Now.ToString(SettingDialog.DateTimeFormat).Length = 0 Then
@@ -546,14 +624,19 @@ Public Class TweenMain
         End If
 
         'ウィンドウ設定
-        Me.ClientSize = _section.FormSize           'サイズ設定
+        Me.ClientSize = _cfg.FormSize
+        'Me.ClientSize = _section.FormSize           'サイズ設定
         _mySize = Me.ClientSize                     'サイズ保持（最小化・最大化されたまま終了した場合の対応用）
-        Me.Location = _section.FormLocation         '位置設定
+        Me.Location = _cfg.FormLocation
+        'Me.Location = _section.FormLocation         '位置設定
         _myLoc = Me.Location                        '位置保持（最小化・最大化されたまま終了した場合の対応用）
         Me.TopMost = SettingDialog.AlwaysTop
-        _mySpDis = _section.SplitterDistance
-        _mySpDis2 = _section.StatusTextHeight
-        MultiLineMenuItem.Checked = _section.StatusMultiline
+        _mySpDis = _cfg.SplitterDistance
+        _mySpDis2 = _cfg.StatusTextHeight
+        MultiLineMenuItem.Checked = _cfg.StatusMultiline
+        '_mySpDis = _section.SplitterDistance
+        '_mySpDis2 = _section.StatusTextHeight
+        'MultiLineMenuItem.Checked = _section.StatusMultiline
         Me.Tween_ClientSizeChanged(Me, Nothing)
 
         '全新着通知のチェック状態により、Reply＆DMの新着通知有効無効切り替え（タブ別設定にするため削除予定）
@@ -588,9 +671,10 @@ Public Class TweenMain
         End If
 
         ''''''''''''''''''''''''''''''''''''''''
-        _statuses.SortOrder = DirectCast(_section.SortOrder, System.Windows.Forms.SortOrder)
+        _statuses.SortOrder = DirectCast(_cfg.SortOrder, System.Windows.Forms.SortOrder)
+        '_statuses.SortOrder = DirectCast(_section.SortOrder, System.Windows.Forms.SortOrder)
         Dim mode As IdComparerClass.ComparerMode
-        Select Case _section.SortColumn
+        Select Case _cfg.SortColumn
             Case 0, 5, 6    '0:アイコン,5:未読マーク,6:プロテクト・フィルターマーク
                 'ソートしない
                 mode = IdComparerClass.ComparerMode.Id  'Idソートに読み替え
@@ -667,25 +751,165 @@ Public Class TweenMain
         'listViewItemSorter.Column = _section.SortColumn
         'listViewItemSorter.Order = DirectCast(_section.SortOrder, System.Windows.Forms.SortOrder)
 
-        ''Replyタブ
-        If _section.ListElement.Item("Reply") Is Nothing Then
-            _section.ListElement.Add(New ListElement("Reply"))
-        End If
+        '''Replyタブ
+        'If _section.ListElement.Item("Reply") Is Nothing Then
+        '    _section.ListElement.Add(New ListElement("Reply"))
+        'End If
 
-        ''DirectMsgタブ
-        If _section.ListElement.Item("Direct") Is Nothing Then
-            _section.ListElement.Add(New ListElement("Direct"))
-        End If
+        '''DirectMsgタブ
+        'If _section.ListElement.Item("Direct") Is Nothing Then
+        '    _section.ListElement.Add(New ListElement("Direct"))
+        'End If
 
-        For idx As Integer = 0 To _section.ListElement.Count - 1
-            Dim name As String = _section.ListElement(idx).Name
+        _statuses.Tabs = _cfg.Tabs
+        For Each tn As String In _statuses.Tabs.Keys
+            If Not AddNewTab(tn, True) Then Throw New Exception("タブ作成エラー")
+        Next
+        'For idx As Integer = 0 To _section.ListElement.Count - 1
+        '    Dim name As String = _section.ListElement(idx).Name
+        '    Dim tb As New TabClass
+        '    tb.Notify = _section.ListElement(idx).Notify
+        '    tb.SoundFile = _section.ListElement(idx).SoundFile
+        '    tb.UnreadManage = _section.ListElement(idx).UnreadManage
+        '    If Not AddNewTab(name, True) Then Throw New Exception("タブ作成エラー") 'GUI部品作成
+        '    For Each flt As Tween.SelectedUser In _section.SelectedUser
+        '        If flt.TabName = name Then
+        '            Dim bflt() As String = flt.BodyFilter.Split(Chr(32))
+        '            Dim body As New List(Of String)
+        '            For Each tmpFlt As String In bflt
+        '                Try
+        '                    Dim dmy As Boolean = False
+        '                    If flt.RegexEnable Then
+        '                        ' 正規表現が正しいかどうかチェック 不正な場合はArgumentExceptionが発生するのでフィルタを無視する
+        '                        Dim rx As Regex = New Regex(tmpFlt)
+        '                        dmy = rx.IsMatch(tmpFlt)
+        '                    End If
+        '                    ' フィルタ追加 ArgumentExceptionが発生した場合はCatchされるのでここに来ない
+        '                    If tmpFlt.Trim <> "" Then body.Add(tmpFlt.Trim)
+        '                Catch ex As ArgumentException
+        '                    ' ArgumentExceptionが発生した場合は該当フィルタを無視
+        '                End Try
+        '            Next
+        '            tb.AddFilter(New FiltersClass(flt.IdFilter, _
+        '                    body, _
+        '                    flt.SearchBoth, _
+        '                    flt.MoveFrom, _
+        '                    flt.SetMark, _
+        '                    flt.UrlSearch, _
+        '                    flt.RegexEnable, _
+        '                    name))
+        '        End If
+        '    Next
+        '    _statuses.AddTab(name, tb)
+        'Next
+
+        JumpUnreadMenuItem.ShortcutKeyDisplayString = "Space"
+        CopySTOTMenuItem.ShortcutKeyDisplayString = "Ctrl+C"
+        CopyURLMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+C"
+
+        AddHandler My.Computer.Network.NetworkAvailabilityChanged, AddressOf Network_NetworkAvailabilityChanged
+        If SettingDialog.MinimizeToTray = False OrElse Me.WindowState <> FormWindowState.Minimized Then
+            Me.Visible = True
+        End If
+        _curTab = ListTab.SelectedTab
+        _curItemIndex = -1
+        _curList = DirectCast(_curTab.Controls(0), DetailsListView)
+        SetMainWindowTitle()
+        SetNotifyIconText()
+
+        TimerColorize.Interval = 200
+        TimerColorize.Start()
+    End Sub
+
+    Private Sub ConvertConfig()
+        Dim _config As Configuration    'アプリケーション構成ファイルクラス
+        Dim _section As ListSection     '構成ファイル中のユーザー定義ListSectionクラス
+
+        If System.IO.File.Exists(My.Application.Info.DirectoryPath + "TweenConf.xml") Then Exit Sub
+        '設定読み出し
+        _config = ConfigurationManager.OpenExeConfiguration(Application.ExecutablePath)
+        _section = DirectCast(_config.GetSection("TwitterSetting"), ListSection)
+        _cfg = New SettingBase
+        _cfg.AlwaysTop = _section.AlwaysTop
+        _cfg.BrowserPath = _section.BrowserPath
+        _cfg.CheckReply = _section.CheckReply
+        _cfg.CloseToExit = _section.CloseToExit
+        _cfg.ColorAtFromTarget = _section.ColorAtFromTarget
+        _cfg.ColorAtSelf = _section.ColorAtSelf
+        _cfg.ColorAtTarget = _section.ColorAtTarget
+        _cfg.ColorFav = _section.ColorFav
+        _cfg.ColorOWL = _section.ColorOWL
+        _cfg.ColorRead = _section.ColorReaded
+        _cfg.ColorSelf = _section.ColorSelf
+        _cfg.ColorTarget = _section.ColorTarget
+        _cfg.ColorUnread = _section.ColorUnread
+        _cfg.cultureCode = _section.cultureCode
+        _cfg.DateTimeFormat = _section.DateTimeFormat
+        _cfg.DefaultTimeOut = _section.DefaultTimeOut
+        _cfg.DispLatestPost = _section.DispLatestPost
+        _cfg.DisplayIndex1 = _section.DisplayIndex1
+        _cfg.DisplayIndex2 = _section.DisplayIndex2
+        _cfg.DisplayIndex3 = _section.DisplayIndex3
+        _cfg.DisplayIndex4 = _section.DisplayIndex4
+        _cfg.DisplayIndex5 = _section.DisplayIndex5
+        _cfg.DisplayIndex6 = _section.DisplayIndex6
+        _cfg.DisplayIndex7 = _section.DisplayIndex7
+        _cfg.DisplayIndex8 = _section.DisplayIndex8
+        _cfg.DispUsername = _section.DispUsername
+        _cfg.DMPeriod = _section.DMPeriod
+        _cfg.FontDetail = _section.FontDetail
+        _cfg.FontRead = _section.FontReaded
+        _cfg.FontUnread = _section.FontUnread
+        _cfg.FormLocation = _section.FormLocation
+        _cfg.FormSize = _section.FormSize
+        _cfg.HubServer = _section.HubServer
+        _cfg.IconSize = _section.IconSize
+        _cfg.ListLock = _section.ListLock
+        _cfg.MaxPostNum = _section.MaxPostNum
+        _cfg.MinimizeToTray = _section.MinimizeToTray
+        _cfg.NameBalloon = _section.NameBalloon
+        _cfg.NewAllPop = _section.NewAllPop
+        _cfg.NextPages = _section.NextPages
+        _cfg.NextPageThreshold = _section.NextPageThreshold
+        _cfg.OneWayLove = _section.OneWayLove
+        _cfg.Outputz = _section.Outputz
+        _cfg.OutputzKey = _section.OutputzKey
+        _cfg.OutputzUrlmode = _section.OutputzUrlmode
+        _cfg.Password = _section.Password
+        _cfg.PeriodAdjust = _section.PeriodAdjust
+        _cfg.PlaySound = _section.PlaySound
+        _cfg.PostCtrlEnter = _section.PostCtrlEnter
+        _cfg.ProtectNotInclude = _section.ProtectNotInclude
+        _cfg.ProxyAddress = _section.ProxyAddress
+        _cfg.ProxyPassword = _section.ProxyPassword
+        _cfg.ProxyPort = _section.ProxyPort
+        _cfg.ProxyType = _section.ProxyType
+        _cfg.ProxyUser = _section.ProxyUser
+        _cfg.Read = _section.Readed
+        _cfg.ReadPages = _section.ReadPages
+        _cfg.ReadPagesDM = _section.ReadPagesDM
+        _cfg.ReadPagesReply = _section.ReadPagesReply
+        _cfg.RestrictFavCheck = _section.RestrictFavCheck
+        _cfg.SortColumn = _section.SortColumn
+        _cfg.SortOrder = _section.SortOrder
+        _cfg.SortOrderLock = _section.SortOrderLock
+        _cfg.SplitterDistance = _section.SplitterDistance
+        _cfg.StartupFollowers = _section.StartupFollowers
+        _cfg.StartupKey = _section.StartupKey
+        _cfg.StartupVersion = _section.StartupVersion
+        _cfg.StatusMultiline = _section.StatusMultiline
+        _cfg.StatusText = _section.StatusText
+        _cfg.StatusTextHeight = _section.StatusTextHeight
+        Dim td As New Dictionary(Of String, TabClass)
+        For i As Integer = 0 To _section.ListElement.Count - 1
             Dim tb As New TabClass
-            tb.Notify = _section.ListElement(idx).Notify
-            tb.SoundFile = _section.ListElement(idx).SoundFile
-            tb.UnreadManage = _section.ListElement(idx).UnreadManage
-            If Not AddNewTab(name, True) Then Throw New Exception("タブ作成エラー") 'GUI部品作成
+            tb.Notify = _section.ListElement(i).Notify
+            tb.SoundFile = _section.ListElement(i).SoundFile
+            tb.TabName = _section.ListElement(i).Name
+            tb.UnreadManage = _section.ListElement(i).UnreadManage
+
             For Each flt As Tween.SelectedUser In _section.SelectedUser
-                If flt.TabName = name Then
+                If flt.TabName = tb.TabName Then
                     Dim bflt() As String = flt.BodyFilter.Split(Chr(32))
                     Dim body As New List(Of String)
                     For Each tmpFlt As String In bflt
@@ -708,28 +932,33 @@ Public Class TweenMain
                             flt.MoveFrom, _
                             flt.SetMark, _
                             flt.UrlSearch, _
-                            flt.RegexEnable))
+                            flt.RegexEnable, _
+                            flt.TabName))
                 End If
             Next
-            _statuses.AddTab(name, tb)
+
+            td.Add(_section.ListElement(i).Name, tb)
         Next
-
-        JumpUnreadMenuItem.ShortcutKeyDisplayString = "Space"
-        CopySTOTMenuItem.ShortcutKeyDisplayString = "Ctrl+C"
-        CopyURLMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+C"
-
-        AddHandler My.Computer.Network.NetworkAvailabilityChanged, AddressOf Network_NetworkAvailabilityChanged
-        If SettingDialog.MinimizeToTray = False OrElse Me.WindowState <> FormWindowState.Minimized Then
-            Me.Visible = True
-        End If
-        _curTab = ListTab.SelectedTab
-        _curItemIndex = -1
-        _curList = DirectCast(_curTab.Controls(0), DetailsListView)
-        SetMainWindowTitle()
-        SetNotifyIconText()
-
-        TimerColorize.Interval = 200
-        TimerColorize.Start()
+        _cfg.Tabs = td
+        _cfg.TimelinePeriod = _section.TimelinePeriod
+        _cfg.TinyURLResolve = _section.TinyURLResolve
+        _cfg.UnreadManage = _section.UnreadManage
+        _cfg.UrlConvertAuto = _section.UrlConvertAuto
+        _cfg.UseAPI = _section.UseAPI
+        _cfg.UseRecommendStatus = _section.UseRecommendStatus
+        _cfg.UserName = _section.UserName
+        _cfg.UseUnreadStyle = _section.UseUnreadStyle
+        _cfg.Width1 = _section.Width1
+        _cfg.Width2 = _section.Width2
+        _cfg.Width3 = _section.Width3
+        _cfg.Width4 = _section.Width4
+        _cfg.Width5 = _section.Width5
+        _cfg.Width6 = _section.Width6
+        _cfg.Width7 = _section.Width7
+        _cfg.Width8 = _section.Width8
+        _cfg.Save()
+        _section = Nothing
+        _config = Nothing
     End Sub
 
     Private Sub Network_NetworkAvailabilityChanged(ByVal sender As Object, ByVal e As Devices.NetworkAvailableEventArgs)
@@ -1063,10 +1292,13 @@ Public Class TweenMain
 
         If _post Is Nothing Then Exit Sub
 
-        For cnt As Integer = 0 To _itemCache.Length - 1
-            '_itemCache(cnt).BackColor = JudgeColor(_post, _postCache(cnt))
-            _curList.ChangeItemBackColor(_itemCacheIndex + cnt, JudgeColor(_post, _postCache(cnt)))
-        Next
+        Try
+            For cnt As Integer = 0 To _itemCache.Length - 1
+                '_itemCache(cnt).BackColor = JudgeColor(_post, _postCache(cnt))
+                _curList.ChangeItemBackColor(_itemCacheIndex + cnt, JudgeColor(_post, _postCache(cnt)))
+            Next
+        Catch ex As Exception
+        End Try
     End Sub
 
     Private Sub ColorizeList(ByVal Item As ListViewItem, ByVal Index As Integer)
@@ -1745,14 +1977,14 @@ Public Class TweenMain
                     _mySpDis = Me.SplitContainer1.SplitterDistance
                     If StatusText.Multiline Then _mySpDis2 = Me.StatusText.Height
                 End If
-            ElseIf _section IsNot Nothing Then
+            ElseIf _cfg IsNot Nothing Then
                 '初回フォームレイアウト復元
                 Try
-                    Me.SplitContainer1.SplitterDistance = _section.SplitterDistance     'Splitterの位置設定
+                    Me.SplitContainer1.SplitterDistance = _cfg.SplitterDistance     'Splitterの位置設定
                     '発言欄複数行
-                    StatusText.Multiline = _section.StatusMultiline
+                    StatusText.Multiline = _cfg.StatusMultiline
                     If StatusText.Multiline Then
-                        SplitContainer2.SplitterDistance = SplitContainer2.Height - _section.StatusTextHeight - SplitContainer2.SplitterWidth
+                        SplitContainer2.SplitterDistance = SplitContainer2.Height - _cfg.StatusTextHeight - SplitContainer2.SplitterWidth
                     Else
                         SplitContainer2.SplitterDistance = SplitContainer2.Height - SplitContainer2.Panel2MinSize - SplitContainer2.SplitterWidth
                     End If
@@ -2080,7 +2312,7 @@ Public Class TweenMain
         '_colHd9 = New ColumnHeader()
         'End If
 
-        If Not startup Then _section.ListElement.Add(New ListElement(tabName))
+        'If Not startup Then _section.ListElement.Add(New ListElement(tabName))
 
         Dim cnt As Integer = ListTab.TabPages.Count
 
@@ -2185,38 +2417,38 @@ Public Class TweenMain
             Next
         Else
             If _iconCol Then
-                _listCustom.Columns(0).Width = _section.Width1
-                _listCustom.Columns(1).Width = _section.Width3
+                _listCustom.Columns(0).Width = _cfg.Width1
+                _listCustom.Columns(1).Width = _cfg.Width3
                 _listCustom.Columns(0).DisplayIndex = 0
                 _listCustom.Columns(1).DisplayIndex = 1
             Else
                 For i As Integer = 0 To 7
-                    If _section.DisplayIndex1 = i Then
+                    If _cfg.DisplayIndex1 = i Then
                         dispOrder(i) = 0
-                    ElseIf _section.DisplayIndex2 = i Then
+                    ElseIf _cfg.DisplayIndex2 = i Then
                         dispOrder(i) = 1
-                    ElseIf _section.DisplayIndex3 = i Then
+                    ElseIf _cfg.DisplayIndex3 = i Then
                         dispOrder(i) = 2
-                    ElseIf _section.DisplayIndex4 = i Then
+                    ElseIf _cfg.DisplayIndex4 = i Then
                         dispOrder(i) = 3
-                    ElseIf _section.DisplayIndex5 = i Then
+                    ElseIf _cfg.DisplayIndex5 = i Then
                         dispOrder(i) = 4
-                    ElseIf _section.DisplayIndex6 = i Then
+                    ElseIf _cfg.DisplayIndex6 = i Then
                         dispOrder(i) = 5
-                    ElseIf _section.DisplayIndex7 = i Then
+                    ElseIf _cfg.DisplayIndex7 = i Then
                         dispOrder(i) = 6
-                    ElseIf _section.DisplayIndex8 = i Then
+                    ElseIf _cfg.DisplayIndex8 = i Then
                         dispOrder(i) = 7
                     End If
                 Next
-                _listCustom.Columns(0).Width = _section.Width1
-                _listCustom.Columns(1).Width = _section.Width2
-                _listCustom.Columns(2).Width = _section.Width3
-                _listCustom.Columns(3).Width = _section.Width4
-                _listCustom.Columns(4).Width = _section.Width5
-                _listCustom.Columns(5).Width = _section.Width6
-                _listCustom.Columns(6).Width = _section.Width7
-                _listCustom.Columns(7).Width = _section.Width8
+                _listCustom.Columns(0).Width = _cfg.Width1
+                _listCustom.Columns(1).Width = _cfg.Width2
+                _listCustom.Columns(2).Width = _cfg.Width3
+                _listCustom.Columns(3).Width = _cfg.Width4
+                _listCustom.Columns(4).Width = _cfg.Width5
+                _listCustom.Columns(5).Width = _cfg.Width6
+                _listCustom.Columns(6).Width = _cfg.Width7
+                _listCustom.Columns(7).Width = _cfg.Width8
                 For i As Integer = 0 To 7
                     _listCustom.Columns(dispOrder(i)).DisplayIndex = i
                 Next
@@ -3453,126 +3685,208 @@ RETRY2:
     Private Sub SaveConfigs()
         If _username <> "" AndAlso _password <> "" Then
             SyncLock _syncObject
-                _section.FormSize = _mySize
-                _section.FormLocation = _myLoc
-                _section.SplitterDistance = _mySpDis
-                _section.StatusMultiline = StatusText.Multiline
-                _section.StatusTextHeight = _mySpDis2
-                _section.UserName = _username
-                _section.Password = _password
-                _section.NextPageThreshold = SettingDialog.NextPageThreshold
-                _section.NextPages = SettingDialog.NextPagesInt
-                _section.TimelinePeriod = SettingDialog.TimelinePeriodInt
-                _section.DMPeriod = SettingDialog.DMPeriodInt
-                _section.MaxPostNum = SettingDialog.MaxPostNum
-                _section.ReadPages = SettingDialog.ReadPages
-                _section.ReadPagesReply = SettingDialog.ReadPagesReply
-                _section.ReadPagesDM = SettingDialog.ReadPagesDM
-                _section.Readed = SettingDialog.Readed
-                _section.IconSize = SettingDialog.IconSz
-                _section.StatusText = SettingDialog.Status
-                _section.UnreadManage = SettingDialog.UnreadManage
-                _section.PlaySound = SettingDialog.PlaySound
-                _section.OneWayLove = SettingDialog.OneWayLove
+                _cfg.FormSize = _mySize
+                _cfg.FormLocation = _myLoc
+                _cfg.SplitterDistance = _mySpDis
+                _cfg.StatusMultiline = StatusText.Multiline
+                _cfg.StatusTextHeight = _mySpDis2
+                _cfg.UserName = _username
+                _cfg.Password = _password
+                _cfg.NextPageThreshold = SettingDialog.NextPageThreshold
+                _cfg.NextPages = SettingDialog.NextPagesInt
+                _cfg.TimelinePeriod = SettingDialog.TimelinePeriodInt
+                _cfg.DMPeriod = SettingDialog.DMPeriodInt
+                _cfg.MaxPostNum = SettingDialog.MaxPostNum
+                _cfg.ReadPages = SettingDialog.ReadPages
+                _cfg.ReadPagesReply = SettingDialog.ReadPagesReply
+                _cfg.ReadPagesDM = SettingDialog.ReadPagesDM
+                _cfg.Read = SettingDialog.Readed
+                _cfg.IconSize = SettingDialog.IconSz
+                _cfg.StatusText = SettingDialog.Status
+                _cfg.UnreadManage = SettingDialog.UnreadManage
+                _cfg.PlaySound = SettingDialog.PlaySound
+                _cfg.OneWayLove = SettingDialog.OneWayLove
 
-                _section.FontUnread = _fntUnread
-                _section.ColorUnread = _clUnread
-                _section.FontReaded = _fntReaded
-                _section.ColorReaded = _clReaded
-                _section.FontDetail = _fntDetail
-                _section.ColorFav = _clFav
-                _section.ColorOWL = _clOWL
-                _section.ColorSelf = _clSelf
-                _section.ColorAtSelf = _clAtSelf
-                _section.ColorTarget = _clTarget
-                _section.ColorAtTarget = _clAtTarget
-                _section.ColorAtFromTarget = _clAtFromTarget
+                '_section.FormSize = _mySize
+                '_section.FormLocation = _myLoc
+                '_section.SplitterDistance = _mySpDis
+                '_section.StatusMultiline = StatusText.Multiline
+                '_section.StatusTextHeight = _mySpDis2
+                '_section.UserName = _username
+                '_section.Password = _password
+                '_section.NextPageThreshold = SettingDialog.NextPageThreshold
+                '_section.NextPages = SettingDialog.NextPagesInt
+                '_section.TimelinePeriod = SettingDialog.TimelinePeriodInt
+                '_section.DMPeriod = SettingDialog.DMPeriodInt
+                '_section.MaxPostNum = SettingDialog.MaxPostNum
+                '_section.ReadPages = SettingDialog.ReadPages
+                '_section.ReadPagesReply = SettingDialog.ReadPagesReply
+                '_section.ReadPagesDM = SettingDialog.ReadPagesDM
+                '_section.Readed = SettingDialog.Readed
+                '_section.IconSize = SettingDialog.IconSz
+                '_section.StatusText = SettingDialog.Status
+                '_section.UnreadManage = SettingDialog.UnreadManage
+                '_section.PlaySound = SettingDialog.PlaySound
+                '_section.OneWayLove = SettingDialog.OneWayLove
 
-                _section.NameBalloon = SettingDialog.NameBalloon
+                _cfg.FontUnread = _fntUnread
+                _cfg.ColorUnread = _clUnread
+                _cfg.FontRead = _fntReaded
+                _cfg.ColorRead = _clReaded
+                _cfg.FontDetail = _fntDetail
+                _cfg.ColorFav = _clFav
+                _cfg.ColorOWL = _clOWL
+                _cfg.ColorSelf = _clSelf
+                _cfg.ColorAtSelf = _clAtSelf
+                _cfg.ColorTarget = _clTarget
+                _cfg.ColorAtTarget = _clAtTarget
+                _cfg.ColorAtFromTarget = _clAtFromTarget
 
-                _section.PostCtrlEnter = SettingDialog.PostCtrlEnter
-                _section.UseAPI = True
-                _section.HubServer = SettingDialog.HubServer
-                _section.BrowserPath = SettingDialog.BrowserPath
-                _section.CheckReply = SettingDialog.CheckReply
-                _section.UseRecommendStatus = SettingDialog.UseRecommendStatus
-                _section.DispUsername = SettingDialog.DispUsername
-                _section.MinimizeToTray = SettingDialog.MinimizeToTray
-                _section.CloseToExit = SettingDialog.CloseToExit
-                _section.DispLatestPost = SettingDialog.DispLatestPost
-                _section.SortOrderLock = SettingDialog.SortOrderLock
-                _section.TinyURLResolve = SettingDialog.TinyUrlResolve
-                _section.ProxyType = SettingDialog.ProxyType
-                _section.ProxyAddress = SettingDialog.ProxyAddress
-                _section.ProxyPort = SettingDialog.ProxyPort
-                _section.ProxyUser = SettingDialog.ProxyUser
-                _section.ProxyPassword = SettingDialog.ProxyPassword
-                _section.PeriodAdjust = SettingDialog.PeriodAdjust
-                _section.StartupVersion = SettingDialog.StartupVersion
-                _section.StartupKey = SettingDialog.StartupKey
-                _section.StartupFollowers = SettingDialog.StartupFollowers
-                _section.RestrictFavCheck = SettingDialog.RestrictFavCheck
-                _section.AlwaysTop = SettingDialog.AlwaysTop
-                _section.UrlConvertAuto = SettingDialog.UrlConvertAuto
-                _section.Outputz = SettingDialog.OutputzEnabled
-                _section.OutputzKey = SettingDialog.OutputzKey
-                _section.OutputzUrlmode = SettingDialog.OutputzUrlmode
-                _section.UseUnreadStyle = SettingDialog.UseUnreadStyle
-                _section.DateTimeFormat = SettingDialog.DateTimeFormat
-                _section.DefaultTimeOut = SettingDialog.DefaultTimeOut
-                _section.ProtectNotInclude = SettingDialog.ProtectNotInclude
 
-                _section.SortOrder = _statuses.SortOrder
+                '_section.FontUnread = _fntUnread
+                '_section.ColorUnread = _clUnread
+                '_section.FontReaded = _fntReaded
+                '_section.ColorReaded = _clReaded
+                '_section.FontDetail = _fntDetail
+                '_section.ColorFav = _clFav
+                '_section.ColorOWL = _clOWL
+                '_section.ColorSelf = _clSelf
+                '_section.ColorAtSelf = _clAtSelf
+                '_section.ColorTarget = _clTarget
+                '_section.ColorAtTarget = _clAtTarget
+                '_section.ColorAtFromTarget = _clAtFromTarget
+
+                _cfg.NameBalloon = SettingDialog.NameBalloon
+                _cfg.PostCtrlEnter = SettingDialog.PostCtrlEnter
+                _cfg.UseAPI = True
+                _cfg.HubServer = SettingDialog.HubServer
+                _cfg.BrowserPath = SettingDialog.BrowserPath
+                _cfg.CheckReply = SettingDialog.CheckReply
+                _cfg.UseRecommendStatus = SettingDialog.UseRecommendStatus
+                _cfg.DispUsername = SettingDialog.DispUsername
+                _cfg.MinimizeToTray = SettingDialog.MinimizeToTray
+                _cfg.CloseToExit = SettingDialog.CloseToExit
+                _cfg.DispLatestPost = SettingDialog.DispLatestPost
+                _cfg.SortOrderLock = SettingDialog.SortOrderLock
+                _cfg.TinyURLResolve = SettingDialog.TinyUrlResolve
+                _cfg.ProxyType = SettingDialog.ProxyType
+                _cfg.ProxyAddress = SettingDialog.ProxyAddress
+                _cfg.ProxyPort = SettingDialog.ProxyPort
+                _cfg.ProxyUser = SettingDialog.ProxyUser
+                _cfg.ProxyPassword = SettingDialog.ProxyPassword
+                _cfg.PeriodAdjust = SettingDialog.PeriodAdjust
+                _cfg.StartupVersion = SettingDialog.StartupVersion
+                _cfg.StartupKey = SettingDialog.StartupKey
+                _cfg.StartupFollowers = SettingDialog.StartupFollowers
+                _cfg.RestrictFavCheck = SettingDialog.RestrictFavCheck
+                _cfg.AlwaysTop = SettingDialog.AlwaysTop
+                _cfg.UrlConvertAuto = SettingDialog.UrlConvertAuto
+                _cfg.Outputz = SettingDialog.OutputzEnabled
+                _cfg.OutputzKey = SettingDialog.OutputzKey
+                _cfg.OutputzUrlmode = SettingDialog.OutputzUrlmode
+                _cfg.UseUnreadStyle = SettingDialog.UseUnreadStyle
+                _cfg.DateTimeFormat = SettingDialog.DateTimeFormat
+                _cfg.DefaultTimeOut = SettingDialog.DefaultTimeOut
+                _cfg.ProtectNotInclude = SettingDialog.ProtectNotInclude
+
+                '_section.NameBalloon = SettingDialog.NameBalloon
+                '_section.PostCtrlEnter = SettingDialog.PostCtrlEnter
+                '_section.UseAPI = True
+                '_section.HubServer = SettingDialog.HubServer
+                '_section.BrowserPath = SettingDialog.BrowserPath
+                '_section.CheckReply = SettingDialog.CheckReply
+                '_section.UseRecommendStatus = SettingDialog.UseRecommendStatus
+                '_section.DispUsername = SettingDialog.DispUsername
+                '_section.MinimizeToTray = SettingDialog.MinimizeToTray
+                '_section.CloseToExit = SettingDialog.CloseToExit
+                '_section.DispLatestPost = SettingDialog.DispLatestPost
+                '_section.SortOrderLock = SettingDialog.SortOrderLock
+                '_section.TinyURLResolve = SettingDialog.TinyUrlResolve
+                '_section.ProxyType = SettingDialog.ProxyType
+                '_section.ProxyAddress = SettingDialog.ProxyAddress
+                '_section.ProxyPort = SettingDialog.ProxyPort
+                '_section.ProxyUser = SettingDialog.ProxyUser
+                '_section.ProxyPassword = SettingDialog.ProxyPassword
+                '_section.PeriodAdjust = SettingDialog.PeriodAdjust
+                '_section.StartupVersion = SettingDialog.StartupVersion
+                '_section.StartupKey = SettingDialog.StartupKey
+                '_section.StartupFollowers = SettingDialog.StartupFollowers
+                '_section.RestrictFavCheck = SettingDialog.RestrictFavCheck
+                '_section.AlwaysTop = SettingDialog.AlwaysTop
+                '_section.UrlConvertAuto = SettingDialog.UrlConvertAuto
+                '_section.Outputz = SettingDialog.OutputzEnabled
+                '_section.OutputzKey = SettingDialog.OutputzKey
+                '_section.OutputzUrlmode = SettingDialog.OutputzUrlmode
+                '_section.UseUnreadStyle = SettingDialog.UseUnreadStyle
+                '_section.DateTimeFormat = SettingDialog.DateTimeFormat
+                '_section.DefaultTimeOut = SettingDialog.DefaultTimeOut
+                '_section.ProtectNotInclude = SettingDialog.ProtectNotInclude
+
+                _cfg.SortOrder = _statuses.SortOrder
                 Select Case _statuses.SortMode
                     Case IdComparerClass.ComparerMode.Nickname  'ニックネーム
-                        _section.SortColumn = 1
+                        _cfg.SortColumn = 1
                     Case IdComparerClass.ComparerMode.Data  '本文
-                        _section.SortColumn = 2
+                        _cfg.SortColumn = 2
                     Case IdComparerClass.ComparerMode.Id  '時刻=発言Id
-                        _section.SortColumn = 3
+                        _cfg.SortColumn = 3
                     Case IdComparerClass.ComparerMode.Name  '名前
-                        _section.SortColumn = 4
+                        _cfg.SortColumn = 4
                     Case IdComparerClass.ComparerMode.Source  'Source
-                        _section.SortColumn = 7
+                        _cfg.SortColumn = 7
                 End Select
+
+
+                '_section.SortOrder = _statuses.SortOrder
+                'Select Case _statuses.SortMode
+                '    Case IdComparerClass.ComparerMode.Nickname  'ニックネーム
+                '        _section.SortColumn = 1
+                '    Case IdComparerClass.ComparerMode.Data  '本文
+                '        _section.SortColumn = 2
+                '    Case IdComparerClass.ComparerMode.Id  '時刻=発言Id
+                '        _section.SortColumn = 3
+                '    Case IdComparerClass.ComparerMode.Name  '名前
+                '        _section.SortColumn = 4
+                '    Case IdComparerClass.ComparerMode.Source  'Source
+                '        _section.SortColumn = 7
+                'End Select
+
 
                 Dim cnt As Integer = 0
                 If ListTab IsNot Nothing AndAlso _
                    ListTab.TabPages IsNot Nothing AndAlso _
                    ListTab.TabPages.Count > 0 Then
-                    _section.ListElement.Clear()
-                    _section.SelectedUser.Clear()
-                    For Each tp As TabPage In ListTab.TabPages
-                        Dim tabName As String = tp.Text
-                        _section.ListElement.Add(New ListElement(tabName))
-                        Dim tab As TabClass = _statuses.Tabs(tabName)
-                        _section.ListElement(tabName).Notify = tab.Notify
-                        _section.ListElement(tabName).SoundFile = tab.SoundFile
-                        _section.ListElement(tabName).UnreadManage = tab.UnreadManage
-                        For Each fc As FiltersClass In tab.GetFilters
-                            Dim bf As String = ""
-                            For Each bfs As String In fc.BodyFilter
-                                If bf.Equals("") Then
-                                    bf = bfs
-                                Else
-                                    bf += " " + bfs
-                                End If
-                            Next
-                            Dim su As New SelectedUser(cnt.ToString)
-                            cnt += 1
-                            su.BodyFilter = bf
-                            su.IdFilter = fc.NameFilter
-                            su.MoveFrom = fc.MoveFrom
-                            su.SetMark = fc.SetMark
-                            su.SearchBoth = fc.SearchBoth
-                            su.UrlSearch = fc.SearchUrl
-                            su.RegexEnable = fc.UseRegex
-                            su.TabName = tabName
-                            _section.SelectedUser.Add(su)
-                        Next
-                    Next
+                    _cfg.Tabs = _statuses.Tabs
+                    '_section.ListElement.Clear()
+                    '_section.SelectedUser.Clear()
+                    'For Each tp As TabPage In ListTab.TabPages
+                    '    Dim tabName As String = tp.Text
+                    '    _section.ListElement.Add(New ListElement(tabName))
+                    '    Dim tab As TabClass = _statuses.Tabs(tabName)
+                    '    _section.ListElement(tabName).Notify = tab.Notify
+                    '    _section.ListElement(tabName).SoundFile = tab.SoundFile
+                    '    _section.ListElement(tabName).UnreadManage = tab.UnreadManage
+                    '    For Each fc As FiltersClass In tab.GetFilters
+                    '        Dim bf As String = ""
+                    '        For Each bfs As String In fc.BodyFilter
+                    '            bf += " " + bfs
+                    '        Next
+                    '        Dim su As New SelectedUser(cnt.ToString)
+                    '        cnt += 1
+                    '        su.BodyFilter = bf
+                    '        su.IdFilter = fc.NameFilter
+                    '        su.MoveFrom = fc.MoveFrom
+                    '        su.SetMark = fc.SetMark
+                    '        su.SearchBoth = fc.SearchBoth
+                    '        su.UrlSearch = fc.SearchUrl
+                    '        su.RegexEnable = fc.UseRegex
+                    '        su.TabName = tabName
+                    '        _section.SelectedUser.Add(su)
+                    '    Next
+                    'Next
                 End If
-                _config.Save()
+                '_config.Save()
+                _cfg.Save()
             End SyncLock
         End If
     End Sub
@@ -4498,7 +4812,7 @@ RETRY2:
     Private Sub MultiLineMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MultiLineMenuItem.Click
         '発言欄複数行
         StatusText.Multiline = MultiLineMenuItem.Checked
-        _section.StatusMultiline = MultiLineMenuItem.Checked
+        _cfg.StatusMultiline = MultiLineMenuItem.Checked
         If MultiLineMenuItem.Checked Then
             If SplitContainer2.Height - _mySpDis2 - SplitContainer2.SplitterWidth < 0 Then
                 SplitContainer2.SplitterDistance = 0
@@ -4625,11 +4939,11 @@ RETRY2:
     End Sub
 
     Private Sub NewPostPopMenuItem_CheckStateChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles NewPostPopMenuItem.CheckStateChanged
-        _section.NewAllPop = NewPostPopMenuItem.Checked
+        _cfg.NewAllPop = NewPostPopMenuItem.Checked
     End Sub
 
     Private Sub ListLockMenuItem_CheckStateChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ListLockMenuItem.CheckStateChanged
-        _section.ListLock = ListLockMenuItem.Checked
+        _cfg.ListLock = ListLockMenuItem.Checked
     End Sub
 
     Private Sub MenuStrip1_MenuActivate(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuStrip1.MenuActivate
@@ -4651,11 +4965,11 @@ RETRY2:
 
     Private Sub MyList_ColumnReordered(ByVal sender As System.Object, ByVal e As ColumnReorderedEventArgs)
         Dim lst As DetailsListView = DirectCast(sender, DetailsListView)
-        If _section Is Nothing Then Exit Sub
+        If _cfg Is Nothing Then Exit Sub
 
         If _iconCol Then
-            _section.Width1 = lst.Columns(0).Width
-            _section.Width3 = lst.Columns(1).Width
+            _cfg.Width1 = lst.Columns(0).Width
+            _cfg.Width3 = lst.Columns(1).Width
             '_section.DisplayIndex1 = lst.Columns(0).DisplayIndex
             '_section.DisplayIndex3 = lst.Columns(1).DisplayIndex
         Else
@@ -4668,50 +4982,50 @@ RETRY2:
             For i As Integer = 0 To lst.Columns.Count - 1
                 Select Case darr(i)
                     Case 0
-                        _section.DisplayIndex1 = i
+                        _cfg.DisplayIndex1 = i
                     Case 1
-                        _section.DisplayIndex2 = i
+                        _cfg.DisplayIndex2 = i
                     Case 2
-                        _section.DisplayIndex3 = i
+                        _cfg.DisplayIndex3 = i
                     Case 3
-                        _section.DisplayIndex4 = i
+                        _cfg.DisplayIndex4 = i
                     Case 4
-                        _section.DisplayIndex5 = i
+                        _cfg.DisplayIndex5 = i
                     Case 5
-                        _section.DisplayIndex6 = i
+                        _cfg.DisplayIndex6 = i
                     Case 6
-                        _section.DisplayIndex7 = i
+                        _cfg.DisplayIndex7 = i
                     Case 7
-                        _section.DisplayIndex8 = i
+                        _cfg.DisplayIndex8 = i
                 End Select
             Next
-            _section.Width1 = lst.Columns(0).Width
-            _section.Width2 = lst.Columns(1).Width
-            _section.Width3 = lst.Columns(2).Width
-            _section.Width4 = lst.Columns(3).Width
-            _section.Width5 = lst.Columns(4).Width
-            _section.Width6 = lst.Columns(5).Width
-            _section.Width7 = lst.Columns(6).Width
-            _section.Width8 = lst.Columns(7).Width
+            _cfg.Width1 = lst.Columns(0).Width
+            _cfg.Width2 = lst.Columns(1).Width
+            _cfg.Width3 = lst.Columns(2).Width
+            _cfg.Width4 = lst.Columns(3).Width
+            _cfg.Width5 = lst.Columns(4).Width
+            _cfg.Width6 = lst.Columns(5).Width
+            _cfg.Width7 = lst.Columns(6).Width
+            _cfg.Width8 = lst.Columns(7).Width
         End If
 
     End Sub
 
     Private Sub MyList_ColumnWidthChanged(ByVal sender As System.Object, ByVal e As ColumnWidthChangedEventArgs)
         Dim lst As DetailsListView = DirectCast(sender, DetailsListView)
-        If _section Is Nothing Then Exit Sub
+        If _cfg Is Nothing Then Exit Sub
         If _iconCol Then
-            _section.Width1 = lst.Columns(0).Width
-            _section.Width3 = lst.Columns(1).Width
+            _cfg.Width1 = lst.Columns(0).Width
+            _cfg.Width3 = lst.Columns(1).Width
         Else
-            _section.Width1 = lst.Columns(0).Width
-            _section.Width2 = lst.Columns(1).Width
-            _section.Width3 = lst.Columns(2).Width
-            _section.Width4 = lst.Columns(3).Width
-            _section.Width5 = lst.Columns(4).Width
-            _section.Width6 = lst.Columns(5).Width
-            _section.Width7 = lst.Columns(6).Width
-            _section.Width8 = lst.Columns(7).Width
+            _cfg.Width1 = lst.Columns(0).Width
+            _cfg.Width2 = lst.Columns(1).Width
+            _cfg.Width3 = lst.Columns(2).Width
+            _cfg.Width4 = lst.Columns(3).Width
+            _cfg.Width5 = lst.Columns(4).Width
+            _cfg.Width6 = lst.Columns(5).Width
+            _cfg.Width7 = lst.Columns(6).Width
+            _cfg.Width8 = lst.Columns(7).Width
         End If
     End Sub
 

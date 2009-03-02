@@ -26,6 +26,7 @@ Imports System.Xml.Serialization
 Imports System.Xml.Schema
 Imports System.IO
 Imports System.Runtime.InteropServices
+Imports System.Configuration
 
 Public Class Setting
     Private _MyuserID As String
@@ -1720,5 +1721,977 @@ Public NotInheritable Class XmlConfiguration
     Public Function GetValueOrDefault(ByVal key As String) As Object
         Return Me.GetValueOrDefault(Of Object)(key)
     End Function
+
+End Class
+
+' Tween - Client of Twitter
+' Copyright © 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
+'           © 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
+'           © 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
+' All rights reserved.
+' 
+' This file is part of Tween.
+' 
+' This program is free software; you can redistribute it and/or modify it
+' under the terms of the GNU General Public License as published by the Free
+' Software Foundation; either version 3 of the License, or (at your option)
+' any later version.
+' 
+' This program is distributed in the hope that it will be useful, but
+' WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+' or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+' for more details. 
+' 
+' You should have received a copy of the GNU General Public License along
+' with this program. If not, see <http://www.gnu.org/licenses/>, or write to
+' the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+' Boston, MA 02110-1301, USA.
+
+
+
+Public NotInheritable Class SettingBase
+
+    Private _cfg As XmlConfiguration
+
+    Public Sub Load()
+        _cfg = XmlConfiguration.Load(My.Application.Info.DirectoryPath + "\TweenConf.xml")
+    End Sub
+
+    Public Sub Save()
+        _cfg.Save(My.Application.Info.DirectoryPath + "\TweenConf.xml")
+    End Sub
+
+    Public Sub New()
+        _cfg = New XmlConfiguration
+    End Sub
+
+    Public Property Tabs() As Dictionary(Of String, TabClass)
+        Get
+            Dim tconf As List(Of XmlConfiguration) = Nothing
+            tconf = _cfg.GetValueOrDefault("tabs", New List(Of XmlConfiguration))
+            If tconf.Count = 0 Then Return New Dictionary(Of String, TabClass)
+            Dim tbd As New Dictionary(Of String, TabClass)
+            For Each tc As XmlConfiguration In tconf
+                Dim name As String = tc.GetValueOrDefault("tabName", "")
+                If name = "" Then Exit For
+                Dim tb As New TabClass
+                tb.Notify = tc.GetValueOrDefault("notify", True)
+                tb.SoundFile = tc.GetValueOrDefault("soundFile", "")
+                tb.UnreadManage = tc.GetValueOrDefault("unreadManage", True)
+                tb.Filters = Filters(tc.GetValueOrDefault("filters", New List(Of XmlConfiguration)))
+
+                tbd.Add(name, tb)
+            Next
+            Return tbd
+        End Get
+        Set(ByVal value As Dictionary(Of String, TabClass))
+            Dim tl As New List(Of XmlConfiguration)
+            For Each tn As String In value.Keys
+                Dim tcfg As New XmlConfiguration
+                tcfg.Item("tabName") = tn
+                tcfg.Item("notify") = value(tn).Notify
+                tcfg.Item("soundFile") = value(tn).SoundFile
+                tcfg.Item("unreadManage") = value(tn).UnreadManage
+                Dim fltrs As List(Of XmlConfiguration) = tcfg.GetValueOrDefault("filters", New List(Of XmlConfiguration))
+                Filters(fltrs) = value(tn).Filters
+                tcfg.Item("filters") = fltrs
+                tl.Add(tcfg)
+            Next
+            _cfg.Item("tabs") = tl
+        End Set
+    End Property
+
+    Private Property Filters(ByVal fltConf As List(Of XmlConfiguration)) As List(Of FiltersClass)
+        Get
+            If fltConf.Count = 0 Then Return New List(Of FiltersClass)
+            Dim flt As New List(Of FiltersClass)
+            For Each fc As XmlConfiguration In fltConf
+                Dim ft As New FiltersClass
+                ft.BodyFilter = fc.GetValueOrDefault("bodyFilter", New List(Of String))
+                ft.MoveFrom = fc.GetValueOrDefault("moveFrom", False)
+                ft.NameFilter = fc.GetValueOrDefault("nameFilter", "")
+                ft.SearchBoth = fc.GetValueOrDefault("searchBoth", True)
+                ft.SearchUrl = fc.GetValueOrDefault("searchUrl", False)
+                ft.SetMark = fc.GetValueOrDefault("setMark", False)
+                ft.UseRegex = fc.GetValueOrDefault("useRegex", False)
+                flt.Add(ft)
+            Next
+            Return flt
+        End Get
+        Set(ByVal value As List(Of FiltersClass))
+            For Each ft As FiltersClass In value
+                Dim fc As New XmlConfiguration
+                fc.Item("bodyFilter") = ft.BodyFilter
+                fc.Item("moveFrom") = ft.MoveFrom
+                fc.Item("nameFilter") = ft.NameFilter
+                fc.Item("searchBoth") = ft.SearchBoth
+                fc.Item("searchUrl") = ft.SearchUrl
+                fc.Item("setMark") = ft.SetMark
+                fc.Item("useRegex") = ft.UseRegex
+                fltConf.Add(fc)
+            Next
+        End Set
+    End Property
+
+    Public Property UserName() As String
+        Get
+            Return _cfg.GetValueOrDefault("userName", "")
+        End Get
+        Set(ByVal value As String)
+            _cfg.Item("userName") = value
+        End Set
+    End Property
+
+    Public Property Password() As String
+        Get
+            Dim pwd As String = _cfg.GetValueOrDefault("password", "")
+            If pwd.Length > 0 Then
+                Try
+                    pwd = DecryptString(pwd)
+                Catch ex As Exception
+                    pwd = ""
+                End Try
+            End If
+            Return pwd
+        End Get
+        Set(ByVal value As String)
+            Dim pwd As String = value.Trim()
+            If pwd.Length > 0 Then
+                Try
+                    _cfg.Item("password") = EncryptString(value)
+                Catch ex As Exception
+                    _cfg.Item("password") = ""
+                End Try
+            Else
+                _cfg.Item("password") = ""
+            End If
+        End Set
+    End Property
+
+    Public Property FormLocation() As Point
+        Get
+            Return _cfg.GetValueOrDefault("formPosition", New Point(0, 0))
+        End Get
+        Set(ByVal value As Point)
+            _cfg.Item("formPosition") = value
+        End Set
+    End Property
+
+    Public Property SplitterDistance() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("splitterDistance", 320)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("splitterDistance") = value
+        End Set
+    End Property
+
+    Public Property FormSize() As Size
+        Get
+            Return _cfg.GetValueOrDefault("formSize", New Size(436, 476))
+        End Get
+        Set(ByVal value As Size)
+            _cfg.Item("formSize") = value
+        End Set
+    End Property
+
+    Public Property NextPageThreshold() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("nextPageThreshold", 20)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("nextPageThreshold") = value
+        End Set
+    End Property
+
+    Public Property NextPages() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("nextPages", 1)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("nextPages") = value
+        End Set
+    End Property
+
+    Public Property TimelinePeriod() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("timelinePeriod", 90)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("timelinePeriod") = value
+        End Set
+    End Property
+
+    Public Property DMPeriod() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("dmPeriod", 600)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("dmPeriod") = value
+        End Set
+    End Property
+
+    Public Property ReadPages() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("readPages", 1)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("readPages") = value
+        End Set
+    End Property
+
+    Public Property ReadPagesReply() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("readPagesReply", 1)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("readPagesReply") = value
+        End Set
+    End Property
+
+    Public Property ReadPagesDM() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("readPagesDm", 1)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("readPagesDm") = value
+        End Set
+    End Property
+
+    Public Property MaxPostNum() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("maxPostNum", 125)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("maxPostNum") = value
+        End Set
+    End Property
+
+    Public Property Read() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("startupRead", True)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("startupRead") = value
+        End Set
+    End Property
+
+    Public Property ListLock() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("listLock", False)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("listLock") = value
+        End Set
+    End Property
+
+    Public Property IconSize() As IconSizes
+        Get
+            Return _cfg.GetValueOrDefault("listIconSize", IconSizes.Icon16)
+        End Get
+        Set(ByVal value As IconSizes)
+            _cfg.Item("listIconSize") = value
+        End Set
+    End Property
+
+    Public Property NewAllPop() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("newAllPop", True)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("newAllPop") = value
+        End Set
+    End Property
+
+    Public Property StatusText() As String
+        Get
+            Return _cfg.GetValueOrDefault("statusText", "")
+        End Get
+        Set(ByVal value As String)
+            _cfg.Item("statusText") = value
+        End Set
+    End Property
+
+    Public Property PlaySound() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("playSound", False)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("playSound") = value
+        End Set
+    End Property
+
+    Public Property UnreadManage() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("unreadManage", True)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("unreadManage") = value
+        End Set
+    End Property
+
+    Public Property OneWayLove() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("oneWayLove", True)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("oneWayLove") = value
+        End Set
+    End Property
+
+    Public Property FontUnread() As System.Drawing.Font
+        Get
+            Dim fc As New FontConverter
+            Dim f2str As String = fc.ConvertToString(New Font(System.Drawing.SystemFonts.DefaultFont, FontStyle.Bold Or FontStyle.Underline))
+            Return DirectCast(fc.ConvertFromString(_cfg.GetValueOrDefault("fontUnread", f2str)), Font)
+        End Get
+        Set(ByVal value As Font)
+            Dim fc As New FontConverter
+            _cfg.Item("fontUnread") = fc.ConvertToString(value)
+        End Set
+    End Property
+
+    Public Property ColorUnread() As Color
+        Get
+            Dim cc As New ColorConverter
+            Dim c2str As String = cc.ConvertToString(System.Drawing.SystemColors.ControlText)
+            Return DirectCast(cc.ConvertFromString(_cfg.GetValueOrDefault("colorUnread", c2str)), Color)
+        End Get
+        Set(ByVal value As Color)
+            Dim cc As New ColorConverter
+            _cfg.Item("colorUnread") = cc.ConvertToString(value)
+        End Set
+    End Property
+
+    Public Property FontRead() As Font
+        Get
+            Dim fc As New FontConverter
+            Dim f2str As String = fc.ConvertToString(System.Drawing.SystemFonts.DefaultFont)
+            Return DirectCast(fc.ConvertFromString(_cfg.GetValueOrDefault("fontRead", f2str)), Font)
+        End Get
+        Set(ByVal value As Font)
+            Dim fc As New FontConverter
+            _cfg.Item("fontRead") = fc.ConvertToString(value)
+        End Set
+    End Property
+
+    Public Property ColorRead() As Color
+        Get
+            Dim cc As New ColorConverter
+            Dim c2str As String = cc.ConvertToString(Color.FromKnownColor(System.Drawing.KnownColor.Gray))
+            Return DirectCast(cc.ConvertFromString(_cfg.GetValueOrDefault("colorRead", c2str)), Color)
+        End Get
+        Set(ByVal value As Color)
+            Dim cc As New ColorConverter
+            _cfg.Item("colorRead") = cc.ConvertToString(value)
+        End Set
+    End Property
+
+    Public Property ColorFav() As Color
+        Get
+            Dim cc As New ColorConverter
+            Dim c2str As String = cc.ConvertToString(Color.FromKnownColor(KnownColor.Red))
+            Return DirectCast(cc.ConvertFromString(_cfg.GetValueOrDefault("colorFav", c2str)), Color)
+        End Get
+        Set(ByVal value As Color)
+            Dim cc As New ColorConverter
+            _cfg.Item("colorFav") = cc.ConvertToString(value)
+        End Set
+    End Property
+
+    Public Property ColorOWL() As Color
+        Get
+            Dim cc As New ColorConverter
+            Dim c2str As String = cc.ConvertToString(Color.FromKnownColor(KnownColor.Blue))
+            Return DirectCast(cc.ConvertFromString(_cfg.GetValueOrDefault("colorOwl", c2str)), Color)
+        End Get
+        Set(ByVal value As Color)
+            Dim cc As New ColorConverter
+            _cfg.Item("colorOwl") = cc.ConvertToString(value)
+        End Set
+    End Property
+
+    Public Property FontDetail() As Font
+        Get
+            Dim fc As New FontConverter
+            Dim f2str As String = fc.ConvertToString(System.Drawing.SystemFonts.DefaultFont)
+            Return DirectCast(fc.ConvertFromString(_cfg.GetValueOrDefault("fontDetail", f2str)), Font)
+        End Get
+        Set(ByVal value As Font)
+            Dim fc As New FontConverter
+            _cfg.Item("fontDetail") = fc.ConvertToString(value)
+        End Set
+    End Property
+
+    Public Property ColorSelf() As Color
+        Get
+            Dim cc As New ColorConverter
+            Dim c2str As String = cc.ConvertToString(Color.FromKnownColor(KnownColor.AliceBlue))
+            Return DirectCast(cc.ConvertFromString(_cfg.GetValueOrDefault("colorSelf", c2str)), Color)
+        End Get
+        Set(ByVal value As Color)
+            Dim cc As New ColorConverter
+            _cfg.Item("colorSelf") = cc.ConvertToString(value)
+        End Set
+    End Property
+
+    Public Property ColorAtSelf() As Color
+        Get
+            Dim cc As New ColorConverter
+            Dim c2str As String = cc.ConvertToString(Color.FromKnownColor(KnownColor.AntiqueWhite))
+            Return DirectCast(cc.ConvertFromString(_cfg.GetValueOrDefault("colorAtSelf", c2str)), Color)
+        End Get
+        Set(ByVal value As Color)
+            Dim cc As New ColorConverter
+            _cfg.Item("colorAtSelf") = cc.ConvertToString(value)
+        End Set
+    End Property
+
+    Public Property ColorTarget() As Color
+        Get
+            Dim cc As New ColorConverter
+            Dim c2str As String = cc.ConvertToString(Color.FromKnownColor(KnownColor.LemonChiffon))
+            Return DirectCast(cc.ConvertFromString(_cfg.GetValueOrDefault("colorTarget", c2str)), Color)
+        End Get
+        Set(ByVal value As Color)
+            Dim cc As New ColorConverter
+            _cfg.Item("colorTarget") = cc.ConvertToString(value)
+        End Set
+    End Property
+
+    Public Property ColorAtTarget() As Color
+        Get
+            Dim cc As New ColorConverter
+            Dim c2str As String = cc.ConvertToString(Color.FromKnownColor(KnownColor.LavenderBlush))
+            Return DirectCast(cc.ConvertFromString(_cfg.GetValueOrDefault("colorAtTarget", c2str)), Color)
+        End Get
+        Set(ByVal value As Color)
+            Dim cc As New ColorConverter
+            _cfg.Item("colorAtTarget") = cc.ConvertToString(value)
+        End Set
+    End Property
+
+    Public Property ColorAtFromTarget() As Color
+        Get
+            Dim cc As New ColorConverter
+            Dim c2str As String = cc.ConvertToString(Color.FromKnownColor(KnownColor.Honeydew))
+            Return DirectCast(cc.ConvertFromString(_cfg.GetValueOrDefault("colorAtFromTarget", c2str)), Color)
+        End Get
+        Set(ByVal value As Color)
+            Dim cc As New ColorConverter
+            _cfg.Item("colorAtFromTarget") = cc.ConvertToString(value)
+        End Set
+    End Property
+
+    Public Property NameBalloon() As NameBalloonEnum
+        Get
+            Return _cfg.GetValueOrDefault("nameBalloon", NameBalloonEnum.NickName)
+        End Get
+        Set(ByVal value As NameBalloonEnum)
+            _cfg.Item("nameBalloon") = value
+        End Set
+    End Property
+
+    Public Property Width1() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("width1", 48)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("width1") = value
+        End Set
+    End Property
+
+    Public Property Width2() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("width2", 80)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("width2") = value
+        End Set
+    End Property
+
+    Public Property Width3() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("width3", 290)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("width3") = value
+        End Set
+    End Property
+
+    Public Property Width4() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("width4", 120)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("width4") = value
+        End Set
+    End Property
+
+    Public Property Width5() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("width5", 50)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("width5") = value
+        End Set
+    End Property
+
+    Public Property Width6() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("width6", 16)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("width6") = value
+        End Set
+    End Property
+
+    Public Property Width7() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("width7", 32)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("width7") = value
+        End Set
+    End Property
+
+    Public Property Width8() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("width8", 50)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("width8") = value
+        End Set
+    End Property
+
+    Public Property SortColumn() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("sortColumn", 3)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("sortColumn") = value
+        End Set
+    End Property
+
+    Public Property SortOrder() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("sortOrder", 1)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("sortOrder") = value
+        End Set
+    End Property
+
+    Public Property DisplayIndex1() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("displayIndex1", 0)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("displayIndex1") = value
+        End Set
+    End Property
+
+    Public Property DisplayIndex2() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("displayIndex2", 1)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("displayIndex2") = value
+        End Set
+    End Property
+
+    Public Property DisplayIndex3() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("displayIndex3", 2)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("displayIndex3") = value
+        End Set
+    End Property
+
+    Public Property DisplayIndex4() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("displayIndex4", 3)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("displayIndex4") = value
+        End Set
+    End Property
+
+    Public Property DisplayIndex5() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("displayIndex5", 4)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("displayIndex5") = value
+        End Set
+    End Property
+
+    Public Property DisplayIndex6() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("displayIndex6", 5)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("displayIndex6") = value
+        End Set
+    End Property
+
+    Public Property DisplayIndex7() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("displayIndex7", 6)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("displayIndex7") = value
+        End Set
+    End Property
+
+    Public Property DisplayIndex8() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("displayIndex8", 7)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("displayIndex8") = value
+        End Set
+    End Property
+
+    Public Property PostCtrlEnter() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("postCtrlEnter", False)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("postCtrlEnter") = value
+        End Set
+    End Property
+
+    Public Property UseAPI() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("useApi", False)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("useApi") = value
+        End Set
+    End Property
+
+    Public Property CheckReply() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("checkReply", True)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("checkReply") = value
+        End Set
+    End Property
+
+    Public Property UseRecommendStatus() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("useRecommendStatus", False)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("useRecommendStatus") = value
+        End Set
+    End Property
+
+    Public Property DispUsername() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("dispUsername", False)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("dispUsername") = value
+        End Set
+    End Property
+
+    Public Property MinimizeToTray() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("minimizeToTray", False)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("minimizeToTray") = value
+        End Set
+    End Property
+
+    Public Property CloseToExit() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("closeToExit", False)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("closeToExit") = value
+        End Set
+    End Property
+
+    Public Property DispLatestPost() As DispTitleEnum
+        Get
+            Return _cfg.GetValueOrDefault("dispLatestPost", DispTitleEnum.Post)
+        End Get
+        Set(ByVal value As DispTitleEnum)
+            _cfg.Item("dispLatestPost") = value
+        End Set
+    End Property
+
+    Public Property HubServer() As String
+        Get
+            Return _cfg.GetValueOrDefault("hubServer", "twitter.com")
+        End Get
+        Set(ByVal value As String)
+            _cfg.Item("hubServer") = value
+        End Set
+    End Property
+
+    Public Property BrowserPath() As String
+        Get
+            Return _cfg.GetValueOrDefault("browserPath", "")
+        End Get
+        Set(ByVal value As String)
+            _cfg.Item("browserPath") = value
+        End Set
+    End Property
+
+    Public Property SortOrderLock() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("sortOrderLock", False)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("sortOrderLock") = value
+        End Set
+    End Property
+
+    Public Property TinyURLResolve() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("tinyurlResolve", True)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("tinyurlResolve") = value
+        End Set
+    End Property
+
+    Public Property ProxyType() As ProxyTypeEnum
+        Get
+            Return _cfg.GetValueOrDefault("proxyType", ProxyTypeEnum.IE)
+        End Get
+        Set(ByVal value As ProxyTypeEnum)
+            _cfg.Item("proxyType") = value
+        End Set
+    End Property
+
+    Public Property ProxyAddress() As String
+        Get
+            Return _cfg.GetValueOrDefault("proxyAddress", "127.0.0.1")
+        End Get
+        Set(ByVal value As String)
+            _cfg.Item("proxyAddress") = value
+        End Set
+    End Property
+
+    Public Property ProxyPort() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("proxyPort", 80)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("proxyPort") = value
+        End Set
+    End Property
+
+    Public Property ProxyUser() As String
+        Get
+            Return _cfg.GetValueOrDefault("proxyUser", "")
+        End Get
+        Set(ByVal value As String)
+            _cfg.Item("proxyUser") = value
+        End Set
+    End Property
+
+    Public Property ProxyPassword() As String
+        Get
+            Dim pwd As String = _cfg.GetValueOrDefault("proxyPassword", "")
+            If pwd.Length > 0 Then
+                Try
+                    pwd = DecryptString(pwd)
+                Catch ex As Exception
+                    pwd = ""
+                End Try
+            End If
+            Return pwd
+        End Get
+        Set(ByVal value As String)
+            Dim pwd As String = value.Trim()
+            If pwd.Length > 0 Then
+                Try
+                    _cfg.Item("proxyPassword") = EncryptString(pwd)
+                Catch ex As Exception
+                    _cfg.Item("proxyPassword") = ""
+                End Try
+            Else
+                _cfg.Item("proxyPassword") = ""
+            End If
+        End Set
+    End Property
+
+    Public Property PeriodAdjust() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("periodAdjust", True)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("periodAdjust") = value
+        End Set
+    End Property
+
+    Public Property StartupVersion() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("startupVersion", True)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("startupVersion") = value
+        End Set
+    End Property
+
+    Public Property StartupKey() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("startupKey", True)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("startupKey") = value
+        End Set
+    End Property
+
+    Public Property StartupFollowers() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("startupFollowers", True)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("startupFollowers") = value
+        End Set
+    End Property
+
+    Public Property RestrictFavCheck() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("restrictFavCheck", False)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("restrictFavCheck") = value
+        End Set
+    End Property
+
+    Public Property AlwaysTop() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("alwaysTop", False)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("alwaysTop") = value
+        End Set
+    End Property
+
+    Public Property StatusMultiline() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("statusMultiline", False)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("statusMultiline") = value
+        End Set
+    End Property
+
+    Public Property StatusTextHeight() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("statusTextHeight", 38)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("statusTextHeight") = value
+        End Set
+    End Property
+
+    Public Property cultureCode() As String
+        Get
+            Return _cfg.GetValueOrDefault("cultureCode", "")
+        End Get
+        Set(ByVal value As String)
+            _cfg.Item("cultureCode") = value
+        End Set
+    End Property
+
+    Public Property UrlConvertAuto() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("urlConvertAuto", False)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("urlConvertAuto") = value
+        End Set
+    End Property
+
+    Public Property Outputz() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("outputz", False)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("outputz") = value
+        End Set
+    End Property
+
+    Public Property OutputzKey() As String
+        Get
+            Dim key As String = _cfg.GetValueOrDefault("outputzKey", "")
+            If key.Length > 0 Then
+                Try
+                    key = DecryptString(key)
+                Catch ex As Exception
+                    key = ""
+                End Try
+            End If
+            Return key
+        End Get
+        Set(ByVal value As String)
+            Dim key As String = value.Trim()
+            If key.Length > 0 Then
+                Try
+                    _cfg.Item("outputzKey") = EncryptString(key)
+                Catch ex As Exception
+                    _cfg.Item("outputzKey") = ""
+                End Try
+            Else
+                _cfg.Item("outputzKey") = ""
+            End If
+        End Set
+    End Property
+
+    Public Property OutputzUrlmode() As OutputzUrlmode
+        Get
+            Return _cfg.GetValueOrDefault("outputzUrlMode", OutputzUrlmode.twittercom)
+        End Get
+        Set(ByVal value As OutputzUrlmode)
+            _cfg.Item("outputzUrlMode") = value
+        End Set
+    End Property
+
+    Public Property UseUnreadStyle() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("useUnreadStyle", True)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("useUnreadStyle") = value
+        End Set
+    End Property
+
+    Public Property DateTimeFormat() As String
+        Get
+            Return _cfg.GetValueOrDefault("datetimeFormat", "yyyy/MM/dd H:mm:ss")
+        End Get
+        Set(ByVal value As String)
+            _cfg.Item("datetimeFormat") = value
+        End Set
+    End Property
+
+    Public Property DefaultTimeOut() As Integer
+        Get
+            Return _cfg.GetValueOrDefault("defaultTimeout", 20)
+        End Get
+        Set(ByVal value As Integer)
+            _cfg.Item("defaultTimeout") = value
+        End Set
+    End Property
+
+    Public Property ProtectNotInclude() As Boolean
+        Get
+            Return _cfg.GetValueOrDefault("protectNotInclude", False)
+        End Get
+        Set(ByVal value As Boolean)
+            _cfg.Item("protectNotInclude") = value
+        End Set
+    End Property
 
 End Class

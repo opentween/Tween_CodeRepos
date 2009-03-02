@@ -354,10 +354,13 @@ Public NotInheritable Class TabInformations
         Return _tabs.ContainsValue(ts)
     End Function
 
-    Public ReadOnly Property Tabs() As Dictionary(Of String, TabClass)
+    Public Property Tabs() As Dictionary(Of String, TabClass)
         Get
             Return _tabs
         End Get
+        Set(ByVal value As Dictionary(Of String, TabClass))
+            _tabs = value
+        End Set
     End Property
 
     Public ReadOnly Property KeysTab() As Collections.Generic.Dictionary(Of String, TabClass).KeyCollection
@@ -826,6 +829,7 @@ Public NotInheritable Class TabClass
     Private _ids As List(Of Long)
     Private _filterMod As Boolean
     Private _tmpIds As List(Of TempolaryId)
+    Private _tabName As String
     'Private rwLock As New System.Threading.ReaderWriterLock()   'フィルタ用
 
     Private Structure TempolaryId
@@ -1036,6 +1040,15 @@ Public NotInheritable Class TabClass
         'End Try
     End Sub
 
+    Public Property Filters() As List(Of FiltersClass)
+        Get
+            Return _filters
+        End Get
+        Set(ByVal value As List(Of FiltersClass))
+            _filters = value
+        End Set
+    End Property
+
     Public Function Contains(ByVal ID As Long) As Boolean
         Return _ids.Contains(ID)
     End Function
@@ -1066,6 +1079,15 @@ Public NotInheritable Class TabClass
     Public Function BackupIds() As Long()
         Return _ids.ToArray()
     End Function
+
+    Public Property TabName() As String
+        Get
+            Return _tabName
+        End Get
+        Set(ByVal value As String)
+            _tabName = value
+        End Set
+    End Property
 End Class
 
 Public NotInheritable Class FiltersClass
@@ -1083,7 +1105,8 @@ Public NotInheritable Class FiltersClass
             ByVal MoveFrom As Boolean, _
             ByVal SetMark As Boolean, _
             ByVal SearchUrl As Boolean, _
-            ByVal UseRegex As Boolean)
+            ByVal UseRegex As Boolean, _
+            ByVal ParentTab As String)
         _name = NameFilter
         _body = BodyFilter
         _searchBoth = SearchBoth

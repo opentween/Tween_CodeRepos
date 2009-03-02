@@ -117,8 +117,8 @@ Public Module Twitter
     Private Const _statusUpdatePath As String = "/status/update?page=1&tab=home"
     Private Const _statusUpdatePathAPI As String = "/statuses/update.xml"
     Private Const _linkToOld As String = "class=""section_links"" rel=""prev"""
-    Private Const _postFavAddPath As String = "/favourings/create/"
-    Private Const _postFavRemovePath As String = "/favourings/destroy/"
+    Private Const _postFavAddPath As String = "/favorites/create/"
+    Private Const _postFavRemovePath As String = "/favorites/destroy/"
     Private Const _authKeyHeader As String = "authenticity_token="
     Private Const _parseLink1 As String = "<a href="""
     Private Const _parseLink2 As String = """>"
@@ -1290,11 +1290,11 @@ Public Module Twitter
         If _endingFlag Then Return ""
 
         'データ部分の生成
-        Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
+        'Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim resStatus As String = ""
-        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _postFavAddPath + id.ToString(), resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2, dataStr), String)
+        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _postFavAddPath + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
 
-        If resMsg.StartsWith("$") = False And resMsg <> " " Then
+        If resStatus.StartsWith("OK") = False Then
             Return resStatus
         End If
 
@@ -1331,11 +1331,11 @@ Public Module Twitter
         If _endingFlag Then Return ""
 
         'データ部分の生成
-        Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
+        'Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim resStatus As String = ""
-        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _postFavRemovePath + id.ToString(), resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2, dataStr), String)
+        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _postFavRemovePath + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
 
-        If resMsg.StartsWith("$") = False And resMsg <> " " Then
+        If resStatus.StartsWith("OK") = False Then
             Return resStatus
         End If
 
