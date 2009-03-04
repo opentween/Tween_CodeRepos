@@ -1441,7 +1441,7 @@ Public Class Setting
 End Class
 
 <XmlRoot(ElementName:="configuration", Namespace:="urn:XSpect.Configuration.XmlConfiguration")> _
-Public NotInheritable Class XmlConfiguration
+Public Class XmlConfiguration
     Implements IDictionary(Of String, Object),  _
                IXmlSerializable
 
@@ -1606,13 +1606,12 @@ Public NotInheritable Class XmlConfiguration
         Implements IXmlSerializable.ReadXml
 
         Dim xdoc As XmlDocument = New XmlDocument()
-
-        xdoc.Load(reader)
-        For Each xentryNode As XmlNode In xdoc.DocumentElement.GetElementsByTagName("entry")
+        xdoc.LoadXml(reader.ReadOuterXml())
+        For Each xentryNode As XmlNode In xdoc.DocumentElement.SelectNodes("./entry")
             Dim xentry As XmlElement = CType(xentryNode, XmlElement)
             Me.Add( _
                 xentry.Attributes.ItemOf("key").Value, _
-                New XmlSerializer(Type.GetType(xentry.Attributes.ItemOf("type").Value)) _
+                New XmlSerializer(Type.GetType(xentry.Attributes.ItemOf("type").Value, True)) _
                     .Deserialize(New XmlNodeReader(xentry.GetElementsByTagName("*").Item(0))) _
             )
         Next
