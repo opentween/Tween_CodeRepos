@@ -1696,7 +1696,7 @@ Public Class XmlConfiguration
     Public Function TryGetValue(Of T)(ByVal key As String, <Out()> ByRef value As T) As Boolean
         Dim outValue As KeyValuePair(Of Type, Object)
         Dim result As Boolean = Me._dictionary.TryGetValue(key, outValue)
-        value = DirectCast(outValue.Value, T)
+        If result Then value = DirectCast(outValue.Value, T)
         Return result
     End Function
 
