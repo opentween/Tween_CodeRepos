@@ -825,7 +825,7 @@ Public Class TweenMain
         Dim _config As Configuration    'アプリケーション構成ファイルクラス
         Dim _section As ListSection     '構成ファイル中のユーザー定義ListSectionクラス
 
-        If System.IO.File.Exists(My.Application.Info.DirectoryPath + "TweenConf.xml") Then Exit Sub
+        If System.IO.File.Exists(My.Application.Info.DirectoryPath + "\TweenConf.xml") Then Exit Sub
         '設定読み出し
         _config = ConfigurationManager.OpenExeConfiguration(Application.ExecutablePath)
         _section = DirectCast(_config.GetSection("TwitterSetting"), ListSection)
@@ -4332,7 +4332,6 @@ RETRY2:
                             MessageBox.Show(tmp, My.Resources.TabMenuItem_ClickText3, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                         Else
                             _statuses.AddTab(tabName)
-                            SaveConfigs()
                             Exit Do
                         End If
                     End If
@@ -4364,6 +4363,7 @@ RETRY2:
         Finally
             Me.Cursor = Cursors.Default
         End Try
+        SaveConfigs()
     End Sub
 
     Protected Overrides Function ProcessDialogKey( _
@@ -4436,7 +4436,6 @@ RETRY2:
                         MessageBox.Show(tmp, My.Resources.IDRuleMenuItem_ClickText3, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                     Else
                         _statuses.AddTab(tabName)
-                        SaveConfigs()
                         Exit Do
                     End If
                 End If
@@ -4499,6 +4498,7 @@ RETRY2:
         Finally
             Me.Cursor = Cursors.Default
         End Try
+        SaveConfigs()
     End Sub
 
     Private Sub CopySTOTMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CopySTOTMenuItem.Click
