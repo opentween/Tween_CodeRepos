@@ -1723,27 +1723,28 @@ Public Class XmlConfiguration
 
 End Class
 
-Public NotInheritable Class SettingBase
+Public NotInheritable Class SettingToConfig
+    Inherits XmlConfiguration
 
-    Private _cfg As XmlConfiguration
+    Public Overloads Shared Function Load() As SettingToConfig
+        Return DirectCast(Load(Path.Combine(My.Application.Info.DirectoryPath, "TweenConf.xml")), SettingToConfig)
+    End Function
 
-    Public Sub Load()
-        _cfg = XmlConfiguration.Load(My.Application.Info.DirectoryPath + "\TweenConf.xml")
-    End Sub
-
-    Public Sub Save()
-        _cfg.Save(My.Application.Info.DirectoryPath + "\TweenConf.xml")
-    End Sub
-
-    Public Sub New()
-        _cfg = New XmlConfiguration
+    Public Overloads Sub Save()
+        Save(Path.Combine(My.Application.Info.DirectoryPath, "TweenConf.xml"))
     End Sub
 
     Public Property Tabs() As Dictionary(Of String, TabClass)
         Get
             Dim tconf As List(Of XmlConfiguration) = Nothing
-            tconf = _cfg.GetValueOrDefault("tabs", New List(Of XmlConfiguration))
-            If tconf.Count = 0 Then Return New Dictionary(Of String, TabClass)
+            tconf = GetValueOrDefault("tabs", New List(Of XmlConfiguration))
+            If tconf.Count = 0 Then
+                Dim tdic As New Dictionary(Of String, TabClass)
+                tdic.Add("Recent", New TabClass)
+                tdic.Add("Reply", New TabClass)
+                tdic.Add("Direct", New TabClass)
+                Return tdic
+            End If
             Dim tbd As New Dictionary(Of String, TabClass)
             For Each tc As XmlConfiguration In tconf
                 Dim name As String = tc.GetValueOrDefault("tabName", "")
@@ -1771,7 +1772,7 @@ Public NotInheritable Class SettingBase
                 tcfg.Item("filters") = fltrs
                 tl.Add(tcfg)
             Next
-            _cfg.Item("tabs") = tl
+            Item("tabs") = tl
         End Set
     End Property
 
@@ -1809,16 +1810,16 @@ Public NotInheritable Class SettingBase
 
     Public Property UserName() As String
         Get
-            Return _cfg.GetValueOrDefault("userName", "")
+            Return GetValueOrDefault("userName", "")
         End Get
         Set(ByVal value As String)
-            _cfg.Item("userName") = value
+            Item("userName") = value
         End Set
     End Property
 
     Public Property Password() As String
         Get
-            Dim pwd As String = _cfg.GetValueOrDefault("password", "")
+            Dim pwd As String = GetValueOrDefault("password", "")
             If pwd.Length > 0 Then
                 Try
                     pwd = DecryptString(pwd)
@@ -1832,184 +1833,184 @@ Public NotInheritable Class SettingBase
             Dim pwd As String = value.Trim()
             If pwd.Length > 0 Then
                 Try
-                    _cfg.Item("password") = EncryptString(value)
+                    Item("password") = EncryptString(value)
                 Catch ex As Exception
-                    _cfg.Item("password") = ""
+                    Item("password") = ""
                 End Try
             Else
-                _cfg.Item("password") = ""
+                Item("password") = ""
             End If
         End Set
     End Property
 
     Public Property FormLocation() As Point
         Get
-            Return _cfg.GetValueOrDefault("formPosition", New Point(0, 0))
+            Return GetValueOrDefault("formPosition", New Point(0, 0))
         End Get
         Set(ByVal value As Point)
-            _cfg.Item("formPosition") = value
+            Item("formPosition") = value
         End Set
     End Property
 
     Public Property SplitterDistance() As Integer
         Get
-            Return _cfg.GetValueOrDefault("splitterDistance", 320)
+            Return GetValueOrDefault("splitterDistance", 320)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("splitterDistance") = value
+            Item("splitterDistance") = value
         End Set
     End Property
 
     Public Property FormSize() As Size
         Get
-            Return _cfg.GetValueOrDefault("formSize", New Size(436, 476))
+            Return GetValueOrDefault("formSize", New Size(436, 476))
         End Get
         Set(ByVal value As Size)
-            _cfg.Item("formSize") = value
+            Item("formSize") = value
         End Set
     End Property
 
     Public Property NextPageThreshold() As Integer
         Get
-            Return _cfg.GetValueOrDefault("nextPageThreshold", 20)
+            Return GetValueOrDefault("nextPageThreshold", 20)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("nextPageThreshold") = value
+            Item("nextPageThreshold") = value
         End Set
     End Property
 
     Public Property NextPages() As Integer
         Get
-            Return _cfg.GetValueOrDefault("nextPages", 1)
+            Return GetValueOrDefault("nextPages", 1)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("nextPages") = value
+            Item("nextPages") = value
         End Set
     End Property
 
     Public Property TimelinePeriod() As Integer
         Get
-            Return _cfg.GetValueOrDefault("timelinePeriod", 90)
+            Return GetValueOrDefault("timelinePeriod", 90)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("timelinePeriod") = value
+            Item("timelinePeriod") = value
         End Set
     End Property
 
     Public Property DMPeriod() As Integer
         Get
-            Return _cfg.GetValueOrDefault("dmPeriod", 600)
+            Return GetValueOrDefault("dmPeriod", 600)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("dmPeriod") = value
+            Item("dmPeriod") = value
         End Set
     End Property
 
     Public Property ReadPages() As Integer
         Get
-            Return _cfg.GetValueOrDefault("readPages", 1)
+            Return GetValueOrDefault("readPages", 1)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("readPages") = value
+            Item("readPages") = value
         End Set
     End Property
 
     Public Property ReadPagesReply() As Integer
         Get
-            Return _cfg.GetValueOrDefault("readPagesReply", 1)
+            Return GetValueOrDefault("readPagesReply", 1)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("readPagesReply") = value
+            Item("readPagesReply") = value
         End Set
     End Property
 
     Public Property ReadPagesDM() As Integer
         Get
-            Return _cfg.GetValueOrDefault("readPagesDm", 1)
+            Return GetValueOrDefault("readPagesDm", 1)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("readPagesDm") = value
+            Item("readPagesDm") = value
         End Set
     End Property
 
     Public Property MaxPostNum() As Integer
         Get
-            Return _cfg.GetValueOrDefault("maxPostNum", 125)
+            Return GetValueOrDefault("maxPostNum", 125)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("maxPostNum") = value
+            Item("maxPostNum") = value
         End Set
     End Property
 
     Public Property Read() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("startupRead", True)
+            Return GetValueOrDefault("startupRead", True)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("startupRead") = value
+            Item("startupRead") = value
         End Set
     End Property
 
     Public Property ListLock() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("listLock", False)
+            Return GetValueOrDefault("listLock", False)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("listLock") = value
+            Item("listLock") = value
         End Set
     End Property
 
     Public Property IconSize() As IconSizes
         Get
-            Return _cfg.GetValueOrDefault("listIconSize", IconSizes.Icon16)
+            Return GetValueOrDefault("listIconSize", IconSizes.Icon16)
         End Get
         Set(ByVal value As IconSizes)
-            _cfg.Item("listIconSize") = value
+            Item("listIconSize") = value
         End Set
     End Property
 
     Public Property NewAllPop() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("newAllPop", True)
+            Return GetValueOrDefault("newAllPop", True)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("newAllPop") = value
+            Item("newAllPop") = value
         End Set
     End Property
 
     Public Property StatusText() As String
         Get
-            Return _cfg.GetValueOrDefault("statusText", "")
+            Return GetValueOrDefault("statusText", "")
         End Get
         Set(ByVal value As String)
-            _cfg.Item("statusText") = value
+            Item("statusText") = value
         End Set
     End Property
 
     Public Property PlaySound() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("playSound", False)
+            Return GetValueOrDefault("playSound", False)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("playSound") = value
+            Item("playSound") = value
         End Set
     End Property
 
     Public Property UnreadManage() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("unreadManage", True)
+            Return GetValueOrDefault("unreadManage", True)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("unreadManage") = value
+            Item("unreadManage") = value
         End Set
     End Property
 
     Public Property OneWayLove() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("oneWayLove", True)
+            Return GetValueOrDefault("oneWayLove", True)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("oneWayLove") = value
+            Item("oneWayLove") = value
         End Set
     End Property
 
@@ -2017,11 +2018,11 @@ Public NotInheritable Class SettingBase
         Get
             Dim fc As New FontConverter
             Dim f2str As String = fc.ConvertToString(New Font(System.Drawing.SystemFonts.DefaultFont, FontStyle.Bold Or FontStyle.Underline))
-            Return DirectCast(fc.ConvertFromString(_cfg.GetValueOrDefault("fontUnread", f2str)), Font)
+            Return DirectCast(fc.ConvertFromString(GetValueOrDefault("fontUnread", f2str)), Font)
         End Get
         Set(ByVal value As Font)
             Dim fc As New FontConverter
-            _cfg.Item("fontUnread") = fc.ConvertToString(value)
+            Item("fontUnread") = fc.ConvertToString(value)
         End Set
     End Property
 
@@ -2029,11 +2030,11 @@ Public NotInheritable Class SettingBase
         Get
             Dim cc As New ColorConverter
             Dim c2str As String = cc.ConvertToString(System.Drawing.SystemColors.ControlText)
-            Return DirectCast(cc.ConvertFromString(_cfg.GetValueOrDefault("colorUnread", c2str)), Color)
+            Return DirectCast(cc.ConvertFromString(GetValueOrDefault("colorUnread", c2str)), Color)
         End Get
         Set(ByVal value As Color)
             Dim cc As New ColorConverter
-            _cfg.Item("colorUnread") = cc.ConvertToString(value)
+            Item("colorUnread") = cc.ConvertToString(value)
         End Set
     End Property
 
@@ -2041,11 +2042,11 @@ Public NotInheritable Class SettingBase
         Get
             Dim fc As New FontConverter
             Dim f2str As String = fc.ConvertToString(System.Drawing.SystemFonts.DefaultFont)
-            Return DirectCast(fc.ConvertFromString(_cfg.GetValueOrDefault("fontRead", f2str)), Font)
+            Return DirectCast(fc.ConvertFromString(GetValueOrDefault("fontRead", f2str)), Font)
         End Get
         Set(ByVal value As Font)
             Dim fc As New FontConverter
-            _cfg.Item("fontRead") = fc.ConvertToString(value)
+            Item("fontRead") = fc.ConvertToString(value)
         End Set
     End Property
 
@@ -2053,11 +2054,11 @@ Public NotInheritable Class SettingBase
         Get
             Dim cc As New ColorConverter
             Dim c2str As String = cc.ConvertToString(Color.FromKnownColor(System.Drawing.KnownColor.Gray))
-            Return DirectCast(cc.ConvertFromString(_cfg.GetValueOrDefault("colorRead", c2str)), Color)
+            Return DirectCast(cc.ConvertFromString(GetValueOrDefault("colorRead", c2str)), Color)
         End Get
         Set(ByVal value As Color)
             Dim cc As New ColorConverter
-            _cfg.Item("colorRead") = cc.ConvertToString(value)
+            Item("colorRead") = cc.ConvertToString(value)
         End Set
     End Property
 
@@ -2065,11 +2066,11 @@ Public NotInheritable Class SettingBase
         Get
             Dim cc As New ColorConverter
             Dim c2str As String = cc.ConvertToString(Color.FromKnownColor(KnownColor.Red))
-            Return DirectCast(cc.ConvertFromString(_cfg.GetValueOrDefault("colorFav", c2str)), Color)
+            Return DirectCast(cc.ConvertFromString(GetValueOrDefault("colorFav", c2str)), Color)
         End Get
         Set(ByVal value As Color)
             Dim cc As New ColorConverter
-            _cfg.Item("colorFav") = cc.ConvertToString(value)
+            Item("colorFav") = cc.ConvertToString(value)
         End Set
     End Property
 
@@ -2077,11 +2078,11 @@ Public NotInheritable Class SettingBase
         Get
             Dim cc As New ColorConverter
             Dim c2str As String = cc.ConvertToString(Color.FromKnownColor(KnownColor.Blue))
-            Return DirectCast(cc.ConvertFromString(_cfg.GetValueOrDefault("colorOwl", c2str)), Color)
+            Return DirectCast(cc.ConvertFromString(GetValueOrDefault("colorOwl", c2str)), Color)
         End Get
         Set(ByVal value As Color)
             Dim cc As New ColorConverter
-            _cfg.Item("colorOwl") = cc.ConvertToString(value)
+            Item("colorOwl") = cc.ConvertToString(value)
         End Set
     End Property
 
@@ -2089,11 +2090,11 @@ Public NotInheritable Class SettingBase
         Get
             Dim fc As New FontConverter
             Dim f2str As String = fc.ConvertToString(System.Drawing.SystemFonts.DefaultFont)
-            Return DirectCast(fc.ConvertFromString(_cfg.GetValueOrDefault("fontDetail", f2str)), Font)
+            Return DirectCast(fc.ConvertFromString(GetValueOrDefault("fontDetail", f2str)), Font)
         End Get
         Set(ByVal value As Font)
             Dim fc As New FontConverter
-            _cfg.Item("fontDetail") = fc.ConvertToString(value)
+            Item("fontDetail") = fc.ConvertToString(value)
         End Set
     End Property
 
@@ -2101,11 +2102,11 @@ Public NotInheritable Class SettingBase
         Get
             Dim cc As New ColorConverter
             Dim c2str As String = cc.ConvertToString(Color.FromKnownColor(KnownColor.AliceBlue))
-            Return DirectCast(cc.ConvertFromString(_cfg.GetValueOrDefault("colorSelf", c2str)), Color)
+            Return DirectCast(cc.ConvertFromString(GetValueOrDefault("colorSelf", c2str)), Color)
         End Get
         Set(ByVal value As Color)
             Dim cc As New ColorConverter
-            _cfg.Item("colorSelf") = cc.ConvertToString(value)
+            Item("colorSelf") = cc.ConvertToString(value)
         End Set
     End Property
 
@@ -2113,11 +2114,11 @@ Public NotInheritable Class SettingBase
         Get
             Dim cc As New ColorConverter
             Dim c2str As String = cc.ConvertToString(Color.FromKnownColor(KnownColor.AntiqueWhite))
-            Return DirectCast(cc.ConvertFromString(_cfg.GetValueOrDefault("colorAtSelf", c2str)), Color)
+            Return DirectCast(cc.ConvertFromString(GetValueOrDefault("colorAtSelf", c2str)), Color)
         End Get
         Set(ByVal value As Color)
             Dim cc As New ColorConverter
-            _cfg.Item("colorAtSelf") = cc.ConvertToString(value)
+            Item("colorAtSelf") = cc.ConvertToString(value)
         End Set
     End Property
 
@@ -2125,11 +2126,11 @@ Public NotInheritable Class SettingBase
         Get
             Dim cc As New ColorConverter
             Dim c2str As String = cc.ConvertToString(Color.FromKnownColor(KnownColor.LemonChiffon))
-            Return DirectCast(cc.ConvertFromString(_cfg.GetValueOrDefault("colorTarget", c2str)), Color)
+            Return DirectCast(cc.ConvertFromString(GetValueOrDefault("colorTarget", c2str)), Color)
         End Get
         Set(ByVal value As Color)
             Dim cc As New ColorConverter
-            _cfg.Item("colorTarget") = cc.ConvertToString(value)
+            Item("colorTarget") = cc.ConvertToString(value)
         End Set
     End Property
 
@@ -2137,11 +2138,11 @@ Public NotInheritable Class SettingBase
         Get
             Dim cc As New ColorConverter
             Dim c2str As String = cc.ConvertToString(Color.FromKnownColor(KnownColor.LavenderBlush))
-            Return DirectCast(cc.ConvertFromString(_cfg.GetValueOrDefault("colorAtTarget", c2str)), Color)
+            Return DirectCast(cc.ConvertFromString(GetValueOrDefault("colorAtTarget", c2str)), Color)
         End Get
         Set(ByVal value As Color)
             Dim cc As New ColorConverter
-            _cfg.Item("colorAtTarget") = cc.ConvertToString(value)
+            Item("colorAtTarget") = cc.ConvertToString(value)
         End Set
     End Property
 
@@ -2149,332 +2150,332 @@ Public NotInheritable Class SettingBase
         Get
             Dim cc As New ColorConverter
             Dim c2str As String = cc.ConvertToString(Color.FromKnownColor(KnownColor.Honeydew))
-            Return DirectCast(cc.ConvertFromString(_cfg.GetValueOrDefault("colorAtFromTarget", c2str)), Color)
+            Return DirectCast(cc.ConvertFromString(GetValueOrDefault("colorAtFromTarget", c2str)), Color)
         End Get
         Set(ByVal value As Color)
             Dim cc As New ColorConverter
-            _cfg.Item("colorAtFromTarget") = cc.ConvertToString(value)
+            Item("colorAtFromTarget") = cc.ConvertToString(value)
         End Set
     End Property
 
     Public Property NameBalloon() As NameBalloonEnum
         Get
-            Return _cfg.GetValueOrDefault("nameBalloon", NameBalloonEnum.NickName)
+            Return GetValueOrDefault("nameBalloon", NameBalloonEnum.NickName)
         End Get
         Set(ByVal value As NameBalloonEnum)
-            _cfg.Item("nameBalloon") = value
+            Item("nameBalloon") = value
         End Set
     End Property
 
     Public Property Width1() As Integer
         Get
-            Return _cfg.GetValueOrDefault("width1", 48)
+            Return GetValueOrDefault("width1", 48)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("width1") = value
+            Item("width1") = value
         End Set
     End Property
 
     Public Property Width2() As Integer
         Get
-            Return _cfg.GetValueOrDefault("width2", 80)
+            Return GetValueOrDefault("width2", 80)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("width2") = value
+            Item("width2") = value
         End Set
     End Property
 
     Public Property Width3() As Integer
         Get
-            Return _cfg.GetValueOrDefault("width3", 290)
+            Return GetValueOrDefault("width3", 290)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("width3") = value
+            Item("width3") = value
         End Set
     End Property
 
     Public Property Width4() As Integer
         Get
-            Return _cfg.GetValueOrDefault("width4", 120)
+            Return GetValueOrDefault("width4", 120)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("width4") = value
+            Item("width4") = value
         End Set
     End Property
 
     Public Property Width5() As Integer
         Get
-            Return _cfg.GetValueOrDefault("width5", 50)
+            Return GetValueOrDefault("width5", 50)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("width5") = value
+            Item("width5") = value
         End Set
     End Property
 
     Public Property Width6() As Integer
         Get
-            Return _cfg.GetValueOrDefault("width6", 16)
+            Return GetValueOrDefault("width6", 16)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("width6") = value
+            Item("width6") = value
         End Set
     End Property
 
     Public Property Width7() As Integer
         Get
-            Return _cfg.GetValueOrDefault("width7", 32)
+            Return GetValueOrDefault("width7", 32)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("width7") = value
+            Item("width7") = value
         End Set
     End Property
 
     Public Property Width8() As Integer
         Get
-            Return _cfg.GetValueOrDefault("width8", 50)
+            Return GetValueOrDefault("width8", 50)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("width8") = value
+            Item("width8") = value
         End Set
     End Property
 
     Public Property SortColumn() As Integer
         Get
-            Return _cfg.GetValueOrDefault("sortColumn", 3)
+            Return GetValueOrDefault("sortColumn", 3)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("sortColumn") = value
+            Item("sortColumn") = value
         End Set
     End Property
 
     Public Property SortOrder() As Integer
         Get
-            Return _cfg.GetValueOrDefault("sortOrder", 1)
+            Return GetValueOrDefault("sortOrder", 1)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("sortOrder") = value
+            Item("sortOrder") = value
         End Set
     End Property
 
     Public Property DisplayIndex1() As Integer
         Get
-            Return _cfg.GetValueOrDefault("displayIndex1", 0)
+            Return GetValueOrDefault("displayIndex1", 0)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("displayIndex1") = value
+            Item("displayIndex1") = value
         End Set
     End Property
 
     Public Property DisplayIndex2() As Integer
         Get
-            Return _cfg.GetValueOrDefault("displayIndex2", 1)
+            Return GetValueOrDefault("displayIndex2", 1)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("displayIndex2") = value
+            Item("displayIndex2") = value
         End Set
     End Property
 
     Public Property DisplayIndex3() As Integer
         Get
-            Return _cfg.GetValueOrDefault("displayIndex3", 2)
+            Return GetValueOrDefault("displayIndex3", 2)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("displayIndex3") = value
+            Item("displayIndex3") = value
         End Set
     End Property
 
     Public Property DisplayIndex4() As Integer
         Get
-            Return _cfg.GetValueOrDefault("displayIndex4", 3)
+            Return GetValueOrDefault("displayIndex4", 3)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("displayIndex4") = value
+            Item("displayIndex4") = value
         End Set
     End Property
 
     Public Property DisplayIndex5() As Integer
         Get
-            Return _cfg.GetValueOrDefault("displayIndex5", 4)
+            Return GetValueOrDefault("displayIndex5", 4)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("displayIndex5") = value
+            Item("displayIndex5") = value
         End Set
     End Property
 
     Public Property DisplayIndex6() As Integer
         Get
-            Return _cfg.GetValueOrDefault("displayIndex6", 5)
+            Return GetValueOrDefault("displayIndex6", 5)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("displayIndex6") = value
+            Item("displayIndex6") = value
         End Set
     End Property
 
     Public Property DisplayIndex7() As Integer
         Get
-            Return _cfg.GetValueOrDefault("displayIndex7", 6)
+            Return GetValueOrDefault("displayIndex7", 6)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("displayIndex7") = value
+            Item("displayIndex7") = value
         End Set
     End Property
 
     Public Property DisplayIndex8() As Integer
         Get
-            Return _cfg.GetValueOrDefault("displayIndex8", 7)
+            Return GetValueOrDefault("displayIndex8", 7)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("displayIndex8") = value
+            Item("displayIndex8") = value
         End Set
     End Property
 
     Public Property PostCtrlEnter() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("postCtrlEnter", False)
+            Return GetValueOrDefault("postCtrlEnter", False)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("postCtrlEnter") = value
+            Item("postCtrlEnter") = value
         End Set
     End Property
 
     Public Property UseAPI() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("useApi", False)
+            Return GetValueOrDefault("useApi", False)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("useApi") = value
+            Item("useApi") = value
         End Set
     End Property
 
     Public Property CheckReply() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("checkReply", True)
+            Return GetValueOrDefault("checkReply", True)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("checkReply") = value
+            Item("checkReply") = value
         End Set
     End Property
 
     Public Property UseRecommendStatus() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("useRecommendStatus", False)
+            Return GetValueOrDefault("useRecommendStatus", False)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("useRecommendStatus") = value
+            Item("useRecommendStatus") = value
         End Set
     End Property
 
     Public Property DispUsername() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("dispUsername", False)
+            Return GetValueOrDefault("dispUsername", False)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("dispUsername") = value
+            Item("dispUsername") = value
         End Set
     End Property
 
     Public Property MinimizeToTray() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("minimizeToTray", False)
+            Return GetValueOrDefault("minimizeToTray", False)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("minimizeToTray") = value
+            Item("minimizeToTray") = value
         End Set
     End Property
 
     Public Property CloseToExit() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("closeToExit", False)
+            Return GetValueOrDefault("closeToExit", False)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("closeToExit") = value
+            Item("closeToExit") = value
         End Set
     End Property
 
     Public Property DispLatestPost() As DispTitleEnum
         Get
-            Return _cfg.GetValueOrDefault("dispLatestPost", DispTitleEnum.Post)
+            Return GetValueOrDefault("dispLatestPost", DispTitleEnum.Post)
         End Get
         Set(ByVal value As DispTitleEnum)
-            _cfg.Item("dispLatestPost") = value
+            Item("dispLatestPost") = value
         End Set
     End Property
 
     Public Property HubServer() As String
         Get
-            Return _cfg.GetValueOrDefault("hubServer", "twitter.com")
+            Return GetValueOrDefault("hubServer", "twitter.com")
         End Get
         Set(ByVal value As String)
-            _cfg.Item("hubServer") = value
+            Item("hubServer") = value
         End Set
     End Property
 
     Public Property BrowserPath() As String
         Get
-            Return _cfg.GetValueOrDefault("browserPath", "")
+            Return GetValueOrDefault("browserPath", "")
         End Get
         Set(ByVal value As String)
-            _cfg.Item("browserPath") = value
+            Item("browserPath") = value
         End Set
     End Property
 
     Public Property SortOrderLock() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("sortOrderLock", False)
+            Return GetValueOrDefault("sortOrderLock", False)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("sortOrderLock") = value
+            Item("sortOrderLock") = value
         End Set
     End Property
 
     Public Property TinyURLResolve() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("tinyurlResolve", True)
+            Return GetValueOrDefault("tinyurlResolve", True)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("tinyurlResolve") = value
+            Item("tinyurlResolve") = value
         End Set
     End Property
 
     Public Property ProxyType() As ProxyTypeEnum
         Get
-            Return _cfg.GetValueOrDefault("proxyType", ProxyTypeEnum.IE)
+            Return GetValueOrDefault("proxyType", ProxyTypeEnum.IE)
         End Get
         Set(ByVal value As ProxyTypeEnum)
-            _cfg.Item("proxyType") = value
+            Item("proxyType") = value
         End Set
     End Property
 
     Public Property ProxyAddress() As String
         Get
-            Return _cfg.GetValueOrDefault("proxyAddress", "127.0.0.1")
+            Return GetValueOrDefault("proxyAddress", "127.0.0.1")
         End Get
         Set(ByVal value As String)
-            _cfg.Item("proxyAddress") = value
+            Item("proxyAddress") = value
         End Set
     End Property
 
     Public Property ProxyPort() As Integer
         Get
-            Return _cfg.GetValueOrDefault("proxyPort", 80)
+            Return GetValueOrDefault("proxyPort", 80)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("proxyPort") = value
+            Item("proxyPort") = value
         End Set
     End Property
 
     Public Property ProxyUser() As String
         Get
-            Return _cfg.GetValueOrDefault("proxyUser", "")
+            Return GetValueOrDefault("proxyUser", "")
         End Get
         Set(ByVal value As String)
-            _cfg.Item("proxyUser") = value
+            Item("proxyUser") = value
         End Set
     End Property
 
     Public Property ProxyPassword() As String
         Get
-            Dim pwd As String = _cfg.GetValueOrDefault("proxyPassword", "")
+            Dim pwd As String = GetValueOrDefault("proxyPassword", "")
             If pwd.Length > 0 Then
                 Try
                     pwd = DecryptString(pwd)
@@ -2488,118 +2489,118 @@ Public NotInheritable Class SettingBase
             Dim pwd As String = value.Trim()
             If pwd.Length > 0 Then
                 Try
-                    _cfg.Item("proxyPassword") = EncryptString(pwd)
+                    Item("proxyPassword") = EncryptString(pwd)
                 Catch ex As Exception
-                    _cfg.Item("proxyPassword") = ""
+                    Item("proxyPassword") = ""
                 End Try
             Else
-                _cfg.Item("proxyPassword") = ""
+                Item("proxyPassword") = ""
             End If
         End Set
     End Property
 
     Public Property PeriodAdjust() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("periodAdjust", True)
+            Return GetValueOrDefault("periodAdjust", True)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("periodAdjust") = value
+            Item("periodAdjust") = value
         End Set
     End Property
 
     Public Property StartupVersion() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("startupVersion", True)
+            Return GetValueOrDefault("startupVersion", True)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("startupVersion") = value
+            Item("startupVersion") = value
         End Set
     End Property
 
     Public Property StartupKey() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("startupKey", True)
+            Return GetValueOrDefault("startupKey", True)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("startupKey") = value
+            Item("startupKey") = value
         End Set
     End Property
 
     Public Property StartupFollowers() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("startupFollowers", True)
+            Return GetValueOrDefault("startupFollowers", True)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("startupFollowers") = value
+            Item("startupFollowers") = value
         End Set
     End Property
 
     Public Property RestrictFavCheck() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("restrictFavCheck", False)
+            Return GetValueOrDefault("restrictFavCheck", False)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("restrictFavCheck") = value
+            Item("restrictFavCheck") = value
         End Set
     End Property
 
     Public Property AlwaysTop() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("alwaysTop", False)
+            Return GetValueOrDefault("alwaysTop", False)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("alwaysTop") = value
+            Item("alwaysTop") = value
         End Set
     End Property
 
     Public Property StatusMultiline() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("statusMultiline", False)
+            Return GetValueOrDefault("statusMultiline", False)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("statusMultiline") = value
+            Item("statusMultiline") = value
         End Set
     End Property
 
     Public Property StatusTextHeight() As Integer
         Get
-            Return _cfg.GetValueOrDefault("statusTextHeight", 38)
+            Return GetValueOrDefault("statusTextHeight", 38)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("statusTextHeight") = value
+            Item("statusTextHeight") = value
         End Set
     End Property
 
     Public Property cultureCode() As String
         Get
-            Return _cfg.GetValueOrDefault("cultureCode", "")
+            Return GetValueOrDefault("cultureCode", "")
         End Get
         Set(ByVal value As String)
-            _cfg.Item("cultureCode") = value
+            Item("cultureCode") = value
         End Set
     End Property
 
     Public Property UrlConvertAuto() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("urlConvertAuto", False)
+            Return GetValueOrDefault("urlConvertAuto", False)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("urlConvertAuto") = value
+            Item("urlConvertAuto") = value
         End Set
     End Property
 
     Public Property Outputz() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("outputz", False)
+            Return GetValueOrDefault("outputz", False)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("outputz") = value
+            Item("outputz") = value
         End Set
     End Property
 
     Public Property OutputzKey() As String
         Get
-            Dim key As String = _cfg.GetValueOrDefault("outputzKey", "")
+            Dim key As String = GetValueOrDefault("outputzKey", "")
             If key.Length > 0 Then
                 Try
                     key = DecryptString(key)
@@ -2613,58 +2614,58 @@ Public NotInheritable Class SettingBase
             Dim key As String = value.Trim()
             If key.Length > 0 Then
                 Try
-                    _cfg.Item("outputzKey") = EncryptString(key)
+                    Item("outputzKey") = EncryptString(key)
                 Catch ex As Exception
-                    _cfg.Item("outputzKey") = ""
+                    Item("outputzKey") = ""
                 End Try
             Else
-                _cfg.Item("outputzKey") = ""
+                Item("outputzKey") = ""
             End If
         End Set
     End Property
 
     Public Property OutputzUrlmode() As OutputzUrlmode
         Get
-            Return _cfg.GetValueOrDefault("outputzUrlMode", OutputzUrlmode.twittercom)
+            Return GetValueOrDefault("outputzUrlMode", OutputzUrlmode.twittercom)
         End Get
         Set(ByVal value As OutputzUrlmode)
-            _cfg.Item("outputzUrlMode") = value
+            Item("outputzUrlMode") = value
         End Set
     End Property
 
     Public Property UseUnreadStyle() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("useUnreadStyle", True)
+            Return GetValueOrDefault("useUnreadStyle", True)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("useUnreadStyle") = value
+            Item("useUnreadStyle") = value
         End Set
     End Property
 
     Public Property DateTimeFormat() As String
         Get
-            Return _cfg.GetValueOrDefault("datetimeFormat", "yyyy/MM/dd H:mm:ss")
+            Return GetValueOrDefault("datetimeFormat", "yyyy/MM/dd H:mm:ss")
         End Get
         Set(ByVal value As String)
-            _cfg.Item("datetimeFormat") = value
+            Item("datetimeFormat") = value
         End Set
     End Property
 
     Public Property DefaultTimeOut() As Integer
         Get
-            Return _cfg.GetValueOrDefault("defaultTimeout", 20)
+            Return GetValueOrDefault("defaultTimeout", 20)
         End Get
         Set(ByVal value As Integer)
-            _cfg.Item("defaultTimeout") = value
+            Item("defaultTimeout") = value
         End Set
     End Property
 
     Public Property ProtectNotInclude() As Boolean
         Get
-            Return _cfg.GetValueOrDefault("protectNotInclude", False)
+            Return GetValueOrDefault("protectNotInclude", False)
         End Get
         Set(ByVal value As Boolean)
-            _cfg.Item("protectNotInclude") = value
+            Item("protectNotInclude") = value
         End Set
     End Property
 
