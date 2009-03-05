@@ -1455,6 +1455,15 @@ Public Class XmlConfiguration
         End Get
     End Property
 
+    Public Property FilePath() As String
+        Get
+            Return Me._filePath
+        End Get
+        Set(ByVal value As String)
+            Me._filePath = value
+        End Set
+    End Property
+
 #Region "IDictionary<string,object> メンバ"
 
     Public Sub Add(ByVal key As String, ByVal value As Object) _
@@ -1648,7 +1657,7 @@ Public Class XmlConfiguration
 
     Public Shared Function Load(ByVal path As String) As XmlConfiguration
         Dim config As XmlConfiguration = DirectCast(New XmlSerializer(GetType(XmlConfiguration)).Deserialize(XmlReader.Create(path)), XmlConfiguration)
-        config._filePath = path
+        config.FilePath = path
         Return config
     End Function
 
@@ -1726,13 +1735,14 @@ End Class
 Public NotInheritable Class SettingToConfig
     Inherits XmlConfiguration
 
-    Public Overloads Shared Function Load() As SettingToConfig
-        Return DirectCast(Load(Path.Combine(My.Application.Info.DirectoryPath, "TweenConf.xml")), SettingToConfig)
+    Public Shared Function Load() As SettingToConfig
+        Dim filePath As String = Path.Combine(My.Application.Info.DirectoryPath, "TweenConf.xml")
+        Dim config As SettingToConfig = DirectCast(New XmlSerializer(GetType(SettingToConfig)) _
+            .Deserialize(XmlReader.Create(filePath)), SettingToConfig _
+        )
+        config.FilePath = filePath
+        Return config
     End Function
-
-    Public Overloads Sub Save()
-        Save(Path.Combine(My.Application.Info.DirectoryPath, "TweenConf.xml"))
-    End Sub
 
     Public Property Tabs() As Dictionary(Of String, TabClass)
         Get
@@ -2668,5 +2678,4 @@ Public NotInheritable Class SettingToConfig
             Item("protectNotInclude") = value
         End Set
     End Property
-
 End Class
