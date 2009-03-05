@@ -57,7 +57,7 @@ Public Class TweenMain
     Private detailHtmlFormat As String
 
     '設定ファイル関連
-    Private _cfg As SettingBase
+    Private _cfg As SettingToConfig
 
     'サブ画面インスタンス
     Private SettingDialog As New Setting()       '設定画面インスタンス
@@ -337,19 +337,10 @@ Public Class TweenMain
         '<<<<<<<<<設定関連>>>>>>>>>
         '設定コンバージョン
         ConvertConfig()
-        _cfg = New SettingBase
-        _cfg.Load()
-
 
         ''設定読み出し
         '_config = ConfigurationManager.OpenExeConfiguration(Application.ExecutablePath)
         '_section = DirectCast(_config.GetSection("TwitterSetting"), ListSection)
-        '初回起動時で設定ファイルがない場合、"TwitterSetting"セクションを作成。構成要素も作成することで他の要素もデフォルト値での取得が可能
-        If _cfg.Tabs.Count = 0 Then
-            _cfg.Tabs.Add("Recent", New TabClass)
-            _cfg.Tabs.Add("Reply", New TabClass)
-            _cfg.Tabs.Add("Direct", New TabClass)
-        End If
         'If _section Is Nothing Then
         '    _section = New ListSection()
         '    _config.Sections.Add("TwitterSetting", _section)
@@ -825,11 +816,33 @@ Public Class TweenMain
         Dim _config As Configuration    'アプリケーション構成ファイルクラス
         Dim _section As ListSection     '構成ファイル中のユーザー定義ListSectionクラス
 
-        If System.IO.File.Exists(My.Application.Info.DirectoryPath + "\TweenConf.xml") Then Exit Sub
+        If System.IO.File.Exists(Path.Combine(My.Application.Info.DirectoryPath, "TweenConf.xml")) Then
+            _cfg = SettingToConfig.Load()
+            Exit Sub
+        End If
+        If System.IO.File.Exists(Path.Combine(My.Application.Info.DirectoryPath, My.Application.Info.AssemblyName + ".exe.config")) = False Then
+            _cfg = New SettingToConfig
+            Exit Sub
+        End If
         '設定読み出し
         _config = ConfigurationManager.OpenExeConfiguration(Application.ExecutablePath)
         _section = DirectCast(_config.GetSection("TwitterSetting"), ListSection)
-        _cfg = New SettingBase
+        If _section Is Nothing Then
+            _section = New ListSection()
+            _config.Sections.Add("TwitterSetting", _section)
+            _section = DirectCast(_config.GetSection("TwitterSetting"), ListSection)
+            _section.SectionInformation.ForceSave = True
+            _section.ListElement = New ListElementCollection("Recent")
+        End If
+        ''Replyタブ
+        If _section.ListElement.Item("Reply") Is Nothing Then
+            _section.ListElement.Add(New ListElement("Reply"))
+        End If
+        ''DirectMsgタブ
+        If _section.ListElement.Item("Direct") Is Nothing Then
+            _section.ListElement.Add(New ListElement("Direct"))
+        End If
+        _cfg = New SettingToConfig
         _cfg.AlwaysTop = _section.AlwaysTop
         _cfg.BrowserPath = _section.BrowserPath
         _cfg.CheckReply = _section.CheckReply
