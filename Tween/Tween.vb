@@ -3099,10 +3099,10 @@ RETRY2:
                             End If
                             Exit Sub
                         Else
-                            If Not startup Then MessageBox.Show(My.Resources.CheckNewVersionText4, My.Resources.CheckNewVersionText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                            If Not startup Then MessageBox.Show(My.Resources.CheckNewVersionText4 + System.Environment.NewLine + retMsg, My.Resources.CheckNewVersionText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                         End If
                     Else
-                        If Not startup Then MessageBox.Show(My.Resources.CheckNewVersionText5, My.Resources.CheckNewVersionText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                        If Not startup Then MessageBox.Show(My.Resources.CheckNewVersionText5 + System.Environment.NewLine + retMsg, My.Resources.CheckNewVersionText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                     End If
                 End If
             Else
@@ -3122,10 +3122,10 @@ RETRY2:
                                 End If
                                 Exit Sub
                             Else
-                                If Not startup Then MessageBox.Show(My.Resources.CheckNewVersionText4, My.Resources.CheckNewVersionText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                                If Not startup Then MessageBox.Show(My.Resources.CheckNewVersionText4 + System.Environment.NewLine + retMsg, My.Resources.CheckNewVersionText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                             End If
                         Else
-                            If Not startup Then MessageBox.Show(My.Resources.CheckNewVersionText5, My.Resources.CheckNewVersionText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                            If Not startup Then MessageBox.Show(My.Resources.CheckNewVersionText5 + System.Environment.NewLine + retMsg, My.Resources.CheckNewVersionText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                         End If
                     End If
                 ElseIf Not startup Then
@@ -4694,6 +4694,7 @@ RETRY2:
     Friend Sub CheckReplyTo(ByVal StatusText As String)
         ' 本当にリプライ先指定すべきかどうかの判定
         Dim id As New Regex("@[a-zA-Z0-9_]+")                           '通常判定用
+        Dim rt As New Regex("^RT:.*\(via @(?<id>[a-zA-Z0-9_]+)\)")      'ReTweet判定用
         Dim m As MatchCollection
 
         ' リプライ先ステータスIDの指定がない場合は指定しない
@@ -5382,8 +5383,13 @@ RETRY2:
     Private Sub ReTweetStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ReTweetStripMenuItem.Click
         'RT:内容 (via @id)
         If _curPost IsNot Nothing Then
-            If SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Then Exit Sub
+            If SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Or _
+               Not StatusText.Enabled Then Exit Sub
             StatusText.Text = "RT:" + _curPost.Data + " (via @" + _curPost.Name + ")"
+            _reply_to_id = 0
+            _reply_to_name = Nothing
+            StatusText.SelectionStart = StatusText.Text.Length
+            StatusText.Focus()
         End If
     End Sub
 

@@ -1951,29 +1951,35 @@ Public Module Twitter
 
     Public Function GetVersionInfo() As String
         Dim resStatus As String = ""
-        Return DirectCast(CreateSocket.GetWebResponse("http://tween.sourceforge.jp/version2.txt?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus), String)
+        Dim ret As String = DirectCast(CreateSocket.GetWebResponse("http://tween.sourceforge.jp/version2.txt?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus), String)
+        If ret.Length = 0 Then Throw New Exception("GetVersionInfo: " + resStatus)
+        Return ret
     End Function
 
     Public Function GetTweenBinary(ByVal strVer As String) As String
         Dim resStatus As String = ""
         Dim ret As String = ""
         ret = DirectCast(CreateSocket.GetWebResponse("http://tween.sourceforge.jp/Tween" + strVer + ".gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFile), String)
-        If ret.Length = 0 Then
+        If resStatus.Length = 0 Then
             '取得OKなら、続いてresources.dllダウンロード
             Return GetTweenResourcesDll(strVer)
         Else
-            Return ret
+            Return resStatus
         End If
     End Function
 
     Public Function GetTweenUpBinary() As String
         Dim resStatus As String = ""
-        Return DirectCast(CreateSocket.GetWebResponse("http://tween.sourceforge.jp/TweenUp.gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileUp), String)
+        Dim ret As String = DirectCast(CreateSocket.GetWebResponse("http://tween.sourceforge.jp/TweenUp.gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileUp), String)
+        If resStatus.Length > 0 Then Return resStatus
+        Return ""
     End Function
 
     Public Function GetTweenResourcesDll(ByVal strver As String) As String
         Dim resStatus As String = ""
-        Return DirectCast(CreateSocket.GetWebResponse("http://tween.sourceforge.jp/TweenRes" + strver + ".gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileRes), String)
+        Dim ret As String = DirectCast(CreateSocket.GetWebResponse("http://tween.sourceforge.jp/TweenRes" + strver + ".gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileRes), String)
+        If resStatus.Length > 0 Then Return resStatus
+        Return ""
     End Function
 
     Private Function CreateSocket() As MySocket
