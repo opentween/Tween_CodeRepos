@@ -1732,6 +1732,7 @@ Public Class XmlConfiguration
 
 End Class
 
+<XmlRoot(ElementName:="configuration", Namespace:="urn:XSpect.Configuration.XmlConfiguration")> _
 Public NotInheritable Class SettingToConfig
     Inherits XmlConfiguration
 
