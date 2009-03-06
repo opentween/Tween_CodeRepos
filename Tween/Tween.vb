@@ -4694,7 +4694,6 @@ RETRY2:
     Friend Sub CheckReplyTo(ByVal StatusText As String)
         ' 本当にリプライ先指定すべきかどうかの判定
         Dim id As New Regex("@[a-zA-Z0-9_]+")                           '通常判定用
-        Dim rt As New Regex("^RT:.*\(via @(?<id>[a-zA-Z0-9_]+)\)")      'ReTweet判定用
         Dim m As MatchCollection
 
         ' リプライ先ステータスIDの指定がない場合は指定しない
@@ -4703,12 +4702,6 @@ RETRY2:
         ' リプライ先ユーザー名がない場合も指定しない
         If _reply_to_name Is Nothing Then
             _reply_to_id = 0
-            Exit Sub
-        End If
-
-        ' ReTweet対応
-        ' 行頭が「RT:」で始まり (via @id)を含んでおり、@idが元書き込みと一致する場合は指定する
-        If rt.Match(StatusText).Groups.Item(1).Value = _reply_to_name Then
             Exit Sub
         End If
 
@@ -5391,8 +5384,6 @@ RETRY2:
         If _curPost IsNot Nothing Then
             If SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Then Exit Sub
             StatusText.Text = "RT:" + _curPost.Data + " (via @" + _curPost.Name + ")"
-            _reply_to_id = _curPost.Id
-            _reply_to_name = _curPost.Name
         End If
     End Sub
 
