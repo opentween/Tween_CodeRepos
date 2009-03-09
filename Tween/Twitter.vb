@@ -988,6 +988,7 @@ Public Module Twitter
         Dim posl2 As Integer = 0
         Dim posTmp As Integer
         Dim IDNConveter As IdnMapping = New IdnMapping()
+        Dim protocol As String() = New String() {"http://", "https://", "ftp://"}
 
         Do While True
             If orgData.IndexOf("<a href=""", posl2, StringComparison.Ordinal) > -1 Then
@@ -995,7 +996,11 @@ Public Module Twitter
                 ' IDN展開
                 posl1 = orgData.IndexOf("<a href=""", posl2, StringComparison.Ordinal)
 
-                posTmp = orgData.IndexOf("http://", posl1, StringComparison.Ordinal)
+                For Each prt As String In protocol
+                    posTmp = orgData.IndexOf(prt, posl1, StringComparison.Ordinal)
+                    If posTmp <> -1 Then Exit For
+                Next
+
                 If posTmp <> -1 Then
                     posl1 = posTmp
                     posl2 = orgData.IndexOf("""", posl1, StringComparison.Ordinal)
