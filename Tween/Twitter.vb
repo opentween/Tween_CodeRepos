@@ -1012,7 +1012,7 @@ Public Module Twitter
                 urlStr = orgData.Substring(posl1, posl2 - posl1)
 
                 ' ドメイン名をPunycode展開
-                Dim Domain As String = (urlStr.Split(New String() {"/"}, StringSplitOptions.None))(2)
+                Dim Domain As String = urlStr.Split("/"c)(2)
                 Dim AsciiDomain As String = IDNConveter.GetAscii(Domain)
                 Dim replacedUrl As String = urlStr.Replace("://" + Domain + "/", "://" + AsciiDomain + "/")
 
