@@ -2009,7 +2009,7 @@ Public Module Twitter
         Dim resStatus As String = ""
         Dim ret As String = ""
         ret = DirectCast(CreateSocket.GetWebResponse("http://tween.sourceforge.jp/Tween" + strVer + ".gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFile), String)
-        If resStatus.Length = 0 Then
+        If ret = "" OrElse resStatus.StartsWith("OK") Then
             '取得OKなら、続いてresources.dllダウンロード
             Return GetTweenResourcesDll(strVer)
         Else
@@ -2020,15 +2020,21 @@ Public Module Twitter
     Public Function GetTweenUpBinary() As String
         Dim resStatus As String = ""
         Dim ret As String = DirectCast(CreateSocket.GetWebResponse("http://tween.sourceforge.jp/TweenUp.gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileUp), String)
-        If resStatus.Length > 0 Then Return resStatus
-        Return ""
+        If ret = "" OrElse resStatus.StartsWith("OK") Then
+            Return ""
+        Else
+            Return resStatus
+        End If
     End Function
 
     Public Function GetTweenResourcesDll(ByVal strver As String) As String
         Dim resStatus As String = ""
         Dim ret As String = DirectCast(CreateSocket.GetWebResponse("http://tween.sourceforge.jp/TweenRes" + strver + ".gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileRes), String)
-        If resStatus.Length > 0 Then Return resStatus
-        Return ""
+        If ret = "" OrElse resStatus.StartsWith("OK") Then
+            Return ""
+        Else
+            Return resStatus
+        End If
     End Function
 
     Private Function CreateSocket() As MySocket
