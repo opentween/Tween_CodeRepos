@@ -27,6 +27,7 @@ Imports System.Text
 Imports System.Threading
 Imports System.IO
 Imports System.Text.RegularExpressions
+Imports System.Globalization
 
 Public Module Twitter
     Delegate Sub GetIconImageDelegate(ByVal post As PostClass)
@@ -512,6 +513,9 @@ Public Module Twitter
                         orgData = orgData.Replace("&lt;3", "♡")
                     End If
 
+                    'URL前処理（IDNデコードなど）
+                    orgData = PreProcessUrl(orgData)
+
                     '短縮URL解決処理（orgData書き換え）
                     orgData = ShortUrlResolve(orgData)
 
@@ -900,6 +904,9 @@ Public Module Twitter
                         Return "GetDirectMessage -> Err: Can't get body"
                     End Try
 
+                    'URL前処理（IDNデコードなど）
+                    orgData = PreProcessUrl(orgData)
+
                     '短縮URL解決処理（orgData書き換え）
                     orgData = ShortUrlResolve(orgData)
 
@@ -974,6 +981,51 @@ Public Module Twitter
         Finally
             GetTmSemaphore.Release()
         End Try
+    End Function
+
+    Private Function PreProcessUrl(ByVal orgData As String) As String
+        Dim posl1 As Integer
+        Dim posl2 As Integer = 0
+        Dim IDNConveter As IdnMapping = New IdnMapping()
+
+        Do While True
+            If orgData.IndexOf("<a href=""", posl2, StringComparison.Ordinal) > -1 Then
+                Dim urlStr As String = ""
+                'Try
+                ' IDN展開
+                posl1 = orgData.IndexOf("<a href=""", posl2, StringComparison.Ordinal)
+
+                If orgData.IndexOf("http", posl1, StringComparison.Ordinal) <> -1 Then
+                    posl1 = orgData.IndexOf("http", posl1, StringComparison.Ordinal)
+                    posl2 = orgData.IndexOf("""", posl1, StringComparison.Ordinal)
+                Else
+                    posl2 = orgData.IndexOf("""", posl1, StringComparison.Ordinal)
+                    Continue Do
+                End If
+
+                urlStr = orgData.Substring(posl1, posl2 - posl1)
+
+                Diagnostics.Debug.WriteLine(urlStr)
+
+                Dim Domain As String = (urlStr.Split(New String() {"/"}, StringSplitOptions.None))(2)
+                Dim AsciiDomain As String = IDNConveter.GetAscii(Domain)
+                Dim replacedUrl As String = urlStr.Replace("://" + Domain + "/", "://" + AsciiDomain + "/")
+
+                Diagnostics.Debug.WriteLine("domain " + Domain)
+                Diagnostics.Debug.WriteLine("asciidomain " + AsciiDomain)
+
+                Diagnostics.Debug.WriteLine("replaced " + replacedUrl)
+
+                orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + replacedUrl)
+
+                'Catch ex As Exception
+                'Throw ex
+                'End Try
+            Else
+                Exit Do
+            End If
+        Loop
+        Return orgData
     End Function
 
     Private Function ShortUrlResolve(ByVal orgData As String) As String
@@ -2064,7 +2116,7 @@ Public Module Twitter
         sw.WriteLine("    Public _parseSourceFrom As String = " + Chr(34) + _parseSourceFrom.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Public _parseSource2 As String = " + Chr(34) + _parseSource2.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("    Public _parseSourceTo As String = " + Chr(34) + _parseSourceTo.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
-        sw.WriteLine("    Public _removeClass As String = " + Chr(34) + _removeclass.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
+        sw.WriteLine("    Public _removeClass As String = " + Chr(34) + _removeClass.Replace(Chr(34), Chr(34) + Chr(34)) + Chr(34))
         sw.WriteLine("End Module")
 
         sw.Close()
