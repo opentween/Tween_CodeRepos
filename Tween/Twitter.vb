@@ -986,17 +986,18 @@ Public Module Twitter
     Private Function PreProcessUrl(ByVal orgData As String) As String
         Dim posl1 As Integer
         Dim posl2 As Integer = 0
+        Dim posTmp As Integer
         Dim IDNConveter As IdnMapping = New IdnMapping()
 
         Do While True
             If orgData.IndexOf("<a href=""", posl2, StringComparison.Ordinal) > -1 Then
                 Dim urlStr As String = ""
-                'Try
                 ' IDN展開
                 posl1 = orgData.IndexOf("<a href=""", posl2, StringComparison.Ordinal)
 
-                If orgData.IndexOf("http", posl1, StringComparison.Ordinal) <> -1 Then
-                    posl1 = orgData.IndexOf("http", posl1, StringComparison.Ordinal)
+                posTmp = orgData.IndexOf("http://", posl1, StringComparison.Ordinal)
+                If posTmp <> -1 Then
+                    posl1 = posTmp
                     posl2 = orgData.IndexOf("""", posl1, StringComparison.Ordinal)
                 Else
                     posl2 = orgData.IndexOf("""", posl1, StringComparison.Ordinal)
@@ -1005,22 +1006,13 @@ Public Module Twitter
 
                 urlStr = orgData.Substring(posl1, posl2 - posl1)
 
-                Diagnostics.Debug.WriteLine(urlStr)
-
+                ' ドメイン名をPunycode展開
                 Dim Domain As String = (urlStr.Split(New String() {"/"}, StringSplitOptions.None))(2)
                 Dim AsciiDomain As String = IDNConveter.GetAscii(Domain)
                 Dim replacedUrl As String = urlStr.Replace("://" + Domain + "/", "://" + AsciiDomain + "/")
 
-                Diagnostics.Debug.WriteLine("domain " + Domain)
-                Diagnostics.Debug.WriteLine("asciidomain " + AsciiDomain)
-
-                Diagnostics.Debug.WriteLine("replaced " + replacedUrl)
-
                 orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + replacedUrl)
 
-                'Catch ex As Exception
-                'Throw ex
-                'End Try
             Else
                 Exit Do
             End If
