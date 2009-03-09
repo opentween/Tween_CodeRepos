@@ -1736,13 +1736,15 @@ End Class
 Public NotInheritable Class SettingToConfig
     Inherits XmlConfiguration
 
+    Private Shared ReadOnly _filePath As String = Path.Combine(My.Application.Info.DirectoryPath, "TweenConf.xml")
+
     Public Sub New()
-        Me.FilePath = Path.Combine(My.Application.Info.DirectoryPath, "TweenConf.xml")
+        Me.FilePath = _filePath
     End Sub
 
     Public Shared Shadows Function Load() As SettingToConfig
         Dim config As SettingToConfig = DirectCast(New XmlSerializer(GetType(SettingToConfig)) _
-            .Deserialize(XmlReader.Create(config.FilePath)), SettingToConfig _
+            .Deserialize(XmlReader.Create(_filePath)), SettingToConfig _
         )
         Return config
     End Function
