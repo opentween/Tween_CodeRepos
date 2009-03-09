@@ -2601,7 +2601,6 @@ Public Class TweenMain
                     Exit For
                 End If
             Next
-            SaveConfigs()
         Else
             _tabDrag = False
         End If
