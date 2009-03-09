@@ -141,7 +141,6 @@ Partial Class TweenMain
         Me.InfoTwitterMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator7 = New System.Windows.Forms.ToolStripSeparator
         Me.AboutMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.DumpPostClassToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ContextMenuStripPostMode = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.ToolStripMenuItemUrlMultibyteSplit = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripMenuItemApiCommandEvasion = New System.Windows.Forms.ToolStripMenuItem
@@ -153,6 +152,9 @@ Partial Class TweenMain
         Me.SaveFileDialog1 = New System.Windows.Forms.SaveFileDialog
         Me.TimerRefreshIcon = New System.Windows.Forms.Timer(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog
+        Me.DebugModeToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.DumpPostClassToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.TraceOutToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripContainer1.BottomToolStripPanel.SuspendLayout()
         Me.ToolStripContainer1.ContentPanel.SuspendLayout()
         Me.ToolStripContainer1.TopToolStripPanel.SuspendLayout()
@@ -804,7 +806,7 @@ Partial Class TweenMain
         '
         'MenuItemHelp
         '
-        Me.MenuItemHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MatomeMenuItem, Me.ToolStripSeparator12, Me.OfficialMenuItem, Me.DLPageMenuItem, Me.ToolStripSeparator16, Me.VerUpMenuItem, Me.WedataMenuItem, Me.ToolStripSeparator14, Me.InfoTwitterMenuItem, Me.ToolStripSeparator7, Me.AboutMenuItem, Me.DumpPostClassToolStripMenuItem})
+        Me.MenuItemHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MatomeMenuItem, Me.ToolStripSeparator12, Me.OfficialMenuItem, Me.DLPageMenuItem, Me.ToolStripSeparator16, Me.VerUpMenuItem, Me.WedataMenuItem, Me.ToolStripSeparator14, Me.InfoTwitterMenuItem, Me.ToolStripSeparator7, Me.AboutMenuItem, Me.DebugModeToolStripMenuItem})
         Me.MenuItemHelp.Name = "MenuItemHelp"
         resources.ApplyResources(Me.MenuItemHelp, "MenuItemHelp")
         '
@@ -863,12 +865,6 @@ Partial Class TweenMain
         Me.AboutMenuItem.Name = "AboutMenuItem"
         resources.ApplyResources(Me.AboutMenuItem, "AboutMenuItem")
         '
-        'DumpPostClassToolStripMenuItem
-        '
-        Me.DumpPostClassToolStripMenuItem.CheckOnClick = True
-        Me.DumpPostClassToolStripMenuItem.Name = "DumpPostClassToolStripMenuItem"
-        resources.ApplyResources(Me.DumpPostClassToolStripMenuItem, "DumpPostClassToolStripMenuItem")
-        '
         'ContextMenuStripPostMode
         '
         Me.ContextMenuStripPostMode.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripMenuItemUrlMultibyteSplit, Me.ToolStripMenuItemApiCommandEvasion, Me.ToolStripMenuItemUrlAutoShorten})
@@ -918,6 +914,24 @@ Partial Class TweenMain
         'OpenFileDialog1
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
+        '
+        'DebugModeToolStripMenuItem
+        '
+        Me.DebugModeToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DumpPostClassToolStripMenuItem, Me.TraceOutToolStripMenuItem})
+        Me.DebugModeToolStripMenuItem.Name = "DebugModeToolStripMenuItem"
+        resources.ApplyResources(Me.DebugModeToolStripMenuItem, "DebugModeToolStripMenuItem")
+        '
+        'DumpPostClassToolStripMenuItem
+        '
+        Me.DumpPostClassToolStripMenuItem.CheckOnClick = True
+        Me.DumpPostClassToolStripMenuItem.Name = "DumpPostClassToolStripMenuItem"
+        resources.ApplyResources(Me.DumpPostClassToolStripMenuItem, "DumpPostClassToolStripMenuItem")
+        '
+        'TraceOutToolStripMenuItem
+        '
+        Me.TraceOutToolStripMenuItem.CheckOnClick = True
+        Me.TraceOutToolStripMenuItem.Name = "TraceOutToolStripMenuItem"
+        resources.ApplyResources(Me.TraceOutToolStripMenuItem, "TraceOutToolStripMenuItem")
         '
         'TweenMain
         '
@@ -1079,11 +1093,13 @@ Partial Class TweenMain
     Friend WithEvents ToolStripMenuItem10 As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents BlackFavAddToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ReTweetStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents DumpPostClassToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ButtonPostMode As System.Windows.Forms.Button
     Friend WithEvents ContextMenuStripPostMode As System.Windows.Forms.ContextMenuStrip
     Friend WithEvents ToolStripMenuItemUrlMultibyteSplit As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripMenuItemApiCommandEvasion As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripMenuItemUrlAutoShorten As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents DebugModeToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents DumpPostClassToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents TraceOutToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class
