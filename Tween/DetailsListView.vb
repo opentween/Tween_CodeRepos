@@ -78,15 +78,19 @@ Namespace TweenCustomControl
             End Get
             Set(ByVal value As Integer)
                 If value = MyBase.VirtualListSize Then Exit Property
-                If MyBase.VirtualListSize > 0 Then
+                If MyBase.VirtualListSize > 0 And value > 0 Then
                     Dim topIndex As Integer = 0
-                    If Me.TopItem Is Nothing Then
-                        topIndex = 0
+                    If MyBase.VirtualListSize < value Then
+                        If Me.TopItem Is Nothing Then
+                            topIndex = 0
+                        Else
+                            topIndex = Me.TopItem.Index
+                        End If
+                        topIndex = Math.Min(topIndex, Math.Abs(value - 1))
+                        Me.TopItem = Me.Items(topIndex)
                     Else
-                        topIndex = Me.TopItem.Index
+                        Me.TopItem = Me.Items(0)
                     End If
-                    topIndex = Math.Min(topIndex, Math.Abs(value - 1))
-                    Me.TopItem = Me.Items(topIndex)
                 End If
                 MyBase.VirtualListSize = value
             End Set
