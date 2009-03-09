@@ -305,6 +305,7 @@ Public Class TweenMain
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Me.Visible = False
 
+        If Not My.Application.CommandLineArgs.Count = 0 AndAlso My.Application.CommandLineArgs.Contains("/d") Then TraceFlag = True
         Me.StatusStrip1.Items.Add(StatusLabel)
 
         LoadIcons() ' アイコン読み込み
@@ -5393,17 +5394,17 @@ RETRY2:
         End If
     End Sub
 
-    Private Sub DumpPostClassToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DumpPostClassToolStripMenuItem.Click
+    Private Sub DumpPostClassToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
         If _curPost IsNot Nothing Then
             DispSelectedPost()
         End If
     End Sub
 
     Private Sub MenuItemHelp_DropDownOpening(ByVal sender As Object, ByVal e As System.EventArgs) Handles MenuItemHelp.DropDownOpening
-        If My.Computer.Keyboard.CapsLock AndAlso My.Computer.Keyboard.CtrlKeyDown AndAlso My.Computer.Keyboard.ShiftKeyDown Then
-            DumpPostClassToolStripMenuItem.Visible = True
+        If DebugBuild OrElse My.Computer.Keyboard.CapsLock AndAlso My.Computer.Keyboard.CtrlKeyDown AndAlso My.Computer.Keyboard.ShiftKeyDown Then
+            DebugModeToolStripMenuItem.Visible = True
         Else
-            DumpPostClassToolStripMenuItem.Visible = False
+            DebugModeToolStripMenuItem.Visible = False
         End If
     End Sub
 
@@ -5417,5 +5418,13 @@ RETRY2:
 
     Private Sub ContextMenuStripPostMode_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuStripPostMode.Opening
         ToolStripMenuItemUrlAutoShorten.Checked = SettingDialog.UrlConvertAuto
+    End Sub
+
+    Private Sub TraceOutToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TraceOutToolStripMenuItem.Click
+        If TraceOutToolStripMenuItem.Checked Then
+            TraceFlag = True
+        Else
+            TraceFlag = False
+        End If
     End Sub
 End Class

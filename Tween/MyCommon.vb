@@ -101,10 +101,17 @@ Public Module MyCommon
     End Enum
 
     Public Const Block As Object = Nothing
+    Public TraceFlag As Boolean = False
+
+#If DEBUG Then
+    Public DebugBuild As Boolean = True
+#Else
+    Public DebugBuild As Boolean = False
+#End If
 
     Public Sub TraceOut(ByVal Message As String)
         SyncLock LockObj
-            If My.Application.CommandLineArgs.Count = 0 OrElse My.Application.CommandLineArgs.Contains("/d") = False Then Exit Sub
+            If Not TraceFlag Then Exit Sub
             Dim now As DateTime = DateTime.Now
             Dim fileName As String = String.Format("TweenTrace-{0:0000}{1:00}{2:00}-{3:00}{4:00}{5:00}.log", now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second)
 
