@@ -141,6 +141,9 @@ Partial Class TweenMain
         Me.InfoTwitterMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator7 = New System.Windows.Forms.ToolStripSeparator
         Me.AboutMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.DebugModeToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.DumpPostClassToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.TraceOutToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ContextMenuStripPostMode = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.ToolStripMenuItemUrlMultibyteSplit = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripMenuItemApiCommandEvasion = New System.Windows.Forms.ToolStripMenuItem
@@ -152,9 +155,6 @@ Partial Class TweenMain
         Me.SaveFileDialog1 = New System.Windows.Forms.SaveFileDialog
         Me.TimerRefreshIcon = New System.Windows.Forms.Timer(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog
-        Me.DebugModeToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.DumpPostClassToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.TraceOutToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripContainer1.BottomToolStripPanel.SuspendLayout()
         Me.ToolStripContainer1.ContentPanel.SuspendLayout()
         Me.ToolStripContainer1.TopToolStripPanel.SuspendLayout()
@@ -865,6 +865,24 @@ Partial Class TweenMain
         Me.AboutMenuItem.Name = "AboutMenuItem"
         resources.ApplyResources(Me.AboutMenuItem, "AboutMenuItem")
         '
+        'DebugModeToolStripMenuItem
+        '
+        Me.DebugModeToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DumpPostClassToolStripMenuItem, Me.TraceOutToolStripMenuItem})
+        Me.DebugModeToolStripMenuItem.Name = "DebugModeToolStripMenuItem"
+        resources.ApplyResources(Me.DebugModeToolStripMenuItem, "DebugModeToolStripMenuItem")
+        '
+        'DumpPostClassToolStripMenuItem
+        '
+        Me.DumpPostClassToolStripMenuItem.CheckOnClick = True
+        Me.DumpPostClassToolStripMenuItem.Name = "DumpPostClassToolStripMenuItem"
+        resources.ApplyResources(Me.DumpPostClassToolStripMenuItem, "DumpPostClassToolStripMenuItem")
+        '
+        'TraceOutToolStripMenuItem
+        '
+        Me.TraceOutToolStripMenuItem.CheckOnClick = True
+        Me.TraceOutToolStripMenuItem.Name = "TraceOutToolStripMenuItem"
+        resources.ApplyResources(Me.TraceOutToolStripMenuItem, "TraceOutToolStripMenuItem")
+        '
         'ContextMenuStripPostMode
         '
         Me.ContextMenuStripPostMode.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripMenuItemUrlMultibyteSplit, Me.ToolStripMenuItemApiCommandEvasion, Me.ToolStripMenuItemUrlAutoShorten})
@@ -914,24 +932,6 @@ Partial Class TweenMain
         'OpenFileDialog1
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
-        '
-        'DebugModeToolStripMenuItem
-        '
-        Me.DebugModeToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DumpPostClassToolStripMenuItem, Me.TraceOutToolStripMenuItem})
-        Me.DebugModeToolStripMenuItem.Name = "DebugModeToolStripMenuItem"
-        resources.ApplyResources(Me.DebugModeToolStripMenuItem, "DebugModeToolStripMenuItem")
-        '
-        'DumpPostClassToolStripMenuItem
-        '
-        Me.DumpPostClassToolStripMenuItem.CheckOnClick = True
-        Me.DumpPostClassToolStripMenuItem.Name = "DumpPostClassToolStripMenuItem"
-        resources.ApplyResources(Me.DumpPostClassToolStripMenuItem, "DumpPostClassToolStripMenuItem")
-        '
-        'TraceOutToolStripMenuItem
-        '
-        Me.TraceOutToolStripMenuItem.CheckOnClick = True
-        Me.TraceOutToolStripMenuItem.Name = "TraceOutToolStripMenuItem"
-        resources.ApplyResources(Me.TraceOutToolStripMenuItem, "TraceOutToolStripMenuItem")
         '
         'TweenMain
         '
