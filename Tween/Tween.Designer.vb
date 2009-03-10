@@ -242,7 +242,6 @@ Partial Class TweenMain
         '
         Me.ContextMenuTabProperty.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AddTabMenuItem, Me.ToolStripSeparator20, Me.UreadManageMenuItem, Me.NotifyDispMenuItem, Me.SoundFileComboBox, Me.ToolStripSeparator18, Me.FilterEditMenuItem, Me.ToolStripSeparator19, Me.ClearTabMenuItem, Me.ToolStripSeparator11, Me.DeleteTabMenuItem})
         Me.ContextMenuTabProperty.Name = "ContextMenuStrip3"
-        Me.ContextMenuTabProperty.OwnerItem = Me.MenuItemTab
         Me.ContextMenuTabProperty.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
         resources.ApplyResources(Me.ContextMenuTabProperty, "ContextMenuTabProperty")
         '
