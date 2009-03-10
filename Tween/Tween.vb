@@ -5393,7 +5393,7 @@ RETRY2:
         End If
     End Sub
 
-    Private Sub DumpPostClassToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
+    Private Sub DumpPostClassToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DumpPostClassToolStripMenuItem.Click
         If _curPost IsNot Nothing Then
             DispSelectedPost()
         End If

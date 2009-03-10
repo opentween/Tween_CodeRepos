@@ -986,35 +986,26 @@ Public Module Twitter
     Private Function PreProcessUrl(ByVal orgData As String) As String
         Dim posl1 As Integer
         Dim posl2 As Integer = 0
-        Dim posTmp As Integer
         Dim IDNConveter As IdnMapping = New IdnMapping()
-        Dim protocol As String() = New String() {"http://", "https://", "ftp://"}
+        Dim href As String = "<a href="""
 
         Do While True
-            If orgData.IndexOf("<a href=""", posl2, StringComparison.Ordinal) > -1 Then
+            If orgData.IndexOf(href, posl2, StringComparison.Ordinal) > -1 Then
                 Dim urlStr As String = ""
                 ' IDN展開
-                posl1 = orgData.IndexOf("<a href=""", posl2, StringComparison.Ordinal)
+                posl1 = orgData.IndexOf(href, posl2, StringComparison.Ordinal)
+                posl1 += href.Length
+                posl2 = orgData.IndexOf("""", posl1, StringComparison.Ordinal)
+                urlStr = orgData.Substring(posl1, posl2 - posl1)
 
-                For Each prt As String In protocol
-                    posTmp = orgData.IndexOf(prt, posl1, StringComparison.Ordinal)
-                    If posTmp <> -1 Then Exit For
-                Next
-
-                If posTmp <> -1 Then
-                    posl1 = posTmp
-                    posl2 = orgData.IndexOf("""", posl1, StringComparison.Ordinal)
-                Else
-                    posl2 = orgData.IndexOf("""", posl1, StringComparison.Ordinal)
+                If Not urlStr.StartsWith("http://") AndAlso Not urlStr.StartsWith("https://") AndAlso Not urlStr.StartsWith("ftp://") Then
                     Continue Do
                 End If
-
-                urlStr = orgData.Substring(posl1, posl2 - posl1)
 
                 ' ドメイン名をPunycode展開
                 Dim Domain As String = urlStr.Split("/"c)(2)
                 Dim AsciiDomain As String = IDNConveter.GetAscii(Domain)
-                Dim replacedUrl As String = urlStr.Replace("://" + Domain + "/", "://" + AsciiDomain + "/")
+                Dim replacedUrl As String = urlStr.Replace("://" + Domain, "://" + AsciiDomain)
 
                 orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + replacedUrl)
 

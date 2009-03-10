@@ -2022,6 +2022,24 @@
   <data name="&gt;&gt;AboutMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;DebugModeToolStripMenuItem.Name" xml:space="preserve">
+    <value>DebugModeToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;DebugModeToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;DumpPostClassToolStripMenuItem.Name" xml:space="preserve">
+    <value>DumpPostClassToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;DumpPostClassToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;TraceOutToolStripMenuItem.Name" xml:space="preserve">
+    <value>TraceOutToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;TraceOutToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;ToolStripMenuItemUrlMultibyteSplit.Name" xml:space="preserve">
     <value>ToolStripMenuItemUrlMultibyteSplit</value>
   </data>
@@ -2081,24 +2099,6 @@
   </data>
   <data name="&gt;&gt;OpenFileDialog1.Type" xml:space="preserve">
     <value>System.Windows.Forms.OpenFileDialog, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;DebugModeToolStripMenuItem.Name" xml:space="preserve">
-    <value>DebugModeToolStripMenuItem</value>
-  </data>
-  <data name="&gt;&gt;DebugModeToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;DumpPostClassToolStripMenuItem.Name" xml:space="preserve">
-    <value>DumpPostClassToolStripMenuItem</value>
-  </data>
-  <data name="&gt;&gt;DumpPostClassToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;TraceOutToolStripMenuItem.Name" xml:space="preserve">
-    <value>TraceOutToolStripMenuItem</value>
-  </data>
-  <data name="&gt;&gt;TraceOutToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>TweenMain</value>
