@@ -37,6 +37,7 @@ Namespace TweenCustomControl
 
 
     Public NotInheritable Class DetailsListView
+        Inherits ListView
 
         Private changeBounds As Rectangle
         Private multiSelected As Boolean
@@ -59,11 +60,6 @@ Namespace TweenCustomControl
         End Event
 
         Public Sub New()
-
-            ' この呼び出しは、Windows フォーム デザイナで必要です。
-            InitializeComponent()
-
-            ' InitializeComponent() 呼び出しの後で初期化を追加します。
             View = Windows.Forms.View.Details
             FullRowSelect = True
             HideSelection = False
