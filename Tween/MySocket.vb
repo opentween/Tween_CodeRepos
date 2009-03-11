@@ -314,6 +314,7 @@ Public NotInheritable Class MySocket
 
     Private Shared Sub StreamToFile(ByVal InStream As Stream, ByVal Path As String, ByVal Encoding As String)
         Dim strm As Stream
+        Const BUFFERSIZE As Integer = 512 * 1024
         If Encoding.Equals("gzip") OrElse Encoding.Equals("deflate") Then
             strm = InStream
         Else
@@ -322,10 +323,11 @@ Public NotInheritable Class MySocket
         Using strm
             Using fs As New FileStream(Path, FileMode.Create, FileAccess.Write)
                 Dim b As Integer
+                Dim buffer(BUFFERSIZE) As Byte
                 While True
-                    b = strm.ReadByte()
-                    If b = -1 Then Exit While
-                    fs.WriteByte(Convert.ToByte(b))
+                    b = strm.Read(buffer, 0, BUFFERSIZE)
+                    If b = 0 Then Exit While
+                    fs.Write(buffer, 0, b)
                 End While
             End Using
         End Using
