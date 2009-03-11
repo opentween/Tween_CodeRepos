@@ -1004,7 +1004,15 @@ Public Module Twitter
 
                 ' ドメイン名をPunycode展開
                 Dim Domain As String = urlStr.Split("/"c)(2)
-                Dim AsciiDomain As String = IDNConveter.GetAscii(Domain)
+                Dim AsciiDomain As String
+
+                ' 変換時に例外が発生した場合はそのURLを無視する
+                Try
+                    AsciiDomain = IDNConveter.GetAscii(Domain)
+                Catch ex As Exception
+                    Continue Do
+                End Try
+
                 Dim replacedUrl As String = urlStr.Replace("://" + Domain, "://" + AsciiDomain)
 
                 orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + replacedUrl)
