@@ -22,6 +22,7 @@
 ' Boston, MA 02110-1301, USA.
 
 Imports System.Text
+Imports System.Globalization
 
 Public Module MyCommon
     Private ReadOnly LockObj As New Object
@@ -204,6 +205,33 @@ retry:
         End If
 
         Return result
+    End Function
+
+    ''' <summary>
+    ''' URLのドメイン名をPunycode展開します。
+    ''' <newpara>
+    ''' ドメイン名がIDNでない場合はそのまま返します。
+    ''' ドメインラベルの区切り文字はFULLSTOP(.、U002E)に置き換えられます。
+    ''' </newpara>
+    ''' </summary>
+    ''' <param name = input>展開対象のURL</param>
+    ''' <returns>IDNが含まれていた場合はPunycodeに展開したURLをを返します。Punycode展開時にエラーが発生した場合はNothingを返します。</returns>
+
+    Public Function IDNDecode(ByVal input As String) As String
+        Dim result As String = ""
+        Dim IDNConverter As New IdnMapping
+
+        ' ドメイン名をPunycode展開
+        Dim Domain As String = input.Split("/"c)(2)
+        Dim AsciiDomain As String
+
+        Try
+            AsciiDomain = IDNConverter.GetAscii(Domain)
+        Catch ex As Exception
+            Return Nothing
+        End Try
+
+        Return input.Replace("://" + Domain, "://" + AsciiDomain)
     End Function
 
     Public Sub MoveArrayItem(ByVal values() As Integer, ByVal idx_fr As Integer, ByVal idx_to As Integer)
