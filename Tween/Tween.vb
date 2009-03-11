@@ -4321,10 +4321,14 @@ RETRY2:
             Dim openUrlStr As String = ""
 
             If PostBrowser.Document.Links.Count = 1 Then
-                openUrlStr = urlEncodeMultibyteChar(PostBrowser.Document.Links(0).GetAttribute("href"))
+                Dim urlStr As String = IDNDecode(PostBrowser.Document.Links(0).GetAttribute("href"))
+                If urlStr Is Nothing Then Exit Sub
+                openUrlStr = urlEncodeMultibyteChar(urlStr)
             Else
                 For Each linkElm As System.Windows.Forms.HtmlElement In PostBrowser.Document.Links
-                    UrlDialog.AddUrl(urlEncodeMultibyteChar(linkElm.GetAttribute("href")))
+                    Dim urlStr As String = IDNDecode(linkElm.GetAttribute("href"))
+                    If urlStr Is Nothing Then Continue For
+                    UrlDialog.AddUrl(urlEncodeMultibyteChar(urlStr))
                 Next
                 If UrlDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
                     openUrlStr = UrlDialog.SelectedUrl

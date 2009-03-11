@@ -920,21 +920,10 @@ Public Module Twitter
                     Continue Do
                 End If
 
-                ' ドメイン名をPunycode展開
-                Dim Domain As String = urlStr.Split("/"c)(2)
-                Dim AsciiDomain As String
-
-                ' 変換時に例外が発生した場合はそのURLを無視する
-                Try
-                    AsciiDomain = IDNConveter.GetAscii(Domain)
-                Catch ex As Exception
-                    Continue Do
-                End Try
-
-                Dim replacedUrl As String = urlStr.Replace("://" + Domain, "://" + AsciiDomain)
+                Dim replacedUrl As String = IDNDecode(urlStr)
+                If replacedUrl Is Nothing Then Continue Do
 
                 orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + replacedUrl)
-
             Else
                 Exit Do
             End If
