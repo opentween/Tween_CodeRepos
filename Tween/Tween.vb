@@ -340,23 +340,11 @@ Public Class TweenMain
         ConvertConfig()
 
         ''設定読み出し
-        '_config = ConfigurationManager.OpenExeConfiguration(Application.ExecutablePath)
-        '_section = DirectCast(_config.GetSection("TwitterSetting"), ListSection)
-        'If _section Is Nothing Then
-        '    _section = New ListSection()
-        '    _config.Sections.Add("TwitterSetting", _section)
-        '    _section = DirectCast(_config.GetSection("TwitterSetting"), ListSection)
-        '    _section.SectionInformation.ForceSave = True
-        '    _section.ListElement = New ListElementCollection("Recent")
-        'End If
         'ユーザー名とパスワードの取得
         _username = _cfg.UserName
         _password = _cfg.Password
-        '_username = _section.UserName
-        '_password = _section.Password
         '新着バルーン通知のチェック状態設定
         NewPostPopMenuItem.Checked = _cfg.NewAllPop
-        'NewPostPopMenuItem.Checked = _section.NewAllPop     '全新着通知
 
         'フォント＆文字色＆背景色保持
         _fntUnread = _cfg.FontUnread
@@ -371,19 +359,6 @@ Public Class TweenMain
         _clTarget = _cfg.ColorTarget
         _clAtTarget = _cfg.ColorAtTarget
         _clAtFromTarget = _cfg.ColorAtFromTarget
-
-        '_fntUnread = _section.FontUnread                '未読フォント
-        '_clUnread = _section.ColorUnread                '未読文字色
-        '_fntReaded = _section.FontReaded                '既読フォント
-        '_clReaded = _section.ColorReaded                '既読文字色
-        '_clFav = _section.ColorFav                      'Fav文字色
-        '_clOWL = _section.ColorOWL                      '片思い文字色
-        '_fntDetail = _section.FontDetail                '詳細部フォント
-        '_clSelf = _section.ColorSelf                    '自発言背景色
-        '_clAtSelf = _section.ColorAtSelf                '自分宛返信背景色
-        '_clTarget = _section.ColorTarget                '選択発言者の他の発言背景色
-        '_clAtTarget = _section.ColorAtTarget            '選択発言の＠先
-        '_clAtFromTarget = _section.ColorAtFromTarget    '選択発言者への＠
 
         _brsForeColorUnread = New SolidBrush(_clUnread)
         _brsForeColorReaded = New SolidBrush(_clReaded)
@@ -410,40 +385,25 @@ Public Class TweenMain
         SettingDialog.NextPagesInt = _cfg.NextPages
         SettingDialog.MaxPostNum = _cfg.MaxPostNum
 
-        'SettingDialog.TimelinePeriodInt = _section.TimelinePeriod       'Recent&Reply取得間隔
-        'SettingDialog.DMPeriodInt = _section.DMPeriod                   'DM取得間隔
-        'SettingDialog.NextPageThreshold = _section.NextPageThreshold    '次頁以降を取得するための新着件数閾値
-        'SettingDialog.NextPagesInt = _section.NextPages                 '閾値を超えた場合の取得ページ数
-        'SettingDialog.MaxPostNum = _section.MaxPostNum                  '時間当たりPOST回数最大値
         '起動時読み込みページ数
         SettingDialog.ReadPages = _cfg.ReadPages
         SettingDialog.ReadPagesReply = _cfg.ReadPagesReply
         SettingDialog.ReadPagesDM = _cfg.ReadPagesDM
 
-        'SettingDialog.ReadPages = _section.ReadPages            'Recent
-        'SettingDialog.ReadPagesReply = _section.ReadPagesReply  'Reply
-        'SettingDialog.ReadPagesDM = _section.ReadPagesDM        'DM
         '起動時読み込み分を既読にするか。Trueなら既読として処理
         SettingDialog.Readed = _cfg.Read
-        'SettingDialog.Readed = _section.Readed
         '新着取得時のリストスクロールをするか。Trueならスクロールしない
         ListLockMenuItem.Checked = _cfg.ListLock
         SettingDialog.IconSz = _cfg.IconSize
-        'ListLockMenuItem.Checked = _section.ListLock
-        'SettingDialog.IconSz = _section.IconSize
         '文末ステータス
         SettingDialog.Status = _cfg.StatusText
-        'SettingDialog.Status = _section.StatusText
         '未読管理。Trueなら未読管理する
         SettingDialog.UnreadManage = _cfg.UnreadManage
-        'SettingDialog.UnreadManage = _section.UnreadManage
         'サウンド再生（タブ別設定より優先）
         SettingDialog.PlaySound = _cfg.PlaySound
-        'SettingDialog.PlaySound = _section.PlaySound
         PlaySoundMenuItem.Checked = SettingDialog.PlaySound
         '片思い表示。Trueなら片思い表示する
         SettingDialog.OneWayLove = _cfg.OneWayLove
-        'SettingDialog.OneWayLove = _section.OneWayLove
         'フォント＆文字色＆背景色
         SettingDialog.FontUnread = _fntUnread
         SettingDialog.ColorUnread = _clUnread
@@ -459,8 +419,6 @@ Public Class TweenMain
         SettingDialog.ColorAtFromTarget = _clAtFromTarget
         SettingDialog.NameBalloon = _cfg.NameBalloon
         SettingDialog.PostCtrlEnter = _cfg.PostCtrlEnter
-        'SettingDialog.NameBalloon = _section.NameBalloon
-        'SettingDialog.PostCtrlEnter = _section.PostCtrlEnter
         SettingDialog.UseAPI = True
         SettingDialog.HubServer = _cfg.HubServer
         SettingDialog.BrowserPath = _cfg.BrowserPath
@@ -490,40 +448,9 @@ Public Class TweenMain
         SettingDialog.UseUnreadStyle = _cfg.UseUnreadStyle
         SettingDialog.DefaultTimeOut = _cfg.DefaultTimeOut
         SettingDialog.ProtectNotInclude = _cfg.ProtectNotInclude
-
+        SettingDialog.PlaySound = _cfg.PlaySound
         SettingDialog.DateTimeFormat = _cfg.DateTimeFormat
 
-
-        'SettingDialog.HubServer = _section.HubServer
-        'SettingDialog.BrowserPath = _section.BrowserPath
-        'SettingDialog.CheckReply = _section.CheckReply
-        'SettingDialog.UseRecommendStatus = _section.UseRecommendStatus
-        'SettingDialog.DispUsername = _section.DispUsername
-        'SettingDialog.CloseToExit = _section.CloseToExit
-        'SettingDialog.MinimizeToTray = _section.MinimizeToTray
-        'SettingDialog.DispLatestPost = _section.DispLatestPost
-        'SettingDialog.SortOrderLock = _section.SortOrderLock
-        'SettingDialog.TinyUrlResolve = _section.TinyURLResolve
-        'SettingDialog.ProxyType = _section.ProxyType
-        'SettingDialog.ProxyAddress = _section.ProxyAddress
-        'SettingDialog.ProxyPort = _section.ProxyPort
-        'SettingDialog.ProxyUser = _section.ProxyUser
-        'SettingDialog.ProxyPassword = _section.ProxyPassword
-        'SettingDialog.PeriodAdjust = _section.PeriodAdjust
-        'SettingDialog.StartupVersion = _section.StartupVersion
-        'SettingDialog.StartupKey = _section.StartupKey
-        'SettingDialog.StartupFollowers = _section.StartupFollowers
-        'SettingDialog.RestrictFavCheck = _section.RestrictFavCheck
-        'SettingDialog.AlwaysTop = _section.AlwaysTop
-        'SettingDialog.UrlConvertAuto = _section.UrlConvertAuto
-        'SettingDialog.OutputzEnabled = _section.Outputz
-        'SettingDialog.OutputzKey = _section.OutputzKey
-        'SettingDialog.OutputzUrlmode = _section.OutputzUrlmode
-        'SettingDialog.UseUnreadStyle = _section.UseUnreadStyle
-        'SettingDialog.DefaultTimeOut = _section.DefaultTimeOut
-        'SettingDialog.ProtectNotInclude = _section.ProtectNotInclude
-
-        'SettingDialog.DateTimeFormat = _section.DateTimeFormat
         '書式指定文字列エラーチェック
         Try
             If DateTime.Now.ToString(SettingDialog.DateTimeFormat).Length = 0 Then
@@ -617,19 +544,15 @@ Public Class TweenMain
 
         'ウィンドウ設定
         Me.ClientSize = _cfg.FormSize
-        'Me.ClientSize = _section.FormSize           'サイズ設定
         _mySize = Me.ClientSize                     'サイズ保持（最小化・最大化されたまま終了した場合の対応用）
         Me.Location = _cfg.FormLocation
-        'Me.Location = _section.FormLocation         '位置設定
         _myLoc = Me.Location                        '位置保持（最小化・最大化されたまま終了した場合の対応用）
         Me.TopMost = SettingDialog.AlwaysTop
         _mySpDis = _cfg.SplitterDistance
         _mySpDis2 = _cfg.StatusTextHeight
         MultiLineMenuItem.Checked = _cfg.StatusMultiline
-        '_mySpDis = _section.SplitterDistance
-        '_mySpDis2 = _section.StatusTextHeight
-        'MultiLineMenuItem.Checked = _section.StatusMultiline
         Me.Tween_ClientSizeChanged(Me, Nothing)
+        PlaySoundMenuItem.Checked = SettingDialog.PlaySound
 
         '全新着通知のチェック状態により、Reply＆DMの新着通知有効無効切り替え（タブ別設定にするため削除予定）
         If SettingDialog.UnreadManage = False Then
@@ -664,7 +587,6 @@ Public Class TweenMain
 
         ''''''''''''''''''''''''''''''''''''''''
         _statuses.SortOrder = DirectCast(_cfg.SortOrder, System.Windows.Forms.SortOrder)
-        '_statuses.SortOrder = DirectCast(_section.SortOrder, System.Windows.Forms.SortOrder)
         Dim mode As IdComparerClass.ComparerMode
         Select Case _cfg.SortColumn
             Case 0, 5, 6    '0:アイコン,5:未読マーク,6:プロテクト・フィルターマーク
@@ -684,7 +606,6 @@ Public Class TweenMain
         _statuses.SortMode = mode
         ''''''''''''''''''''''''''''''''''''''''
 
-        '_iconCol = False
         Select Case SettingDialog.IconSz
             Case IconSizes.IconNone
                 _iconSz = 0
@@ -724,76 +645,15 @@ Public Class TweenMain
 
         StatusLabel.Text = My.Resources.Form1_LoadText1       '画面右下の状態表示を変更
         StatusLabelUrl.Text = ""            '画面左下のリンク先URL表示部を初期化
-        'PostedText.Text = ""
         PostBrowser.DocumentText = ""       '発言詳細部初期化
-        'PostedText.RemoveLinks()
         NameLabel.Text = ""                 '発言詳細部名前ラベル初期化
         DateTimeLabel.Text = ""             '発言詳細部日時ラベル初期化
 
         '<<<<<<<<タブ関連>>>>>>>
-        'Recentタブ
-        'Timeline.SmallImageList = TIconSmallList
-        'listViewItemSorter = New ListViewItemComparer
-        'listViewItemSorter.ColumnModes = New ListViewItemComparer.ComparerMode() _
-        '        {ListViewItemComparer.ComparerMode.None, _
-        '         ListViewItemComparer.ComparerMode.String, _
-        '         ListViewItemComparer.ComparerMode.String, _
-        '         ListViewItemComparer.ComparerMode.DateTime, _
-        '         ListViewItemComparer.ComparerMode.String}
-        'listViewItemSorter.Column = _section.SortColumn
-        'listViewItemSorter.Order = DirectCast(_section.SortOrder, System.Windows.Forms.SortOrder)
-
-        '''Replyタブ
-        'If _section.ListElement.Item("Reply") Is Nothing Then
-        '    _section.ListElement.Add(New ListElement("Reply"))
-        'End If
-
-        '''DirectMsgタブ
-        'If _section.ListElement.Item("Direct") Is Nothing Then
-        '    _section.ListElement.Add(New ListElement("Direct"))
-        'End If
-
         _statuses.Tabs = _cfg.Tabs
         For Each tn As String In _statuses.Tabs.Keys
             If Not AddNewTab(tn, True) Then Throw New Exception("タブ作成エラー")
         Next
-        'For idx As Integer = 0 To _section.ListElement.Count - 1
-        '    Dim name As String = _section.ListElement(idx).Name
-        '    Dim tb As New TabClass
-        '    tb.Notify = _section.ListElement(idx).Notify
-        '    tb.SoundFile = _section.ListElement(idx).SoundFile
-        '    tb.UnreadManage = _section.ListElement(idx).UnreadManage
-        '    If Not AddNewTab(name, True) Then Throw New Exception("タブ作成エラー") 'GUI部品作成
-        '    For Each flt As Tween.SelectedUser In _section.SelectedUser
-        '        If flt.TabName = name Then
-        '            Dim bflt() As String = flt.BodyFilter.Split(Chr(32))
-        '            Dim body As New List(Of String)
-        '            For Each tmpFlt As String In bflt
-        '                Try
-        '                    Dim dmy As Boolean = False
-        '                    If flt.RegexEnable Then
-        '                        ' 正規表現が正しいかどうかチェック 不正な場合はArgumentExceptionが発生するのでフィルタを無視する
-        '                        Dim rx As Regex = New Regex(tmpFlt)
-        '                        dmy = rx.IsMatch(tmpFlt)
-        '                    End If
-        '                    ' フィルタ追加 ArgumentExceptionが発生した場合はCatchされるのでここに来ない
-        '                    If tmpFlt.Trim <> "" Then body.Add(tmpFlt.Trim)
-        '                Catch ex As ArgumentException
-        '                    ' ArgumentExceptionが発生した場合は該当フィルタを無視
-        '                End Try
-        '            Next
-        '            tb.AddFilter(New FiltersClass(flt.IdFilter, _
-        '                    body, _
-        '                    flt.SearchBoth, _
-        '                    flt.MoveFrom, _
-        '                    flt.SetMark, _
-        '                    flt.UrlSearch, _
-        '                    flt.RegexEnable, _
-        '                    name))
-        '        End If
-        '    Next
-        '    _statuses.AddTab(name, tb)
-        'Next
 
         JumpUnreadMenuItem.ShortcutKeyDisplayString = "Space"
         CopySTOTMenuItem.ShortcutKeyDisplayString = "Ctrl+C"
@@ -2230,6 +2090,7 @@ Public Class TweenMain
                     ReadedStripMenuItem.Enabled = True
                     UnreadStripMenuItem.Enabled = True
                 End If
+                PlaySoundMenuItem.Checked = SettingDialog.PlaySound
                 _fntUnread = SettingDialog.FontUnread
                 _clUnread = SettingDialog.ColorUnread
                 _fntReaded = SettingDialog.FontReaded
@@ -3720,28 +3581,6 @@ RETRY2:
                 _cfg.PlaySound = SettingDialog.PlaySound
                 _cfg.OneWayLove = SettingDialog.OneWayLove
 
-                '_section.FormSize = _mySize
-                '_section.FormLocation = _myLoc
-                '_section.SplitterDistance = _mySpDis
-                '_section.StatusMultiline = StatusText.Multiline
-                '_section.StatusTextHeight = _mySpDis2
-                '_section.UserName = _username
-                '_section.Password = _password
-                '_section.NextPageThreshold = SettingDialog.NextPageThreshold
-                '_section.NextPages = SettingDialog.NextPagesInt
-                '_section.TimelinePeriod = SettingDialog.TimelinePeriodInt
-                '_section.DMPeriod = SettingDialog.DMPeriodInt
-                '_section.MaxPostNum = SettingDialog.MaxPostNum
-                '_section.ReadPages = SettingDialog.ReadPages
-                '_section.ReadPagesReply = SettingDialog.ReadPagesReply
-                '_section.ReadPagesDM = SettingDialog.ReadPagesDM
-                '_section.Readed = SettingDialog.Readed
-                '_section.IconSize = SettingDialog.IconSz
-                '_section.StatusText = SettingDialog.Status
-                '_section.UnreadManage = SettingDialog.UnreadManage
-                '_section.PlaySound = SettingDialog.PlaySound
-                '_section.OneWayLove = SettingDialog.OneWayLove
-
                 _cfg.FontUnread = _fntUnread
                 _cfg.ColorUnread = _clUnread
                 _cfg.FontRead = _fntReaded
@@ -3754,20 +3593,6 @@ RETRY2:
                 _cfg.ColorTarget = _clTarget
                 _cfg.ColorAtTarget = _clAtTarget
                 _cfg.ColorAtFromTarget = _clAtFromTarget
-
-
-                '_section.FontUnread = _fntUnread
-                '_section.ColorUnread = _clUnread
-                '_section.FontReaded = _fntReaded
-                '_section.ColorReaded = _clReaded
-                '_section.FontDetail = _fntDetail
-                '_section.ColorFav = _clFav
-                '_section.ColorOWL = _clOWL
-                '_section.ColorSelf = _clSelf
-                '_section.ColorAtSelf = _clAtSelf
-                '_section.ColorTarget = _clTarget
-                '_section.ColorAtTarget = _clAtTarget
-                '_section.ColorAtFromTarget = _clAtFromTarget
 
                 _cfg.NameBalloon = SettingDialog.NameBalloon
                 _cfg.PostCtrlEnter = SettingDialog.PostCtrlEnter
@@ -3802,39 +3627,6 @@ RETRY2:
                 _cfg.DefaultTimeOut = SettingDialog.DefaultTimeOut
                 _cfg.ProtectNotInclude = SettingDialog.ProtectNotInclude
 
-                '_section.NameBalloon = SettingDialog.NameBalloon
-                '_section.PostCtrlEnter = SettingDialog.PostCtrlEnter
-                '_section.UseAPI = True
-                '_section.HubServer = SettingDialog.HubServer
-                '_section.BrowserPath = SettingDialog.BrowserPath
-                '_section.CheckReply = SettingDialog.CheckReply
-                '_section.UseRecommendStatus = SettingDialog.UseRecommendStatus
-                '_section.DispUsername = SettingDialog.DispUsername
-                '_section.MinimizeToTray = SettingDialog.MinimizeToTray
-                '_section.CloseToExit = SettingDialog.CloseToExit
-                '_section.DispLatestPost = SettingDialog.DispLatestPost
-                '_section.SortOrderLock = SettingDialog.SortOrderLock
-                '_section.TinyURLResolve = SettingDialog.TinyUrlResolve
-                '_section.ProxyType = SettingDialog.ProxyType
-                '_section.ProxyAddress = SettingDialog.ProxyAddress
-                '_section.ProxyPort = SettingDialog.ProxyPort
-                '_section.ProxyUser = SettingDialog.ProxyUser
-                '_section.ProxyPassword = SettingDialog.ProxyPassword
-                '_section.PeriodAdjust = SettingDialog.PeriodAdjust
-                '_section.StartupVersion = SettingDialog.StartupVersion
-                '_section.StartupKey = SettingDialog.StartupKey
-                '_section.StartupFollowers = SettingDialog.StartupFollowers
-                '_section.RestrictFavCheck = SettingDialog.RestrictFavCheck
-                '_section.AlwaysTop = SettingDialog.AlwaysTop
-                '_section.UrlConvertAuto = SettingDialog.UrlConvertAuto
-                '_section.Outputz = SettingDialog.OutputzEnabled
-                '_section.OutputzKey = SettingDialog.OutputzKey
-                '_section.OutputzUrlmode = SettingDialog.OutputzUrlmode
-                '_section.UseUnreadStyle = SettingDialog.UseUnreadStyle
-                '_section.DateTimeFormat = SettingDialog.DateTimeFormat
-                '_section.DefaultTimeOut = SettingDialog.DefaultTimeOut
-                '_section.ProtectNotInclude = SettingDialog.ProtectNotInclude
-
                 _cfg.SortOrder = _statuses.SortOrder
                 Select Case _statuses.SortMode
                     Case IdComparerClass.ComparerMode.Nickname  'ニックネーム
@@ -3849,56 +3641,12 @@ RETRY2:
                         _cfg.SortColumn = 7
                 End Select
 
-
-                '_section.SortOrder = _statuses.SortOrder
-                'Select Case _statuses.SortMode
-                '    Case IdComparerClass.ComparerMode.Nickname  'ニックネーム
-                '        _section.SortColumn = 1
-                '    Case IdComparerClass.ComparerMode.Data  '本文
-                '        _section.SortColumn = 2
-                '    Case IdComparerClass.ComparerMode.Id  '時刻=発言Id
-                '        _section.SortColumn = 3
-                '    Case IdComparerClass.ComparerMode.Name  '名前
-                '        _section.SortColumn = 4
-                '    Case IdComparerClass.ComparerMode.Source  'Source
-                '        _section.SortColumn = 7
-                'End Select
-
-
                 Dim cnt As Integer = 0
                 If ListTab IsNot Nothing AndAlso _
                    ListTab.TabPages IsNot Nothing AndAlso _
                    ListTab.TabPages.Count > 0 Then
                     _cfg.Tabs = _statuses.Tabs
-                    '_section.ListElement.Clear()
-                    '_section.SelectedUser.Clear()
-                    'For Each tp As TabPage In ListTab.TabPages
-                    '    Dim tabName As String = tp.Text
-                    '    _section.ListElement.Add(New ListElement(tabName))
-                    '    Dim tab As TabClass = _statuses.Tabs(tabName)
-                    '    _section.ListElement(tabName).Notify = tab.Notify
-                    '    _section.ListElement(tabName).SoundFile = tab.SoundFile
-                    '    _section.ListElement(tabName).UnreadManage = tab.UnreadManage
-                    '    For Each fc As FiltersClass In tab.GetFilters
-                    '        Dim bf As String = ""
-                    '        For Each bfs As String In fc.BodyFilter
-                    '            bf += " " + bfs
-                    '        Next
-                    '        Dim su As New SelectedUser(cnt.ToString)
-                    '        cnt += 1
-                    '        su.BodyFilter = bf
-                    '        su.IdFilter = fc.NameFilter
-                    '        su.MoveFrom = fc.MoveFrom
-                    '        su.SetMark = fc.SetMark
-                    '        su.SearchBoth = fc.SearchBoth
-                    '        su.UrlSearch = fc.SearchUrl
-                    '        su.RegexEnable = fc.UseRegex
-                    '        su.TabName = tabName
-                    '        _section.SelectedUser.Add(su)
-                    '    Next
-                    'Next
                 End If
-                '_config.Save()
                 _cfg.Save()
             End SyncLock
         End If
@@ -4043,7 +3791,6 @@ RETRY2:
             i = ListTab.TabPages.Count - 1
         End If
 
-        'Dim ts As TabStructure = DirectCast(e.Data.GetData(GetType(TabStructure)), Tween.TabStructure)
         Dim tp As TabPage = DirectCast(e.Data.GetData(GetType(TabPage)), TabPage)
         If tp.Text = tn Then Exit Sub
 

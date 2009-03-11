@@ -43,7 +43,6 @@ Public Module Twitter
     Private ReadOnly LockObj As New Object
     Private GetTmSemaphore As New Threading.Semaphore(8, 8)
 
-    'Private links As New List(Of Long)
     Private follower As New Collections.Specialized.StringCollection
     Private tmpFollower As New Collections.Specialized.StringCollection
 
@@ -70,8 +69,6 @@ Public Module Twitter
 
     Private _hubServer As String
     Private _defaultTimeOut As Integer      ' MySocketクラスへ渡すタイムアウト待ち時間（秒単位　ミリ秒への換算はMySocketクラス側で行う）
-
-    'Private _owner As TweenMain
 
     '共通で使用する状態
     Private _authKey As String              'StatusUpdate、発言削除で使用
@@ -127,60 +124,8 @@ Public Module Twitter
     Private Const _GetFollowers As String = "/statuses/followers.xml"
     Private Const _ShowStatus As String = "/statuses/show/"
 
-
     '''Wedata対応
     Private Const wedataUrl As String = "http://wedata.net/databases/Tween/items.json"
-    'テーブル（未使用）
-    'Private Const tbGetMsgDM As String = "GetMsgDM"
-    'Private Const tbSplitDM As String = "SplitDM"
-    'Private Const tbFollower As String = "Follower"
-    'Private Const tbGetStar As String = "GetStar"
-    'Private Const tbIsReply As String = "IsReply"
-    'Private Const tbGetDate As String = "GetDate"
-    'Private Const tbGetMsg As String = "GetMsg"
-    'Private Const tbIsProtect As String = "IsProtect"
-    'Private Const tbGetImagePath As String = "GetImagePath"
-    'Private Const tbGetNick As String = "GetNick"
-    'Private Const tbGetName As String = "GetName"
-    ''Private Const tbGetSiv As String = "GetSiv"
-    'Private Const tbStatusID As String = "StatusID"
-    'Private Const tbSplitPostRecent As String = "SplitPostRecent"
-    'Private Const tbAuthKey As String = "AuthKey"
-    'Private Const tbInfoTwitter As String = "InfoTwitter"
-    'Private Const tbSplitPostReply As String = "SplitPostReply"
-    'Private Const tbGetDMCount As String = "GetDMCount"
-    'Private Const tbRemoveClass As String = "RemoveClass"
-    ''属性
-    'Private Const tbTagFrom As String = "tagfrom"
-    'Private Const tbTagTo As String = "tagto"
-    'Private Const tbTag As String = "tag"
-    'Private Const tbTagMbrFrom As String = "tagmbrfrom"
-    'Private Const tbTagMbrFrom2 As String = "tagmbrfrom2"
-    'Private Const tbTagMbrTo As String = "tagmbrto"
-    'Private Const tbTagStatus As String = "status"
-    'Private Const tbTagJpnFrom As String = "tagjpnfrom"
-    'Private Const tbTagEngFrom As String = "tagengfrom"
-
-    'Public Sub New(ByVal Username As String, _
-    '            ByVal Password As String, _
-    '            ByVal ProxyType As ProxyTypeEnum, _
-    '            ByVal ProxyAddress As String, _
-    '            ByVal ProxyPort As Integer, _
-    '            ByVal ProxyUser As String, _
-    '            ByVal ProxyPassword As String)
-    '    _mySock = New MySocket("UTF-8", Username, Password, ProxyType, ProxyAddress, ProxyPort, ProxyUser, ProxyPassword)
-    '    _uid = Username
-    '    _pwd = Password
-    '    'follower.Add(_uid)
-    '    _proxyType = ProxyType
-    '    _proxyAddress = ProxyAddress
-    '    _proxyPort = ProxyPort
-    '    _proxyUser = ProxyUser
-    '    _proxyPassword = ProxyPassword
-
-    '    '発言保持クラス
-    '    _statuses = TabInformations.GetInstance()
-    'End Sub
 
     Private Function SignIn() As String
         If _endingFlag Then Return ""
@@ -773,33 +718,6 @@ Public Module Twitter
             Dim pos1 As Integer
             Dim pos2 As Integer
 
-            ''Followerの抽出（Webのあて先リストがおかしいのでコメントアウト）
-            'If page = 1 And gType = GetTypes.GET_DMRCV Then
-            '    pos1 = retMsg.IndexOf(_followerList)
-            '    If pos1 = -1 Then
-            '        If follower.Count = 0 Then follower.Add(_uid)
-            '        '取得失敗
-            '        _signed = False
-            '        Return "GetDirectMessage -> Err: Busy(3)"
-            '    End If
-            '    follower.Clear()
-            '    follower.Add(_uid)
-            '    pos1 += _followerList.Length
-            '    pos1 = retMsg.IndexOf(_followerMbr1, pos1)
-            '    Try
-            '        Do While pos1 > -1
-            '            pos2 = retMsg.IndexOf(_followerMbr2, pos1)
-            '            pos1 = retMsg.IndexOf(_followerMbr3, pos2)
-            '            follower.Add(retMsg.Substring(pos2 + _followerMbr2.Length, pos1 - pos2 - _followerMbr2.Length))
-            '            pos1 = retMsg.IndexOf(_followerMbr1, pos1)
-            '        Loop
-            '        follower.RemoveAt(follower.Count - 1)
-            '    Catch ex As Exception
-            '        _signed = False
-            '        Return "GetDirectMessage -> Err: Can't get followers"
-            '    End Try
-            'End If
-
             '各メッセージに分割可能か？
             pos1 = retMsg.IndexOf(_splitDM, StringComparison.Ordinal)
             If pos1 = -1 Then
@@ -1117,16 +1035,6 @@ Public Module Twitter
             Exit Sub
         End If
 
-        'Dim dlgt As New TweenMain.GetImageIndexDelegate(AddressOf _owner.GetImageIndex)
-        'Try
-        '    If Not _endingFlag Then
-        '        post.ImageIndex = DirectCast(_owner.Invoke(dlgt, post), Integer)
-        '    Else
-        '        Exit Sub
-        '    End If
-        'Catch ex As Exception
-        '    Exit Sub
-        'End Try
         SyncLock LockObj
             post.ImageIndex = _lIcon.Images.IndexOfKey(post.ImageUrl)
         End SyncLock
@@ -1152,16 +1060,6 @@ Public Module Twitter
             g.DrawImage(img, 0, 0, _iconSz, _iconSz)
         End Using
 
-        'Dim dlgt2 As New TweenMain.SetImageDelegate(AddressOf _owner.SetImage)
-        'Try
-        '    If Not _endingFlag Then
-        '        _owner.Invoke(dlgt2, New Object() {post, img, bmp2})
-        '    Else
-        '        Exit Sub
-        '    End If
-        'Catch ex As Exception
-        '    Exit Sub
-        'End Try
         SyncLock LockObj
             post.ImageIndex = _lIcon.Images.IndexOfKey(post.ImageUrl)
             If post.ImageIndex = -1 Then
@@ -1390,7 +1288,11 @@ Public Module Twitter
         Return ""
     End Function
 
+#Region "follower取得"
     Delegate Function GetFollowersDelegate(ByVal Query As Integer) As String
+    Private semaphore As Threading.Semaphore = Nothing
+    Private threadNum As Integer = 0
+    Private _threadErr As Boolean = False
 
     Private Function GetFollowersMethod(ByVal Query As Integer) As String
         Dim resStatus As String = ""
@@ -1399,7 +1301,7 @@ Public Module Twitter
         Try
             resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _GetFollowers + _pageQry + Query.ToString, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
             If resStatus.StartsWith("OK") = False Then
-                IsThreadError = True
+                _threadErr = True
                 Return resStatus
             End If
             Using rd As Xml.XmlTextReader = New Xml.XmlTextReader(New System.IO.StringReader(resMsg))
@@ -1420,7 +1322,7 @@ Public Module Twitter
                 End While
             End Using
         Catch ex As XmlException
-            IsThreadError = True
+            _threadErr = True
             TraceOut("NG(XmlException)")
             Return "NG(XmlException)"
         End Try
@@ -1428,28 +1330,17 @@ Public Module Twitter
         Return ""
     End Function
 
-    Private _threadErr As Boolean = False
-
-    Private Property IsThreadError() As Boolean
-        Get
-            Return _threadErr
-        End Get
-        Set(ByVal value As Boolean)
-            _threadErr = value
-        End Set
-    End Property
-
     Private Sub GetFollowersCallback(ByVal ar As IAsyncResult)
         Dim dlgt As GetFollowersDelegate = DirectCast(ar.AsyncState, GetFollowersDelegate)
 
         Try
             Dim ret As String = dlgt.EndInvoke(ar)
-            If Not ret.Equals("") AndAlso Not IsThreadError Then
+            If Not ret.Equals("") AndAlso Not _threadErr Then
                 TraceOut(ret)
-                IsThreadError = True
+                _threadErr = True
             End If
         Catch ex As Exception
-            IsThreadError = True
+            _threadErr = True
             ExceptionOut(ex)
         Finally
             semaphore.Release()                     ' セマフォから出る
@@ -1459,7 +1350,6 @@ Public Module Twitter
     End Sub
 
     ' キャッシュの検証と読み込み　-1を渡した場合は読み込みのみ行う（APIエラーでFollowersCountが取得できなかったとき）
-
     Private Function ValidateCache(ByVal _FollowersCount As Integer) As Integer
         Dim CacheFileName As String = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "FollowersCache")
 
@@ -1516,10 +1406,7 @@ Public Module Twitter
 
     End Sub
 
-    Private semaphore As Threading.Semaphore = Nothing
-    Private threadNum As Integer = 0
-
-    Private Function doGetFollowers(ByVal CacheInvalidate As Boolean) As String
+    Public Function GetFollowers(ByVal CacheInvalidate As Boolean) As String
 #If DEBUG Then
         Dim sw As New System.Diagnostics.Stopwatch
         sw.Start()
@@ -1532,7 +1419,7 @@ Public Module Twitter
         Dim followersCount As Integer = 0
 
         Interlocked.Exchange(threadNum, 0)      ' スレッド数カウンタ初期化
-        IsThreadError = False
+        _threadErr = False
         follower.Clear()
         tmpFollower.Clear()
         follower.Add(_uid.ToLower())
@@ -1604,7 +1491,7 @@ Public Module Twitter
 
         ' エラーが発生しているならFollowersリストクリア
 
-        If IsThreadError Then
+        If _threadErr Then
             ' エラーが発生しているならFollowersリストクリア
             SyncLock LockObj
                 follower.Clear()
@@ -1624,9 +1511,7 @@ Public Module Twitter
         Return ""
     End Function
 
-    Public Function GetFollowers(ByVal CacheInvalidate As Boolean) As String
-        Return doGetFollowers(CacheInvalidate)
-    End Function
+#End Region
 
     Public Sub RefreshOwl()
         If follower.Count > 1 Then TabInformations.GetInstance.RefreshOwl(follower)
@@ -1997,6 +1882,7 @@ Public Module Twitter
         Return ret
     End Function
 
+#Region "バージョンアップ"
     Public Function GetVersionInfo() As String
         Dim resStatus As String = ""
         Dim ret As String = DirectCast(CreateSocket.GetWebResponse("http://tween.sourceforge.jp/version2.txt?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus), String)
@@ -2035,16 +1921,11 @@ Public Module Twitter
             Return resStatus
         End If
     End Function
+#End Region
 
     Private Function CreateSocket() As MySocket
         Return New MySocket("UTF-8", _uid, _pwd, _proxyType, _proxyAddress, _proxyPort, _proxyUser, _proxyPassword, _defaultTimeOut)
     End Function
-
-    'Public WriteOnly Property Owner() As TweenMain
-    '    Set(ByVal value As TweenMain)
-    '        _owner = value
-    '    End Set
-    'End Property
 
     Public WriteOnly Property ListIcon() As ImageList
         Set(ByVal value As ImageList)
@@ -2067,6 +1948,7 @@ Public Module Twitter
         End Set
     End Property
 
+#Region "デバッグモード解析キー自動生成"
 #If DEBUG Then
     Public Sub GenerateAnalyzeKey()
         '解析キー情報部分のソースをwedataから作成する
@@ -2126,4 +2008,5 @@ Public Module Twitter
 
     End Sub
 #End If
+#End Region
 End Module
