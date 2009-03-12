@@ -44,16 +44,18 @@ Namespace My
         End Sub
 
         Private Sub MyApplication_Startup(ByVal sender As Object, ByVal e As Microsoft.VisualBasic.ApplicationServices.StartupEventArgs) Handles Me.Startup
-            Dim filename As String = Application.Info.DirectoryPath + "\" + Application.Info.ProductName + ".exe.config"
-            Try
-                Using config As New IO.StreamReader(filename)
-                    Dim xmlDoc As New Xml.XmlDocument
-                    xmlDoc.Load(config)
-                    ChangeUICulture(xmlDoc.DocumentElement.Item("TwitterSetting").GetAttribute("culturecode"))
-                End Using
-            Catch ex As Exception
+            Dim filename As String = System.IO.Path.Combine(Application.Info.DirectoryPath, "TweenConf.xml")
+            If IO.File.Exists(filename) Then
+                Try
+                    Using config As New IO.StreamReader(filename)
+                        Dim xmlDoc As New Xml.XmlDocument
+                        xmlDoc.Load(config)
+                        ChangeUICulture(xmlDoc.SelectSingleNode("/configuration/entry[@key='cultureCode']").SelectSingleNode("string").InnerText)
+                    End Using
+                Catch ex As Exception
 
-            End Try
+                End Try
+            End If
 
             Dim pt As String = Application.Info.DirectoryPath.Replace("\", "/") + "/" + Application.Info.ProductName
             mt = New System.Threading.Mutex(False, pt)

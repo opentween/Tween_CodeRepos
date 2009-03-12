@@ -1285,7 +1285,10 @@ Public Class TweenMain
 
             _endingFlag = True
 
-            SaveConfigs()
+            'sgenのdllがあれば不要か？
+            If e.CloseReason <> CloseReason.WindowsShutDown AndAlso e.CloseReason = CloseReason.TaskManagerClosing Then
+                SaveConfigs()
+            End If
 
             For i As Integer = 0 To _bw.Length - 1
                 If _bw(i) IsNot Nothing Then _bw(i).CancelAsync()
