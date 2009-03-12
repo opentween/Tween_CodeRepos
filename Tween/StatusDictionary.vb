@@ -48,6 +48,7 @@ Public NotInheritable Class PostClass
     Private _ImageIndex As Integer
     Private _IsDm As Boolean
     Private _statuses As Statuses = Statuses.None
+    Private _Uid As Long
 
     <FlagsAttribute()> _
     Private Enum Statuses
@@ -76,7 +77,8 @@ Public NotInheritable Class PostClass
             ByVal ReplyToList As List(Of String), _
             ByVal IsMe As Boolean, _
             ByVal ImageIndex As Integer, _
-            ByVal IsDm As Boolean)
+            ByVal IsDm As Boolean, _
+            ByVal Uid As Long)
         _Nick = Nickname
         _Data = Data
         _ImageUrl = ImageUrl
@@ -97,6 +99,7 @@ Public NotInheritable Class PostClass
         _IsMe = IsMe
         _ImageIndex = ImageIndex
         _IsDm = IsDm
+        _Uid = Uid
     End Sub
 
     Public Sub New()
@@ -281,6 +284,14 @@ Public NotInheritable Class PostClass
         Get
             Return _statuses
         End Get
+    End Property
+    Public Property Uid() As Long
+        Get
+            Return _Uid
+        End Get
+        Set(ByVal value As Long)
+            _Uid = value
+        End Set
     End Property
 End Class
 
