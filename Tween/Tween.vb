@@ -5027,29 +5027,8 @@ RETRY2:
         bw.RunWorkerAsync(args)
     End Sub
 
-    'Public Delegate Function GetImageIndexDelegate(ByVal post As PostClass) As Integer
-
-    'Public Function GetImageIndex(ByVal post As PostClass) As Integer
-    '    Return TIconSmallList.Images.IndexOfKey(post.ImageUrl)
-    'End Function
-
-    'Public Delegate Sub SetImageDelegate(ByVal post As PostClass, ByVal Img As Image, ByVal ImgBmp As Bitmap)
-
-    'Public Sub SetImage(ByVal post As PostClass, ByVal Img As Image, ByVal ImgBmp As Bitmap)
-    '    post.ImageIndex = GetImageIndex(post)
-    '    If post.ImageIndex > -1 Then Exit Sub
-
-    '    TIconDic.Add(post.ImageUrl, Img)  '詳細表示用ディクショナリに追加
-    '    TIconSmallList.Images.Add(post.ImageUrl, ImgBmp)
-    '    post.ImageIndex = TIconSmallList.Images.IndexOfKey(post.ImageUrl)
-    'End Sub
-
     Private Sub TweenMain_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
         If IsNetworkAvailable() Then
-            'If SettingDialog.StartupFollowers Then
-            '    _waitFollower = True
-            '    GetTimeline(WORKERTYPE.Follower, 0, 0)
-            'End If
             If SettingDialog.ReadPages > 0 Then
                 _waitTimeline = True
                 GetTimeline(WORKERTYPE.Timeline, 1, SettingDialog.ReadPages)
@@ -5062,10 +5041,6 @@ RETRY2:
                 _waitDm = True
                 GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, SettingDialog.ReadPagesDM)
             End If
-            'Do While _waitFollower AndAlso Not _endingFlag
-            '    System.Threading.Thread.Sleep(1)
-            '    My.Application.DoEvents()
-            'Loop
             Dim i As Integer = 0
             Do While (_waitTimeline OrElse _waitReply OrElse _waitDm) AndAlso Not _endingFlag
                 System.Threading.Thread.Sleep(100)

@@ -1937,6 +1937,112 @@ Public Module Twitter
         End Set
     End Property
 
+    Public Function GetTimelineApi(ByVal read As Boolean, _
+                            ByVal gType As WORKERTYPE) As String
+        If _endingFlag Then Return ""
+
+        Dim retMsg As String = ""
+        Dim resStatus As String = ""
+        'スレッド取得は行わず、countで調整
+        Dim countQuery As String = "count=60"   '可変に（ユーザーは触れなくてよい）
+        Dim friendPath As String = "/statuses/friends_timeline.xml" 'const切るように
+        Dim replyPath As String = "/statuses/replies.xml"   'const切るように
+
+        If gType = WORKERTYPE.Timeline Then
+            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + friendPath + "?" + countQuery, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        Else
+            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + replyPath + "?" + countQuery, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        End If
+
+        If retMsg = "" Then Return resStatus
+
+        Dim arIdx As Integer = -1
+        Dim dlgt(60) As GetIconImageDelegate    'countQueryに合わせる
+        Dim ar(60) As IAsyncResult              'countQueryに合わせる
+        Dim xdoc As New XmlDocument
+        xdoc.LoadXml(retMsg)
+
+        For Each xentryNode As XmlNode In xdoc.DocumentElement.SelectNodes("./status")
+            Dim xentry As XmlElement = CType(xentryNode, XmlElement)
+            Dim post As New PostClass
+            post.PDate = DateTime.ParseExact(xentry.Item("created_at").InnerText, "ddd MMM dd HH:mm:ss zzzz yyyy", System.Globalization.DateTimeFormatInfo.InvariantInfo, System.Globalization.DateTimeStyles.None)
+            post.Id = Long.Parse(xentry.Item("id").InnerText)
+            '二重取得回避
+            SyncLock LockObj
+                If TabInformations.GetInstance.ContainsKey(post.Id) Then Continue For
+            End SyncLock
+            '本文
+            post.Data = xentry.Item("text").InnerText
+            post.Data = post.Data.Replace("<3", "♡")
+            'HTMLに整形（後で関数化）
+            Dim rgUrl As Regex = New Regex("(?<![0-9A-Za-z])(?:https?|shttp)://(?:(?:[-_.!~*'()a-zA-Z0-9;:&=+$,]|%[0-9A-Fa-f" + _
+                             "][0-9A-Fa-f])*@)?(?:(?:[a-zA-Z0-9](?:[-a-zA-Z0-9]*[a-zA-Z0-9])?\.)" + _
+                             "*[a-zA-Z](?:[-a-zA-Z0-9]*[a-zA-Z0-9])?\.?|[0-9]+\.[0-9]+\.[0-9]+\." + _
+                             "[0-9]+)(?::[0-9]*)?(?:/(?:[-_.!~*'()a-zA-Z0-9:@&=+$,]|%[0-9A-Fa-f]" + _
+                             "[0-9A-Fa-f])*(?:;(?:[-_.!~*'()a-zA-Z0-9:@&=+$,]|%[0-9A-Fa-f][0-9A-" + _
+                             "Fa-f])*)*(?:/(?:[-_.!~*'()a-zA-Z0-9:@&=+$,]|%[0-9A-Fa-f][0-9A-Fa-f" + _
+                             "])*(?:;(?:[-_.!~*'()a-zA-Z0-9:@&=+$,]|%[0-9A-Fa-f][0-9A-Fa-f])*)*)" + _
+                             "*)?(?:\?(?:[-_.!~*'()a-zA-Z0-9;/?:@&=+$,]|%[0-9A-Fa-f][0-9A-Fa-f])" + _
+                             "*)?(?:#(?:[-_.!~*'()a-zA-Z0-9;/?:@&=+$,]|%[0-9A-Fa-f][0-9A-Fa-f])*)?")
+            post.OriginalData = rgUrl.Replace(post.Data, "<a href=""$&"">$&</a>")
+            Dim rg As New Regex("(^|[^a-zA-Z0-9_@])@[a-zA-Z0-9_]{1,20}")
+            Dim m As Match = rg.Match(post.OriginalData)
+            While m.Success
+                post.ReplyToList.Add(m.Value.ToLower)
+                m = m.NextMatch
+            End While
+            post.OriginalData = rg.Replace(post.OriginalData, "<a href=""https://twitter.com/$&"">$&</a>")
+            post.OriginalData = AdjustHtml(ShortUrlResolve(PreProcessUrl(post.OriginalData)))
+
+            post.Source = xentry.Item("source").InnerText
+            If post.Source.StartsWith("<") Then
+                Dim rgS As New Regex(">(?<source>.+)<")
+                Dim mS As Match = rgS.Match(post.Source)
+                If mS.Success Then
+                    post.Source = mS.Result("${source}")
+                End If
+            End If
+
+            Long.TryParse(xentry.Item("in_reply_to_status_id").InnerText, post.InReplyToId)
+            post.InReplyToUser = xentry.Item("in_reply_to_screen_name").InnerText
+            'in_reply_to_user_idを使うか？
+            post.IsFav = Boolean.Parse(xentry.Item("favorited").InnerText)
+
+            '以下、ユーザー情報
+            Dim xUentry As XmlElement = CType(xentry.SelectSingleNode("./user"), XmlElement)
+            post.Uid = Long.Parse(xUentry.Item("id").InnerText)
+            post.Name = xUentry.Item("screen_name").InnerText
+            post.Nickname = xUentry.Item("name").InnerText
+            post.ImageUrl = xUentry.Item("profile_image_url").InnerText
+            post.IsProtect = Boolean.Parse(xUentry.Item("protected").InnerText)
+
+            post.IsRead = read
+            If gType = WORKERTYPE.Timeline Then
+                post.IsReply = post.InReplyToUser.ToLower.Equals(_uid.ToLower)
+            Else
+                post.IsReply = True
+            End If
+            post.IsOwl = False  'ids取得して判断
+            post.IsDm = False
+
+            arIdx += 1
+            dlgt(arIdx) = New GetIconImageDelegate(AddressOf GetIconImage)
+            ar(arIdx) = dlgt(arIdx).BeginInvoke(post, Nothing, Nothing)
+
+        Next
+
+        For i As Integer = 0 To arIdx
+            Try
+                dlgt(i).EndInvoke(ar(i))
+            Catch ex As Exception
+                '最後までendinvoke回す（ゾンビ化回避）
+                ExceptionOut(ex)
+            End Try
+        Next
+
+        Return ""
+    End Function
+
 #Region "デバッグモード解析キー自動生成"
 #If DEBUG Then
     Public Sub GenerateAnalyzeKey()
