@@ -221,11 +221,14 @@ retry:
         Dim result As String = ""
         Dim IDNConverter As New IdnMapping
 
+        If Not input.Contains("://") Then Return Nothing
+
         ' ドメイン名をPunycode展開
-        Dim Domain As String = input.Split("/"c)(2)
+        Dim Domain As String
         Dim AsciiDomain As String
 
         Try
+            Domain = input.Split("/"c)(2)
             AsciiDomain = IDNConverter.GetAscii(Domain)
         Catch ex As Exception
             Return Nothing
