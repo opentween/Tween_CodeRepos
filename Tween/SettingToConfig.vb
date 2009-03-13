@@ -32,6 +32,7 @@ Public Class XmlConfiguration
                IXmlSerializable
 
     Private ReadOnly _dictionary As Dictionary(Of String, KeyValuePair(Of Type, Object))
+    Private Shared ReadOnly _lockObj As New Object
 
     Private _filePath As String
 
@@ -242,22 +243,26 @@ Public Class XmlConfiguration
     End Sub
 
     Public Shared Function Load(ByVal path As String) As XmlConfiguration
-        Dim config As XmlConfiguration = DirectCast(New XmlSerializer(GetType(XmlConfiguration)).Deserialize(XmlReader.Create(path)), XmlConfiguration)
-        config.FilePath = path
-        Return config
+        SyncLock _lockObj
+            Dim config As XmlConfiguration = DirectCast(New XmlSerializer(GetType(XmlConfiguration)).Deserialize(XmlReader.Create(path)), XmlConfiguration)
+            config.FilePath = path
+            Return config
+        End SyncLock
     End Function
 
     Public Sub Save(ByVal path As String)
-        Using stream As MemoryStream = New MemoryStream()
-            Dim serializer As XmlSerializer = New XmlSerializer(GetType(XmlConfiguration))
-            serializer.Serialize(XmlWriter.Create(stream), Me)
-            stream.Seek(0, SeekOrigin.Begin)
-            Dim xdoc As XmlDocument = New XmlDocument()
-            xdoc.Load(stream)
-            xdoc.Save(path)
-        End Using
+        SyncLock _lockObj
+            Using stream As MemoryStream = New MemoryStream()
+                Dim serializer As XmlSerializer = New XmlSerializer(GetType(XmlConfiguration))
+                serializer.Serialize(XmlWriter.Create(stream), Me)
+                stream.Seek(0, SeekOrigin.Begin)
+                Dim xdoc As XmlDocument = New XmlDocument()
+                xdoc.Load(stream)
+                xdoc.Save(path)
+            End Using
 
-        Me._filePath = path
+            Me._filePath = path
+        End SyncLock
     End Sub
 
     Public Sub Save()

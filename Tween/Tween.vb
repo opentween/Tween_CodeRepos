@@ -2150,12 +2150,18 @@ Public Class TweenMain
         SaveConfigs()
     End Sub
 
+    Private Sub PostBrowser_Navigated(ByVal sender As Object, ByVal e As System.Windows.Forms.WebBrowserNavigatedEventArgs) Handles PostBrowser.Navigated
+        If e.Url.AbsoluteUri <> "about:blank" Then
+            DispSelectedPost()
+            OpenUriAsync(e.Url.AbsoluteUri)
+        End If
+    End Sub
+
     Private Sub PostBrowser_Navigating(ByVal sender As System.Object, ByVal e As System.Windows.Forms.WebBrowserNavigatingEventArgs) Handles PostBrowser.Navigating
         If e.Url.AbsoluteUri <> "about:blank" Then
             e.Cancel = True
             OpenUriAsync(e.Url.AbsoluteUri)
         End If
-
     End Sub
 
     Private Function AddNewTab(ByVal tabName As String, ByVal startup As Boolean) As Boolean
@@ -2940,11 +2946,17 @@ RETRY2:
     End Sub
 
     Private Sub CheckNewVersion(Optional ByVal startup As Boolean = False)
-        Dim retMsg As String
+        Dim retMsg As String = ""
         Dim strVer As String
         Dim forceUpdate As Boolean = My.Computer.Keyboard.ShiftKeyDown
 
-        retMsg = Twitter.GetVersionInfo()
+        Try
+            retMsg = Twitter.GetVersionInfo()
+        Catch ex As Exception
+            StatusLabel.Text = My.Resources.CheckNewVersionText9
+            If Not startup Then MessageBox.Show(My.Resources.CheckNewVersionText10, My.Resources.CheckNewVersionText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            Exit Sub
+        End Try
         If retMsg.Length > 0 Then
             strVer = retMsg.Substring(0, 4)
             If strVer.CompareTo(My.Application.Info.Version.ToString.Replace(".", "")) > 0 Then
