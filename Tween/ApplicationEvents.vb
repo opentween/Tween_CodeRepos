@@ -69,6 +69,19 @@ Namespace My
             End Try
 
             GC.KeepAlive(mt)
+
+            ''csc.exeタイムアウト回避
+            'Static done As Boolean = False
+            'If Not done Then
+            '    Dim prcInfo As System.Diagnostics.ProcessStartInfo = New System.Diagnostics.ProcessStartInfo("cmd.exe")
+            '    With prcInfo
+            '        .CreateNoWindow = True
+            '        .Arguments = "/C exit"
+            '        .WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
+            '    End With
+            '    System.Diagnostics.Process.Start(prcInfo)
+            '    done = True
+            'End If
         End Sub
 
         Private Sub MyApplication_UnhandledException(ByVal sender As Object, ByVal e As Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs) Handles Me.UnhandledException
