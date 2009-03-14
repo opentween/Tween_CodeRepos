@@ -3995,14 +3995,19 @@ RETRY2:
 
     Private Sub UreadManageMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UreadManageMenuItem.Click
         If _rclickTabName = "" Then Exit Sub
+        Dim idx As Integer
+
+        For idx = 0 To ListTab.TabCount
+            If ListTab.TabPages(idx).Text = _rclickTabName Then Exit For
+        Next
 
         _statuses.SetTabUnreadManage(_rclickTabName, UreadManageMenuItem.Checked)
+        If _statuses.Tabs(_rclickTabName).UnreadCount > 0 Then
+            ListTab.TabPages(idx).ImageIndex = 0
+        Else
+            ListTab.TabPages(idx).ImageIndex = -1
+        End If
         If _curTab.Text = _rclickTabName Then
-            If _statuses.Tabs(_rclickTabName).UnreadCount > 0 Then
-                _curTab.ImageIndex = 0
-            Else
-                _curTab.ImageIndex = -1
-            End If
             _itemCache = Nothing
             _postCache = Nothing
             _curList.Refresh()
