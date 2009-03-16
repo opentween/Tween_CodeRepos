@@ -184,10 +184,10 @@ retry:
                 End If
             ElseIf Convert.ToInt32(c) > 127 Then
                 ' UTF-8の場合
-                ' UriクラスをNewして再構成し、入力をPathAndQueryのみとしてやり直す
+                ' UriクラスをNewして再構成し、入力をinputからAuthority部分を除去してやり直す
                 If uri Is Nothing Then
                     uri = New Uri(input)
-                    input = uri.PathAndQuery
+                    input = input.Remove(0, uri.GetLeftPart(UriPartial.Authority).Length)
                     sb.Length = 0
                     GoTo retry
                 Else
