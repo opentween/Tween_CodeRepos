@@ -4012,8 +4012,11 @@ RETRY2:
         If idx = -1 Then idx = 0
         SoundFileComboBox.SelectedIndex = idx
         UreadManageMenuItem.Checked = tb.UnreadManage
-        If IsDefaultTab(_rclickTabName) Then
+        If _rclickTabName = "Recent" OrElse _rclickTabName = "Direct" Then
             FilterEditMenuItem.Enabled = False
+            DeleteTabMenuItem.Enabled = False
+        ElseIf _rclickTabName = "Reply" Then
+            FilterEditMenuItem.Enabled = True
             DeleteTabMenuItem.Enabled = False
         Else
             FilterEditMenuItem.Enabled = True
@@ -4066,7 +4069,7 @@ RETRY2:
     End Sub
 
     Private Sub FilterEditMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FilterEditMenuItem.Click
-        If _rclickTabName = "" OrElse IsDefaultTab(_rclickTabName) Then Exit Sub
+        If _rclickTabName = "" OrElse _rclickTabName = "Recent" OrElse _rclickTabName = "Direct" Then Exit Sub
 
         fDialog.SetCurrent(_rclickTabName)
         fDialog.ShowDialog()
