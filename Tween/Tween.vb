@@ -4095,7 +4095,7 @@ RETRY2:
 
     Private Sub AddTabMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AddTabMenuItem.Click
         Dim inputName As New InputTabName()
-        inputName.TabName = "MyTab" + ListTab.TabPages.Count.ToString
+        inputName.TabName = "MyTab" + (ListTab.TabPages.Count + 1).ToString
         inputName.ShowDialog()
         Dim tabName As String = inputName.TabName
         inputName.Dispose()
