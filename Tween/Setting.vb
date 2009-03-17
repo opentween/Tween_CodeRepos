@@ -51,6 +51,9 @@ Public Class Setting
     Private _clTarget As Color
     Private _clAtTarget As Color
     Private _clAtFromTarget As Color
+    Private _clInputBackcolor As Color
+    Private _clInputFont As Color
+    Private _fntInputFont As Font
     Private _MyNameBalloon As NameBalloonEnum
     Private _MyPostCtrlEnter As Boolean
     Private _useAPI As Boolean
@@ -140,6 +143,9 @@ Public Class Setting
             _clTarget = lblTarget.BackColor
             _clAtTarget = lblAtTarget.BackColor
             _clAtFromTarget = lblAtFromTarget.BackColor
+            _clInputBackcolor = lblInputBackcolor.BackColor
+            _clInputFont = lblInputFont.ForeColor
+            _fntInputFont = lblInputFont.Font
             Select Case cmbNameBalloon.SelectedIndex
                 Case 0
                     _MyNameBalloon = NameBalloonEnum.None
@@ -277,6 +283,9 @@ Public Class Setting
         lblTarget.BackColor = _clTarget
         lblAtTarget.BackColor = _clAtTarget
         lblAtFromTarget.BackColor = _clAtFromTarget
+        lblInputBackcolor.BackColor = _clInputBackcolor
+        lblInputFont.ForeColor = _clInputFont
+        lblInputFont.Font = _fntInputFont
 
         Select Case _MyNameBalloon
             Case NameBalloonEnum.None
@@ -506,7 +515,7 @@ Public Class Setting
         End If
     End Sub
 
-    Private Sub btnFontAndColor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnDetail.Click, btnListFont.Click, btnUnread.Click
+    Private Sub btnFontAndColor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnDetail.Click, btnListFont.Click, btnUnread.Click, btnInputFont.Click
         Dim Btn As Button = CType(sender, Button)
         Dim rtn As DialogResult
 
@@ -535,6 +544,10 @@ Public Class Setting
             Case "btnListFont"
                 FontDialog1.Color = lblListFont.ForeColor
                 FontDialog1.Font = lblListFont.Font
+            Case "btnInputFont"
+                FontDialog1.Color = lblInputFont.ForeColor
+                FontDialog1.Font = lblInputFont.Font
+                FontDialog1.ShowEffects = False
         End Select
 
         rtn = FontDialog1.ShowDialog
@@ -553,11 +566,14 @@ Public Class Setting
             Case "btnListFont"
                 lblListFont.ForeColor = FontDialog1.Color
                 lblListFont.Font = FontDialog1.Font
+            Case "btnInputFont"
+                lblInputFont.ForeColor = FontDialog1.Color
+                lblInputFont.Font = FontDialog1.Font
         End Select
 
     End Sub
 
-    Private Sub btnColor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSelf.Click, btnAtSelf.Click, btnTarget.Click, btnAtTarget.Click, btnAtFromTarget.Click, btnFav.Click, btnOWL.Click
+    Private Sub btnColor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSelf.Click, btnAtSelf.Click, btnTarget.Click, btnAtTarget.Click, btnAtFromTarget.Click, btnFav.Click, btnOWL.Click, btnInputBackcolor.Click
         Dim Btn As Button = CType(sender, Button)
         Dim rtn As DialogResult
 
@@ -585,6 +601,8 @@ Public Class Setting
                 '    'ColorDialog1.Color = lblUnRead.ForeColor
                 'Case "btnReaded"
                 '    'ColorDialog1.Color = lblReaded.ForeColor
+            Case "btnInputBackcolor"
+                ColorDialog1.Color = lblInputBackcolor.BackColor
         End Select
 
         rtn = ColorDialog1.ShowDialog
@@ -610,6 +628,8 @@ Public Class Setting
                 '    'lblUnRead.ForeColor = ColorDialog1.Color
                 'Case "btnReaded"
                 '    'lblReaded.ForeColor = ColorDialog1.Color
+            Case "btnInputBackcolor"
+                lblInputBackcolor.BackColor = ColorDialog1.Color
         End Select
     End Sub
 
@@ -883,6 +903,33 @@ Public Class Setting
         End Get
         Set(ByVal value As Color)
             _clAtFromTarget = value
+        End Set
+    End Property
+
+    Public Property ColorInputBackcolor() As Color
+        Get
+            Return _clInputBackcolor
+        End Get
+        Set(ByVal value As Color)
+            _clInputBackcolor = value
+        End Set
+    End Property
+
+    Public Property ColorInputFont() As Color
+        Get
+            Return _clInputFont
+        End Get
+        Set(ByVal value As Color)
+            _clInputFont = value
+        End Set
+    End Property
+
+    Public Property FontInputFont() As Font
+        Get
+            Return _fntInputFont
+        End Get
+        Set(ByVal value As Font)
+            _fntInputFont = value
         End Set
     End Property
 
