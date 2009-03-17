@@ -4837,7 +4837,8 @@ RETRY2:
 
     Private Sub ToolStripMenuItem3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripMenuItem3.Click
         '発言詳細で「選択文字列をコピー」
-        PostBrowser.Document.ExecCommand("Copy", False, Nothing)
+        'PostBrowser.Document.ExecCommand("Copy", False, Nothing)
+        SendKeys.Send("^c")
     End Sub
 
     Private Sub doSearchToolStrip(ByVal url As String)

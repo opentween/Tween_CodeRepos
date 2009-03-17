@@ -951,6 +951,7 @@ Public Module Twitter
                             If retUrlStr.Length > 0 Then
                                 If Not retUrlStr.StartsWith("http") Then Exit Do
                                 orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + urlEncodeMultibyteChar(retUrlStr))
+                                posl2 = 0   '置換した場合は頭から再探索（複数同時置換での例外対応）
                             End If
                         Catch ex As Exception
                             '_signed = False
@@ -1935,21 +1936,22 @@ Public Module Twitter
         Dim retMsg As String = ""
         Dim resStatus As String = ""
         'スレッド取得は行わず、countで調整
-        Dim countQuery As String = "count=60"   '可変に（ユーザーは触れなくてよい）
-        Dim friendPath As String = "/statuses/friends_timeline.xml" 'const切るように
-        Dim replyPath As String = "/statuses/replies.xml"   'const切るように
+        Const GET_COUNT As Integer = 60
+        Const COUNT_QUERY As String = "count="
+        Const FRIEND_PATH As String = "/statuses/friends_timeline.xml"
+        Const REPLY_PATH As String = "/statuses/replies.xml"
 
         If gType = WORKERTYPE.Timeline Then
-            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + friendPath + "?" + countQuery, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + FRIEND_PATH + "?" + COUNT_QUERY + GET_COUNT.ToString(), resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
         Else
-            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + replyPath + "?" + countQuery, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + REPLY_PATH + "?" + COUNT_QUERY + GET_COUNT.ToString(), resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
         End If
 
         If retMsg = "" Then Return resStatus
 
         Dim arIdx As Integer = -1
-        Dim dlgt(60) As GetIconImageDelegate    'countQueryに合わせる
-        Dim ar(60) As IAsyncResult              'countQueryに合わせる
+        Dim dlgt(GET_COUNT) As GetIconImageDelegate    'countQueryに合わせる
+        Dim ar(GET_COUNT) As IAsyncResult              'countQueryに合わせる
         Dim xdoc As New XmlDocument
         xdoc.LoadXml(retMsg)
 
@@ -1965,26 +1967,9 @@ Public Module Twitter
             '本文
             post.Data = xentry.Item("text").InnerText
             post.Data = post.Data.Replace("<3", "♡")
-            'HTMLに整形（後で関数化）
-            Dim rgUrl As Regex = New Regex("(?<![0-9A-Za-z])(?:https?|shttp)://(?:(?:[-_.!~*'()a-zA-Z0-9;:&=+$,]|%[0-9A-Fa-f" + _
-                             "][0-9A-Fa-f])*@)?(?:(?:[a-zA-Z0-9](?:[-a-zA-Z0-9]*[a-zA-Z0-9])?\.)" + _
-                             "*[a-zA-Z](?:[-a-zA-Z0-9]*[a-zA-Z0-9])?\.?|[0-9]+\.[0-9]+\.[0-9]+\." + _
-                             "[0-9]+)(?::[0-9]*)?(?:/(?:[-_.!~*'()a-zA-Z0-9:@&=+$,]|%[0-9A-Fa-f]" + _
-                             "[0-9A-Fa-f])*(?:;(?:[-_.!~*'()a-zA-Z0-9:@&=+$,]|%[0-9A-Fa-f][0-9A-" + _
-                             "Fa-f])*)*(?:/(?:[-_.!~*'()a-zA-Z0-9:@&=+$,]|%[0-9A-Fa-f][0-9A-Fa-f" + _
-                             "])*(?:;(?:[-_.!~*'()a-zA-Z0-9:@&=+$,]|%[0-9A-Fa-f][0-9A-Fa-f])*)*)" + _
-                             "*)?(?:\?(?:[-_.!~*'()a-zA-Z0-9;/?:@&=+$,]|%[0-9A-Fa-f][0-9A-Fa-f])" + _
-                             "*)?(?:#(?:[-_.!~*'()a-zA-Z0-9;/?:@&=+$,]|%[0-9A-Fa-f][0-9A-Fa-f])*)?")
-            post.OriginalData = rgUrl.Replace(post.Data, "<a href=""$&"">$&</a>")
-            Dim rg As New Regex("(^|[^a-zA-Z0-9_@])@[a-zA-Z0-9_]{1,20}")
-            Dim m As Match = rg.Match(post.OriginalData)
-            While m.Success
-                post.ReplyToList.Add(m.Value.ToLower)
-                m = m.NextMatch
-            End While
-            post.OriginalData = rg.Replace(post.OriginalData, "<a href=""https://twitter.com/$&"">$&</a>")
-            post.OriginalData = AdjustHtml(ShortUrlResolve(PreProcessUrl(post.OriginalData)))
-
+            'HTMLに整形
+            post.OriginalData = CreateHtmlAnchor(post.Data, post.ReplyToList)
+            'Source取得（htmlの場合は、中身を取り出し）
             post.Source = xentry.Item("source").InnerText
             If post.Source.StartsWith("<") Then
                 Dim rgS As New Regex(">(?<source>.+)<")
@@ -1993,7 +1978,6 @@ Public Module Twitter
                     post.Source = mS.Result("${source}")
                 End If
             End If
-
             Long.TryParse(xentry.Item("in_reply_to_status_id").InnerText, post.InReplyToId)
             post.InReplyToUser = xentry.Item("in_reply_to_screen_name").InnerText
             'in_reply_to_user_idを使うか？
@@ -2016,12 +2000,13 @@ Public Module Twitter
             post.IsOwl = False  'ids取得して判断
             post.IsDm = False
 
+            '非同期アイコン取得＆StatusDictionaryに追加
             arIdx += 1
             dlgt(arIdx) = New GetIconImageDelegate(AddressOf GetIconImage)
             ar(arIdx) = dlgt(arIdx).BeginInvoke(post, Nothing, Nothing)
-
         Next
 
+        'アイコン取得完了待ち
         For i As Integer = 0 To arIdx
             Try
                 dlgt(i).EndInvoke(ar(i))
@@ -2032,6 +2017,123 @@ Public Module Twitter
         Next
 
         Return ""
+    End Function
+
+    Public Function GetDirectMessageApi(ByVal read As Boolean, _
+                            ByVal gType As WORKERTYPE) As String
+        If _endingFlag Then Return ""
+
+        Dim retMsg As String = ""
+        Dim resStatus As String = ""
+        'スレッド取得は行わず、countで調整
+        Const GET_COUNT As Integer = 20
+        'Const COUNT_QUERY As String = "count="
+        Const RECEIVE_PATH As String = "/direct_messages.xml"
+        Const SENT_PATH As String = "/direct_messages/sent.xml"
+
+        If gType = WORKERTYPE.DirectMessegeRcv Then
+            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + RECEIVE_PATH, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        Else
+            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + SENT_PATH, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        End If
+
+        If retMsg = "" Then Return resStatus
+
+        Dim arIdx As Integer = -1
+        Dim dlgt(GET_COUNT) As GetIconImageDelegate    'countQueryに合わせる
+        Dim ar(GET_COUNT) As IAsyncResult              'countQueryに合わせる
+        Dim xdoc As New XmlDocument
+        xdoc.LoadXml(retMsg)
+
+        For Each xentryNode As XmlNode In xdoc.DocumentElement.SelectNodes("./status")
+            Dim xentry As XmlElement = CType(xentryNode, XmlElement)
+            Dim post As New PostClass
+            post.PDate = DateTime.ParseExact(xentry.Item("created_at").InnerText, "ddd MMM dd HH:mm:ss zzzz yyyy", System.Globalization.DateTimeFormatInfo.InvariantInfo, System.Globalization.DateTimeStyles.None)
+            post.Id = Long.Parse(xentry.Item("id").InnerText)
+            '二重取得回避
+            SyncLock LockObj
+                If TabInformations.GetInstance.ContainsKey(post.Id) Then Continue For
+            End SyncLock
+            '本文
+            post.Data = xentry.Item("text").InnerText
+            post.Data = post.Data.Replace("<3", "♡")
+            'HTMLに整形
+            post.OriginalData = CreateHtmlAnchor(post.Data, post.ReplyToList)
+            'Source取得（htmlの場合は、中身を取り出し）
+            post.Source = xentry.Item("source").InnerText
+            If post.Source.StartsWith("<") Then
+                Dim rgS As New Regex(">(?<source>.+)<")
+                Dim mS As Match = rgS.Match(post.Source)
+                If mS.Success Then
+                    post.Source = mS.Result("${source}")
+                End If
+            End If
+            Long.TryParse(xentry.Item("in_reply_to_status_id").InnerText, post.InReplyToId)
+            post.InReplyToUser = xentry.Item("in_reply_to_screen_name").InnerText
+            'in_reply_to_user_idを使うか？
+            post.IsFav = Boolean.Parse(xentry.Item("favorited").InnerText)
+
+            '以下、ユーザー情報
+            Dim xUentry As XmlElement = CType(xentry.SelectSingleNode("./user"), XmlElement)
+            post.Uid = Long.Parse(xUentry.Item("id").InnerText)
+            post.Name = xUentry.Item("screen_name").InnerText
+            post.Nickname = xUentry.Item("name").InnerText
+            post.ImageUrl = xUentry.Item("profile_image_url").InnerText
+            post.IsProtect = Boolean.Parse(xUentry.Item("protected").InnerText)
+
+            post.IsRead = read
+            If gType = WORKERTYPE.Timeline Then
+                post.IsReply = post.InReplyToUser.ToLower.Equals(_uid.ToLower)
+            Else
+                post.IsReply = True
+            End If
+            post.IsOwl = False  'ids取得して判断
+            post.IsDm = False
+
+            '非同期アイコン取得＆StatusDictionaryに追加
+            arIdx += 1
+            dlgt(arIdx) = New GetIconImageDelegate(AddressOf GetIconImage)
+            ar(arIdx) = dlgt(arIdx).BeginInvoke(post, Nothing, Nothing)
+        Next
+
+        'アイコン取得完了待ち
+        For i As Integer = 0 To arIdx
+            Try
+                dlgt(i).EndInvoke(ar(i))
+            Catch ex As Exception
+                '最後までendinvoke回す（ゾンビ化回避）
+                ExceptionOut(ex)
+            End Try
+        Next
+
+        Return ""
+    End Function
+
+    Private Function CreateHtmlAnchor(ByVal Text As String, ByVal AtList As List(Of String)) As String
+        'uriの正規表現
+        Dim rgUrl As Regex = New Regex("(?<![0-9A-Za-z])(?:https?|shttp|ftps?)://(?:(?:[-_.!~*'()a-zA-Z0-9;:&=+$,]|%[0-9A-Fa-f" + _
+                         "][0-9A-Fa-f])*@)?(?:(?:[a-zA-Z0-9](?:[-a-zA-Z0-9]*[a-zA-Z0-9])?\.)" + _
+                         "*[a-zA-Z](?:[-a-zA-Z0-9]*[a-zA-Z0-9])?\.?|[0-9]+\.[0-9]+\.[0-9]+\." + _
+                         "[0-9]+)(?::[0-9]*)?(?:/(?:[-_.!~*'()a-zA-Z0-9:@&=+$,]|%[0-9A-Fa-f]" + _
+                         "[0-9A-Fa-f])*(?:;(?:[-_.!~*'()a-zA-Z0-9:@&=+$,]|%[0-9A-Fa-f][0-9A-" + _
+                         "Fa-f])*)*(?:/(?:[-_.!~*'()a-zA-Z0-9:@&=+$,]|%[0-9A-Fa-f][0-9A-Fa-f" + _
+                         "])*(?:;(?:[-_.!~*'()a-zA-Z0-9:@&=+$,]|%[0-9A-Fa-f][0-9A-Fa-f])*)*)" + _
+                         "*)?(?:\?(?:[-_.!~*'()a-zA-Z0-9;/?:@&=+$,]|%[0-9A-Fa-f][0-9A-Fa-f])" + _
+                         "*)?(?:#(?:[-_.!~*'()a-zA-Z0-9;/?:@&=+$,]|%[0-9A-Fa-f][0-9A-Fa-f])*)?")
+        Dim retStr As String = HttpUtility.HtmlEncode(Text)     '要検証（デコードされて取得されるので再エンコード）
+        '絶対パス表現のUriをリンクに置換
+        retStr = rgUrl.Replace(Text, "<a href=""$&"">$&</a>")
+        '@返信を抽出し、@先リスト作成
+        Dim rg As New Regex("(^|[^a-zA-Z0-9_@])@[a-zA-Z0-9_]{1,20}")
+        Dim m As Match = rg.Match(retStr)
+        While m.Success
+            AtList.Add(m.Value.ToLower)
+            m = m.NextMatch
+        End While
+        '@先をリンクに置換
+        retStr = rg.Replace(retStr, "<a href=""/$&"">$&</a>")
+        retStr = AdjustHtml(ShortUrlResolve(PreProcessUrl(retStr))) 'IDN置換、短縮Uri解決、@リンクを相対→絶対にしてtarget属性付与
+        Return retStr
     End Function
 
 #Region "デバッグモード解析キー自動生成"
