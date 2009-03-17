@@ -80,6 +80,9 @@ Public Class TweenMain
     Private _clTarget As Color            '選択発言者の他の発言用背景色
     Private _clAtTarget As Color          '選択発言中の返信先用背景色
     Private _clAtFromTarget As Color      '選択発言者への返信発言用背景色
+    Private _clInputBackcolor As Color      '入力欄背景色
+    Private _clInputFont As Color           '入力欄文字色
+    Private _fntInputFont As Font           '入力欄フォント
     'Private TIconList As ImageList        '発言詳細部用アイコン画像リスト
     Private TIconDic As Dictionary(Of String, Image)        '発言詳細部用アイコン画像リスト
     Private TIconSmallList As ImageList   'リスト表示用アイコン画像リスト
@@ -359,6 +362,9 @@ Public Class TweenMain
         _clTarget = _cfg.ColorTarget
         _clAtTarget = _cfg.ColorAtTarget
         _clAtFromTarget = _cfg.ColorAtFromTarget
+        _clInputBackcolor = _cfg.ColorInputBackcolor
+        _clInputFont = _cfg.ColorInputFont
+        _fntInputFont = _cfg.FontInputFont
 
         _brsForeColorUnread = New SolidBrush(_clUnread)
         _brsForeColorReaded = New SolidBrush(_clReaded)
@@ -417,6 +423,9 @@ Public Class TweenMain
         SettingDialog.ColorTarget = _clTarget
         SettingDialog.ColorAtTarget = _clAtTarget
         SettingDialog.ColorAtFromTarget = _clAtFromTarget
+        SettingDialog.ColorInputBackcolor = _clInputBackcolor
+        SettingDialog.ColorInputFont = _clInputFont
+        SettingDialog.FontInputFont = _fntInputFont
         SettingDialog.NameBalloon = _cfg.NameBalloon
         SettingDialog.PostCtrlEnter = _cfg.PostCtrlEnter
         SettingDialog.UseAPI = True
@@ -502,6 +511,9 @@ Public Class TweenMain
             _clTarget = SettingDialog.ColorTarget
             _clAtTarget = SettingDialog.ColorAtTarget
             _clAtFromTarget = SettingDialog.ColorAtFromTarget
+            _clInputBackcolor = SettingDialog.ColorInputBackcolor
+            _clInputFont = SettingDialog.ColorInputFont
+            _fntInputFont = SettingDialog.FontInputFont
             _brsForeColorUnread.Dispose()
             _brsForeColorReaded.Dispose()
             _brsForeColorFav.Dispose()
@@ -553,6 +565,9 @@ Public Class TweenMain
         MultiLineMenuItem.Checked = _cfg.StatusMultiline
         Me.Tween_ClientSizeChanged(Me, Nothing)
         PlaySoundMenuItem.Checked = SettingDialog.PlaySound
+        '入力欄
+        StatusText.Font = _fntInputFont
+        StatusText.ForeColor = _clInputFont
 
         '全新着通知のチェック状態により、Reply＆DMの新着通知有効無効切り替え（タブ別設定にするため削除予定）
         If SettingDialog.UnreadManage = False Then
@@ -2106,6 +2121,12 @@ Public Class TweenMain
                 _clTarget = SettingDialog.ColorTarget
                 _clAtTarget = SettingDialog.ColorAtTarget
                 _clAtFromTarget = SettingDialog.ColorAtFromTarget
+                _clInputBackcolor = SettingDialog.ColorInputBackcolor
+                _clInputFont = SettingDialog.ColorInputFont
+                _fntInputFont = SettingDialog.FontInputFont
+                If StatusText.Focused Then StatusText.BackColor = _clInputBackcolor
+                StatusText.Font = _fntInputFont
+                StatusText.ForeColor = _clInputFont
                 _brsForeColorUnread.Dispose()
                 _brsForeColorReaded.Dispose()
                 _brsForeColorFav.Dispose()
@@ -2550,7 +2571,7 @@ Public Class TweenMain
         If pLen < 0 Then
             StatusText.ForeColor = Color.Red
         Else
-            StatusText.ForeColor = Color.FromKnownColor(KnownColor.ControlText)
+            StatusText.ForeColor = _clInputFont
         End If
     End Sub
 
@@ -2575,9 +2596,13 @@ Public Class TweenMain
         Else
             'A cache miss, so create a new ListViewItem and pass it back.
             Dim tb As TabPage = DirectCast(DirectCast(sender, Tween.TweenCustomControl.DetailsListView).Parent, TabPage)
-            e.Item = CreateItem(tb, _
-                                _statuses.Item(tb.Text, e.ItemIndex), _
-                                e.ItemIndex)
+            Try
+                e.Item = CreateItem(tb, _
+                                    _statuses.Item(tb.Text, e.ItemIndex), _
+                                    e.ItemIndex)
+            Catch ex As Exception
+                e.Item = New ListViewItem()
+            End Try
         End If
     End Sub
 
@@ -3523,7 +3548,7 @@ RETRY2:
     Private Sub StatusText_Enter(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusText.Enter
         ' フォーカスの戻り先を StatusText に設定
         Me.Tag = StatusText
-        StatusText.BackColor = Color.LemonChiffon
+        StatusText.BackColor = _clInputBackcolor
     End Sub
 
     Private Sub StatusText_Leave(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusText.Leave
@@ -3608,6 +3633,9 @@ RETRY2:
                 _cfg.ColorTarget = _clTarget
                 _cfg.ColorAtTarget = _clAtTarget
                 _cfg.ColorAtFromTarget = _clAtFromTarget
+                _cfg.ColorInputBackcolor = _clInputBackcolor
+                _cfg.ColorInputFont = _clInputFont
+                _cfg.FontInputFont = _fntInputFont
 
                 _cfg.NameBalloon = SettingDialog.NameBalloon
                 _cfg.PostCtrlEnter = SettingDialog.PostCtrlEnter

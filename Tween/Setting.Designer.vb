@@ -54,6 +54,9 @@ Partial Class Setting
         Me.OneWayLv = New System.Windows.Forms.CheckBox
         Me.Label16 = New System.Windows.Forms.Label
         Me.GroupBox1 = New System.Windows.Forms.GroupBox
+        Me.btnInputBackcolor = New System.Windows.Forms.Button
+        Me.lblInputBackcolor = New System.Windows.Forms.Label
+        Me.Label52 = New System.Windows.Forms.Label
         Me.btnUnread = New System.Windows.Forms.Button
         Me.lblUnread = New System.Windows.Forms.Label
         Me.Label20 = New System.Windows.Forms.Label
@@ -180,6 +183,9 @@ Partial Class Setting
         Me.Label59 = New System.Windows.Forms.Label
         Me.TextBoxOutputzKey = New System.Windows.Forms.TextBox
         Me.CheckOutputz = New System.Windows.Forms.CheckBox
+        Me.btnInputFont = New System.Windows.Forms.Button
+        Me.lblInputFont = New System.Windows.Forms.Label
+        Me.Label65 = New System.Windows.Forms.Label
         Me.GroupBox1.SuspendLayout()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
@@ -350,6 +356,12 @@ Partial Class Setting
         '
         'GroupBox1
         '
+        Me.GroupBox1.Controls.Add(Me.btnInputFont)
+        Me.GroupBox1.Controls.Add(Me.lblInputFont)
+        Me.GroupBox1.Controls.Add(Me.Label65)
+        Me.GroupBox1.Controls.Add(Me.btnInputBackcolor)
+        Me.GroupBox1.Controls.Add(Me.lblInputBackcolor)
+        Me.GroupBox1.Controls.Add(Me.Label52)
         Me.GroupBox1.Controls.Add(Me.btnUnread)
         Me.GroupBox1.Controls.Add(Me.lblUnread)
         Me.GroupBox1.Controls.Add(Me.Label20)
@@ -392,6 +404,23 @@ Partial Class Setting
         resources.ApplyResources(Me.GroupBox1, "GroupBox1")
         Me.GroupBox1.Name = "GroupBox1"
         Me.GroupBox1.TabStop = False
+        '
+        'btnInputBackcolor
+        '
+        resources.ApplyResources(Me.btnInputBackcolor, "btnInputBackcolor")
+        Me.btnInputBackcolor.Name = "btnInputBackcolor"
+        Me.btnInputBackcolor.UseVisualStyleBackColor = True
+        '
+        'lblInputBackcolor
+        '
+        Me.lblInputBackcolor.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        resources.ApplyResources(Me.lblInputBackcolor, "lblInputBackcolor")
+        Me.lblInputBackcolor.Name = "lblInputBackcolor"
+        '
+        'Label52
+        '
+        resources.ApplyResources(Me.Label52, "Label52")
+        Me.Label52.Name = "Label52"
         '
         'btnUnread
         '
@@ -1205,6 +1234,23 @@ Partial Class Setting
         Me.CheckOutputz.Name = "CheckOutputz"
         Me.CheckOutputz.UseVisualStyleBackColor = True
         '
+        'btnInputFont
+        '
+        resources.ApplyResources(Me.btnInputFont, "btnInputFont")
+        Me.btnInputFont.Name = "btnInputFont"
+        Me.btnInputFont.UseVisualStyleBackColor = True
+        '
+        'lblInputFont
+        '
+        Me.lblInputFont.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        resources.ApplyResources(Me.lblInputFont, "lblInputFont")
+        Me.lblInputFont.Name = "lblInputFont"
+        '
+        'Label65
+        '
+        resources.ApplyResources(Me.Label65, "Label65")
+        Me.Label65.Name = "Label65"
+        '
         'Setting
         '
         Me.AcceptButton = Me.Save
@@ -1394,4 +1440,10 @@ Partial Class Setting
     Friend WithEvents ConnectionTimeOut As System.Windows.Forms.TextBox
     Friend WithEvents CheckProtectNotInclude As System.Windows.Forms.CheckBox
     Friend WithEvents Label42 As System.Windows.Forms.Label
+    Friend WithEvents btnInputBackcolor As System.Windows.Forms.Button
+    Friend WithEvents lblInputBackcolor As System.Windows.Forms.Label
+    Friend WithEvents Label52 As System.Windows.Forms.Label
+    Friend WithEvents btnInputFont As System.Windows.Forms.Button
+    Friend WithEvents lblInputFont As System.Windows.Forms.Label
+    Friend WithEvents Label65 As System.Windows.Forms.Label
 End Class

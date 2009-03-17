@@ -764,6 +764,42 @@ Public NotInheritable Class SettingToConfig
         End Set
     End Property
 
+    Public Property ColorInputBackcolor() As Color
+        Get
+            Dim cc As New ColorConverter
+            Dim c2str As String = cc.ConvertToString(Color.LemonChiffon)
+            Return DirectCast(cc.ConvertFromString(GetValueOrDefault("colorInputBackcolor", c2str)), Color)
+        End Get
+        Set(ByVal value As Color)
+            Dim cc As New ColorConverter
+            Item("colorInputBackcolor") = cc.ConvertToString(value)
+        End Set
+    End Property
+
+    Public Property ColorInputFont() As Color
+        Get
+            Dim cc As New ColorConverter
+            Dim c2str As String = cc.ConvertToString(Color.FromKnownColor(KnownColor.ControlText))
+            Return DirectCast(cc.ConvertFromString(GetValueOrDefault("colorInputFont", c2str)), Color)
+        End Get
+        Set(ByVal value As Color)
+            Dim cc As New ColorConverter
+            Item("colorInputFont") = cc.ConvertToString(value)
+        End Set
+    End Property
+
+    Public Property FontInputFont() As Font
+        Get
+            Dim fc As New FontConverter
+            Dim f2str As String = fc.ConvertToString(System.Drawing.SystemFonts.DefaultFont)
+            Return DirectCast(fc.ConvertFromString(GetValueOrDefault("fontInputFont", f2str)), Font)
+        End Get
+        Set(ByVal value As Font)
+            Dim fc As New FontConverter
+            Item("fontInputFont") = fc.ConvertToString(value)
+        End Set
+    End Property
+
     Public Property NameBalloon() As NameBalloonEnum
         Get
             Return GetValueOrDefault("nameBalloon", NameBalloonEnum.NickName)

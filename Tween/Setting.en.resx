@@ -220,6 +220,15 @@
   <data name="Label16.Text" xml:space="preserve">
     <value>Colorize One-way following</value>
   </data>
+  <data name="btnInputBackcolor.Text" xml:space="preserve">
+    <value>Back...</value>
+  </data>
+  <data name="Label52.Size" type="System.Drawing.Size, System.Drawing">
+    <value>174, 12</value>
+  </data>
+  <data name="Label52.Text" xml:space="preserve">
+    <value>Input field backcolor when active</value>
+  </data>
   <data name="btnUnread.Text" xml:space="preserve">
     <value>Font&amp;&amp;Fore...</value>
   </data>
@@ -454,24 +463,6 @@
   <data name="CheckMinimizeToTray.Text" xml:space="preserve">
     <value>Enable</value>
   </data>
-  <data name="Label42.Size" type="System.Drawing.Size, System.Drawing">
-    <value>115, 12</value>
-  </data>
-  <data name="Label42.Text" xml:space="preserve">
-    <value>Use API for Tweeting</value>
-  </data>
-  <data name="CheckUseAPI.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 16</value>
-  </data>
-  <data name="CheckUseAPI.Text" xml:space="preserve">
-    <value>Enable</value>
-  </data>
-  <data name="Label43.Size" type="System.Drawing.Size, System.Drawing">
-    <value>122, 12</value>
-  </data>
-  <data name="Label43.Text" xml:space="preserve">
-    <value>Host Name (http://.../）</value>
-  </data>
   <data name="Label44.Size" type="System.Drawing.Size, System.Drawing">
     <value>88, 12</value>
   </data>
@@ -568,14 +559,14 @@
   <data name="CheckPeriodAdjust.Text" xml:space="preserve">
     <value>Enable Auto-Adjustment</value>
   </data>
-  <data name="Label52.Size" type="System.Drawing.Size, System.Drawing">
-    <value>153, 12</value>
-  </data>
-  <data name="Label52.Text" xml:space="preserve">
-    <value>Tweeting Limitation per Hour</value>
-  </data>
   <data name="TabPage1.Text" xml:space="preserve">
     <value>Basic</value>
+  </data>
+  <data name="Label42.Size" type="System.Drawing.Size, System.Drawing">
+    <value>115, 12</value>
+  </data>
+  <data name="Label42.Text" xml:space="preserve">
+    <value>Use API for Tweeting</value>
   </data>
   <data name="CheckAutoConvertUrl.Size" type="System.Drawing.Size, System.Drawing">
     <value>58, 16</value>
