@@ -735,6 +735,8 @@ Public NotInheritable Class TabInformations
                                 post.IsMark = True 'マークあり
                             Case HITRESULT.Move
                                 tbr.Remove(post.Id)
+                            Case HITRESULT.None
+                                If key = "Reply" And post.IsReply Then _tabs("Reply").Add(post.Id, post.IsRead, True)
                         End Select
                     Next
                     tb.AddSubmit()  '振分確定
@@ -830,7 +832,6 @@ Public NotInheritable Class TabInformations
 End Class
 
 Public NotInheritable Class TabClass
-    '自分のタブ名は分からない
     Private _unreadManage As Boolean
     Private _notify As Boolean
     Private _soundFile As String
@@ -1026,29 +1027,24 @@ Public NotInheritable Class TabClass
     End Sub
 
     Public Sub AddFilter(ByVal filter As FiltersClass)
-        'Try
-        '    rwLock.AcquireWriterLock(System.Threading.Timeout.Infinite) '書き込みロック取得
+        If _filters.Contains(filter) Then Exit Sub
         _filters.Add(filter)
         _filterMod = True
-        'Finally
-        '    rwLock.ReleaseWriterLock()
-        'End Try
     End Sub
 
     Public Sub EditFilter(ByVal original As FiltersClass, ByVal modified As FiltersClass)
-        'Try
-        '    rwLock.AcquireWriterLock(System.Threading.Timeout.Infinite) '書き込みロック取得
-        original.BodyFilter = modified.BodyFilter
-        original.MoveFrom = modified.MoveFrom
-        original.NameFilter = modified.NameFilter
-        original.SearchBoth = modified.SearchBoth
-        original.SearchUrl = modified.SearchUrl
-        original.SetMark = modified.SetMark
-        original.UseRegex = modified.UseRegex
+        If _filters.Contains(modified) Then
+            _filters.Remove(original)
+        Else
+            original.BodyFilter = modified.BodyFilter
+            original.MoveFrom = modified.MoveFrom
+            original.NameFilter = modified.NameFilter
+            original.SearchBoth = modified.SearchBoth
+            original.SearchUrl = modified.SearchUrl
+            original.SetMark = modified.SetMark
+            original.UseRegex = modified.UseRegex
+        End If
         _filterMod = True
-        'Finally
-        '    rwLock.ReleaseWriterLock()
-        'End Try
     End Sub
 
     Public Property Filters() As List(Of FiltersClass)
@@ -1102,6 +1098,7 @@ Public NotInheritable Class TabClass
 End Class
 
 Public NotInheritable Class FiltersClass
+    Implements System.IEquatable(Of FiltersClass)
     Private _name As String
     Private _body As New List(Of String)
     Private _searchBoth As Boolean
@@ -1291,6 +1288,37 @@ Public NotInheritable Class FiltersClass
         Else
             Return HITRESULT.None
         End If
+    End Function
+
+    Public Overloads Function Equals(ByVal other As FiltersClass) As Boolean _
+     Implements System.IEquatable(Of Tween.FiltersClass).Equals
+
+        If Me.BodyFilter.Count <> other.BodyFilter.Count Then Return False
+        For i As Integer = 0 To Me.BodyFilter.Count - 1
+            If Me.BodyFilter(i) <> other.BodyFilter(i) Then Return False
+        Next
+
+        Return (Me.MoveFrom = other.MoveFrom) And _
+               (Me.NameFilter = other.NameFilter) And _
+               (Me.SearchBoth = other.SearchBoth) And _
+               (Me.SearchUrl = other.SearchUrl) And _
+               (Me.SetMark = other.SetMark) And _
+               (Me.UseRegex = other.UseRegex)
+    End Function
+
+    Public Overrides Function Equals(ByVal obj As Object) As Boolean
+        If (obj Is Nothing) OrElse Not (Me.GetType() Is obj.GetType()) Then Return False
+        Return Me.Equals(CType(obj, FiltersClass))
+    End Function
+
+    Public Overrides Function GetHashCode() As Integer
+        Return Me.BodyFilter.GetHashCode Xor _
+               Me.MoveFrom.GetHashCode Xor _
+               Me.NameFilter.GetHashCode Xor _
+               Me.SearchBoth.GetHashCode Xor _
+               Me.SearchUrl.GetHashCode Xor _
+               Me.SetMark.GetHashCode Xor _
+               Me.UseRegex.GetHashCode
     End Function
 End Class
 
