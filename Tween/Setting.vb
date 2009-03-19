@@ -547,7 +547,6 @@ Public Class Setting
             Case "btnInputFont"
                 FontDialog1.Color = lblInputFont.ForeColor
                 FontDialog1.Font = lblInputFont.Font
-                FontDialog1.ShowEffects = False
         End Select
 
         rtn = FontDialog1.ShowDialog
