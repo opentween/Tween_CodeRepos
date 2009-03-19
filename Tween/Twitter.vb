@@ -922,8 +922,10 @@ Public Module Twitter
 
                 Dim replacedUrl As String = IDNDecode(urlStr)
                 If replacedUrl Is Nothing Then Continue Do
+                If replacedUrl = urlStr Then Continue Do
 
                 orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + replacedUrl)
+                posl2 = 0
             Else
                 Exit Do
             End If
