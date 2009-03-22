@@ -557,7 +557,7 @@ Public Class TweenMain
         'ウィンドウ設定
         Me.ClientSize = _cfg.FormSize
         _mySize = Me.ClientSize                     'サイズ保持（最小化・最大化されたまま終了した場合の対応用）
-        Me.Location = _cfg.FormLocation
+        Me.DesktopLocation = _cfg.FormLocation
         _myLoc = Me.Location                        '位置保持（最小化・最大化されたまま終了した場合の対応用）
         Me.TopMost = SettingDialog.AlwaysTop
         _mySpDis = _cfg.SplitterDistance
