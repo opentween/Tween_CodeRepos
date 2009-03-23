@@ -3852,8 +3852,8 @@ RETRY2:
         Else
             ListTab.TabPages.Insert(i + 1, mTp)
         End If
-
         ListTab.ResumeLayout()
+        SaveConfigs()
     End Sub
 
     Private Sub MakeReplyOrDirectStatus(Optional ByVal isAuto As Boolean = True, Optional ByVal isReply As Boolean = True, Optional ByVal isAll As Boolean = False)
@@ -4785,8 +4785,6 @@ RETRY2:
         If _iconCol Then
             _cfg.Width1 = lst.Columns(0).Width
             _cfg.Width3 = lst.Columns(1).Width
-            '_section.DisplayIndex1 = lst.Columns(0).DisplayIndex
-            '_section.DisplayIndex3 = lst.Columns(1).DisplayIndex
         Else
             Dim darr(lst.Columns.Count - 1) As Integer
             For i As Integer = 0 To lst.Columns.Count - 1
@@ -4823,24 +4821,59 @@ RETRY2:
             _cfg.Width7 = lst.Columns(6).Width
             _cfg.Width8 = lst.Columns(7).Width
         End If
-
+        SaveConfigs()
     End Sub
 
     Private Sub MyList_ColumnWidthChanged(ByVal sender As System.Object, ByVal e As ColumnWidthChangedEventArgs)
         Dim lst As DetailsListView = DirectCast(sender, DetailsListView)
+        Dim changed As Boolean = False
         If _cfg Is Nothing Then Exit Sub
         If _iconCol Then
-            _cfg.Width1 = lst.Columns(0).Width
-            _cfg.Width3 = lst.Columns(1).Width
+            If _cfg.Width1 <> lst.Columns(0).Width Then
+                _cfg.Width1 = lst.Columns(0).Width
+                changed = True
+            End If
+            If _cfg.Width3 <> lst.Columns(1).Width Then
+                _cfg.Width3 = lst.Columns(1).Width
+                changed = True
+            End If
         Else
-            _cfg.Width1 = lst.Columns(0).Width
-            _cfg.Width2 = lst.Columns(1).Width
-            _cfg.Width3 = lst.Columns(2).Width
-            _cfg.Width4 = lst.Columns(3).Width
-            _cfg.Width5 = lst.Columns(4).Width
-            _cfg.Width6 = lst.Columns(5).Width
-            _cfg.Width7 = lst.Columns(6).Width
-            _cfg.Width8 = lst.Columns(7).Width
+            If _cfg.Width1 <> lst.Columns(0).Width Then
+                _cfg.Width1 = lst.Columns(0).Width
+                changed = True
+            End If
+            If _cfg.Width2 <> lst.Columns(1).Width Then
+                _cfg.Width2 = lst.Columns(1).Width
+                changed = True
+            End If
+            If _cfg.Width3 <> lst.Columns(2).Width Then
+                _cfg.Width3 = lst.Columns(2).Width
+                changed = True
+            End If
+            If _cfg.Width4 <> lst.Columns(3).Width Then
+                _cfg.Width4 = lst.Columns(3).Width
+                changed = True
+            End If
+            If _cfg.Width5 <> lst.Columns(4).Width Then
+                _cfg.Width5 = lst.Columns(4).Width
+                changed = True
+            End If
+            If _cfg.Width6 <> lst.Columns(5).Width Then
+                _cfg.Width6 = lst.Columns(5).Width
+                changed = True
+            End If
+            If _cfg.Width7 <> lst.Columns(6).Width Then
+                _cfg.Width7 = lst.Columns(6).Width
+                changed = True
+            End If
+            If _cfg.Width8 <> lst.Columns(7).Width Then
+                _cfg.Width8 = lst.Columns(7).Width
+                changed = True
+            End If
+        End If
+        ' 非表示の時にColumnChangedが呼ばれた場合はForm初期化処理中なので保存しない
+        If changed Then
+            SaveConfigs()
         End If
     End Sub
 
