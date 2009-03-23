@@ -25,6 +25,7 @@ Imports System
 Imports System.Drawing
 Imports System.Runtime.InteropServices
 Imports System.Windows.Forms
+Imports System.Diagnostics
 
 Namespace TweenCustomControl
     Friend Class Win32Api
@@ -177,6 +178,7 @@ Namespace TweenCustomControl
             End If
         End Function
 
+        <DebuggerStepThrough()> _
         Protected Overrides Sub WndProc(ByRef m As System.Windows.Forms.Message)
             Const WM_ERASEBKGND As Integer = &H14
             Const WM_PAINT As Integer = &HF
