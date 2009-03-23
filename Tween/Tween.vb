@@ -4601,7 +4601,13 @@ RETRY2:
         Me.SaveFileDialog1.FileName = name.Substring(name.LastIndexOf("/"c) + 1)
 
         If Me.SaveFileDialog1.ShowDialog() = Windows.Forms.DialogResult.OK Then
-            Me.TIconDic(name).Save(Me.SaveFileDialog1.FileName)
+            Using bmp2 As New Bitmap(TIconDic(name).Size.Width, TIconDic(name).Size.Height)
+                Using g As Graphics = Graphics.FromImage(bmp2)
+                    g.InterpolationMode = Drawing2D.InterpolationMode.High
+                    g.DrawImage(TIconDic(name), 0, 0, TIconDic(name).Size.Width, TIconDic(name).Size.Height)
+                End Using
+                bmp2.Save(Me.SaveFileDialog1.FileName)
+            End Using
         End If
     End Sub
 
