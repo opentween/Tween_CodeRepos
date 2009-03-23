@@ -4442,7 +4442,7 @@ RETRY2:
                 ttl.Append("Ver:").Append(myVer)
             Case DispTitleEnum.Post
                 If _history IsNot Nothing AndAlso _history.Count > 1 Then
-                    ttl.Append(_history(_history.Count - 2))
+                    ttl.Append(_history(_history.Count - 2).Replace(vbCrLf, ""))
                 End If
             Case DispTitleEnum.UnreadRepCount
                 ttl.AppendFormat(My.Resources.SetMainWindowTitleText1, _statuses.Tabs("Reply").UnreadCount + _statuses.Tabs("Direct").UnreadCount)
