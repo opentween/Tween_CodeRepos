@@ -1301,7 +1301,7 @@ Public Class TweenMain
             _endingFlag = True
 
             'sgenのdllがあれば不要か？
-            If e.CloseReason <> CloseReason.WindowsShutDown AndAlso e.CloseReason = CloseReason.TaskManagerClosing Then
+            If e.CloseReason <> CloseReason.WindowsShutDown AndAlso e.CloseReason <> CloseReason.TaskManagerClosing Then
                 SaveConfigs()
             End If
 
