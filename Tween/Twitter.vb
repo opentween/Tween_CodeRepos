@@ -44,6 +44,7 @@ Public Module Twitter
     Private GetTmSemaphore As New Threading.Semaphore(8, 8)
 
     Private follower As New Collections.Specialized.StringCollection
+    Private followerId As New List(Of Long)
     Private tmpFollower As New Collections.Specialized.StringCollection
 
     'プロパティからアクセスされる共通情報
@@ -2007,13 +2008,20 @@ Public Module Twitter
             post.Nickname = xUentry.Item("name").InnerText
             post.ImageUrl = xUentry.Item("profile_image_url").InnerText
             post.IsProtect = Boolean.Parse(xUentry.Item("protected").InnerText)
-
+            post.IsMe = post.Name.ToLower.Equals(_uid.ToLower)
             post.IsRead = read
             If gType = WORKERTYPE.Timeline Then
-                post.IsReply = post.InReplyToUser.ToLower.Equals(_uid.ToLower)
+                post.IsReply = post.ReplyToList.Contains(_uid.ToLower)
             Else
                 post.IsReply = True
             End If
+
+            If post.IsMe Then
+                post.IsOwl = False
+            Else
+                post.IsOwl = Not followerId.Contains(post.Uid)
+            End If
+
             post.IsOwl = False  'ids取得して判断
             post.IsDm = False
 
@@ -2062,36 +2070,39 @@ Public Module Twitter
         Dim xdoc As New XmlDocument
         xdoc.LoadXml(retMsg)
 
-        For Each xentryNode As XmlNode In xdoc.DocumentElement.SelectNodes("./status")
+        For Each xentryNode As XmlNode In xdoc.DocumentElement.SelectNodes("./direct_message")
             Dim xentry As XmlElement = CType(xentryNode, XmlElement)
             Dim post As New PostClass
-            post.PDate = DateTime.ParseExact(xentry.Item("created_at").InnerText, "ddd MMM dd HH:mm:ss zzzz yyyy", System.Globalization.DateTimeFormatInfo.InvariantInfo, System.Globalization.DateTimeStyles.None)
             post.Id = Long.Parse(xentry.Item("id").InnerText)
             '二重取得回避
             SyncLock LockObj
                 If TabInformations.GetInstance.ContainsKey(post.Id) Then Continue For
             End SyncLock
+            'sender_id
+            'recipient_id
+            post.PDate = DateTime.ParseExact(xentry.Item("created_at").InnerText, "ddd MMM dd HH:mm:ss zzzz yyyy", System.Globalization.DateTimeFormatInfo.InvariantInfo, System.Globalization.DateTimeStyles.None)
             '本文
             post.Data = xentry.Item("text").InnerText
             post.Data = post.Data.Replace("<3", "♡")
             'HTMLに整形
             post.OriginalData = CreateHtmlAnchor(post.Data, post.ReplyToList)
-            'Source取得（htmlの場合は、中身を取り出し）
-            post.Source = xentry.Item("source").InnerText
-            If post.Source.StartsWith("<") Then
-                Dim rgS As New Regex(">(?<source>.+)<")
-                Dim mS As Match = rgS.Match(post.Source)
-                If mS.Success Then
-                    post.Source = mS.Result("${source}")
-                End If
+            post.IsFav = False
+            '受信ＤＭかの判定で使用
+            If gType = WORKERTYPE.DirectMessegeRcv Then
+                post.IsOwl = False
+            Else
+                post.IsOwl = True
             End If
-            Long.TryParse(xentry.Item("in_reply_to_status_id").InnerText, post.InReplyToId)
-            post.InReplyToUser = xentry.Item("in_reply_to_screen_name").InnerText
-            'in_reply_to_user_idを使うか？
-            post.IsFav = Boolean.Parse(xentry.Item("favorited").InnerText)
 
             '以下、ユーザー情報
-            Dim xUentry As XmlElement = CType(xentry.SelectSingleNode("./user"), XmlElement)
+            Dim xUentry As XmlElement
+            If gType = WORKERTYPE.DirectMessegeRcv Then
+                xUentry = CType(xentry.SelectSingleNode("./sender"), XmlElement)
+                post.IsMe = False
+            Else
+                xUentry = CType(xentry.SelectSingleNode("./recipient"), XmlElement)
+                post.IsMe = True
+            End If
             post.Uid = Long.Parse(xUentry.Item("id").InnerText)
             post.Name = xUentry.Item("screen_name").InnerText
             post.Nickname = xUentry.Item("name").InnerText
@@ -2099,13 +2110,8 @@ Public Module Twitter
             post.IsProtect = Boolean.Parse(xUentry.Item("protected").InnerText)
 
             post.IsRead = read
-            If gType = WORKERTYPE.Timeline Then
-                post.IsReply = post.InReplyToUser.ToLower.Equals(_uid.ToLower)
-            Else
-                post.IsReply = True
-            End If
-            post.IsOwl = False  'ids取得して判断
-            post.IsDm = False
+            post.IsReply = False
+            post.IsDm = True
 
             '非同期アイコン取得＆StatusDictionaryに追加
             arIdx += 1
@@ -2121,6 +2127,28 @@ Public Module Twitter
                 '最後までendinvoke回す（ゾンビ化回避）
                 ExceptionOut(ex)
             End Try
+        Next
+
+        Return ""
+    End Function
+
+    Public Function GetFollowersApi() As String
+        If _endingFlag Then Return ""
+
+        Dim retMsg As String = ""
+        Dim resStatus As String = ""
+        Const FOLLOWER_PATH As String = "/followers/ids.xml"
+
+        retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + FOLLOWER_PATH, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+
+        If retMsg = "" Then Return resStatus
+
+        Dim xdoc As New XmlDocument
+        xdoc.LoadXml(retMsg)
+
+        For Each xentryNode As XmlNode In xdoc.DocumentElement.SelectNodes("./id")
+            followerId.Clear()
+            followerId.Add(Long.Parse(xentryNode.InnerText))
         Next
 
         Return ""

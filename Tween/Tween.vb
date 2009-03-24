@@ -428,7 +428,7 @@ Public Class TweenMain
         SettingDialog.FontInputFont = _fntInputFont
         SettingDialog.NameBalloon = _cfg.NameBalloon
         SettingDialog.PostCtrlEnter = _cfg.PostCtrlEnter
-        SettingDialog.UseAPI = True
+        SettingDialog.UseAPI = _cfg.UseAPI
         SettingDialog.HubServer = _cfg.HubServer
         SettingDialog.BrowserPath = _cfg.BrowserPath
         SettingDialog.CheckReply = _cfg.CheckReply
@@ -3639,7 +3639,7 @@ RETRY2:
 
                 _cfg.NameBalloon = SettingDialog.NameBalloon
                 _cfg.PostCtrlEnter = SettingDialog.PostCtrlEnter
-                _cfg.UseAPI = True
+                _cfg.UseAPI = SettingDialog.UseAPI
                 _cfg.HubServer = SettingDialog.HubServer
                 _cfg.BrowserPath = SettingDialog.BrowserPath
                 _cfg.CheckReply = SettingDialog.CheckReply
