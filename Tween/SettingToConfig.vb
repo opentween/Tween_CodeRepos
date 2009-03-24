@@ -258,7 +258,11 @@ Public Class XmlConfiguration
                 stream.Seek(0, SeekOrigin.Begin)
                 Dim xdoc As XmlDocument = New XmlDocument()
                 xdoc.Load(stream)
-                xdoc.Save(path)
+                Try
+                    xdoc.Save(path)
+                Catch ex As IOException
+                    '他プロセスで使用中例外の回避（対策考える）
+                End Try
             End Using
 
             Me._filePath = path

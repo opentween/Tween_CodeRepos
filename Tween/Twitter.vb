@@ -160,18 +160,23 @@ Public Module Twitter
             account = _authKeyHeader + authToken + "&" + _uidHeader + _uid + "&" + _pwdHeader + _pwd + "&" + "remember_me=1"
 
             resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _loginPath, resStatus, MySocket.REQ_TYPE.ReqPOST, account), String)
-            If Not resMsg.Equals("<html><body>You are being <a href=""https://twitter.com:443/"">redirected</a>.</body></html>") Then
+            If resStatus.StartsWith("OK") Then
                 Dim msg As String = resStatus
-                If resMsg.Contains("https://twitter.com/account/locked") Then
-                    msg = "You account is Locked Out."
-                ElseIf resMsg.Contains("Wrong Username/Email and password combination.") Then
-                    msg = "Wrong Username/Email and password combination."
+                If resMsg.Contains("Wrong Username/Email and password combination.") Then
+                    msg = "Wrong Username or password."
                 Else
-                    '未知の応答
-                    TraceOut(True, "SignIn Failed." + vbCrLf + "resStatus:" + resStatus + vbCrLf + "resMsg:" + vbCrLf + resMsg)
-                    msg = "Unknown response"
+                    '未知の応答(May be required Chapta)
+                    msg = "Wrong Username or password. Try from web."
                 End If
                 Return "SignIn Failed -> " + msg
+            ElseIf resMsg.Contains("https://twitter.com/account/locked") Then   '302 FOUND
+                Dim msg As String = "You account is Locked Out."
+                Return "SignIn Failed -> " + msg
+            ElseIf resMsg.Contains("https://twitter.com:443/") Then '302 FOUND
+                'OK
+            Else
+                TraceOut(True, "SignIn Failed." + vbCrLf + "resStatus:" + resStatus + vbCrLf + "resMsg:" + vbCrLf + resMsg)
+                Return "SignIn Failed -> " + "Unknown problems."
             End If
 
             _signed = True
