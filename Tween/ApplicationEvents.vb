@@ -72,16 +72,20 @@ Namespace My
 
             'csc.exeタイムアウト回避
             Static done As Boolean = False
-            If Not done Then
-                Dim prcInfo As System.Diagnostics.ProcessStartInfo = New System.Diagnostics.ProcessStartInfo("cmd.exe")
-                With prcInfo
-                    .CreateNoWindow = True
-                    .Arguments = "/C exit"
-                    .WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
-                End With
-                System.Diagnostics.Process.Start(prcInfo)
-                done = True
-            End If
+            Try
+                If Not done Then
+                    Dim prcInfo As System.Diagnostics.ProcessStartInfo = New System.Diagnostics.ProcessStartInfo("cmd.exe")
+                    With prcInfo
+                        .CreateNoWindow = True
+                        .Arguments = "/C exit"
+                        .WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
+                    End With
+                    System.Diagnostics.Process.Start(prcInfo)
+                    done = True
+                End If
+            Catch ex As System.ComponentModel.Win32Exception
+                'リソース不足で起動できない
+            End Try
         End Sub
 
         Private Sub MyApplication_UnhandledException(ByVal sender As Object, ByVal e As Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs) Handles Me.UnhandledException

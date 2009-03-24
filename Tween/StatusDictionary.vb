@@ -1033,17 +1033,17 @@ Public NotInheritable Class TabClass
     End Sub
 
     Public Sub EditFilter(ByVal original As FiltersClass, ByVal modified As FiltersClass)
-        If _filters.Contains(modified) Then
-            _filters.Remove(original)
-        Else
-            original.BodyFilter = modified.BodyFilter
-            original.MoveFrom = modified.MoveFrom
-            original.NameFilter = modified.NameFilter
-            original.SearchBoth = modified.SearchBoth
-            original.SearchUrl = modified.SearchUrl
-            original.SetMark = modified.SetMark
-            original.UseRegex = modified.UseRegex
-        End If
+        'If _filters.Contains(modified) AndAlso original.ReferenceEquals(modified) Then
+        '    Exit Sub
+        'Else
+        original.BodyFilter = modified.BodyFilter
+        original.MoveFrom = modified.MoveFrom
+        original.NameFilter = modified.NameFilter
+        original.SearchBoth = modified.SearchBoth
+        original.SearchUrl = modified.SearchUrl
+        original.SetMark = modified.SetMark
+        original.UseRegex = modified.UseRegex
+        'End If
         _filterMod = True
     End Sub
 
