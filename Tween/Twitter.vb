@@ -169,6 +169,7 @@ Public Module Twitter
                 Else
                     '未知の応答
                     TraceOut(True, "SignIn Failed." + vbCrLf + "resStatus:" + resStatus + vbCrLf + "resMsg:" + vbCrLf + resMsg)
+                    msg = "Unknown response"
                 End If
                 Return "SignIn Failed -> " + msg
             End If
