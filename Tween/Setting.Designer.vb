@@ -54,6 +54,9 @@ Partial Class Setting
         Me.OneWayLv = New System.Windows.Forms.CheckBox
         Me.Label16 = New System.Windows.Forms.Label
         Me.GroupBox1 = New System.Windows.Forms.GroupBox
+        Me.btnInputFont = New System.Windows.Forms.Button
+        Me.lblInputFont = New System.Windows.Forms.Label
+        Me.Label65 = New System.Windows.Forms.Label
         Me.btnInputBackcolor = New System.Windows.Forms.Button
         Me.lblInputBackcolor = New System.Windows.Forms.Label
         Me.Label52 = New System.Windows.Forms.Label
@@ -183,9 +186,12 @@ Partial Class Setting
         Me.Label59 = New System.Windows.Forms.Label
         Me.TextBoxOutputzKey = New System.Windows.Forms.TextBox
         Me.CheckOutputz = New System.Windows.Forms.CheckBox
-        Me.btnInputFont = New System.Windows.Forms.Button
-        Me.lblInputFont = New System.Windows.Forms.Label
-        Me.Label65 = New System.Windows.Forms.Label
+        Me.Label43 = New System.Windows.Forms.Label
+        Me.CheckBox1 = New System.Windows.Forms.CheckBox
+        Me.Label66 = New System.Windows.Forms.Label
+        Me.CheckBox2 = New System.Windows.Forms.CheckBox
+        Me.Label67 = New System.Windows.Forms.Label
+        Me.TextBox1 = New System.Windows.Forms.TextBox
         Me.GroupBox1.SuspendLayout()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
@@ -404,6 +410,23 @@ Partial Class Setting
         resources.ApplyResources(Me.GroupBox1, "GroupBox1")
         Me.GroupBox1.Name = "GroupBox1"
         Me.GroupBox1.TabStop = False
+        '
+        'btnInputFont
+        '
+        resources.ApplyResources(Me.btnInputFont, "btnInputFont")
+        Me.btnInputFont.Name = "btnInputFont"
+        Me.btnInputFont.UseVisualStyleBackColor = True
+        '
+        'lblInputFont
+        '
+        Me.lblInputFont.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        resources.ApplyResources(Me.lblInputFont, "lblInputFont")
+        Me.lblInputFont.Name = "lblInputFont"
+        '
+        'Label65
+        '
+        resources.ApplyResources(Me.Label65, "Label65")
+        Me.Label65.Name = "Label65"
         '
         'btnInputBackcolor
         '
@@ -848,6 +871,12 @@ Partial Class Setting
         '
         'TabPage1
         '
+        Me.TabPage1.Controls.Add(Me.Label67)
+        Me.TabPage1.Controls.Add(Me.TextBox1)
+        Me.TabPage1.Controls.Add(Me.Label66)
+        Me.TabPage1.Controls.Add(Me.CheckBox2)
+        Me.TabPage1.Controls.Add(Me.Label43)
+        Me.TabPage1.Controls.Add(Me.CheckBox1)
         Me.TabPage1.Controls.Add(Me.Label54)
         Me.TabPage1.Controls.Add(Me.CheckStartupFollowers)
         Me.TabPage1.Controls.Add(Me.Label53)
@@ -1234,22 +1263,37 @@ Partial Class Setting
         Me.CheckOutputz.Name = "CheckOutputz"
         Me.CheckOutputz.UseVisualStyleBackColor = True
         '
-        'btnInputFont
+        'Label43
         '
-        resources.ApplyResources(Me.btnInputFont, "btnInputFont")
-        Me.btnInputFont.Name = "btnInputFont"
-        Me.btnInputFont.UseVisualStyleBackColor = True
+        resources.ApplyResources(Me.Label43, "Label43")
+        Me.Label43.Name = "Label43"
         '
-        'lblInputFont
+        'CheckBox1
         '
-        Me.lblInputFont.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        resources.ApplyResources(Me.lblInputFont, "lblInputFont")
-        Me.lblInputFont.Name = "lblInputFont"
+        resources.ApplyResources(Me.CheckBox1, "CheckBox1")
+        Me.CheckBox1.Name = "CheckBox1"
+        Me.CheckBox1.UseVisualStyleBackColor = True
         '
-        'Label65
+        'Label66
         '
-        resources.ApplyResources(Me.Label65, "Label65")
-        Me.Label65.Name = "Label65"
+        resources.ApplyResources(Me.Label66, "Label66")
+        Me.Label66.Name = "Label66"
+        '
+        'CheckBox2
+        '
+        resources.ApplyResources(Me.CheckBox2, "CheckBox2")
+        Me.CheckBox2.Name = "CheckBox2"
+        Me.CheckBox2.UseVisualStyleBackColor = True
+        '
+        'Label67
+        '
+        resources.ApplyResources(Me.Label67, "Label67")
+        Me.Label67.Name = "Label67"
+        '
+        'TextBox1
+        '
+        resources.ApplyResources(Me.TextBox1, "TextBox1")
+        Me.TextBox1.Name = "TextBox1"
         '
         'Setting
         '
@@ -1446,4 +1490,10 @@ Partial Class Setting
     Friend WithEvents btnInputFont As System.Windows.Forms.Button
     Friend WithEvents lblInputFont As System.Windows.Forms.Label
     Friend WithEvents Label65 As System.Windows.Forms.Label
+    Friend WithEvents Label66 As System.Windows.Forms.Label
+    Friend WithEvents CheckBox2 As System.Windows.Forms.CheckBox
+    Friend WithEvents Label43 As System.Windows.Forms.Label
+    Friend WithEvents CheckBox1 As System.Windows.Forms.CheckBox
+    Friend WithEvents Label67 As System.Windows.Forms.Label
+    Friend WithEvents TextBox1 As System.Windows.Forms.TextBox
 End Class
