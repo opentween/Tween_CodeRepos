@@ -517,6 +517,36 @@
   <data name="Label47.Text" xml:space="preserve">
     <value>Apply after restarting</value>
   </data>
+  <data name="Label67.Size" type="System.Drawing.Size, System.Drawing">
+    <value>201, 12</value>
+  </data>
+  <data name="Label67.Text" xml:space="preserve">
+    <value>Getting number of tweets in API mode</value>
+  </data>
+  <data name="Label66.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 12</value>
+  </data>
+  <data name="Label66.Text" xml:space="preserve">
+    <value>POST method</value>
+  </data>
+  <data name="CheckPostMethod.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 16</value>
+  </data>
+  <data name="CheckPostMethod.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="Label43.Size" type="System.Drawing.Size, System.Drawing">
+    <value>59, 12</value>
+  </data>
+  <data name="Label43.Text" xml:space="preserve">
+    <value>TwitterAPI</value>
+  </data>
+  <data name="CheckUseApi.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 16</value>
+  </data>
+  <data name="CheckUseApi.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
   <data name="Label54.Size" type="System.Drawing.Size, System.Drawing">
     <value>131, 12</value>
   </data>

@@ -685,4 +685,7 @@
   <data name="ConnectionTimeOut_ValidatingText1" xml:space="preserve">
     <value>タイムアウトまでの時間には数値（0～120）を指定してください。</value>
   </data>
+  <data name="TextCountApi_Validating1" xml:space="preserve">
+    <value>取得発言数は20～200件を指定してください。</value>
+  </data>
 </root>
