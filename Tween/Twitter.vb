@@ -163,6 +163,7 @@ Public Module Twitter
 
             resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _loginPath, resStatus, MySocket.REQ_TYPE.ReqPOST, account), String)
             If resStatus.StartsWith("OK") Then
+                'OK (username/passwordが合致しない)
                 Dim msg As String = resStatus
                 If resMsg.Contains("Wrong Username/Email and password combination.") Then
                     msg = "Wrong Username or password."
@@ -176,7 +177,11 @@ Public Module Twitter
                 Return "SignIn Failed -> " + msg
             ElseIf resMsg.Contains("https://twitter.com:443/") Then '302 FOUND
                 'OK
+            ElseIf resMsg.StartsWith("Err:") Then
+                ' その他プロトコルエラー
+                Return "SignIn Failed -> " + resMsg
             Else
+                '応答がOK でありサインインできていない場合の未知の応答
                 TraceOut(True, "SignIn Failed." + vbCrLf + "resStatus:" + resStatus + vbCrLf + "resMsg:" + vbCrLf + resMsg)
                 Return "SignIn Failed -> " + "Unknown problems."
             End If
