@@ -3195,6 +3195,16 @@ RETRY2:
                 e.SuppressKeyPress = True
                 DoRefresh()
             End If
+            If e.KeyCode = Keys.S Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                SendKeys.Send("^{PGDN}")
+            End If
+            If e.KeyCode = Keys.A Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                SendKeys.Send("^{PGUP}")
+            End If
         End If
         _anchorFlag = False
         If e.Control AndAlso Not e.Alt AndAlso Not e.Shift Then
@@ -3204,6 +3214,8 @@ RETRY2:
                 TimerColorize.Start()
                 'cMode = 1
             End If
+            If e.KeyCode = Keys.N Then SendKeys.Send("^{PGDN}")
+            If e.KeyCode = Keys.P Then SendKeys.Send("^{PGUP}")
         End If
         If Not e.Control AndAlso e.Alt AndAlso Not e.Shift Then
             ' ALTキーが押されている場合
@@ -5243,4 +5255,5 @@ RETRY2:
             TraceFlag = False
         End If
     End Sub
+
 End Class

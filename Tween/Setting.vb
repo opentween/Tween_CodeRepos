@@ -57,6 +57,8 @@ Public Class Setting
     Private _MyNameBalloon As NameBalloonEnum
     Private _MyPostCtrlEnter As Boolean
     Private _useAPI As Boolean
+    Private _usePostMethod As Boolean
+    Private _countApi As Integer
     Private _hubServer As String
     Private _browserpath As String
     Private _MyCheckReply As Boolean
@@ -155,7 +157,9 @@ Public Class Setting
                     _MyNameBalloon = NameBalloonEnum.NickName
             End Select
             _MyPostCtrlEnter = CheckPostCtrlEnter.Checked
-            _useAPI = True
+            _useAPI = CheckUseApi.Checked
+            _usePostMethod = CheckPostMethod.Checked
+            _countApi = CType(TextCountApi.Text, Integer)
             _hubServer = "twitter.com"
             _browserpath = BrowserPathText.Text.Trim
             _MyCheckReply = CheckboxReply.Checked
@@ -297,7 +301,9 @@ Public Class Setting
         End Select
 
         CheckPostCtrlEnter.Checked = _MyPostCtrlEnter
-        'CheckUseAPI.Checked = _useAPI
+        CheckUseApi.Checked = _useAPI
+        CheckPostMethod.Checked = _usePostMethod
+        TextCountApi.Text = _countApi.ToString
         'HubServerDomain.Text = _hubServer
         BrowserPathText.Text = _browserpath
         CheckboxReply.Checked = _MyCheckReply
@@ -959,6 +965,24 @@ Public Class Setting
         End Set
     End Property
 
+    Public Property UsePostMethod() As Boolean
+        Get
+            Return _usePostMethod
+        End Get
+        Set(ByVal value As Boolean)
+            _usePostMethod = value
+        End Set
+    End Property
+
+    Public Property CountApi() As Integer
+        Get
+            Return _countApi
+        End Get
+        Set(ByVal value As Integer)
+            _countApi = value
+        End Set
+    End Property
+
     Public Property CheckReply() As Boolean
         Get
             Return _MyCheckReply
@@ -1334,6 +1358,31 @@ Public Class Setting
 
     Private Sub LabelDateTimeFormatApplied_VisibleChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles LabelDateTimeFormatApplied.VisibleChanged
         CreateDateTimeFormatSample()
+    End Sub
+
+    Private Sub CheckUseApi_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CheckUseApi.CheckedChanged
+        CheckboxReply.Enabled = Not CheckUseApi.Checked
+        CheckPeriodAdjust.Enabled = Not CheckUseApi.Checked
+        NextThreshold.Enabled = Not CheckUseApi.Checked
+        NextPages.Enabled = Not CheckUseApi.Checked
+        CheckPostMethod.Enabled = CheckUseApi.Checked
+        TextCountApi.Enabled = CheckUseApi.Checked
+    End Sub
+
+    Private Sub TextCountApi_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles TextCountApi.Validating
+        Dim cnt As Integer
+        Try
+            cnt = Integer.Parse(TextCountApi.Text)
+        Catch ex As Exception
+            MessageBox.Show(My.Resources.TextCountApi_Validating1)
+            e.Cancel = True
+            Exit Sub
+        End Try
+
+        If cnt < 20 OrElse cnt > 200 Then
+            MessageBox.Show(My.Resources.TextCountApi_Validating1)
+            e.Cancel = True
+        End If
     End Sub
 End Class
 

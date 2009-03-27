@@ -993,6 +993,24 @@ Public NotInheritable Class SettingToConfig
         End Set
     End Property
 
+    Public Property UsePostMethod() As Boolean
+        Get
+            Return GetValueOrDefault("usePostMethod", False)
+        End Get
+        Set(ByVal value As Boolean)
+            Item("usePostMethod") = value
+        End Set
+    End Property
+
+    Public Property CountApi() As Integer
+        Get
+            Return GetValueOrDefault("countApi", 60)
+        End Get
+        Set(ByVal value As Integer)
+            Item("countApi") = value
+        End Set
+    End Property
+
     Public Property CheckReply() As Boolean
         Get
             Return GetValueOrDefault("checkReply", True)

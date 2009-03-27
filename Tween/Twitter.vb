@@ -70,6 +70,7 @@ Public Module Twitter
 
     Private _hubServer As String
     Private _defaultTimeOut As Integer      ' MySocketクラスへ渡すタイムアウト待ち時間（秒単位　ミリ秒への換算はMySocketクラス側で行う）
+    Private _countApi As Integer
 
     '共通で使用する状態
     Private _authKey As String              'StatusUpdate、発言削除で使用
@@ -1944,6 +1945,12 @@ Public Module Twitter
         End Get
         Set(ByVal value As Integer)
             _defaultTimeOut = value
+        End Set
+    End Property
+
+    Public WriteOnly Property CountApi() As Integer
+        Set(ByVal value As Integer)
+            _countApi = value
         End Set
     End Property
 
