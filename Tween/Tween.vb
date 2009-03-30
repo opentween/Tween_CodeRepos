@@ -801,13 +801,23 @@ Public Class TweenMain
                 If flt.TabName = tb.TabName Then
                     Dim bflt() As String = flt.BodyFilter.Split(Chr(32))
                     Dim body As New List(Of String)
+                    ' エラーチェック (IdFilter)
+                    Try
+                        Dim dmy As Boolean = False
+                        If flt.RegexEnable Then
+                            ' 正規表現が正しいかどうかチェック 不正な場合はArgumentExceptionが発生するのでフィルタを無視する
+                            Dim rx As Regex = New Regex(flt.IdFilter)
+                        End If
+                    Catch ex As ArgumentException
+                        ' ArgumentExceptionが発生した場合は該当フィルタを無視
+                        Continue For
+                    End Try
+                    ' エラーチェック (BodyFilter)
                     For Each tmpFlt As String In bflt
                         Try
-                            Dim dmy As Boolean = False
                             If flt.RegexEnable Then
                                 ' 正規表現が正しいかどうかチェック 不正な場合はArgumentExceptionが発生するのでフィルタを無視する
                                 Dim rx As Regex = New Regex(tmpFlt)
-                                dmy = rx.IsMatch(tmpFlt)
                             End If
                             ' フィルタ追加 ArgumentExceptionが発生した場合はCatchされるのでここに来ない
                             If tmpFlt.Trim <> "" Then body.Add(tmpFlt.Trim)

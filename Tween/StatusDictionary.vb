@@ -24,6 +24,7 @@
 Imports System.Collections.Generic
 Imports System.Collections.ObjectModel
 Imports Tween.TweenCustomControl
+Imports System.Text.RegularExpressions
 
 
 Public NotInheritable Class PostClass
@@ -1123,9 +1124,17 @@ Public NotInheritable Class FiltersClass
         _searchUrl = SearchUrl
         _useRegex = UseRegex
         If _useRegex Then
+            For Each nm As String In _name
+                Try
+                    Dim rgx As New Regex(nm)
+                Catch ex As Exception
+                    Throw New Exception(My.Resources.ButtonOK_ClickText3 + ex.Message)
+                    Exit Sub
+                End Try
+            Next
             For Each bs As String In _body
                 Try
-                    Dim rgx As New System.Text.RegularExpressions.Regex(bs)
+                    Dim rgx As New Regex(bs)
                 Catch ex As Exception
                     Throw New Exception(My.Resources.ButtonOK_ClickText3 + ex.Message)
                     Exit Sub
@@ -1257,10 +1266,11 @@ Public NotInheritable Class FiltersClass
             tBody = Body
         End If
         If _searchBoth Then
-            If _name = "" OrElse Name.Equals(_name, StringComparison.OrdinalIgnoreCase) Then
+            If _name = "" OrElse Name.Equals(_name, StringComparison.OrdinalIgnoreCase) OrElse _
+                            (_useRegex AndAlso Regex.IsMatch(Name, _name, RegexOptions.IgnoreCase)) Then
                 For Each fs As String In _body
                     If _useRegex Then
-                        If System.Text.RegularExpressions.Regex.IsMatch(tBody, fs, System.Text.RegularExpressions.RegexOptions.IgnoreCase) = False Then bHit = False
+                        If Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) = False Then bHit = False
                     Else
                         If tBody.ToLower().Contains(fs.ToLower()) = False Then bHit = False
                     End If
@@ -1272,8 +1282,8 @@ Public NotInheritable Class FiltersClass
         Else
             For Each fs As String In _body
                 If _useRegex Then
-                    If Not (System.Text.RegularExpressions.Regex.IsMatch(Name, fs, System.Text.RegularExpressions.RegexOptions.IgnoreCase) OrElse _
-                            System.Text.RegularExpressions.Regex.IsMatch(tBody, fs, System.Text.RegularExpressions.RegexOptions.IgnoreCase)) Then bHit = False
+                    If Not (Regex.IsMatch(Name, fs, RegexOptions.IgnoreCase) OrElse _
+                            Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase)) Then bHit = False
                 Else
                     If Not (Name.ToLower().Contains(fs.ToLower()) OrElse _
                             tBody.ToLower().Contains(fs.ToLower())) Then bHit = False
