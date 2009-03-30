@@ -230,13 +230,23 @@ Public Class FilterDialog
                 MessageBox.Show(My.Resources.ButtonOK_ClickText1, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 Exit Sub
             End If
-            If CheckRegex.Checked AndAlso MSG1.Text <> "" Then
-                Try
-                    Dim rgx As New System.Text.RegularExpressions.Regex(MSG1.Text)
-                Catch ex As Exception
-                    MessageBox.Show(My.Resources.ButtonOK_ClickText3 + ex.Message, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-                    Exit Sub
-                End Try
+            If CheckRegex.Checked Then
+                If UID.Text <> "" Then
+                    Try
+                        Dim rgx As New System.Text.RegularExpressions.Regex(UID.Text)
+                    Catch ex As Exception
+                        MessageBox.Show(My.Resources.ButtonOK_ClickText3 + ex.Message, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                        Exit Sub
+                    End Try
+                End If
+                If MSG1.Text <> "" Then
+                    Try
+                        Dim rgx As New System.Text.RegularExpressions.Regex(MSG1.Text)
+                    Catch ex As Exception
+                        MessageBox.Show(My.Resources.ButtonOK_ClickText3 + ex.Message, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                        Exit Sub
+                    End Try
+                End If
             End If
         Else
             If Not CheckRegex.Checked Then MSG2.Text = MSG2.Text.Replace("　", " ").Trim()
