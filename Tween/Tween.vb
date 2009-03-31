@@ -667,10 +667,10 @@ Public Class TweenMain
         '<<<<<<<<タブ関連>>>>>>>
         _statuses.Tabs = _cfg.Tabs
         'デフォルトタブの存在チェック、ない場合には追加
-        If Not _statuses.Tabs.ContainsKey("Recent") Then _statuses.Tabs.Add("Recent", New TabClass)
-        If Not _statuses.Tabs.ContainsKey("Reply") Then _statuses.Tabs.Add("Reply", New TabClass)
-        If Not _statuses.Tabs.ContainsKey("Direct") Then _statuses.Tabs.Add("Direct", New TabClass)
-        If Not _statuses.Tabs.ContainsKey("Favourites") Then _statuses.Tabs.Add("Favourites", New TabClass)
+        If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.RECENT) Then _statuses.Tabs.Add(DEFAULTTAB.RECENT, New TabClass)
+        If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.REPLY) Then _statuses.Tabs.Add(DEFAULTTAB.REPLY, New TabClass)
+        If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.DM) Then _statuses.Tabs.Add(DEFAULTTAB.DM, New TabClass)
+        If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.FAV) Then _statuses.Tabs.Add(DEFAULTTAB.FAV, New TabClass)
         For Each tn As String In _statuses.Tabs.Keys
             If Not AddNewTab(tn, True) Then Throw New Exception("タブ作成エラー")
         Next
@@ -713,19 +713,19 @@ Public Class TweenMain
             _config.Sections.Add("TwitterSetting", _section)
             _section = DirectCast(_config.GetSection("TwitterSetting"), ListSection)
             _section.SectionInformation.ForceSave = True
-            _section.ListElement = New ListElementCollection("Recent")
+            _section.ListElement = New ListElementCollection(DEFAULTTAB.RECENT)
         End If
         ''Replyタブ
-        If _section.ListElement.Item("Reply") Is Nothing Then
-            _section.ListElement.Add(New ListElement("Reply"))
+        If _section.ListElement.Item(DEFAULTTAB.REPLY) Is Nothing Then
+            _section.ListElement.Add(New ListElement(DEFAULTTAB.REPLY))
         End If
         ''DirectMsgタブ
-        If _section.ListElement.Item("Direct") Is Nothing Then
-            _section.ListElement.Add(New ListElement("Direct"))
+        If _section.ListElement.Item(DEFAULTTAB.DM) Is Nothing Then
+            _section.ListElement.Add(New ListElement(DEFAULTTAB.DM))
         End If
         ''Favoritesタブ
-        If _section.ListElement.Item("Favourites") Is Nothing Then
-            _section.ListElement.Add(New ListElement("Favourites"))
+        If _section.ListElement.Item(DEFAULTTAB.FAV) Is Nothing Then
+            _section.ListElement.Add(New ListElement(DEFAULTTAB.FAV))
         End If
         _cfg = New SettingToConfig
         _cfg.AlwaysTop = _section.AlwaysTop
@@ -1395,7 +1395,7 @@ Public Class TweenMain
                             args.sIds.Add(post.Id)
                             post.IsFav = True    'リスト再描画必要
                             _favTimestamps.Add(Now)
-                            _statuses.Tabs.Item("Favourites").Add(post.Id, post.IsRead, False)
+                            _statuses.Tabs.Item(DEFAULTTAB.FAV).Add(post.Id, post.IsRead, False)
                         End If
                     End If
                 Next
@@ -1648,10 +1648,10 @@ Public Class TweenMain
             Dim nm As Integer = 0
             DispSelectedPost()          ' 詳細画面書き直し
             For Each i As Long In rslt.sIds
-                _statuses.RemovePost("Favourites", i)
+                _statuses.RemovePost(DEFAULTTAB.FAV, i)
                 nm += 1
             Next
-            If _curTab.Text.Equals("Favourites") Then
+            If _curTab.Text.Equals(DEFAULTTAB.FAV) Then
                 _curList.VirtualListSize -= nm
                 _itemCache = Nothing    'キャッシュ破棄
                 _postCache = Nothing
@@ -1728,7 +1728,7 @@ Public Class TweenMain
                 ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
             Case WORKERTYPE.FavAdd, WORKERTYPE.BlackFavAdd, WORKERTYPE.FavRemove
                 _curList.BeginUpdate()
-                If rslt.type = WORKERTYPE.FavRemove AndAlso _curTab.Text.Equals("Favourites") Then
+                If rslt.type = WORKERTYPE.FavRemove AndAlso _curTab.Text.Equals(DEFAULTTAB.FAV) Then
                     For i As Integer = 0 To _curList.VirtualListSize - 1
                         '
                     Next
@@ -1825,7 +1825,7 @@ Public Class TweenMain
     End Sub
 
     Private Sub FavAddToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FavAddToolStripMenuItem.Click
-        If _curTab.Text = "Direct" OrElse _curList.SelectedIndices.Count = 0 Then Exit Sub
+        If _curTab.Text = DEFAULTTAB.DM OrElse _curList.SelectedIndices.Count = 0 Then Exit Sub
 
         '複数fav確認msg
         If _curList.SelectedIndices.Count > 1 Then
@@ -1853,7 +1853,7 @@ Public Class TweenMain
     End Sub
 
     Private Sub FavRemoveToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FavRemoveToolStripMenuItem.Click
-        If _curTab.Text = "Direct" OrElse _curList.SelectedIndices.Count = 0 Then Exit Sub
+        If _curTab.Text = DEFAULTTAB.DM OrElse _curList.SelectedIndices.Count = 0 Then Exit Sub
 
         If _curList.SelectedIndices.Count > 1 Then
             If MessageBox.Show(My.Resources.FavRemoveToolStripMenuItem_ClickText1, My.Resources.FavRemoveToolStripMenuItem_ClickText2, _
@@ -1964,7 +1964,7 @@ Public Class TweenMain
     End Sub
 
     Private Sub ContextMenuStrip2_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuStrip2.Opening
-        If ListTab.SelectedTab.Text = "Direct" Then
+        If ListTab.SelectedTab.Text = DEFAULTTAB.DM Then
             FavAddToolStripMenuItem.Enabled = False
             FavRemoveToolStripMenuItem.Enabled = False
             StatusOpenMenuItem.Enabled = False
@@ -1992,7 +1992,7 @@ Public Class TweenMain
     End Sub
 
     Private Sub DeleteStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DeleteStripMenuItem.Click
-        If _curTab.Text <> "Direct" Then
+        If _curTab.Text <> DEFAULTTAB.DM Then
             Dim myPost As Boolean = False
             For Each idx As Integer In _curList.SelectedIndices
                 If GetCurTabPost(idx).IsMe Then
@@ -2015,7 +2015,7 @@ Public Class TweenMain
             Dim rslt As Boolean = True
             For Each Id As Long In _statuses.GetId(_curTab.Text, _curList.SelectedIndices)
                 Dim rtn As String = ""
-                If _curTab.Text = "Direct" Then
+                If _curTab.Text = DEFAULTTAB.DM Then
                     rtn = Twitter.RemoveDirectMessage(Id)
                 Else
                     If _statuses.Item(Id).IsMe Then
@@ -2091,9 +2091,9 @@ Public Class TweenMain
 
     Private Sub DoRefresh()
         Select Case _curTab.Text
-            Case "Reply"
+            Case DEFAULTTAB.REPLY
                 GetTimeline(WORKERTYPE.Reply, 1, 0)
-            Case "Direct"
+            Case DEFAULTTAB.DM
                 GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
             Case Else
                 GetTimeline(WORKERTYPE.Timeline, 1, 0)
@@ -3128,7 +3128,7 @@ RETRY2:
 
         NameLabel.ForeColor = System.Drawing.SystemColors.ControlText
         DateTimeLabel.Text = _curPost.PDate.ToString()
-        If _curPost.IsOwl AndAlso (SettingDialog.OneWayLove OrElse _curTab.Text = "Direct") Then NameLabel.ForeColor = _clOWL
+        If _curPost.IsOwl AndAlso (SettingDialog.OneWayLove OrElse _curTab.Text = DEFAULTTAB.DM) Then NameLabel.ForeColor = _clOWL
         If _curPost.IsFav Then NameLabel.ForeColor = _clFav
 
         If DumpPostClassToolStripMenuItem.Checked Then
@@ -3410,7 +3410,7 @@ RETRY2:
         Dim stp As Integer = 1
         Dim targetId As Long = 0
 
-        If _curTab.Text = "Direct" Then Exit Sub ' Directタブは対象外（見つかるはずがない）
+        If _curTab.Text = DEFAULTTAB.DM Then Exit Sub ' Directタブは対象外（見つかるはずがない）
         If _curList.SelectedIndices.Count = 0 Then Exit Sub '未選択も処理しない
 
         targetId = GetCurTabPost(_curList.SelectedIndices(0)).Id
@@ -3437,7 +3437,7 @@ RETRY2:
 
         Dim found As Boolean = False
         For tabidx As Integer = fIdx To toIdx Step stp
-            If ListTab.TabPages(tabidx).Text = "Direct" Then Continue For ' Directタブは対象外
+            If ListTab.TabPages(tabidx).Text = DEFAULTTAB.DM Then Continue For ' Directタブは対象外
             '_itemCache = Nothing
             '_postCache = Nothing
             For idx As Integer = 0 To DirectCast(ListTab.TabPages(tabidx).Controls(0), DetailsListView).VirtualListSize - 1
@@ -3921,7 +3921,7 @@ RETRY2:
             ' アイテムが1件以上選択されている
             If _curList.SelectedIndices.Count = 1 AndAlso Not isAll AndAlso _curPost IsNot Nothing Then
                 ' 単独ユーザー宛リプライまたはDM
-                If (ListTab.SelectedTab.Text = "Direct" AndAlso isAuto) OrElse (Not isAuto AndAlso Not isReply) Then
+                If (ListTab.SelectedTab.Text = DEFAULTTAB.DM AndAlso isAuto) OrElse (Not isAuto AndAlso Not isReply) Then
                     ' ダイレクトメッセージ
                     StatusText.Text = "D " + _curPost.Name + " " + StatusText.Text
                     StatusText.SelectionStart = StatusText.Text.Length
@@ -4066,10 +4066,10 @@ RETRY2:
         If idx = -1 Then idx = 0
         SoundFileComboBox.SelectedIndex = idx
         UreadManageMenuItem.Checked = tb.UnreadManage
-        If _rclickTabName = "Recent" OrElse _rclickTabName = "Direct" OrElse _rclickTabName = "Favourites" Then
+        If _rclickTabName = DEFAULTTAB.RECENT OrElse _rclickTabName = DEFAULTTAB.DM OrElse _rclickTabName = DEFAULTTAB.FAV Then
             FilterEditMenuItem.Enabled = False
             DeleteTabMenuItem.Enabled = False
-        ElseIf _rclickTabName = "Reply" Then
+        ElseIf _rclickTabName = DEFAULTTAB.REPLY Then
             FilterEditMenuItem.Enabled = True
             DeleteTabMenuItem.Enabled = False
         Else
@@ -4123,8 +4123,8 @@ RETRY2:
     End Sub
 
     Private Sub FilterEditMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FilterEditMenuItem.Click
-        If _rclickTabName = "" OrElse _rclickTabName = "Recent" OrElse _rclickTabName = "Direct" _
-                OrElse _rclickTabName = "Favourites" Then Exit Sub
+        If _rclickTabName = "" OrElse _rclickTabName = DEFAULTTAB.RECENT OrElse _rclickTabName = DEFAULTTAB.DM _
+                OrElse _rclickTabName = DEFAULTTAB.FAV Then Exit Sub
 
         fDialog.SetCurrent(_rclickTabName)
         fDialog.ShowDialog()
@@ -4500,11 +4500,11 @@ RETRY2:
                     ttl.Append(_history(_history.Count - 2).Replace(vbCrLf, ""))
                 End If
             Case DispTitleEnum.UnreadRepCount
-                ttl.AppendFormat(My.Resources.SetMainWindowTitleText1, _statuses.Tabs("Reply").UnreadCount + _statuses.Tabs("Direct").UnreadCount)
+                ttl.AppendFormat(My.Resources.SetMainWindowTitleText1, _statuses.Tabs(DEFAULTTAB.REPLY).UnreadCount + _statuses.Tabs(DEFAULTTAB.DM).UnreadCount)
             Case DispTitleEnum.UnreadAllCount
                 ttl.AppendFormat(My.Resources.SetMainWindowTitleText2, ur)
             Case DispTitleEnum.UnreadAllRepCount
-                ttl.AppendFormat(My.Resources.SetMainWindowTitleText3, ur, _statuses.Tabs("Reply").UnreadCount + _statuses.Tabs("Direct").UnreadCount)
+                ttl.AppendFormat(My.Resources.SetMainWindowTitleText3, ur, _statuses.Tabs(DEFAULTTAB.REPLY).UnreadCount + _statuses.Tabs(DEFAULTTAB.DM).UnreadCount)
             Case DispTitleEnum.UnreadCountAllCount
                 ttl.AppendFormat(My.Resources.SetMainWindowTitleText4, ur, al)
         End Select
@@ -4515,7 +4515,7 @@ RETRY2:
     Private Sub SetStatusLabel()
         'ステータス欄にカウント表示
         'タブ未読数/タブ発言数 全未読数/総発言数 (未読＠＋未読DM数)
-        Dim urat As Integer = _statuses.Tabs("Reply").UnreadCount + _statuses.Tabs("Direct").UnreadCount
+        Dim urat As Integer = _statuses.Tabs(DEFAULTTAB.REPLY).UnreadCount + _statuses.Tabs(DEFAULTTAB.DM).UnreadCount
         Dim ur As Integer = 0
         Dim al As Integer = 0
         Dim tur As Integer = 0
@@ -5035,7 +5035,7 @@ RETRY2:
         Dim cnt As Integer = 0
         'Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
 
-        If _curTab.Text = "Direct" OrElse _curList.SelectedIndices.Count = 0 Then Exit Sub
+        If _curTab.Text = DEFAULTTAB.DM OrElse _curList.SelectedIndices.Count = 0 Then Exit Sub
 
         If _curList.SelectedIndices.Count > 1 Then
             If MessageBox.Show(My.Resources.BlackFavAddToolStripMenuItem_ClickText1, My.Resources.BlackFavAddToolStripMenuItem_ClickText2, _

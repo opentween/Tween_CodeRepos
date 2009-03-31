@@ -350,10 +350,10 @@ Public NotInheritable Class SettingToConfig
             tconf = GetValueOrDefault("tabs", New List(Of XmlConfiguration))
             If tconf.Count = 0 Then
                 Dim tdic As New Dictionary(Of String, TabClass)
-                tdic.Add("Recent", New TabClass)
-                tdic.Add("Reply", New TabClass)
-                tdic.Add("Direct", New TabClass)
-                tdic.Add("Favorites", New TabClass)
+                tdic.Add(DEFAULTTAB.RECENT, New TabClass)
+                tdic.Add(DEFAULTTAB.REPLY, New TabClass)
+                tdic.Add(DEFAULTTAB.DM, New TabClass)
+                tdic.Add(DEFAULTTAB.FAV, New TabClass)
                 Return tdic
             End If
             Dim tbd As New Dictionary(Of String, TabClass)
