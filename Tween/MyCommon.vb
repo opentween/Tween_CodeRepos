@@ -101,6 +101,22 @@ Public Module MyCommon
         OpenUri                 'Uri開く
     End Enum
 
+    Public Structure DEFAULTTAB
+        Const RECENT As String = "Recent"
+        Const REPLY As String = "Reply"
+        Const DM As String = "Direct"
+        Const FAV As String = "Favourites"
+
+        Private dummy As String
+
+        Private Shadows Function ReferenceEquals() As Object
+            Return New Object
+        End Function
+        Private Shadows Function Equals() As Object
+            Return New Object
+        End Function
+    End Structure
+
     Public Const Block As Object = Nothing
     Public TraceFlag As Boolean = False
 
@@ -258,8 +274,8 @@ retry:
 
     ' デフォルトタブの判定処理
     Public Function IsDefaultTab(ByVal tabName As String) As Boolean
-        If tabName = "Recent" OrElse tabName = "Reply" _
-                OrElse tabName = "Direct" OrElse tabName = "Favorites" Then
+        If tabName = DEFAULTTAB.RECENT OrElse tabName = DEFAULTTAB.REPLY _
+                OrElse tabName = DEFAULTTAB.DM OrElse tabName = DEFAULTTAB.FAV Then
             Return True
         Else
             Return False

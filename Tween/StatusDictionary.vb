@@ -344,14 +344,14 @@ Public NotInheritable Class TabInformations
                 Dim exist As Boolean = False
                 Dim Id As Long = _tabs(TabName).GetId(idx)
                 For Each key As String In _tabs.Keys
-                    If Not key = TabName AndAlso Not key = "Direct" Then
+                    If Not key = TabName AndAlso Not key = DEFAULTTAB.DM Then
                         If _tabs(key).Contains(Id) Then
                             exist = True
                             Exit For
                         End If
                     End If
                 Next
-                If Not exist Then _tabs("Recent").Add(Id, _statuses(Id).IsRead, False)
+                If Not exist Then _tabs(DEFAULTTAB.RECENT).Add(Id, _statuses(Id).IsRead, False)
             Next
 
             _tabs.Remove(TabName)
@@ -598,19 +598,19 @@ Public NotInheritable Class TabInformations
                     End If
                 Next
                 If Not mv Then  '移動されなかったらRecentに追加
-                    _tabs("Recent").Add(post.Id, post.IsRead, True)
-                    If Not _tabs("Recent").SoundFile = "" AndAlso _soundFile = "" Then _soundFile = _tabs("Recent").SoundFile
-                    If _tabs("Recent").Notify Then add = True
+                    _tabs(DEFAULTTAB.RECENT).Add(post.Id, post.IsRead, True)
+                    If Not _tabs(DEFAULTTAB.RECENT).SoundFile = "" AndAlso _soundFile = "" Then _soundFile = _tabs(DEFAULTTAB.RECENT).SoundFile
+                    If _tabs(DEFAULTTAB.RECENT).Notify Then add = True
                 End If
                 If post.IsReply Then    'ReplyだったらReplyタブに追加
-                    _tabs("Reply").Add(post.Id, post.IsRead, True)
-                    If Not _tabs("Reply").SoundFile = "" Then _soundFile = _tabs("Reply").SoundFile
-                    If _tabs("Reply").Notify Then add = True
+                    _tabs(DEFAULTTAB.REPLY).Add(post.Id, post.IsRead, True)
+                    If Not _tabs(DEFAULTTAB.REPLY).SoundFile = "" Then _soundFile = _tabs(DEFAULTTAB.REPLY).SoundFile
+                    If _tabs(DEFAULTTAB.REPLY).Notify Then add = True
                 End If
                 If post.IsFav Then    'Fav済み発言だったらFavoritesタブに追加
-                    _tabs("Favourites").Add(post.Id, post.IsRead, True)
-                    If Not _tabs("Favourites").SoundFile = "" Then _soundFile = _tabs("Favourites").SoundFile
-                    If _tabs("Favourites").Notify Then add = True
+                    _tabs(DEFAULTTAB.FAV).Add(post.Id, post.IsRead, True)
+                    If Not _tabs(DEFAULTTAB.FAV).SoundFile = "" Then _soundFile = _tabs(DEFAULTTAB.FAV).SoundFile
+                    If _tabs(DEFAULTTAB.FAV).Notify Then add = True
                 End If
                 If add Then _notifyPosts.Add(post)
             Else
@@ -738,7 +738,7 @@ Public NotInheritable Class TabInformations
 
     Public Sub FilterAll()
         SyncLock LockObj
-            Dim tbr As TabClass = _tabs("Recent")
+            Dim tbr As TabClass = _tabs(DEFAULTTAB.RECENT)
             For Each key As String In _tabs.Keys
                 Dim tb As TabClass = _tabs(key)
                 If tb.FilterModified Then
@@ -757,8 +757,8 @@ Public NotInheritable Class TabInformations
                             Case HITRESULT.Move
                                 tbr.Remove(post.Id)
                             Case HITRESULT.None
-                                If key = "Reply" And post.IsReply Then _tabs("Reply").Add(post.Id, post.IsRead, True)
-                                If post.IsFav Then _tabs("Favorites").Add(post.Id, post.IsRead, True)
+                                If key = DEFAULTTAB.REPLY And post.IsReply Then _tabs(DEFAULTTAB.REPLY).Add(post.Id, post.IsRead, True)
+                                If post.IsFav Then _tabs(DEFAULTTAB.FAV).Add(post.Id, post.IsRead, True)
                         End Select
                     Next
                     tb.AddSubmit()  '振分確定
