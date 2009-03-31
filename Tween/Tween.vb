@@ -1406,19 +1406,11 @@ Public Class TweenMain
                     Dim post As PostClass = _statuses.Item(args.ids(i))
                     args.page = i + 1
                     bw.ReportProgress(50, MakeStatusMessage(args, False))
-                    bw.ReportProgress(60, MakeStatusMessage(args, False))
                     If post.IsFav Then
                         ret = Twitter.PostFavRemove(post.Id)
                         If ret.Length = 0 Then
                             args.sIds.Add(post.Id)
                             post.IsFav = False    'リスト再描画必要
-                            _statuses.Tabs.Item("Favourites").Remove(post.Id)
-                            If _curTab.Text.Equals("Favourites") Then
-                                _itemCache = Nothing    'キャッシュ破棄
-                                _postCache = Nothing
-                                _curPost = Nothing
-                                _curItemIndex = -1
-                            End If
                         End If
                     End If
                 Next
@@ -1652,6 +1644,21 @@ Public Class TweenMain
             '_initial = False    '起動時モード終了
         End If
 
+        If rslt.type = WORKERTYPE.FavRemove Then
+            Dim nm As Integer = 0
+            For Each i As Long In rslt.sIds
+                _statuses.RemovePost("Favourites", i)
+                nm += 1
+            Next
+            If _curTab.Text.Equals("Favourites") Then
+                _curList.VirtualListSize -= nm
+                _itemCache = Nothing    'キャッシュ破棄
+                _postCache = Nothing
+                _curPost = Nothing
+                _curItemIndex = -1
+            End If
+        End If
+
         'リストに反映
         Dim busy As Boolean = False
         For Each bw As BackgroundWorker In _bw
@@ -1720,14 +1727,20 @@ Public Class TweenMain
                 ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
             Case WORKERTYPE.FavAdd, WORKERTYPE.BlackFavAdd, WORKERTYPE.FavRemove
                 _curList.BeginUpdate()
-                For i As Integer = 0 To rslt.sIds.Count - 1
-                    If _curTab.Text.Equals(rslt.tName) Then
-                        Dim idx As Integer = _statuses.Tabs(rslt.tName).GetIndex(rslt.sIds(i))
-                        Dim post As PostClass = _statuses.Item(rslt.sIds(i))
-                        ChangeCacheStyleRead(post.IsRead, idx, _curTab)
-                        If idx = _curItemIndex Then DispSelectedPost() '選択アイテム再表示
-                    End If
-                Next
+                If rslt.type = WORKERTYPE.FavRemove AndAlso _curTab.Text.Equals("Favourites") Then
+                    For i As Integer = 0 To _curList.VirtualListSize - 1
+                        '
+                    Next
+                Else
+                    For i As Integer = 0 To rslt.sIds.Count - 1
+                        If _curTab.Text.Equals(rslt.tName) Then
+                            Dim idx As Integer = _statuses.Tabs(rslt.tName).GetIndex(rslt.sIds(i))
+                            Dim post As PostClass = _statuses.Item(rslt.sIds(i))
+                            ChangeCacheStyleRead(post.IsRead, idx, _curTab)
+                            If idx = _curItemIndex Then DispSelectedPost() '選択アイテム再表示
+                        End If
+                    Next
+                End If
                 _curList.EndUpdate()
             Case WORKERTYPE.PostMessage
                 urlUndoBuffer = Nothing

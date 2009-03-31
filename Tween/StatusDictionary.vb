@@ -425,6 +425,21 @@ Public NotInheritable Class TabInformations
         Me.SortPosts()
     End Sub
 
+    Public Sub RemovePost(ByVal Name As String, ByVal Id As Long)
+        SyncLock LockObj
+            Dim post As PostClass = _statuses(Id)
+            '指定タブから該当ID削除
+            Dim tab As TabClass = _tabs(Name)
+            If tab.Contains(Id) Then
+                If tab.UnreadManage AndAlso Not post.IsRead Then    '未読管理
+                    tab.UnreadCount -= 1
+                    Me.SetNextUnreadId(Id, tab)
+                End If
+                tab.Remove(Id)
+            End If
+        End SyncLock
+    End Sub
+
     Public Sub RemovePost(ByVal Id As Long)
         SyncLock LockObj
             Dim post As PostClass = _statuses(Id)
