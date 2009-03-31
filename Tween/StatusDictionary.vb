@@ -592,6 +592,11 @@ Public NotInheritable Class TabInformations
                     If Not _tabs("Reply").SoundFile = "" Then _soundFile = _tabs("Reply").SoundFile
                     If _tabs("Reply").Notify Then add = True
                 End If
+                If post.IsFav Then    'Fav済み発言だったらFavoritesタブに追加
+                    _tabs("Favourites").Add(post.Id, post.IsRead, True)
+                    If Not _tabs("Favourites").SoundFile = "" Then _soundFile = _tabs("Favourites").SoundFile
+                    If _tabs("Favourites").Notify Then add = True
+                End If
                 If add Then _notifyPosts.Add(post)
             Else
                 _tabs("Direct").Add(post.Id, post.IsRead, True)
@@ -738,6 +743,7 @@ Public NotInheritable Class TabInformations
                                 tbr.Remove(post.Id)
                             Case HITRESULT.None
                                 If key = "Reply" And post.IsReply Then _tabs("Reply").Add(post.Id, post.IsRead, True)
+                                If post.IsFav Then _tabs("Favorites").Add(post.Id, post.IsRead, True)
                         End Select
                     Next
                     tb.AddSubmit()  '振分確定

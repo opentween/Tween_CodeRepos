@@ -259,7 +259,7 @@ retry:
     ' デフォルトタブの判定処理
     Public Function IsDefaultTab(ByVal tabName As String) As Boolean
         If tabName = "Recent" OrElse tabName = "Reply" _
-                OrElse tabName = "Direct" Then
+                OrElse tabName = "Direct" OrElse tabName = "Favorites" Then
             Return True
         Else
             Return False

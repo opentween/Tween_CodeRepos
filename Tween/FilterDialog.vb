@@ -364,7 +364,7 @@ Public Class FilterDialog
         _sts = TabInformations.GetInstance()
         ComboTabs.Items.Clear()
         For Each key As String In _sts.Tabs.Keys
-            If key <> "Recent" AndAlso key <> "Direct" Then
+            If key <> "Recent" AndAlso key <> "Direct" AndAlso key <> "Favorites" Then
                 ComboTabs.Items.Add(key)
             End If
         Next
