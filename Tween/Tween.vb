@@ -1646,6 +1646,7 @@ Public Class TweenMain
 
         If rslt.type = WORKERTYPE.FavRemove Then
             Dim nm As Integer = 0
+            DispSelectedPost()          ' 詳細画面書き直し
             For Each i As Long In rslt.sIds
                 _statuses.RemovePost("Favourites", i)
                 nm += 1
