@@ -353,6 +353,7 @@ Public NotInheritable Class SettingToConfig
                 tdic.Add("Recent", New TabClass)
                 tdic.Add("Reply", New TabClass)
                 tdic.Add("Direct", New TabClass)
+                tdic.Add("Favorites", New TabClass)
                 Return tdic
             End If
             Dim tbd As New Dictionary(Of String, TabClass)

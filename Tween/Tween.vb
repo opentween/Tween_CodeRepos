@@ -666,6 +666,11 @@ Public Class TweenMain
 
         '<<<<<<<<タブ関連>>>>>>>
         _statuses.Tabs = _cfg.Tabs
+        'デフォルトタブの存在チェック、ない場合には追加
+        If Not _statuses.Tabs.ContainsKey("Recent") Then _statuses.Tabs.Add("Recent", New TabClass)
+        If Not _statuses.Tabs.ContainsKey("Reply") Then _statuses.Tabs.Add("Reply", New TabClass)
+        If Not _statuses.Tabs.ContainsKey("Direct") Then _statuses.Tabs.Add("Direct", New TabClass)
+        If Not _statuses.Tabs.ContainsKey("Favourites") Then _statuses.Tabs.Add("Favourites", New TabClass)
         For Each tn As String In _statuses.Tabs.Keys
             If Not AddNewTab(tn, True) Then Throw New Exception("タブ作成エラー")
         Next
@@ -717,6 +722,10 @@ Public Class TweenMain
         ''DirectMsgタブ
         If _section.ListElement.Item("Direct") Is Nothing Then
             _section.ListElement.Add(New ListElement("Direct"))
+        End If
+        ''Favoritesタブ
+        If _section.ListElement.Item("Favourites") Is Nothing Then
+            _section.ListElement.Add(New ListElement("Favourites"))
         End If
         _cfg = New SettingToConfig
         _cfg.AlwaysTop = _section.AlwaysTop
@@ -1386,6 +1395,7 @@ Public Class TweenMain
                             args.sIds.Add(post.Id)
                             post.IsFav = True    'リスト再描画必要
                             _favTimestamps.Add(Now)
+                            _statuses.Tabs.Item("Favourites").Add(post.Id, post.IsRead, False)
                         End If
                     End If
                 Next
@@ -1396,11 +1406,19 @@ Public Class TweenMain
                     Dim post As PostClass = _statuses.Item(args.ids(i))
                     args.page = i + 1
                     bw.ReportProgress(50, MakeStatusMessage(args, False))
+                    bw.ReportProgress(60, MakeStatusMessage(args, False))
                     If post.IsFav Then
                         ret = Twitter.PostFavRemove(post.Id)
                         If ret.Length = 0 Then
                             args.sIds.Add(post.Id)
                             post.IsFav = False    'リスト再描画必要
+                            _statuses.Tabs.Item("Favourites").Remove(post.Id)
+                            If _curTab.Text.Equals("Favourites") Then
+                                _itemCache = Nothing    'キャッシュ破棄
+                                _postCache = Nothing
+                                _curPost = Nothing
+                                _curItemIndex = -1
+                            End If
                         End If
                     End If
                 Next
@@ -4034,7 +4052,7 @@ RETRY2:
         If idx = -1 Then idx = 0
         SoundFileComboBox.SelectedIndex = idx
         UreadManageMenuItem.Checked = tb.UnreadManage
-        If _rclickTabName = "Recent" OrElse _rclickTabName = "Direct" Then
+        If _rclickTabName = "Recent" OrElse _rclickTabName = "Direct" OrElse _rclickTabName = "Favourites" Then
             FilterEditMenuItem.Enabled = False
             DeleteTabMenuItem.Enabled = False
         ElseIf _rclickTabName = "Reply" Then
@@ -4091,7 +4109,8 @@ RETRY2:
     End Sub
 
     Private Sub FilterEditMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FilterEditMenuItem.Click
-        If _rclickTabName = "" OrElse _rclickTabName = "Recent" OrElse _rclickTabName = "Direct" Then Exit Sub
+        If _rclickTabName = "" OrElse _rclickTabName = "Recent" OrElse _rclickTabName = "Direct" _
+                OrElse _rclickTabName = "Favourites" Then Exit Sub
 
         fDialog.SetCurrent(_rclickTabName)
         fDialog.ShowDialog()
