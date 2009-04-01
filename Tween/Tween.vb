@@ -699,7 +699,7 @@ Public Class TweenMain
 
         If System.IO.File.Exists(Path.Combine(My.Application.Info.DirectoryPath, "TweenConf.xml")) Then
             _cfg = SettingToConfig.Load()
-            Exit Sub
+            If _cfg IsNot Nothing Then Exit Sub
         End If
         If System.IO.File.Exists(Path.Combine(My.Application.Info.DirectoryPath, My.Application.Info.AssemblyName + ".exe.config")) = False Then
             _cfg = New SettingToConfig

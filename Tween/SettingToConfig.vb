@@ -338,9 +338,14 @@ Public NotInheritable Class SettingToConfig
     End Sub
 
     Public Shared Shadows Function Load() As SettingToConfig
-        Dim config As SettingToConfig = DirectCast(New XmlSerializer(GetType(SettingToConfig)) _
-            .Deserialize(XmlReader.Create(_filePath)), SettingToConfig _
-        )
+        Dim config As SettingToConfig = Nothing
+        Try
+            config = DirectCast(New XmlSerializer(GetType(SettingToConfig)) _
+                            .Deserialize(XmlReader.Create(_filePath)), SettingToConfig)
+        Catch ex As InvalidOperationException
+            Return Nothing
+        End Try
+
         Return config
     End Function
 
