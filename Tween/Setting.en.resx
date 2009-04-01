@@ -220,14 +220,23 @@
   <data name="Label16.Text" xml:space="preserve">
     <value>Colorize One-way following</value>
   </data>
+  <data name="btnInputFont.Text" xml:space="preserve">
+    <value>Font...</value>
+  </data>
+  <data name="Label65.Size" type="System.Drawing.Size, System.Drawing">
+    <value>97, 12</value>
+  </data>
+  <data name="Label65.Text" xml:space="preserve">
+    <value>Font of input field</value>
+  </data>
   <data name="btnInputBackcolor.Text" xml:space="preserve">
     <value>Back...</value>
   </data>
   <data name="Label52.Size" type="System.Drawing.Size, System.Drawing">
-    <value>174, 12</value>
+    <value>169, 12</value>
   </data>
   <data name="Label52.Text" xml:space="preserve">
-    <value>Input field backcolor when active</value>
+    <value>Backcolor of focused input field</value>
   </data>
   <data name="btnUnread.Text" xml:space="preserve">
     <value>Font&amp;&amp;Fore...</value>
@@ -592,11 +601,17 @@
   <data name="TabPage1.Text" xml:space="preserve">
     <value>Basic</value>
   </data>
+  <data name="CheckProtectNotInclude.Size" type="System.Drawing.Size, System.Drawing">
+    <value>160, 16</value>
+  </data>
+  <data name="CheckProtectNotInclude.Text" xml:space="preserve">
+    <value>Execlude protected tweets</value>
+  </data>
   <data name="Label42.Size" type="System.Drawing.Size, System.Drawing">
-    <value>115, 12</value>
+    <value>144, 12</value>
   </data>
   <data name="Label42.Text" xml:space="preserve">
-    <value>Use API for Tweeting</value>
+    <value>Clipboard copy or ReTweet</value>
   </data>
   <data name="CheckAutoConvertUrl.Size" type="System.Drawing.Size, System.Drawing">
     <value>58, 16</value>
@@ -676,6 +691,18 @@
   </data>
   <data name="TabPage4.Text" xml:space="preserve">
     <value>Fonts &amp; Colors</value>
+  </data>
+  <data name="Label64.Size" type="System.Drawing.Size, System.Drawing">
+    <value>371, 12</value>
+  </data>
+  <data name="Label64.Text" xml:space="preserve">
+    <value>※Adjust Connection timeout if the error of timeout happens frequently.</value>
+  </data>
+  <data name="Label63.Size" type="System.Drawing.Size, System.Drawing">
+    <value>130, 12</value>
+  </data>
+  <data name="Label63.Text" xml:space="preserve">
+    <value>Connection timeout(sec)</value>
   </data>
   <data name="Label55.Size" type="System.Drawing.Size, System.Drawing">
     <value>320, 12</value>
