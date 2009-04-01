@@ -165,7 +165,7 @@ Public Module MyCommon
                 writer.WriteLine(My.Resources.UnhandledExceptionText2)
                 writer.WriteLine(My.Resources.UnhandledExceptionText3)
                 writer.WriteLine(My.Resources.UnhandledExceptionText11 + princ.IsInRole(WindowsBuiltInRole.Administrator).ToString)
-                writer.WriteLine(My.Resources.UnhandledExceptionText11 + princ.IsInRole(WindowsBuiltInRole.User).ToString)
+                writer.WriteLine(My.Resources.UnhandledExceptionText12 + princ.IsInRole(WindowsBuiltInRole.User).ToString)
                 writer.WriteLine()
                 writer.WriteLine(My.Resources.UnhandledExceptionText4)
                 writer.WriteLine(My.Resources.UnhandledExceptionText5, Environment.OSVersion.VersionString)
