@@ -247,6 +247,9 @@ Public Module Twitter
             Dim retMsg As String = ""
             Dim resStatus As String = ""
 
+            Static redirectToTimeline As String = ""
+            Static redirectToReply As String = ""
+
             If _signed = False Then
                 retMsg = SignIn()
                 If retMsg.Length > 0 Then
@@ -265,10 +268,27 @@ Public Module Twitter
                 pageQuery = _pageQry + page.ToString
             End If
 
+RETRY:
             If gType = WORKERTYPE.Timeline Then
-                retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _homePath + pageQuery, resStatus), String)
+                If redirectToTimeline = "" Then
+                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _homePath + pageQuery, resStatus), String)
+                    If resStatus.StartsWith("Found") Then
+                        redirectToTimeline = resStatus.Substring(6)
+                        GoTo RETRY
+                    End If
+                Else
+                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToTimeline + pageQuery, resStatus), String)
+                End If
             Else
-                retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _replyPath + pageQuery, resStatus), String)
+                If redirectToReply = "" Then
+                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _replyPath + pageQuery, resStatus), String)
+                    If resStatus.StartsWith("Found") Then
+                        redirectToReply = resStatus.Substring(6)
+                        GoTo RETRY
+                    End If
+                Else
+                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToReply + pageQuery, resStatus), String)
+                End If
             End If
 
             If retMsg.Length = 0 Then
@@ -695,8 +715,10 @@ Public Module Twitter
             Dim retMsg As String = ""
             Dim resStatus As String = ""
 
+            Static redirectToDmRcv As String = ""
+            Static redirectToDmSnd As String = ""
+
             _getDm = False
-            'endPage = page
 
             If _signed = False Then
                 retMsg = SignIn()
@@ -709,11 +731,27 @@ Public Module Twitter
 
             'リクエストメッセージを作成する
             Dim pageQuery As String = _pageQry + page.ToString
-
+RETRY:
             If gType = WORKERTYPE.DirectMessegeRcv Then
-                retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathRcv + pageQuery, resStatus), String)
+                If redirectToDmRcv = "" Then
+                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathRcv + pageQuery, resStatus), String)
+                    If resStatus.StartsWith("Found") Then
+                        redirectToDmRcv = resStatus.Substring(6)
+                        GoTo RETRY
+                    End If
+                Else
+                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToDmRcv + pageQuery, resStatus), String)
+                End If
             Else
-                retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathSnt + pageQuery, resStatus), String)
+                If redirectToDmSnd = "" Then
+                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathSnt + pageQuery, resStatus), String)
+                    If resStatus.StartsWith("Found") Then
+                        redirectToDmSnd = resStatus.Substring(6)
+                        GoTo RETRY
+                    End If
+                Else
+                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToDmSnd + pageQuery, resStatus), String)
+                End If
             End If
 
             If retMsg.Length = 0 Then
@@ -863,16 +901,16 @@ Public Module Twitter
                     End Try
 
 #If 0 Then
-                    'Get Date
-                    Try
-                        pos1 = strPost.IndexOf(_parseDate, pos2, StringComparison.Ordinal)
-                        pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length, StringComparison.Ordinal)
-                        post.PDate = DateTime.ParseExact(strPost.Substring(pos1 + _parseDate.Length, pos2 - pos1 - _parseDate.Length), "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz", System.Globalization.DateTimeFormatInfo.InvariantInfo, Globalization.DateTimeStyles.None)
-                    Catch ex As Exception
-                        _signed = False
-                        TraceOut("DM-Date:" + strPost)
-                        Return "GetDirectMessage -> Err: Can't get date."
-                    End Try
+                'Get Date
+                Try
+                    pos1 = strPost.IndexOf(_parseDate, pos2, StringComparison.Ordinal)
+                    pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length, StringComparison.Ordinal)
+                    post.PDate = DateTime.ParseExact(strPost.Substring(pos1 + _parseDate.Length, pos2 - pos1 - _parseDate.Length), "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz", System.Globalization.DateTimeFormatInfo.InvariantInfo, Globalization.DateTimeStyles.None)
+                Catch ex As Exception
+                    _signed = False
+                    TraceOut("DM-Date:" + strPost)
+                    Return "GetDirectMessage -> Err: Can't get date."
+                End Try
 #Else
                     '取得できなくなったため暫定対応(2/26)
                     post.PDate = Now()
