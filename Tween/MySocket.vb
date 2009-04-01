@@ -197,7 +197,13 @@ Public NotInheritable Class MySocket
                         Next
                     End SyncLock
                 End If
-                resStatus = webRes.StatusCode.ToString() + " " + webRes.ResponseUri.AbsoluteUri
+
+                If webRes.StatusCode = HttpStatusCode.Found Then
+                    resStatus = webRes.StatusCode.ToString() + " " + webRes.Headers.Item(HttpResponseHeader.Location)
+                Else
+                    resStatus = webRes.StatusCode.ToString() + " " + webRes.ResponseUri.AbsoluteUri
+                End If
+
 
                 Using strm As Stream = webRes.GetResponseStream()
                     Select Case reqType
