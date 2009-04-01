@@ -23,6 +23,7 @@
 
 Imports System.Text
 Imports System.Globalization
+Imports System.Security.Principal
 
 Public Module MyCommon
     Private ReadOnly LockObj As New Object
@@ -157,9 +158,14 @@ Public Module MyCommon
             Dim fileName As String = String.Format("Tween-{0:0000}{1:00}{2:00}-{3:00}{4:00}{5:00}.log", now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second)
 
             Using writer As IO.StreamWriter = New IO.StreamWriter(fileName)
+                Dim ident As WindowsIdentity = WindowsIdentity.GetCurrent()
+                Dim princ As New WindowsPrincipal(ident)
+
                 writer.WriteLine(My.Resources.UnhandledExceptionText1, DateTime.Now.ToString())
                 writer.WriteLine(My.Resources.UnhandledExceptionText2)
                 writer.WriteLine(My.Resources.UnhandledExceptionText3)
+                writer.WriteLine(My.Resources.UnhandledExceptionText11 + princ.IsInRole(WindowsBuiltInRole.Administrator).ToString)
+                writer.WriteLine(My.Resources.UnhandledExceptionText11 + princ.IsInRole(WindowsBuiltInRole.User).ToString)
                 writer.WriteLine()
                 writer.WriteLine(My.Resources.UnhandledExceptionText4)
                 writer.WriteLine(My.Resources.UnhandledExceptionText5, Environment.OSVersion.VersionString)

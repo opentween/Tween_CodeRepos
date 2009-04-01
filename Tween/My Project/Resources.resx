@@ -688,4 +688,10 @@
   <data name="TextCountApi_Validating1" xml:space="preserve">
     <value>取得発言数は20～200件を指定してください。</value>
   </data>
+  <data name="UnhandledExceptionText11" xml:space="preserve">
+    <value>Administrator権限：</value>
+  </data>
+  <data name="UnhandledExceptionText12" xml:space="preserve">
+    <value>Users権限：</value>
+  </data>
 </root>
