@@ -614,9 +614,9 @@ Public NotInheritable Class TabInformations
                 End If
                 If add Then _notifyPosts.Add(post)
             Else
-                _tabs("Direct").Add(post.Id, post.IsRead, True)
-                If _tabs("Direct").Notify Then _notifyPosts.Add(post)
-                _soundFile = _tabs("Direct").SoundFile
+                _tabs(DEFAULTTAB.DM).Add(post.Id, post.IsRead, True)
+                If _tabs(DEFAULTTAB.DM).Notify Then _notifyPosts.Add(post)
+                _soundFile = _tabs(DEFAULTTAB.DM).SoundFile
             End If
         Next
     End Sub
