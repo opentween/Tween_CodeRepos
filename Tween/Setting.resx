@@ -3153,9 +3153,6 @@
   <data name="Label67.Text" xml:space="preserve">
     <value>標準取得件数</value>
   </data>
-  <data name="Label67.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
   <data name="&gt;&gt;Label67.Name" xml:space="preserve">
     <value>Label67</value>
   </data>
@@ -3176,9 +3173,6 @@
   </data>
   <data name="TextCountApi.TabIndex" type="System.Int32, mscorlib">
     <value>39</value>
-  </data>
-  <data name="TextCountApi.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
   </data>
   <data name="&gt;&gt;TextCountApi.Name" xml:space="preserve">
     <value>TextCountApi</value>
@@ -3210,9 +3204,6 @@
   <data name="Label66.Text" xml:space="preserve">
     <value>POSTメソッド　（※非推奨）</value>
   </data>
-  <data name="Label66.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
   <data name="&gt;&gt;Label66.Name" xml:space="preserve">
     <value>Label66</value>
   </data>
@@ -3242,9 +3233,6 @@
   </data>
   <data name="CheckPostMethod.Text" xml:space="preserve">
     <value>POSTメソッドで取得</value>
-  </data>
-  <data name="CheckPostMethod.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
   </data>
   <data name="&gt;&gt;CheckPostMethod.Name" xml:space="preserve">
     <value>CheckPostMethod</value>
@@ -3276,9 +3264,6 @@
   <data name="Label43.Text" xml:space="preserve">
     <value>API使用　（オフ=Webから取得）</value>
   </data>
-  <data name="Label43.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
   <data name="&gt;&gt;Label43.Name" xml:space="preserve">
     <value>Label43</value>
   </data>
@@ -3308,9 +3293,6 @@
   </data>
   <data name="CheckUseApi.Text" xml:space="preserve">
     <value>API使用する</value>
-  </data>
-  <data name="CheckUseApi.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
   </data>
   <data name="&gt;&gt;CheckUseApi.Name" xml:space="preserve">
     <value>CheckUseApi</value>
