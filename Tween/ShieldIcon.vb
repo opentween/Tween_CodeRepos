@@ -31,7 +31,7 @@ Public Class ShieldIcon
 
     Public Sub New()
         'NT6 kernelかどうか検査
-        If Environment.OSVersion.Platform <> PlatformID.Win32NT OrElse Environment.OSVersion.Version.Major <> 6 Then
+        If Not IsNT6() Then
             icondata = Nothing
             Return
         End If
