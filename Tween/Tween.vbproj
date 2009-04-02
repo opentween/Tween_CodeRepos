@@ -126,6 +126,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SettingToConfig.vb" />
+    <Compile Include="ShieldIcon.vb" />
     <Compile Include="StatusDictionary.vb" />
     <Compile Include="FilterDialog.Designer.vb">
       <DependentUpon>FilterDialog.vb</DependentUpon>
