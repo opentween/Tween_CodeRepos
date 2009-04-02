@@ -391,4 +391,12 @@ retry:
         End If
         Return newBytes
     End Function
+
+    Public Function IsNT6() As Boolean
+        'NT6 kernelかどうか検査
+        If Environment.OSVersion.Platform <> PlatformID.Win32NT OrElse Environment.OSVersion.Version.Major <> 6 Then
+            Return False
+        End If
+        Return True
+    End Function
 End Module
