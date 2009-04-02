@@ -51,7 +51,6 @@ Public Class ShieldIcon
     Public Sub Dispose()
         If icondata IsNot Nothing Then
             icondata.Dispose()
-            DestroyIcon(sii.hIcon)
         End If
     End Sub
 
