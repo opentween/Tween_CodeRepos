@@ -3745,7 +3745,11 @@ RETRY2:
                 If ListTab IsNot Nothing AndAlso _
                    ListTab.TabPages IsNot Nothing AndAlso _
                    ListTab.TabPages.Count > 0 Then
-                    _cfg.Tabs = _statuses.Tabs
+                    Dim tbs As New Dictionary(Of String, TabClass)
+                    For cnt = 0 To ListTab.TabPages.Count - 1
+                        tbs.Add(ListTab.TabPages(cnt).Text, _statuses.Tabs(ListTab.TabPages(cnt).Text))
+                    Next
+                    _cfg.Tabs = tbs
                 End If
                 _cfg.Save()
             End SyncLock
