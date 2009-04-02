@@ -269,14 +269,14 @@ Public NotInheritable Class MySocket
                             End Select
                             Return img
                         Case REQ_TYPE.ReqGETFile
-                            StreamToFile(strm, My.Application.Info.DirectoryPath + "\TweenNew.exe", webRes.ContentEncoding)
+                            StreamToFile(strm, Path.Combine(Path.GetTempPath(), "TweenNew.exe"), webRes.ContentEncoding)
                         Case REQ_TYPE.ReqGETFileUp
-                            StreamToFile(strm, My.Application.Info.DirectoryPath + "\TweenUp.exe", webRes.ContentEncoding)
+                            StreamToFile(strm, Path.Combine(Path.GetTempPath(), "TweenUp.exe"), webRes.ContentEncoding)
                         Case REQ_TYPE.ReqGETFileRes
-                            If Directory.Exists(My.Application.Info.DirectoryPath + "\en") = False Then
-                                Directory.CreateDirectory(My.Application.Info.DirectoryPath + "\en")
+                            If Directory.Exists(Path.Combine(Path.GetTempPath(), "en")) = False Then
+                                Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "en"))
                             End If
-                            StreamToFile(strm, My.Application.Info.DirectoryPath + "\en\Tween.resourcesNew.dll", webRes.ContentEncoding)
+                            StreamToFile(strm, Path.Combine(Path.GetTempPath(), "en\Tween.resourcesNew.dll"), webRes.ContentEncoding)
                         Case REQ_TYPE.ReqGETForwardTo
                             Dim rtStr As String = ""
                             If webRes.StatusCode = HttpStatusCode.MovedPermanently OrElse _

@@ -31,6 +31,7 @@ Imports System.Web
 Imports System.Reflection
 Imports System.ComponentModel
 Imports System.Xml.XPath
+Imports System.Diagnostics
 
 Public Class TweenMain
     '各種設定
@@ -3063,6 +3064,20 @@ RETRY2:
         CheckNewVersion()
     End Sub
 
+    Private Sub RunTweenUp()
+        Dim pinfo As New ProcessStartInfo
+        pinfo.UseShellExecute = True
+        pinfo.WorkingDirectory = Application.StartupPath
+        pinfo.FileName = Path.Combine(Path.GetTempPath(), "TweenUp.exe")
+        pinfo.Arguments = Application.StartupPath
+        pinfo.Verb = "runas"
+        Try
+            Process.Start(pinfo)
+        Catch ex As Exception
+            MsgBox("TweenUp.exeの実行に失敗しました。(管理者権限が必要です。)")
+        End Try
+    End Sub
+
     Private Sub CheckNewVersion(Optional ByVal startup As Boolean = False)
         Dim retMsg As String = ""
         Dim strVer As String
@@ -3084,7 +3099,7 @@ RETRY2:
                     If retMsg.Length = 0 Then
                         retMsg = Twitter.GetTweenUpBinary()
                         If retMsg.Length = 0 Then
-                            System.Diagnostics.Process.Start(My.Application.Info.DirectoryPath + "\TweenUp.exe")
+                            RunTweenUp()
                             If startup Then
                                 Application.Exit()
                             Else
@@ -3107,7 +3122,7 @@ RETRY2:
                         If retMsg.Length = 0 Then
                             retMsg = Twitter.GetTweenUpBinary()
                             If retMsg.Length = 0 Then
-                                System.Diagnostics.Process.Start(My.Application.Info.DirectoryPath + "\TweenUp.exe")
+                                RunTweenUp()
                                 If startup Then
                                     Application.Exit()
                                 Else
