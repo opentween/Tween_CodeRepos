@@ -71,6 +71,8 @@ Public Module Twitter
     Private _hubServer As String
     Private _defaultTimeOut As Integer      ' MySocketクラスへ渡すタイムアウト待ち時間（秒単位　ミリ秒への換算はMySocketクラス側で行う）
     Private _countApi As Integer
+    Private _usePostMethod As Boolean
+    Private _ApiMethod As MySocket.REQ_TYPE
 
     '共通で使用する状態
     Private _authKey As String              'StatusUpdate、発言削除で使用
@@ -1992,8 +1994,20 @@ RETRY:
     End Property
 
     Public WriteOnly Property CountApi() As Integer
+        'API時の取得件数
         Set(ByVal value As Integer)
             _countApi = value
+        End Set
+    End Property
+
+    Public WriteOnly Property UsePostMethod() As Boolean
+        Set(ByVal value As Boolean)
+            _usePostMethod = value
+            If value Then
+                _ApiMethod = MySocket.REQ_TYPE.ReqPOSTAPI
+            Else
+                _ApiMethod = MySocket.REQ_TYPE.ReqGetAPI
+            End If
         End Set
     End Property
 
@@ -2004,22 +2018,22 @@ RETRY:
         Dim retMsg As String = ""
         Dim resStatus As String = ""
         'スレッド取得は行わず、countで調整
-        Const GET_COUNT As Integer = 60
+        'Const GET_COUNT As Integer = 60
         Const COUNT_QUERY As String = "count="
         Const FRIEND_PATH As String = "/statuses/friends_timeline.xml"
         Const REPLY_PATH As String = "/statuses/replies.xml"
 
         If gType = WORKERTYPE.Timeline Then
-            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + FRIEND_PATH + "?" + COUNT_QUERY + GET_COUNT.ToString(), resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + FRIEND_PATH + "?" + COUNT_QUERY + _countApi.ToString(), resStatus, _ApiMethod), String)
         Else
-            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + REPLY_PATH + "?" + COUNT_QUERY + GET_COUNT.ToString(), resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + REPLY_PATH + "?" + COUNT_QUERY + _countApi.ToString(), resStatus, _ApiMethod), String)
         End If
 
         If retMsg = "" Then Return resStatus
 
         Dim arIdx As Integer = -1
-        Dim dlgt(GET_COUNT) As GetIconImageDelegate    'countQueryに合わせる
-        Dim ar(GET_COUNT) As IAsyncResult              'countQueryに合わせる
+        Dim dlgt(_countApi) As GetIconImageDelegate    'countQueryに合わせる
+        Dim ar(_countApi) As IAsyncResult              'countQueryに合わせる
         Dim xdoc As New XmlDocument
         xdoc.LoadXml(retMsg)
 
@@ -2072,7 +2086,6 @@ RETRY:
                 post.IsOwl = Not followerId.Contains(post.Uid)
             End If
 
-            post.IsOwl = False  'ids取得して判断
             post.IsDm = False
 
             '非同期アイコン取得＆StatusDictionaryに追加
@@ -2107,9 +2120,9 @@ RETRY:
         Const SENT_PATH As String = "/direct_messages/sent.xml"
 
         If gType = WORKERTYPE.DirectMessegeRcv Then
-            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + RECEIVE_PATH, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + RECEIVE_PATH, resStatus, _ApiMethod), String)
         Else
-            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + SENT_PATH, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + SENT_PATH, resStatus, _ApiMethod), String)
         End If
 
         If retMsg = "" Then Return resStatus
@@ -2189,15 +2202,15 @@ RETRY:
         Dim resStatus As String = ""
         Const FOLLOWER_PATH As String = "/followers/ids.xml"
 
-        retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + FOLLOWER_PATH, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + FOLLOWER_PATH, resStatus, _ApiMethod), String)
 
         If retMsg = "" Then Return resStatus
 
         Dim xdoc As New XmlDocument
         xdoc.LoadXml(retMsg)
 
+        followerId.Clear()
         For Each xentryNode As XmlNode In xdoc.DocumentElement.SelectNodes("./id")
-            followerId.Clear()
             followerId.Add(Long.Parse(xentryNode.InnerText))
         Next
 

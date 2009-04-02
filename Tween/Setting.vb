@@ -395,7 +395,7 @@ Public Class Setting
             Exit Sub
         End Try
 
-        If prd <> 0 And (prd < 15 Or prd > 600) Then
+        If prd <> 0 And (prd < 30 Or prd > 600) Then
             MessageBox.Show(My.Resources.TimelinePeriod_ValidatingText2)
             e.Cancel = True
         End If
@@ -443,7 +443,7 @@ Public Class Setting
             Exit Sub
         End Try
 
-        If prd <> 0 And (prd < 15 Or prd > 600) Then
+        If prd <> 0 And (prd < 30 Or prd > 600) Then
             MessageBox.Show(My.Resources.DMPeriod_ValidatingText2)
             e.Cancel = True
         End If

@@ -262,6 +262,7 @@ Public Class XmlConfiguration
                     xdoc.Save(path)
                 Catch ex As IOException
                     '他プロセスで使用中例外の回避（対策考える）
+                    MessageBox.Show("他のプロセスで使用中？書き込めませんでした。", "設定保存", MessageBoxButtons.OK)
                 End Try
             End Using
 
