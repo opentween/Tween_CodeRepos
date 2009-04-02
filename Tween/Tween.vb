@@ -145,6 +145,7 @@ Public Class TweenMain
     Private _bw(9) As BackgroundWorker
     Private cMode As Integer
     Private StatusLabel As New ToolStripLabelHistory
+    Private shield As New ShieldIcon
     '''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 #If DEBUG Then
@@ -242,6 +243,7 @@ Public Class TweenMain
         If _brsBackColorAtTo IsNot Nothing Then _brsBackColorAtTo.Dispose()
         If _brsBackColorNone IsNot Nothing Then _brsBackColorNone.Dispose()
         If _brsDeactiveSelection IsNot Nothing Then _brsDeactiveSelection.Dispose()
+        shield.Dispose()
         StatusLabel.Dispose()
         sf.Dispose()
     End Sub
@@ -308,6 +310,7 @@ Public Class TweenMain
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Me.Visible = False
 
+        VerUpMenuItem.Image = shield.Icon
         If Not My.Application.CommandLineArgs.Count = 0 AndAlso My.Application.CommandLineArgs.Contains("/d") Then TraceFlag = True
         Me.StatusStrip1.Items.Add(StatusLabel)
 
