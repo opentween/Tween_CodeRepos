@@ -2059,6 +2059,15 @@ Public Class TweenMain
               MessageBoxButtons.OKCancel, _
               MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then Exit Sub
 
+        Dim fidx As Integer
+        If _curList.FocusedItem IsNot Nothing Then
+            fidx = _curList.FocusedItem.Index
+        ElseIf _curList.TopItem IsNot Nothing Then
+            fidx = _curList.TopItem.Index
+        Else
+            fidx = 0
+        End If
+
         Try
             Me.Cursor = Cursors.WaitCursor
 
@@ -2094,6 +2103,16 @@ Public Class TweenMain
             _curItemIndex = -1
             For Each tb As TabPage In ListTab.TabPages
                 DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
+                If _curTab.Equals(tb) Then
+                    _curList.SelectedIndices.Clear()
+                    If _statuses.Tabs(tb.Text).AllCount - 1 > fidx Then
+                        _curList.SelectedIndices.Add(fidx)
+                    Else
+                        _curList.SelectedIndices.Add(_statuses.Tabs(tb.Text).AllCount - 1)
+                    End If
+                    _curList.EnsureVisible(_curList.SelectedIndices(0))
+                    _curList.FocusedItem = _curList.Items(_curList.SelectedIndices(0))
+                End If
                 If _statuses.Tabs(tb.Text).UnreadCount = 0 AndAlso tb.ImageIndex = 0 Then tb.ImageIndex = -1
             Next
         Finally

@@ -276,6 +276,9 @@ RETRY:
                     retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _homePath + pageQuery, resStatus), String)
                     If resStatus.StartsWith("Found") Then
                         redirectToTimeline = resStatus.Substring(6)
+                        If redirectToTimeline.Contains("?") Then
+                            redirectToTimeline = redirectToTimeline.Remove(redirectToTimeline.IndexOf("?"))
+                        End If
                         GoTo RETRY
                     End If
                 Else
@@ -286,6 +289,9 @@ RETRY:
                     retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _replyPath + pageQuery, resStatus), String)
                     If resStatus.StartsWith("Found") Then
                         redirectToReply = resStatus.Substring(6)
+                        If redirectToReply.Contains("?") Then
+                            redirectToReply = redirectToReply.Remove(redirectToReply.IndexOf("?"))
+                        End If
                         GoTo RETRY
                     End If
                 Else
@@ -739,6 +745,9 @@ RETRY:
                     retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathRcv + pageQuery, resStatus), String)
                     If resStatus.StartsWith("Found") Then
                         redirectToDmRcv = resStatus.Substring(6)
+                        If redirectToDmRcv.Contains("?") Then
+                            redirectToDmRcv = redirectToDmRcv.Remove(redirectToDmRcv.IndexOf("?"))
+                        End If
                         GoTo RETRY
                     End If
                 Else
@@ -749,6 +758,9 @@ RETRY:
                     retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathSnt + pageQuery, resStatus), String)
                     If resStatus.StartsWith("Found") Then
                         redirectToDmSnd = resStatus.Substring(6)
+                        If redirectToDmSnd.Contains("?") Then
+                            redirectToDmSnd = redirectToDmSnd.Remove(redirectToDmSnd.IndexOf("?"))
+                        End If
                         GoTo RETRY
                     End If
                 Else
@@ -2035,58 +2047,72 @@ RETRY:
         Dim dlgt(_countApi) As GetIconImageDelegate    'countQueryに合わせる
         Dim ar(_countApi) As IAsyncResult              'countQueryに合わせる
         Dim xdoc As New XmlDocument
-        xdoc.LoadXml(retMsg)
+        Try
+            xdoc.LoadXml(retMsg)
+        Catch ex As Exception
+            ExceptionOut(ex)
+            TraceOut(True, retMsg)
+            MessageBox.Show("不正なXMLです。(TL-LoadXml)")
+            Return "Invalid XML!"
+        End Try
 
         For Each xentryNode As XmlNode In xdoc.DocumentElement.SelectNodes("./status")
             Dim xentry As XmlElement = CType(xentryNode, XmlElement)
             Dim post As New PostClass
-            post.PDate = DateTime.ParseExact(xentry.Item("created_at").InnerText, "ddd MMM dd HH:mm:ss zzzz yyyy", System.Globalization.DateTimeFormatInfo.InvariantInfo, System.Globalization.DateTimeStyles.None)
-            post.Id = Long.Parse(xentry.Item("id").InnerText)
-            '二重取得回避
-            SyncLock LockObj
-                If TabInformations.GetInstance.ContainsKey(post.Id) Then Continue For
-            End SyncLock
-            '本文
-            post.Data = xentry.Item("text").InnerText
-            post.Data = post.Data.Replace("<3", "♡")
-            'HTMLに整形
-            post.OriginalData = CreateHtmlAnchor(post.Data, post.ReplyToList)
-            'Source取得（htmlの場合は、中身を取り出し）
-            post.Source = xentry.Item("source").InnerText
-            If post.Source.StartsWith("<") Then
-                Dim rgS As New Regex(">(?<source>.+)<")
-                Dim mS As Match = rgS.Match(post.Source)
-                If mS.Success Then
-                    post.Source = mS.Result("${source}")
+            Try
+                post.PDate = DateTime.ParseExact(xentry.Item("created_at").InnerText, "ddd MMM dd HH:mm:ss zzzz yyyy", System.Globalization.DateTimeFormatInfo.InvariantInfo, System.Globalization.DateTimeStyles.None)
+                post.Id = Long.Parse(xentry.Item("id").InnerText)
+                '二重取得回避
+                SyncLock LockObj
+                    If TabInformations.GetInstance.ContainsKey(post.Id) Then Continue For
+                End SyncLock
+                '本文
+                post.Data = xentry.Item("text").InnerText
+                post.Data = post.Data.Replace("<3", "♡")
+                'HTMLに整形
+                post.OriginalData = CreateHtmlAnchor(post.Data, post.ReplyToList)
+                'Source取得（htmlの場合は、中身を取り出し）
+                post.Source = xentry.Item("source").InnerText
+                If post.Source.StartsWith("<") Then
+                    Dim rgS As New Regex(">(?<source>.+)<")
+                    Dim mS As Match = rgS.Match(post.Source)
+                    If mS.Success Then
+                        post.Source = mS.Result("${source}")
+                    End If
                 End If
-            End If
-            Long.TryParse(xentry.Item("in_reply_to_status_id").InnerText, post.InReplyToId)
-            post.InReplyToUser = xentry.Item("in_reply_to_screen_name").InnerText
-            'in_reply_to_user_idを使うか？
-            post.IsFav = Boolean.Parse(xentry.Item("favorited").InnerText)
+                Long.TryParse(xentry.Item("in_reply_to_status_id").InnerText, post.InReplyToId)
+                post.InReplyToUser = xentry.Item("in_reply_to_screen_name").InnerText
+                'in_reply_to_user_idを使うか？
+                post.IsFav = Boolean.Parse(xentry.Item("favorited").InnerText)
 
-            '以下、ユーザー情報
-            Dim xUentry As XmlElement = CType(xentry.SelectSingleNode("./user"), XmlElement)
-            post.Uid = Long.Parse(xUentry.Item("id").InnerText)
-            post.Name = xUentry.Item("screen_name").InnerText
-            post.Nickname = xUentry.Item("name").InnerText
-            post.ImageUrl = xUentry.Item("profile_image_url").InnerText
-            post.IsProtect = Boolean.Parse(xUentry.Item("protected").InnerText)
-            post.IsMe = post.Name.ToLower.Equals(_uid.ToLower)
-            post.IsRead = read
-            If gType = WORKERTYPE.Timeline Then
-                post.IsReply = post.ReplyToList.Contains(_uid.ToLower)
-            Else
-                post.IsReply = True
-            End If
+                '以下、ユーザー情報
+                Dim xUentry As XmlElement = CType(xentry.SelectSingleNode("./user"), XmlElement)
+                post.Uid = Long.Parse(xUentry.Item("id").InnerText)
+                post.Name = xUentry.Item("screen_name").InnerText
+                post.Nickname = xUentry.Item("name").InnerText
+                post.ImageUrl = xUentry.Item("profile_image_url").InnerText
+                post.IsProtect = Boolean.Parse(xUentry.Item("protected").InnerText)
+                post.IsMe = post.Name.ToLower.Equals(_uid.ToLower)
+                post.IsRead = read
+                If gType = WORKERTYPE.Timeline Then
+                    post.IsReply = post.ReplyToList.Contains(_uid.ToLower)
+                Else
+                    post.IsReply = True
+                End If
 
-            If post.IsMe Then
-                post.IsOwl = False
-            Else
-                post.IsOwl = Not followerId.Contains(post.Uid)
-            End If
+                If post.IsMe Then
+                    post.IsOwl = False
+                Else
+                    post.IsOwl = Not followerId.Contains(post.Uid)
+                End If
 
-            post.IsDm = False
+                post.IsDm = False
+            Catch ex As Exception
+                ExceptionOut(ex)
+                TraceOut(True, retMsg)
+                MessageBox.Show("不正なXMLです。(TL-Parse)")
+                Continue For
+            End Try
 
             '非同期アイコン取得＆StatusDictionaryに追加
             arIdx += 1
@@ -2131,46 +2157,60 @@ RETRY:
         Dim dlgt(GET_COUNT) As GetIconImageDelegate    'countQueryに合わせる
         Dim ar(GET_COUNT) As IAsyncResult              'countQueryに合わせる
         Dim xdoc As New XmlDocument
-        xdoc.LoadXml(retMsg)
+        Try
+            xdoc.LoadXml(retMsg)
+        Catch ex As Exception
+            ExceptionOut(ex)
+            TraceOut(True, retMsg)
+            MessageBox.Show("不正なXMLです。(DM-LoadXml)")
+            Return "Invalid XML!"
+        End Try
 
         For Each xentryNode As XmlNode In xdoc.DocumentElement.SelectNodes("./direct_message")
             Dim xentry As XmlElement = CType(xentryNode, XmlElement)
             Dim post As New PostClass
-            post.Id = Long.Parse(xentry.Item("id").InnerText)
-            '二重取得回避
-            SyncLock LockObj
-                If TabInformations.GetInstance.ContainsKey(post.Id) Then Continue For
-            End SyncLock
-            'sender_id
-            'recipient_id
-            post.PDate = DateTime.ParseExact(xentry.Item("created_at").InnerText, "ddd MMM dd HH:mm:ss zzzz yyyy", System.Globalization.DateTimeFormatInfo.InvariantInfo, System.Globalization.DateTimeStyles.None)
-            '本文
-            post.Data = xentry.Item("text").InnerText
-            post.Data = post.Data.Replace("<3", "♡")
-            'HTMLに整形
-            post.OriginalData = CreateHtmlAnchor(post.Data, post.ReplyToList)
-            post.IsFav = False
-            '受信ＤＭかの判定で使用
-            If gType = WORKERTYPE.DirectMessegeRcv Then
-                post.IsOwl = False
-            Else
-                post.IsOwl = True
-            End If
+            Try
+                post.Id = Long.Parse(xentry.Item("id").InnerText)
+                '二重取得回避
+                SyncLock LockObj
+                    If TabInformations.GetInstance.ContainsKey(post.Id) Then Continue For
+                End SyncLock
+                'sender_id
+                'recipient_id
+                post.PDate = DateTime.ParseExact(xentry.Item("created_at").InnerText, "ddd MMM dd HH:mm:ss zzzz yyyy", System.Globalization.DateTimeFormatInfo.InvariantInfo, System.Globalization.DateTimeStyles.None)
+                '本文
+                post.Data = xentry.Item("text").InnerText
+                post.Data = post.Data.Replace("<3", "♡")
+                'HTMLに整形
+                post.OriginalData = CreateHtmlAnchor(post.Data, post.ReplyToList)
+                post.IsFav = False
+                '受信ＤＭかの判定で使用
+                If gType = WORKERTYPE.DirectMessegeRcv Then
+                    post.IsOwl = False
+                Else
+                    post.IsOwl = True
+                End If
 
-            '以下、ユーザー情報
-            Dim xUentry As XmlElement
-            If gType = WORKERTYPE.DirectMessegeRcv Then
-                xUentry = CType(xentry.SelectSingleNode("./sender"), XmlElement)
-                post.IsMe = False
-            Else
-                xUentry = CType(xentry.SelectSingleNode("./recipient"), XmlElement)
-                post.IsMe = True
-            End If
-            post.Uid = Long.Parse(xUentry.Item("id").InnerText)
-            post.Name = xUentry.Item("screen_name").InnerText
-            post.Nickname = xUentry.Item("name").InnerText
-            post.ImageUrl = xUentry.Item("profile_image_url").InnerText
-            post.IsProtect = Boolean.Parse(xUentry.Item("protected").InnerText)
+                '以下、ユーザー情報
+                Dim xUentry As XmlElement
+                If gType = WORKERTYPE.DirectMessegeRcv Then
+                    xUentry = CType(xentry.SelectSingleNode("./sender"), XmlElement)
+                    post.IsMe = False
+                Else
+                    xUentry = CType(xentry.SelectSingleNode("./recipient"), XmlElement)
+                    post.IsMe = True
+                End If
+                post.Uid = Long.Parse(xUentry.Item("id").InnerText)
+                post.Name = xUentry.Item("screen_name").InnerText
+                post.Nickname = xUentry.Item("name").InnerText
+                post.ImageUrl = xUentry.Item("profile_image_url").InnerText
+                post.IsProtect = Boolean.Parse(xUentry.Item("protected").InnerText)
+            Catch ex As Exception
+                ExceptionOut(ex)
+                TraceOut(True, retMsg)
+                MessageBox.Show("不正なXMLです。(DM-Parse)")
+                Continue For
+            End Try
 
             post.IsRead = read
             post.IsReply = False
@@ -2232,14 +2272,14 @@ RETRY:
         '絶対パス表現のUriをリンクに置換
         retStr = rgUrl.Replace(Text, "<a href=""$&"">$&</a>")
         '@返信を抽出し、@先リスト作成
-        Dim rg As New Regex("(^|[^a-zA-Z0-9_@])@[a-zA-Z0-9_]{1,20}")
+        Dim rg As New Regex("(^|[ -/:-@[-^`{-~])@([a-zA-Z0-9_]{1,20})")
         Dim m As Match = rg.Match(retStr)
         While m.Success
-            AtList.Add(m.Value.ToLower)
+            AtList.Add(m.Result("$2"))
             m = m.NextMatch
         End While
         '@先をリンクに置換
-        retStr = rg.Replace(retStr, "<a href=""/$&"">$&</a>")
+        retStr = rg.Replace(retStr, "$1@<a href=""/$2"">$2</a>")
         retStr = AdjustHtml(ShortUrlResolve(PreProcessUrl(retStr))) 'IDN置換、短縮Uri解決、@リンクを相対→絶対にしてtarget属性付与
         Return retStr
     End Function
