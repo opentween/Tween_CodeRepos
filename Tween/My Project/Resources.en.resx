@@ -639,4 +639,7 @@
   <data name="TextCountApi_Validating1" xml:space="preserve">
     <value>Getting number of tweet in Api-mode must be 20 to 200.</value>
   </data>
+  <data name="AddNewTabText4_2" xml:space="preserve">
+    <value>Date</value>
+  </data>
 </root>
