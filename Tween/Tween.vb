@@ -3092,7 +3092,7 @@ RETRY2:
         pinfo.UseShellExecute = True
         pinfo.WorkingDirectory = Application.StartupPath
         pinfo.FileName = Path.Combine(Path.GetTempPath(), "TweenUp.exe")
-        pinfo.Arguments = Application.StartupPath
+        pinfo.Arguments = """" + Application.StartupPath + """"
         pinfo.Verb = "runas"
         Try
             Process.Start(pinfo)
