@@ -3088,12 +3088,15 @@ RETRY2:
     End Sub
 
     Private Sub RunTweenUp()
+
         Dim pinfo As New ProcessStartInfo
         pinfo.UseShellExecute = True
         pinfo.WorkingDirectory = Application.StartupPath
         pinfo.FileName = Path.Combine(Path.GetTempPath(), "TweenUp.exe")
         pinfo.Arguments = """" + Application.StartupPath + """"
-        pinfo.Verb = "runas"
+        If IsNT6() Then
+            pinfo.Verb = "runas"
+        End If
         Try
             Process.Start(pinfo)
         Catch ex As Exception
