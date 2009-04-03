@@ -561,6 +561,7 @@ Public Class TweenMain
         Twitter.CountApi = SettingDialog.CountApi
         Twitter.UseAPI = SettingDialog.UseAPI
         Twitter.UsePostMethod = SettingDialog.UsePostMethod
+        Twitter.HubServer = SettingDialog.HubServer
         If IsNetworkAvailable() Then
             If SettingDialog.StartupFollowers Then
                 _waitFollower = True
@@ -654,7 +655,6 @@ Public Class TweenMain
             Twitter.GetIcon = True
             Twitter.IconSize = _iconSz
         End If
-        Twitter.HubServer = SettingDialog.HubServer
         Twitter.TinyUrlResolve = SettingDialog.TinyUrlResolve
 
         '発言詳細部アイコンをリストアイコンにサイズ変更
@@ -2382,7 +2382,11 @@ Public Class TweenMain
         _colHd2.Width = 80
         _colHd3.Text = My.Resources.AddNewTabText3
         _colHd3.Width = 300
-        _colHd4.Text = My.Resources.AddNewTabText4
+        If SettingDialog.UseAPI Then
+            _colHd4.Text = My.Resources.AddNewTabText4_2
+        Else
+            _colHd4.Text = My.Resources.AddNewTabText4
+        End If
         _colHd4.Width = 50
         _colHd5.Text = My.Resources.AddNewTabText5
         _colHd5.Width = 50
@@ -3988,6 +3992,8 @@ RETRY2:
         If Not StatusText.Enabled Then Exit Sub
 
         ' 複数あてリプライはReplyではなく通常ポスト
+        '↑仕様変更で全部リプライ扱いでＯＫ（先頭ドット付加しない）
+        '090403暫定でドットを付加しないようにだけ修正。単独と複数の処理は統合できると思われる。
 
         If _curList.SelectedIndices.Count > 0 Then
             ' アイテムが1件以上選択されている
@@ -4011,34 +4017,35 @@ RETRY2:
                     If isAuto Then
                         If StatusText.Text.Contains("@" + _curPost.Name + " ") Then Exit Sub
                         If Not StatusText.Text.StartsWith("@") Then
-                            If StatusText.Text.StartsWith(". ") Then
-                                ' 複数リプライ
-                                StatusText.Text = StatusText.Text.Insert(2, "@" + _curPost.Name + " ")
-                                _reply_to_id = 0
-                                _reply_to_name = Nothing
-                            Else
-                                ' 単独リプライ
-                                StatusText.Text = "@" + _curPost.Name + " " + StatusText.Text
-                                _reply_to_id = _curPost.Id
-                                _reply_to_name = _curPost.Name
-                            End If
+                            'If StatusText.Text.StartsWith(". ") Then
+                            '    ' 複数リプライ
+                            '    StatusText.Text = StatusText.Text.Insert(2, "@" + _curPost.Name + " ")
+                            '    _reply_to_id = 0
+                            '    _reply_to_name = Nothing
+                            'Else
+                            ' 単独リプライ
+                            StatusText.Text = "@" + _curPost.Name + " " + StatusText.Text
+                            _reply_to_id = _curPost.Id
+                            _reply_to_name = _curPost.Name
+                            'End If
                         Else
                             ' 複数リプライ
-                            StatusText.Text = ". @" + _curPost.Name + " " + StatusText.Text
+                            'StatusText.Text = ". @" + _curPost.Name + " " + StatusText.Text
+                            StatusText.Text = "@" + _curPost.Name + " " + StatusText.Text
                             _reply_to_id = 0
                             _reply_to_name = Nothing
                         End If
                     Else
                         Dim sidx As Integer = StatusText.SelectionStart
-                        If StatusText.Text.StartsWith("@") Then
-                            '複数リプライ
-                            StatusText.Text = ". " + StatusText.Text.Insert(sidx, " @" + _curPost.Name + " ")
-                            sidx += 5 + _curPost.Name.Length
-                        Else
+                        'If StatusText.Text.StartsWith("@") Then
+                        '    '複数リプライ
+                        '    StatusText.Text = ". " + StatusText.Text.Insert(sidx, " @" + _curPost.Name + " ")
+                        '    sidx += 5 + _curPost.Name.Length
+                        'Else
                             ' 複数リプライ
                             StatusText.Text = StatusText.Text.Insert(sidx, " @" + _curPost.Name + " ")
                             sidx += 3 + _curPost.Name.Length
-                        End If
+                        'End If
                         StatusText.SelectionStart = sidx
                         StatusText.Focus()
                         _reply_to_id = 0
@@ -4052,13 +4059,14 @@ RETRY2:
 
                 If isAuto Then
                     Dim sTxt As String = StatusText.Text
-                    If Not sTxt.StartsWith(". ") Then
-                        sTxt = ". " + sTxt
-                    End If
+                    'If Not sTxt.StartsWith(". ") Then
+                    '    sTxt = ". " + sTxt
+                    'End If
                     For cnt As Integer = 0 To _curList.SelectedIndices.Count - 1
                         Dim post As PostClass = _statuses.Item(_curTab.Text, _curList.SelectedIndices(cnt))
                         If Not sTxt.Contains("@" + post.Name + " ") Then
-                            sTxt = sTxt.Insert(2, "@" + post.Name + " ")
+                            'sTxt = sTxt.Insert(2, "@" + post.Name + " ")
+                            sTxt = "@" + post.Name + " " + sTxt
                         End If
                     Next
                     StatusText.Text = sTxt
@@ -4081,29 +4089,29 @@ RETRY2:
                         End If
                     Next
                     If ids.Length = 0 Then Exit Sub
-                    If Not StatusText.Text.StartsWith(". ") Then
-                        StatusText.Text = ". " + StatusText.Text
-                        sidx += 2
-                    End If
+                    'If Not StatusText.Text.StartsWith(". ") Then
+                    '    StatusText.Text = ". " + StatusText.Text
+                    '    sidx += 2
+                    'End If
                     If sidx > 0 Then
                         If StatusText.Text.Substring(sidx - 1, 1) <> " " Then
                             ids = " " + ids
                         End If
                     End If
-                    If StatusText.Text.StartsWith("@") Then
-                        StatusText.Text = ". " + StatusText.Text.Insert(sidx, ids)
-                        sidx += 2 + ids.Length
-                    Else
-                        StatusText.Text = StatusText.Text.Insert(sidx, ids)
-                        sidx += 1 + ids.Length
-                    End If
+                    'If StatusText.Text.StartsWith("@") Then
+                    '    StatusText.Text = ". " + StatusText.Text.Insert(sidx, ids)
+                    '    sidx += 2 + ids.Length
+                    'Else
+                    StatusText.Text = StatusText.Text.Insert(sidx, ids)
+                    sidx += 1 + ids.Length
+                    'End If
                     StatusText.SelectionStart = sidx
                     StatusText.Focus()
                     Exit Sub
                 End If
             End If
-            StatusText.SelectionStart = StatusText.Text.Length
-            StatusText.Focus()
+        StatusText.SelectionStart = StatusText.Text.Length
+        StatusText.Focus()
         End If
     End Sub
 

@@ -694,4 +694,7 @@
   <data name="UnhandledExceptionText12" xml:space="preserve">
     <value>Users権限：</value>
   </data>
+  <data name="AddNewTabText4_2" xml:space="preserve">
+    <value>日時</value>
+  </data>
 </root>

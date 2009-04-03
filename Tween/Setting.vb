@@ -1365,6 +1365,9 @@ Public Class Setting
         CheckPeriodAdjust.Enabled = Not CheckUseApi.Checked
         NextThreshold.Enabled = Not CheckUseApi.Checked
         NextPages.Enabled = Not CheckUseApi.Checked
+        StartupReadPages.Enabled = Not CheckUseApi.Checked
+        StartupReadReply.Enabled = Not CheckUseApi.Checked
+        StartupReadDM.Enabled = Not CheckUseApi.Checked
         CheckPostMethod.Enabled = CheckUseApi.Checked
         TextCountApi.Enabled = CheckUseApi.Checked
     End Sub

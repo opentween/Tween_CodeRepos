@@ -1251,9 +1251,9 @@ RETRY:
         'データ部分の生成
         Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim resStatus As String = ""
-        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMDestroyPath + id.ToString, resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer3, dataStr, "https://" + _baseUrlStr + _DMPathRcv), String)
+        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMDestroyPath + id.ToString + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
 
-        If resMsg <> " " OrElse resStatus.StartsWith("OK") = False Then
+        If resMsg.StartsWith("<?xml") = False OrElse resStatus.StartsWith("OK") = False Then
             Return resStatus
         End If
 
