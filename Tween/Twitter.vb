@@ -2254,7 +2254,7 @@ RETRY:
         Catch ex As Exception
             ExceptionOut(ex)
             TraceOut(True, retMsg)
-            MessageBox.Show("不正なXMLです。(FollowerApi-LoadXml)")
+            MessageBox.Show("不正なXMLです。再取得してください。(FollowerApi-LoadXml)")
             Return "Invalid XML!"
         End Try
 
@@ -2265,7 +2265,7 @@ RETRY:
             Catch ex As Exception
                 ExceptionOut(ex)
                 TraceOut(True, retMsg)
-                MessageBox.Show("不正なXMLです。(FollowerApi-Parse)")
+                MessageBox.Show("不正なXMLです。再取得してください。(FollowerApi-Parse)")
                 Continue For
             End Try
         Next

@@ -251,6 +251,8 @@ Public Class XmlConfiguration
     End Function
 
     Public Sub Save(ByVal path As String)
+        Dim retryCnt As Integer = 0
+RETRY:
         SyncLock _lockObj
             Using stream As MemoryStream = New MemoryStream()
                 Dim serializer As XmlSerializer = New XmlSerializer(GetType(XmlConfiguration))
@@ -262,7 +264,13 @@ Public Class XmlConfiguration
                     xdoc.Save(path)
                 Catch ex As IOException
                     '他プロセスで使用中例外の回避（対策考える）
-                    MessageBox.Show("他のプロセスで使用中？書き込めませんでした。", "設定保存", MessageBoxButtons.OK)
+                    If retryCnt = 0 Then
+                        retryCnt += 1
+                        System.Threading.Thread.Sleep(1000)
+                        GoTo RETRY
+                    Else
+                        MessageBox.Show("設定の保存ができませんでした。再実行してください。（設定画面を開いてOKボタンを押すことで保存処理が実行されます。）", "設定保存", MessageBoxButtons.OK)
+                    End If
                 End Try
             End Using
 
