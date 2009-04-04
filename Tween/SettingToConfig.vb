@@ -34,7 +34,7 @@ Public Class XmlConfiguration
     Private ReadOnly _dictionary As Dictionary(Of String, KeyValuePair(Of Type, Object))
     Private Shared ReadOnly _lockObj As New Object
 
-    Private _filePath As String
+    Private _configurationFile As FileInfo
 
     Private ReadOnly Property _dictionaryCollection() As ICollection(Of KeyValuePair(Of String, KeyValuePair(Of Type, Object)))
         Get
@@ -42,12 +42,12 @@ Public Class XmlConfiguration
         End Get
     End Property
 
-    Public Property FilePath() As String
+    Public Property ConfigurationFile As FileInfo
         Get
-            Return Me._filePath
+            Return Me._configurationFile
         End Get
-        Set(ByVal value As String)
-            Me._filePath = value
+        Set(ByVal value As FileInfo)
+            Me._configurationFile = value
         End Set
     End Property
 
@@ -242,29 +242,43 @@ Public Class XmlConfiguration
         Me._dictionary = New Dictionary(Of String, KeyValuePair(Of Type, Object))()
     End Sub
 
-    Public Shared Function Load(ByVal path As String) As XmlConfiguration
+    Public Shared Function Load(ByVal file As FileInfo) As XmlConfiguration
         SyncLock _lockObj
-            Dim config As XmlConfiguration = DirectCast(New XmlSerializer(GetType(XmlConfiguration)).Deserialize(XmlReader.Create(path)), XmlConfiguration)
-            config.FilePath = path
-            Return config
+            Using reader As XmlReader = XmlReader.Create(file.FullName)
+                Dim config As XmlConfiguration = DirectCast(New XmlSerializer(GetType(XmlConfiguration)).Deserialize(reader), XmlConfiguration)
+                config.ConfigurationFile = file
+                Return config
+            End Using
         End SyncLock
     End Function
 
-    Public Sub Save(ByVal path As String)
+    Public Shared Function Load(ByVal path As String) As XmlConfiguration
+㰊㰼㰼㰼⸠業敮
+        Return Load(New FileInfo(path))
+    End Function
+
+    Public Sub Save(ByVal file As FileInfo)
+㴊㴽㴽㴽
         Dim retryCnt As Integer = 0
 RETRY:
+㸊㸾㸾㸾⸠㍲㤱㐰
         SyncLock _lockObj
             Using stream As MemoryStream = New MemoryStream()
-                Dim serializer As XmlSerializer = New XmlSerializer(GetType(XmlConfiguration))
-                serializer.Serialize(XmlWriter.Create(stream), Me)
+                Using writer As XmlWriter = XmlWriter.Create(stream)
+                    Dim serializer As XmlSerializer = New XmlSerializer(GetType(XmlConfiguration))
+                    serializer.Serialize(writer, Me)
+                End Using
                 stream.Seek(0, SeekOrigin.Begin)
                 Dim xdoc As XmlDocument = New XmlDocument()
                 xdoc.Load(stream)
-                Try
-                    xdoc.Save(path)
-                Catch ex As IOException
-                    '他プロセスで使用中例外の回避（対策考える）
-                    If retryCnt = 0 Then
+                xdoc.Save(file.FullName)
+            End Using
+            Me.ConfigurationFile = file
+        End SyncLock
+㰊㰼㰼㰼⸠業敮
+    End Sub㴍㴽㴽㴽
+                    If retryCnt = 0 Then㸍㸾㸾㸾⸠㍲㤱㐰
+㰊㰼㰼㰼⸠業敮㴍㴽㴽㴽
                         retryCnt += 1
                         System.Threading.Thread.Sleep(1000)
                         GoTo RETRY
@@ -273,13 +287,14 @@ RETRY:
                     End If
                 End Try
             End Using
+㸊㸾㸾㸾⸠㍲㤱㐰
 
-            Me._filePath = path
-        End SyncLock
+    Public Sub Save(ByVal path As String)
+        Me.Save(New FileInfo(path))
     End Sub
 
     Public Sub Save()
-        Me.Save(Me._filePath)
+        Me.Save(Me.ConfigurationFile)
     End Sub
 
     Private Function GetInternalValue(ByVal value As Object) As KeyValuePair(Of Type, Object)
@@ -340,17 +355,20 @@ End Class
 Public NotInheritable Class SettingToConfig
     Inherits XmlConfiguration
 
-    Private Shared ReadOnly _filePath As String = Path.Combine(My.Application.Info.DirectoryPath, "TweenConf.xml")
+    Private Shared _file As FileInfo
 
     Public Sub New()
-        Me.FilePath = _filePath
+        _file = New FileInfo(Path.Combine(My.Application.Info.DirectoryPath, "TweenConf.xml"))
+        If not _file.Exists then
+            _file.Create()
+        End If
     End Sub
 
     Public Shared Shadows Function Load() As SettingToConfig
         Dim config As SettingToConfig = Nothing
         Try
             config = DirectCast(New XmlSerializer(GetType(SettingToConfig)) _
-                            .Deserialize(XmlReader.Create(_filePath)), SettingToConfig)
+                            .Deserialize(XmlReader.Create(_file.FullName)), SettingToConfig)
         Catch ex As InvalidOperationException
             Return Nothing
         End Try
