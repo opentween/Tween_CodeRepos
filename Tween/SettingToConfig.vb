@@ -253,15 +253,10 @@ Public Class XmlConfiguration
     End Function
 
     Public Shared Function Load(ByVal path As String) As XmlConfiguration
-㰊㰼㰼㰼⸠業敮
         Return Load(New FileInfo(path))
     End Function
 
     Public Sub Save(ByVal file As FileInfo)
-㴊㴽㴽㴽
-        Dim retryCnt As Integer = 0
-RETRY:
-㸊㸾㸾㸾⸠㍲㤱㐰
         SyncLock _lockObj
             Using stream As MemoryStream = New MemoryStream()
                 Using writer As XmlWriter = XmlWriter.Create(stream)
@@ -275,19 +270,7 @@ RETRY:
             End Using
             Me.ConfigurationFile = file
         End SyncLock
-㰊㰼㰼㰼⸠業敮
-    End Sub㴍㴽㴽㴽
-                    If retryCnt = 0 Then㸍㸾㸾㸾⸠㍲㤱㐰
-㰊㰼㰼㰼⸠業敮㴍㴽㴽㴽
-                        retryCnt += 1
-                        System.Threading.Thread.Sleep(1000)
-                        GoTo RETRY
-                    Else
-                        MessageBox.Show("設定の保存ができませんでした。再実行してください。（設定画面を開いてOKボタンを押すことで保存処理が実行されます。）", "設定保存", MessageBoxButtons.OK)
-                    End If
-                End Try
-            End Using
-㸊㸾㸾㸾⸠㍲㤱㐰
+    End Sub
 
     Public Sub Save(ByVal path As String)
         Me.Save(New FileInfo(path))
