@@ -32,7 +32,7 @@ Public Class XmlConfiguration
                IXmlSerializable
 
     Private ReadOnly _dictionary As Dictionary(Of String, KeyValuePair(Of Type, Object))
-    Private Shared ReadOnly _lockObj As New Object
+    Protected Shared ReadOnly _lockObj As New Object
 
     Private _configurationFile As FileInfo
 
@@ -348,15 +348,14 @@ Public NotInheritable Class SettingToConfig
     End Sub
 
     Public Shared Shadows Function Load() As SettingToConfig
-        Dim config As SettingToConfig = Nothing
-        Try
-            config = DirectCast(New XmlSerializer(GetType(SettingToConfig)) _
-                            .Deserialize(XmlReader.Create(_file.FullName)), SettingToConfig)
-        Catch ex As InvalidOperationException
-            Return Nothing
-        End Try
-
-        Return config
+        SyncLock _lockObj
+            _file = New FileInfo(Path.Combine(My.Application.Info.DirectoryPath, "TweenConf.xml"))
+            Using reader As XmlReader = XmlReader.Create(_file.FullName)
+                Dim config As SettingToConfig = DirectCast(New XmlSerializer(GetType(SettingToConfig)).Deserialize(reader), SettingToConfig)
+                config.ConfigurationFile = _file
+                Return config
+            End Using
+        End SyncLock
     End Function
 
     Public Property Tabs() As Dictionary(Of String, TabClass)
