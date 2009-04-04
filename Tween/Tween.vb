@@ -67,6 +67,7 @@ Public Class TweenMain
     'Private _tabs As New List(Of TabStructure)() '要素TabStructureクラスのジェネリックリストインスタンス（タブ情報用）
     Private fDialog As New FilterDialog() 'フィルター編集画面
     Private UrlDialog As New OpenURL()
+    Private dialogAsShieldicon As New DialogAsShieldIcon() ' シールドアイコン付きダイアログ
 
     '表示フォント、色、アイコン
     Private _fntUnread As Font            '未読用フォント
@@ -215,6 +216,7 @@ Public Class TweenMain
         SearchDialog.Dispose()
         fDialog.Dispose()
         UrlDialog.Dispose()
+        dialogAsShieldicon.Dispose()
         If TIconDic IsNot Nothing AndAlso TIconDic.Keys.Count > 0 Then
             For Each key As String In TIconDic.Keys
                 TIconDic(key).Dispose()
@@ -3120,7 +3122,7 @@ RETRY2:
             strVer = retMsg.Substring(0, 4)
             If strVer.CompareTo(My.Application.Info.Version.ToString.Replace(".", "")) > 0 Then
                 Dim tmp As String = String.Format(My.Resources.CheckNewVersionText3, strVer)
-                If MessageBox.Show(tmp, My.Resources.CheckNewVersionText1, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
+                If dialogAsShieldicon.Show(tmp, My.Resources.CheckNewVersionText1, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
                     retMsg = Twitter.GetTweenBinary(strVer)
                     If retMsg.Length = 0 Then
                         retMsg = Twitter.GetTweenUpBinary()
@@ -3143,7 +3145,7 @@ RETRY2:
             Else
                 If forceUpdate Then
                     Dim tmp As String = String.Format(My.Resources.CheckNewVersionText6, strVer)
-                    If MessageBox.Show(tmp, My.Resources.CheckNewVersionText1, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
+                    If dialogAsShieldicon.Show(tmp, My.Resources.CheckNewVersionText1, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
                         retMsg = Twitter.GetTweenBinary(strVer)
                         If retMsg.Length = 0 Then
                             retMsg = Twitter.GetTweenUpBinary()
