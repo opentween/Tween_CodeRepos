@@ -579,7 +579,7 @@ RETRY:
                         post.ReplyToList.Add(m.Groups(1).Value.ToLower())
                         m = m.NextMatch
                     End While
-                    If Not post.IsReply Then post.IsReply = post.ReplyToList.Contains(_uid.ToLower())
+                    If Not post.IsReply Then post.IsReply = post.ReplyToList.Contains(_uid)
 
                     If gType = WORKERTYPE.Reply Then post.IsReply = True
 
@@ -1579,7 +1579,7 @@ RETRY:
             Return _uid
         End Get
         Set(ByVal value As String)
-            _uid = value
+            _uid = value.ToLower
             _signed = False
         End Set
     End Property
@@ -2068,9 +2068,10 @@ RETRY:
                 End SyncLock
                 '本文
                 post.Data = xentry.Item("text").InnerText
-                post.Data = post.Data.Replace("<3", "♡")
                 'HTMLに整形
                 post.OriginalData = CreateHtmlAnchor(post.Data, post.ReplyToList)
+                post.Data = HttpUtility.HtmlDecode(post.Data)
+                post.Data = post.Data.Replace("<3", "♡")
                 'Source取得（htmlの場合は、中身を取り出し）
                 post.Source = xentry.Item("source").InnerText
                 If post.Source.StartsWith("<") Then
@@ -2092,10 +2093,10 @@ RETRY:
                 post.Nickname = xUentry.Item("name").InnerText
                 post.ImageUrl = xUentry.Item("profile_image_url").InnerText
                 post.IsProtect = Boolean.Parse(xUentry.Item("protected").InnerText)
-                post.IsMe = post.Name.ToLower.Equals(_uid.ToLower)
+                post.IsMe = post.Name.ToLower.Equals(_uid)
                 post.IsRead = read
                 If gType = WORKERTYPE.Timeline Then
-                    post.IsReply = post.ReplyToList.Contains(_uid.ToLower)
+                    post.IsReply = post.ReplyToList.Contains(_uid)
                 Else
                     post.IsReply = True
                 End If
@@ -2103,7 +2104,7 @@ RETRY:
                 If post.IsMe Then
                     post.IsOwl = False
                 Else
-                    post.IsOwl = Not followerId.Contains(post.Uid)
+                    If followerId.Count > 0 Then post.IsOwl = Not followerId.Contains(post.Uid)
                 End If
 
                 post.IsDm = False
@@ -2180,9 +2181,10 @@ RETRY:
                 post.PDate = DateTime.ParseExact(xentry.Item("created_at").InnerText, "ddd MMM dd HH:mm:ss zzzz yyyy", System.Globalization.DateTimeFormatInfo.InvariantInfo, System.Globalization.DateTimeStyles.None)
                 '本文
                 post.Data = xentry.Item("text").InnerText
-                post.Data = post.Data.Replace("<3", "♡")
                 'HTMLに整形
                 post.OriginalData = CreateHtmlAnchor(post.Data, post.ReplyToList)
+                post.Data = HttpUtility.HtmlDecode(post.Data)
+                post.Data = post.Data.Replace("<3", "♡")
                 post.IsFav = False
                 '受信ＤＭかの判定で使用
                 If gType = WORKERTYPE.DirectMessegeRcv Then
@@ -2247,11 +2249,25 @@ RETRY:
         If retMsg = "" Then Return resStatus
 
         Dim xdoc As New XmlDocument
-        xdoc.LoadXml(retMsg)
+        Try
+            xdoc.LoadXml(retMsg)
+        Catch ex As Exception
+            ExceptionOut(ex)
+            TraceOut(True, retMsg)
+            MessageBox.Show("不正なXMLです。(FollowerApi-LoadXml)")
+            Return "Invalid XML!"
+        End Try
 
         followerId.Clear()
         For Each xentryNode As XmlNode In xdoc.DocumentElement.SelectNodes("./id")
-            followerId.Add(Long.Parse(xentryNode.InnerText))
+            Try
+                followerId.Add(Long.Parse(xentryNode.InnerText))
+            Catch ex As Exception
+                ExceptionOut(ex)
+                TraceOut(True, retMsg)
+                MessageBox.Show("不正なXMLです。(FollowerApi-Parse)")
+                Continue For
+            End Try
         Next
 
         Return ""
@@ -2275,7 +2291,7 @@ RETRY:
         Dim rg As New Regex("(^|[ -/:-@[-^`{-~])@([a-zA-Z0-9_]{1,20})")
         Dim m As Match = rg.Match(retStr)
         While m.Success
-            AtList.Add(m.Result("$2"))
+            AtList.Add(m.Result("$2").ToLower)
             m = m.NextMatch
         End While
         '@先をリンクに置換
