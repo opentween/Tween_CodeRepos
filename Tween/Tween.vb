@@ -933,10 +933,78 @@ Public Class TweenMain
     Private Sub RefreshTimeline()
         'スクロール制御準備
         Dim smode As Integer = -1    '-1:制御しない,-2:最新へ,その他:topitem使用
-        Dim topId As Long = -1
+        Dim topId As Long = GetScrollPos(smode)
         Dim befCnt As Integer = _curList.VirtualListSize
 
-        '_curList.BeginUpdate()
+        '現在の選択状態を退避
+        Dim selId As New Dictionary(Of String, Long())
+        Dim focusedId As New Dictionary(Of String, Long)
+        SaveSelectedStatus(selId, focusedId)
+
+        '更新確定
+        Dim notifyPosts() As PostClass = Nothing
+        Dim soundFile As String = ""
+        Dim addCount As Integer = 0
+        addCount = _statuses.SubmitUpdate(soundFile, notifyPosts)
+
+        If _endingFlag Then Exit Sub
+
+        'リストに反映＆選択状態復元
+        Try
+            For Each tab As TabPage In ListTab.TabPages
+                Dim lst As DetailsListView = DirectCast(tab.Controls(0), DetailsListView)
+                Dim tabInfo As TabClass = _statuses.Tabs(tab.Text)
+                lst.BeginUpdate()
+                If lst.VirtualListSize <> tabInfo.AllCount Then
+                    If lst.Equals(_curList) Then
+                        _itemCache = Nothing
+                        _postCache = Nothing
+                    End If
+                    lst.VirtualListSize = tabInfo.AllCount 'リスト件数更新
+                    Me.SelectListItem(lst, _
+                                      _statuses.GetIndex(tab.Text, selId(tab.Text)), _
+                                      _statuses.GetIndex(tab.Text, focusedId(tab.Text)))
+                End If
+                lst.EndUpdate()
+                If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
+            Next
+        Catch ex As Exception
+            ExceptionOut(ex, "Ref1")
+        End Try
+
+        'スクロール制御後処理
+        Try
+            If befCnt <> _curList.VirtualListSize Then
+                Select Case smode
+                    Case -3
+                        '最上行
+                        _curList.EnsureVisible(0)
+                    Case -2
+                        '最下行へ
+                        _curList.EnsureVisible(_curList.VirtualListSize - 1)
+                    Case -1
+                        '制御しない
+                    Case Else
+                        '表示位置キープ
+                        If _curList.VirtualListSize > 0 Then
+                            _curList.EnsureVisible(_curList.VirtualListSize - 1)
+                            _curList.EnsureVisible(_statuses.GetIndex(_curTab.Text, topId))
+                        End If
+                End Select
+            End If
+        Catch ex As Exception
+            ExceptionOut(ex, "Ref2")
+        End Try
+
+        '新着通知
+        NotifyNewPosts(notifyPosts, soundFile, addCount)
+
+        SetMainWindowTitle()
+        If Not StatusLabelUrl.Text.StartsWith("http") Then SetStatusLabel()
+    End Sub
+
+    Private Function GetScrollPos(ByRef smode As Integer) As Long
+        Dim topId As Long = -1
         If _curList.VirtualListSize > 0 Then
             If _statuses.SortMode = IdComparerClass.ComparerMode.Id Then
                 If _statuses.SortOrder = SortOrder.Ascending Then
@@ -988,10 +1056,10 @@ Public Class TweenMain
         Else
             smode = -1
         End If
+        Return topId
+    End Function
 
-        '現在の選択状態を退避
-        Dim selId As New Dictionary(Of String, Long())
-        Dim focusedId As New Dictionary(Of String, Long)
+    Private Sub SaveSelectedStatus(ByVal selId As Dictionary(Of String, Long()), ByVal focusedId As Dictionary(Of String, Long))
         If _endingFlag Then Exit Sub
         For Each tab As TabPage In ListTab.TabPages
             Dim lst As DetailsListView = DirectCast(tab.Controls(0), DetailsListView)
@@ -1007,64 +1075,13 @@ Public Class TweenMain
             End If
         Next
 
-        '_curList.EndUpdate()
+    End Sub
 
-        '更新確定
-        Dim notifyPosts() As PostClass = Nothing
-        Dim soundFile As String = ""
-        Dim addCount As Integer = 0
-        addCount = _statuses.SubmitUpdate(soundFile, notifyPosts)
-
-        'リストに反映＆選択状態復元
-        If _endingFlag Then Exit Sub
-        For Each tab As TabPage In ListTab.TabPages
-            Dim lst As DetailsListView = DirectCast(tab.Controls(0), DetailsListView)
-            Dim tabInfo As TabClass = _statuses.Tabs(tab.Text)
-            lst.BeginUpdate()
-            If lst.VirtualListSize <> tabInfo.AllCount Then
-                If lst.Equals(_curList) Then
-                    '_curList.BeginUpdate()
-                    _itemCache = Nothing
-                    _postCache = Nothing
-                End If
-                lst.VirtualListSize = tabInfo.AllCount 'リスト件数更新
-                'If lst.Equals(_curList) Then
-                Me.SelectListItem(lst, _
-                                  _statuses.GetIndex(tab.Text, selId(tab.Text)), _
-                                  _statuses.GetIndex(tab.Text, focusedId(tab.Text)))
-                '_curList.EndUpdate()
-                'End If
-            End If
-            lst.EndUpdate()
-            If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
-        Next
-
-        'スクロール制御後処理
-        '_curList.BeginUpdate()
-        If befCnt <> _curList.VirtualListSize Then
-            Select Case smode
-                Case -3
-                    '最上行
-                    _curList.EnsureVisible(0)
-                Case -2
-                    '最下行へ
-                    _curList.EnsureVisible(_curList.VirtualListSize - 1)
-                Case -1
-                    '制御しない
-                Case Else
-                    '表示位置キープ
-                    If _curList.VirtualListSize > 0 Then
-                        _curList.EnsureVisible(_curList.VirtualListSize - 1)
-                        _curList.EnsureVisible(_statuses.GetIndex(_curTab.Text, topId))
-                    End If
-            End Select
-        End If
-        '_curList.EndUpdate()
-
+    Private Sub NotifyNewPosts(ByVal notifyPosts() As PostClass, ByVal soundFile As String, ByVal addCount As Integer)
         '新着通知
         If NewPostPopMenuItem.Checked AndAlso _
-           notifyPosts IsNot Nothing AndAlso notifyPosts.Length > 0 AndAlso _
-           Not _initial Then
+               notifyPosts IsNot Nothing AndAlso notifyPosts.Length > 0 AndAlso _
+               Not _initial Then
             Dim sb As New StringBuilder
             Dim reply As Boolean = False
             Dim dm As Boolean = False
@@ -1095,8 +1112,6 @@ Public Class TweenMain
             NotifyIcon1.ShowBalloonTip(500)
         End If
 
-        '★★★リストリフレッシュ必要か？要検証★★★
-
         'サウンド再生
         If Not _initial AndAlso SettingDialog.PlaySound AndAlso soundFile <> "" Then
             Try
@@ -1105,11 +1120,6 @@ Public Class TweenMain
 
             End Try
         End If
-
-        SetMainWindowTitle()
-        If Not StatusLabelUrl.Text.StartsWith("http") Then SetStatusLabel()
-        'TimerColorize.Stop()
-        'TimerColorize.Start()
     End Sub
 
     Private Sub Mylist_Scrolled(ByVal sender As Object, ByVal e As System.EventArgs)
