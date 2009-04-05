@@ -34,7 +34,7 @@ Public Class XmlConfiguration
     Private ReadOnly _dictionary As Dictionary(Of String, KeyValuePair(Of Type, Object))
     Protected Shared ReadOnly _lockObj As New Object
 
-    Private _configurationFile As FileInfo
+    Protected _configurationFile As FileInfo
 
     Private ReadOnly Property _dictionaryCollection() As ICollection(Of KeyValuePair(Of String, KeyValuePair(Of Type, Object)))
         Get
@@ -338,21 +338,20 @@ End Class
 Public NotInheritable Class SettingToConfig
     Inherits XmlConfiguration
 
-    Private Shared _file As FileInfo
-
     Public Sub New()
-        _file = New FileInfo(Path.Combine(My.Application.Info.DirectoryPath, "TweenConf.xml"))
-        If not _file.Exists then
-            _file.Create()
+        If ConfigurationFile Is Nothing Then
+            ConfigurationFile = New FileInfo(Path.Combine(My.Application.Info.DirectoryPath, "TweenConf.xml"))
+            If Not ConfigurationFile.Exists Then ConfigurationFile.Create()
         End If
     End Sub
 
     Public Shared Shadows Function Load() As SettingToConfig
         SyncLock _lockObj
-            _file = New FileInfo(Path.Combine(My.Application.Info.DirectoryPath, "TweenConf.xml"))
-            Using reader As XmlReader = XmlReader.Create(_file.FullName)
+            Dim fileConf As FileInfo = New FileInfo(Path.Combine(My.Application.Info.DirectoryPath, "TweenConf.xml"))
+            If Not fileConf.Exists Then fileConf.Create()
+            Using reader As XmlReader = XmlReader.Create(fileConf.FullName)
                 Dim config As SettingToConfig = DirectCast(New XmlSerializer(GetType(SettingToConfig)).Deserialize(reader), SettingToConfig)
-                config.ConfigurationFile = _file
+                config.ConfigurationFile = fileConf
                 Return config
             End Using
         End SyncLock
