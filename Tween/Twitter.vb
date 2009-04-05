@@ -2050,9 +2050,9 @@ RETRY:
         Try
             xdoc.LoadXml(retMsg)
         Catch ex As Exception
-            ExceptionOut(ex)
-            TraceOut(True, retMsg)
-            MessageBox.Show("不正なXMLです。(TL-LoadXml)")
+            'ExceptionOut(ex)
+            'TraceOut(True, retMsg)
+            'MessageBox.Show("不正なXMLです。(TL-LoadXml)")
             Return "Invalid XML!"
         End Try
 
@@ -2109,9 +2109,9 @@ RETRY:
 
                 post.IsDm = False
             Catch ex As Exception
-                ExceptionOut(ex)
-                TraceOut(True, retMsg)
-                MessageBox.Show("不正なXMLです。(TL-Parse)")
+                'ExceptionOut(ex)
+                'TraceOut(True, retMsg)
+                'MessageBox.Show("不正なXMLです。(TL-Parse)")
                 Continue For
             End Try
 
@@ -2161,9 +2161,9 @@ RETRY:
         Try
             xdoc.LoadXml(retMsg)
         Catch ex As Exception
-            ExceptionOut(ex)
-            TraceOut(True, retMsg)
-            MessageBox.Show("不正なXMLです。(DM-LoadXml)")
+            'ExceptionOut(ex)
+            'TraceOut(True, retMsg)
+            'MessageBox.Show("不正なXMLです。(DM-LoadXml)")
             Return "Invalid XML!"
         End Try
 
@@ -2208,9 +2208,9 @@ RETRY:
                 post.ImageUrl = xUentry.Item("profile_image_url").InnerText
                 post.IsProtect = Boolean.Parse(xUentry.Item("protected").InnerText)
             Catch ex As Exception
-                ExceptionOut(ex)
-                TraceOut(True, retMsg)
-                MessageBox.Show("不正なXMLです。(DM-Parse)")
+                'ExceptionOut(ex)
+                'TraceOut(True, retMsg)
+                'MessageBox.Show("不正なXMLです。(DM-Parse)")
                 Continue For
             End Try
 
@@ -2252,8 +2252,8 @@ RETRY:
         Try
             xdoc.LoadXml(retMsg)
         Catch ex As Exception
-            ExceptionOut(ex)
-            TraceOut(True, retMsg)
+            'ExceptionOut(ex)
+            'TraceOut(True, retMsg)
             MessageBox.Show("不正なXMLです。再取得してください。(FollowerApi-LoadXml)")
             Return "Invalid XML!"
         End Try
@@ -2263,8 +2263,8 @@ RETRY:
             Try
                 followerId.Add(Long.Parse(xentryNode.InnerText))
             Catch ex As Exception
-                ExceptionOut(ex)
-                TraceOut(True, retMsg)
+                'ExceptionOut(ex)
+                'TraceOut(True, retMsg)
                 MessageBox.Show("不正なXMLです。再取得してください。(FollowerApi-Parse)")
                 Continue For
             End Try
