@@ -242,10 +242,10 @@
     <value>削除成功</value>
   </data>
   <data name="DMPeriod_ValidatingText1" xml:space="preserve">
-    <value>更新間隔には数値（0または15～600）を指定してください。</value>
+    <value>更新間隔には数値（0または30～600）を指定してください。</value>
   </data>
   <data name="DMPeriod_ValidatingText2" xml:space="preserve">
-    <value>更新間隔には数値（0または15～600）を指定してください。</value>
+    <value>更新間隔には数値（0または30～600）を指定してください。</value>
   </data>
   <data name="DoTabSearchText1" xml:space="preserve">
     <value>正規表現パターンが間違っています。</value>
@@ -485,7 +485,7 @@
     <value>http://pcod.no-ip.org/yats/search?query={0}</value>
   </data>
   <data name="SearchItem4Url" xml:space="preserve">
-    <value>http://search.twitter.com/search?q=&amp;amp;ands={0}&amp;amp;phrase=&amp;amp;ors=&amp;amp;nots=&amp;amp;tag=&amp;amp;lang=en&amp;amp;from=&amp;amp;to=&amp;amp;ref=&amp;amp;near=&amp;amp;within=15&amp;amp;units=mi&amp;amp;since=&amp;amp;until=&amp;amp;rpp=15</value>
+    <value>http://search.twitter.com/search?q={0}</value>
   </data>
   <data name="SetFiltersText1" xml:space="preserve">
     <value>[ユーザ･･･{0}]  </value>
@@ -584,10 +584,10 @@
     <value>ポート番号には0～65535を指定してください。</value>
   </data>
   <data name="TimelinePeriod_ValidatingText1" xml:space="preserve">
-    <value>更新間隔には数値（0または15～600）を指定してください。</value>
+    <value>更新間隔には数値（0または30～600）を指定してください。</value>
   </data>
   <data name="TimelinePeriod_ValidatingText2" xml:space="preserve">
-    <value>更新間隔には数値（0または15～600）を指定してください。</value>
+    <value>更新間隔には数値（0または30～600）を指定してください。</value>
   </data>
   <data name="TimerDM_TickText1" xml:space="preserve">
     <value>DMRcv更新中...</value>

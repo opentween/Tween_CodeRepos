@@ -298,20 +298,22 @@ Namespace My.Resources
         '''<summary>
         '''  更新履歴
         '''
-        '''***Ver0.4.0.0(Unreleased)
+        '''***Ver 0.4.1.0(2009/4/5)
+        '''-API使用時のreply判定漏れするバグ修正
+        '''-API使用時のHTMLデコードしないバグ修正
+        '''-設定が保存できない問題に対応
+        '''***Ver 0.4.0.0(2009/4/4)
+        '''-発言削除時のフォーカス位置調整
+        '''-スクレイピング時に、新WebUiの場合に、1ページ目を取得しない問題を修正
+        '''-API使用時に@idへのリンク付与がずれている問題を修正
+        '''-API使用時に不正なXMLを取得した場合の暫定対処
         '''-タブ切替のショートカット追加。a/sもしくはC-n/C-pで前後のタブに切り替えます。C-nでのタブ振り分けルール作成のショートカットを置き換えました。
         '''-英語版設定画面の項目名が日本語版と不一致だったものを修正。英語対応していなかった項目の英語対応
-        '''***Ver0.3.9.0(2009/4/1)
-        '''-WebのURL変更への対応
-        '''-デフォルトタブ「Favourites」追加。Fav発言が追加されます。
-        '''-振り分けルールのID欄でも正規表現が使えるように変更
-        '''***Ver0.3.8.0(2009/3/24)
-        '''-Form位置決定の際にタスクバーの考慮をしていなかったのを修正
-        '''-通常の終了時に設定が保存されていなかった不具合を修正
-        '''-アイコン保存でエラーが起きるのを修正
-        '''-タイトルバーに最終書き込みを表示するモードで複数行ポストをした場合にXPのビジュアルスタイル有効だと描画が乱れることがあったのを修正
-        '''-設定保存タイミングの見直し
-        '''-振り分けルール編集画面で、編集ボタンを押して、同内容でOKボタン押した際にルールが消えて [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        '''-API取得に対応。設定画面から切替てください。（注意：デフォルトでAPI使用しません）
+        '''-複数返信でも先頭にドットを付加しないように変更
+        '''-自動バージョンアップ時に特権昇格を要求するよう変更。メニューにシールドアイコン付加
+        '''-タブの並び順が保存されないバグ修正
+        '''*** [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property ChangeLog() As String
             Get
@@ -509,7 +511,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  更新間隔には数値（0または15～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''  更新間隔には数値（0または30～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property DMPeriod_ValidatingText1() As String
             Get
@@ -518,7 +520,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  更新間隔には数値（0または15～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''  更新間隔には数値（0または30～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property DMPeriod_ValidatingText2() As String
             Get
@@ -1233,7 +1235,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  http://search.twitter.com/search?q=&amp;amp;ands={0}&amp;amp;phrase=&amp;amp;ors=&amp;amp;nots=&amp;amp;tag=&amp;amp;lang=en&amp;amp;from=&amp;amp;to=&amp;amp;ref=&amp;amp;near=&amp;amp;within=15&amp;amp;units=mi&amp;amp;since=&amp;amp;until=&amp;amp;rpp=15 に類似しているローカライズされた文字列を検索します。
+        '''  http://search.twitter.com/search?q={0} に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property SearchItem4Url() As String
             Get
@@ -1546,7 +1548,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  更新間隔には数値（0または15～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''  更新間隔には数値（0または30～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property TimelinePeriod_ValidatingText1() As String
             Get
@@ -1555,7 +1557,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  更新間隔には数値（0または15～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''  更新間隔には数値（0または30～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property TimelinePeriod_ValidatingText2() As String
             Get
