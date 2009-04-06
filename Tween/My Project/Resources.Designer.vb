@@ -511,7 +511,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  更新間隔には数値（0または15～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''  更新間隔には数値（0または30～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property DMPeriod_ValidatingText1() As String
             Get
@@ -520,7 +520,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  更新間隔には数値（0または15～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''  更新間隔には数値（0または30～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property DMPeriod_ValidatingText2() As String
             Get
@@ -1548,7 +1548,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  更新間隔には数値（0または15～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''  更新間隔には数値（0または30～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property TimelinePeriod_ValidatingText1() As String
             Get
@@ -1557,7 +1557,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  更新間隔には数値（0または15～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''  更新間隔には数値（0または30～600）を指定してください。 に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property TimelinePeriod_ValidatingText2() As String
             Get

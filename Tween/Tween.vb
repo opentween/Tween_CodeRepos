@@ -2189,7 +2189,7 @@ Public Class TweenMain
                 Twitter.Username = _username
                 Twitter.Password = _password
                 If SettingDialog.TimelinePeriodInt > 0 Then
-                    If SettingDialog.PeriodAdjust Then
+                    If SettingDialog.PeriodAdjust AndAlso Not SettingDialog.UseAPI Then
                         If SettingDialog.TimelinePeriodInt * 1000 < TimerTimeline.Interval Then
                             TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
                         End If
