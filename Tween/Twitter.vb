@@ -81,6 +81,7 @@ Public Module Twitter
     Private _infoTwitter As String = ""
     Private _dmCount As Integer
     Private _getDm As Boolean
+    Private _remainCountApi As Integer = -1
 
     Private _ShortUrlService() As String = { _
             "http://tinyurl.com/", _
@@ -1494,7 +1495,7 @@ RETRY:
                     follower.Clear()
                     follower.Add(_uid.ToLower())
                 End SyncLock
-                Return "NG"
+                Return "Can't get followers_count and invalid cache."
             Else
                 'キャッシュを読み出せたのでキャッシュを使う
                 SyncLock LockObj
@@ -1554,7 +1555,7 @@ RETRY:
                 follower.Clear()
                 follower.Add(_uid.ToLower())
             End SyncLock
-            Return "NG"
+            Return "Can't get followers."
         End If
 
         follower = tmpFollower
@@ -2029,19 +2030,25 @@ RETRY:
 
         Dim retMsg As String = ""
         Dim resStatus As String = ""
+        Dim sck As MySocket = CreateSocket()
         'スレッド取得は行わず、countで調整
-        'Const GET_COUNT As Integer = 60
         Const COUNT_QUERY As String = "count="
         Const FRIEND_PATH As String = "/statuses/friends_timeline.xml"
         Const REPLY_PATH As String = "/statuses/replies.xml"
 
         If gType = WORKERTYPE.Timeline Then
-            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + FRIEND_PATH + "?" + COUNT_QUERY + _countApi.ToString(), resStatus, _ApiMethod), String)
+            retMsg = DirectCast(sck.GetWebResponse("https://" + _hubServer + FRIEND_PATH + "?" + COUNT_QUERY + _countApi.ToString(), resStatus, _ApiMethod), String)
         Else
-            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + REPLY_PATH + "?" + COUNT_QUERY + _countApi.ToString(), resStatus, _ApiMethod), String)
+            retMsg = DirectCast(sck.GetWebResponse("https://" + _hubServer + REPLY_PATH + "?" + COUNT_QUERY + _countApi.ToString(), resStatus, _ApiMethod), String)
         End If
 
-        If retMsg = "" Then Return resStatus
+        If retMsg = "" Then
+            If resStatus.StartsWith("Err: BadRequest") Then
+                Return "Maybe, the requests reached API limit."
+            Else
+                Return resStatus
+            End If
+        End If
 
         Dim arIdx As Integer = -1
         Dim dlgt(_countApi) As GetIconImageDelegate    'countQueryに合わせる
@@ -2131,6 +2138,8 @@ RETRY:
             End Try
         Next
 
+        If _ApiMethod = MySocket.REQ_TYPE.ReqGetAPI Then _remainCountApi = sck.RemainCountApi
+
         Return ""
     End Function
 
@@ -2140,19 +2149,25 @@ RETRY:
 
         Dim retMsg As String = ""
         Dim resStatus As String = ""
+        Dim sck As MySocket = CreateSocket()
         'スレッド取得は行わず、countで調整
         Const GET_COUNT As Integer = 20
-        'Const COUNT_QUERY As String = "count="
         Const RECEIVE_PATH As String = "/direct_messages.xml"
         Const SENT_PATH As String = "/direct_messages/sent.xml"
 
         If gType = WORKERTYPE.DirectMessegeRcv Then
-            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + RECEIVE_PATH, resStatus, _ApiMethod), String)
+            retMsg = DirectCast(sck.GetWebResponse("https://" + _hubServer + RECEIVE_PATH, resStatus, _ApiMethod), String)
         Else
-            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + SENT_PATH, resStatus, _ApiMethod), String)
+            retMsg = DirectCast(sck.GetWebResponse("https://" + _hubServer + SENT_PATH, resStatus, _ApiMethod), String)
         End If
 
-        If retMsg = "" Then Return resStatus
+        If retMsg = "" Then
+            If resStatus.StartsWith("Err: BadRequest") Then
+                Return "Maybe, the requests reached API limit."
+            Else
+                Return resStatus
+            End If
+        End If
 
         Dim arIdx As Integer = -1
         Dim dlgt(GET_COUNT) As GetIconImageDelegate    'countQueryに合わせる
@@ -2234,6 +2249,8 @@ RETRY:
             End Try
         Next
 
+        If _ApiMethod = MySocket.REQ_TYPE.ReqGetAPI Then _remainCountApi = sck.RemainCountApi
+
         Return ""
     End Function
 
@@ -2299,6 +2316,12 @@ RETRY:
         retStr = AdjustHtml(ShortUrlResolve(PreProcessUrl(retStr))) 'IDN置換、短縮Uri解決、@リンクを相対→絶対にしてtarget属性付与
         Return retStr
     End Function
+
+    Public ReadOnly Property RemainCountApi() As Integer
+        Get
+            Return _remainCountApi
+        End Get
+    End Property
 
 #Region "デバッグモード解析キー自動生成"
 #If DEBUG Then

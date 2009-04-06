@@ -35,6 +35,7 @@ Public NotInheritable Class MySocket
     Private Shared cCon As New System.Net.CookieContainer()
     Private Shared ReadOnly cConLock As New Object
     Private _defaultTimeOut As Integer = HttpTimeOut.DefaultValue * 1000
+    Private _remainCountApi As Integer
 
     Public Enum REQ_TYPE
         ReqGET
@@ -79,6 +80,7 @@ Public NotInheritable Class MySocket
         End Select
         _proxyType = ProxyType
         DefaultTimeOut = TimeOut
+        _remainCountApi = -1
     End Sub
 
     Public Function GetWebResponse(ByVal url As String, _
@@ -212,80 +214,90 @@ Public NotInheritable Class MySocket
                             Using sr As New StreamReader(strm, _enc)
                                 rtStr = sr.ReadToEnd()
                             End Using
+                            If reqType = REQ_TYPE.ReqGetAPI Then
+#If DEBUG Then
+                                Diagnostics.Debug.WriteLine(webRes.Headers.Item("X-RateLimit-Limit"))
+                                Diagnostics.Debug.WriteLine(webRes.Headers.Item("X-RateLimit-Remaining"))
+                                Diagnostics.Debug.WriteLine(webRes.Headers.Item("X-RateLimit-Reset"))
+#End If
+                                If webRes.Headers.Item("X-RateLimit-Remaining") IsNot Nothing Then
+                                    If Not Integer.TryParse(webRes.Headers.Item("X-RateLimit-Remaining"), _remainCountApi) Then _remainCountApi = -1
+                                End If
+                            End If
                             Return rtStr
                         Case REQ_TYPE.ReqGETBinary
-                            Dim readData(1023) As Byte
-                            Dim readSize As Integer = 0
-                            Dim img As Image
-                            Dim mem As New MemoryStream
-                            While True
-                                readSize = strm.Read(readData, 0, readData.Length)
-                                If readSize = 0 Then
-                                    Exit While
-                                End If
-                                mem.Write(readData, 0, readSize)
-                            End While
-                            img = Image.FromStream(mem, True)
-                            Select Case img.RawFormat.Guid
-                                Case Imaging.ImageFormat.Icon.Guid
-                                    img.Dispose()   '一旦破棄
-                                    mem.Seek(0, SeekOrigin.Begin)   '頭だし
-                                    Using icn As Icon = New Icon(mem)
-                                        If icn Is Nothing Then Return Nothing
-                                        img = icn.ToBitmap()
-                                    End Using
-                                    mem.Close()
-                                Case Imaging.ImageFormat.Gif.Guid
-                                    Dim fd As New Imaging.FrameDimension(img.FrameDimensionsList(0))
-                                    Dim page As Integer = img.GetFrameCount(fd)
-                                    If page > 1 Then
-                                        Dim eflg As Boolean = False
-                                        '全フレームが読み込み可能か確認
-                                        For i As Integer = 0 To page - 1
-                                            Try
-                                                img.SelectActiveFrame(fd, i)
-                                            Catch ex As Exception
-                                                eflg = True
-                                                Exit For
-                                            End Try
-                                        Next
-                                        If eflg Then
-                                            'エラーが起きたらbitmapに変換
-                                            Dim bmp As New Bitmap(48, 48)
-                                            Using g As Graphics = Graphics.FromImage(bmp)
-                                                g.InterpolationMode = Drawing2D.InterpolationMode.High
-                                                g.DrawImage(img, 0, 0, 48, 48)
-                                            End Using
-                                            mem.Close()
-                                            img.Dispose()
-                                            img = bmp
-                                        End If
-                                        'エラーが起きなければ、memorystreamは閉じない（animated gif）
-                                    Else
-                                        mem.Close()
+                                Dim readData(1023) As Byte
+                                Dim readSize As Integer = 0
+                                Dim img As Image
+                                Dim mem As New MemoryStream
+                                While True
+                                    readSize = strm.Read(readData, 0, readData.Length)
+                                    If readSize = 0 Then
+                                        Exit While
                                     End If
-                                Case Else
-                                    mem.Close()
-                            End Select
-                            Return img
+                                    mem.Write(readData, 0, readSize)
+                                End While
+                                img = Image.FromStream(mem, True)
+                                Select Case img.RawFormat.Guid
+                                    Case Imaging.ImageFormat.Icon.Guid
+                                        img.Dispose()   '一旦破棄
+                                        mem.Seek(0, SeekOrigin.Begin)   '頭だし
+                                        Using icn As Icon = New Icon(mem)
+                                            If icn Is Nothing Then Return Nothing
+                                            img = icn.ToBitmap()
+                                        End Using
+                                        mem.Close()
+                                    Case Imaging.ImageFormat.Gif.Guid
+                                        Dim fd As New Imaging.FrameDimension(img.FrameDimensionsList(0))
+                                        Dim page As Integer = img.GetFrameCount(fd)
+                                        If page > 1 Then
+                                            Dim eflg As Boolean = False
+                                            '全フレームが読み込み可能か確認
+                                            For i As Integer = 0 To page - 1
+                                                Try
+                                                    img.SelectActiveFrame(fd, i)
+                                                Catch ex As Exception
+                                                    eflg = True
+                                                    Exit For
+                                                End Try
+                                            Next
+                                            If eflg Then
+                                                'エラーが起きたらbitmapに変換
+                                                Dim bmp As New Bitmap(48, 48)
+                                                Using g As Graphics = Graphics.FromImage(bmp)
+                                                    g.InterpolationMode = Drawing2D.InterpolationMode.High
+                                                    g.DrawImage(img, 0, 0, 48, 48)
+                                                End Using
+                                                mem.Close()
+                                                img.Dispose()
+                                                img = bmp
+                                            End If
+                                            'エラーが起きなければ、memorystreamは閉じない（animated gif）
+                                        Else
+                                            mem.Close()
+                                        End If
+                                    Case Else
+                                        mem.Close()
+                                End Select
+                                Return img
                         Case REQ_TYPE.ReqGETFile
-                            StreamToFile(strm, Path.Combine(Path.GetTempPath(), "TweenNew.exe"), webRes.ContentEncoding)
+                                StreamToFile(strm, Path.Combine(Path.GetTempPath(), "TweenNew.exe"), webRes.ContentEncoding)
                         Case REQ_TYPE.ReqGETFileUp
-                            StreamToFile(strm, Path.Combine(Path.GetTempPath(), "TweenUp.exe"), webRes.ContentEncoding)
+                                StreamToFile(strm, Path.Combine(Path.GetTempPath(), "TweenUp.exe"), webRes.ContentEncoding)
                         Case REQ_TYPE.ReqGETFileRes
-                            If Directory.Exists(Path.Combine(Path.GetTempPath(), "en")) = False Then
-                                Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "en"))
-                            End If
-                            StreamToFile(strm, Path.Combine(Path.GetTempPath(), "en\Tween.resourcesNew.dll"), webRes.ContentEncoding)
+                                If Directory.Exists(Path.Combine(Path.GetTempPath(), "en")) = False Then
+                                    Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "en"))
+                                End If
+                                StreamToFile(strm, Path.Combine(Path.GetTempPath(), "en\Tween.resourcesNew.dll"), webRes.ContentEncoding)
                         Case REQ_TYPE.ReqGETForwardTo
-                            Dim rtStr As String = ""
-                            If webRes.StatusCode = HttpStatusCode.MovedPermanently OrElse _
-                               webRes.StatusCode = HttpStatusCode.Found OrElse _
-                               webRes.StatusCode = HttpStatusCode.SeeOther OrElse _
-                               webRes.StatusCode = HttpStatusCode.TemporaryRedirect Then
-                                rtStr = webRes.Headers.GetValues("Location")(0)
-                                Return rtStr
-                            End If
+                                Dim rtStr As String = ""
+                                If webRes.StatusCode = HttpStatusCode.MovedPermanently OrElse _
+                                   webRes.StatusCode = HttpStatusCode.Found OrElse _
+                                   webRes.StatusCode = HttpStatusCode.SeeOther OrElse _
+                                   webRes.StatusCode = HttpStatusCode.TemporaryRedirect Then
+                                    rtStr = webRes.Headers.GetValues("Location")(0)
+                                    Return rtStr
+                                End If
                     End Select
                 End Using
             End Using
@@ -357,5 +369,11 @@ Public NotInheritable Class MySocket
                 _defaultTimeOut = value * 1000
             End If
         End Set
+    End Property
+
+    Public ReadOnly Property RemainCountApi() As Integer
+        Get
+            Return _remainCountApi
+        End Get
     End Property
 End Class

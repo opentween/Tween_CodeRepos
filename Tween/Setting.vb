@@ -1,7 +1,7 @@
 ﻿' Tween - Client of Twitter
-' Copyright © 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
-'           © 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
-'           © 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
+' Copyright (c) 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
+'           (c) 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
+'           (c) 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
 ' All rights reserved.
 ' 
 ' This file is part of Tween.
@@ -302,6 +302,17 @@ Public Class Setting
 
         CheckPostCtrlEnter.Checked = _MyPostCtrlEnter
         CheckUseApi.Checked = _useAPI
+        'Enable切り替え
+        CheckboxReply.Enabled = Not CheckUseApi.Checked
+        CheckPeriodAdjust.Enabled = Not CheckUseApi.Checked
+        NextThreshold.Enabled = Not CheckUseApi.Checked
+        NextPages.Enabled = Not CheckUseApi.Checked
+        StartupReadPages.Enabled = Not CheckUseApi.Checked
+        StartupReadReply.Enabled = Not CheckUseApi.Checked
+        StartupReadDM.Enabled = Not CheckUseApi.Checked
+        CheckPostMethod.Enabled = CheckUseApi.Checked
+        TextCountApi.Enabled = CheckUseApi.Checked
+
         CheckPostMethod.Checked = _usePostMethod
         TextCountApi.Text = _countApi.ToString
         'HubServerDomain.Text = _hubServer

@@ -226,10 +226,10 @@
     <value>Remove succeeded</value>
   </data>
   <data name="DMPeriod_ValidatingText1" xml:space="preserve">
-    <value>Fetching interval must a value in 0 or 15 to 600.</value>
+    <value>Fetching interval must a value in 0 or 30 to 600.</value>
   </data>
   <data name="DMPeriod_ValidatingText2" xml:space="preserve">
-    <value>Fetching interval must a value in 0 or 15 to 600.</value>
+    <value>Fetching interval must a value in 0 or 30 to 600.</value>
   </data>
   <data name="DoTabSearchText1" xml:space="preserve">
     <value>Invalid regular expression pattern.</value>
@@ -448,7 +448,7 @@
     <value>http://pcod.no-ip.org/yats/search?query={0}</value>
   </data>
   <data name="SearchItem4Url" xml:space="preserve">
-    <value>http://search.twitter.com/search?q=&amp;amp;ands={0}&amp;amp;phrase=&amp;amp;ors=&amp;amp;nots=&amp;amp;tag=&amp;amp;lang=en&amp;amp;from=&amp;amp;to=&amp;amp;ref=&amp;amp;near=&amp;amp;within=15&amp;amp;units=mi&amp;amp;since=&amp;amp;until=&amp;amp;rpp=15</value>
+    <value>http://search.twitter.com/search?q={0}</value>
   </data>
   <data name="SetFiltersText1" xml:space="preserve">
     <value>[User: {0}]  </value>
@@ -544,10 +544,10 @@
     <value>Port number must be number 0 to 65535.</value>
   </data>
   <data name="TimelinePeriod_ValidatingText1" xml:space="preserve">
-    <value>Refresh interval must be number 0 or 15 to 600</value>
+    <value>Refresh interval must be number 0 or 30 to 600</value>
   </data>
   <data name="TimelinePeriod_ValidatingText2" xml:space="preserve">
-    <value>Refresh interval must be number 0 or 15 to 600</value>
+    <value>Refresh interval must be number 0 or 30 to 600</value>
   </data>
   <data name="TimerDM_TickText1" xml:space="preserve">
     <value>DMRcv refreshing...</value>
