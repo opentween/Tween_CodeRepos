@@ -1474,7 +1474,10 @@ Public Class TweenMain
             Case WORKERTYPE.PostMessage
                 bw.ReportProgress(200)
                 CheckReplyTo(args.status)
-                ret = Twitter.PostStatus(args.status, _reply_to_id)
+                For i As Integer = 0 To 1
+                    ret = Twitter.PostStatus(args.status, _reply_to_id)
+                    If ret = "" Then Exit For
+                Next
                 _reply_to_id = 0
                 _reply_to_name = Nothing
                 bw.ReportProgress(300)
