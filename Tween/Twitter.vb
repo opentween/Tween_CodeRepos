@@ -2057,9 +2057,8 @@ RETRY:
         Try
             xdoc.LoadXml(retMsg)
         Catch ex As Exception
-            ExceptionOut(ex)
-            TraceOut(True, retMsg)
-            MessageBox.Show("不正なXMLです。(TL-LoadXml)")
+            TraceOut(retMsg)
+            'MessageBox.Show("不正なXMLです。(TL-LoadXml)")
             Return "Invalid XML!"
         End Try
 
@@ -2116,9 +2115,8 @@ RETRY:
 
                 post.IsDm = False
             Catch ex As Exception
-                ExceptionOut(ex)
-                TraceOut(True, retMsg)
-                MessageBox.Show("不正なXMLです。(TL-Parse)")
+                TraceOut(retMsg)
+                'MessageBox.Show("不正なXMLです。(TL-Parse)")
                 Continue For
             End Try
 
@@ -2176,9 +2174,8 @@ RETRY:
         Try
             xdoc.LoadXml(retMsg)
         Catch ex As Exception
-            ExceptionOut(ex)
-            TraceOut(True, retMsg)
-            MessageBox.Show("不正なXMLです。(DM-LoadXml)")
+            TraceOut(retMsg)
+            'MessageBox.Show("不正なXMLです。(DM-LoadXml)")
             Return "Invalid XML!"
         End Try
 
@@ -2223,9 +2220,8 @@ RETRY:
                 post.ImageUrl = xUentry.Item("profile_image_url").InnerText
                 post.IsProtect = Boolean.Parse(xUentry.Item("protected").InnerText)
             Catch ex As Exception
-                ExceptionOut(ex)
-                TraceOut(True, retMsg)
-                MessageBox.Show("不正なXMLです。(DM-Parse)")
+                TraceOut(retMsg)
+                'MessageBox.Show("不正なXMLです。(DM-Parse)")
                 Continue For
             End Try
 
@@ -2269,8 +2265,7 @@ RETRY:
         Try
             xdoc.LoadXml(retMsg)
         Catch ex As Exception
-            ExceptionOut(ex)
-            TraceOut(True, retMsg)
+            TraceOut(retMsg)
             MessageBox.Show("不正なXMLです。再取得してください。(FollowerApi-LoadXml)")
             Return "Invalid XML!"
         End Try
@@ -2280,8 +2275,7 @@ RETRY:
             Try
                 followerId.Add(Long.Parse(xentryNode.InnerText))
             Catch ex As Exception
-                ExceptionOut(ex)
-                TraceOut(True, retMsg)
+                TraceOut(retMsg)
                 MessageBox.Show("不正なXMLです。再取得してください。(FollowerApi-Parse)")
                 Continue For
             End Try

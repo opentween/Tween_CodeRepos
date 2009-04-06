@@ -2182,6 +2182,8 @@ Public Class TweenMain
     End Sub
 
     Private Sub SettingStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SettingStripMenuItem.Click
+        Dim chgUseApi As Boolean = False
+
         If SettingDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
             SyncLock _syncObject
                 _username = SettingDialog.UserID
@@ -2210,6 +2212,9 @@ Public Class TweenMain
                 End If
                 Twitter.NextThreshold = SettingDialog.NextPageThreshold
                 Twitter.NextPages = SettingDialog.NextPagesInt
+                If Twitter.UseAPI <> SettingDialog.UseAPI AndAlso Not _initial Then
+                    chgUseApi = True
+                End If
                 Twitter.UseAPI = SettingDialog.UseAPI
                 Twitter.CountApi = SettingDialog.CountApi
                 Twitter.UsePostMethod = SettingDialog.UsePostMethod
@@ -2294,6 +2299,8 @@ Public Class TweenMain
 
         Me.TopMost = SettingDialog.AlwaysTop
         SaveConfigs()
+
+        If chgUseApi Then doGetFollowersMenu(False) 'API使用を切り替えたら取り直し
     End Sub
 
     Private Sub PostBrowser_Navigated(ByVal sender As Object, ByVal e As System.Windows.Forms.WebBrowserNavigatedEventArgs) Handles PostBrowser.Navigated
