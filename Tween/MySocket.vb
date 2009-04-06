@@ -212,6 +212,13 @@ Public NotInheritable Class MySocket
                             Using sr As New StreamReader(strm, _enc)
                                 rtStr = sr.ReadToEnd()
                             End Using
+#If DEBUG Then
+                            If reqType = REQ_TYPE.ReqGetAPI Then
+                                Diagnostics.Debug.WriteLine(webRes.Headers.Item("X-RateLimit-Limit"))
+                                Diagnostics.Debug.WriteLine(webRes.Headers.Item("X-RateLimit-Remaining"))
+                                Diagnostics.Debug.WriteLine(webRes.Headers.Item("X-RateLimit-Reset"))
+                            End If
+#End If
                             Return rtStr
                         Case REQ_TYPE.ReqGETBinary
                             Dim readData(1023) As Byte

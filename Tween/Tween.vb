@@ -969,7 +969,7 @@ Public Class TweenMain
                 If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
             Next
         Catch ex As Exception
-            ExceptionOut(ex, "Ref1")
+            ExceptionOut(ex, "Ref1, UseAPI=" + SettingDialog.UseAPI.ToString)
         End Try
 
         'スクロール制御後処理
@@ -993,7 +993,7 @@ Public Class TweenMain
                 End Select
             End If
         Catch ex As Exception
-            ExceptionOut(ex, "Ref2")
+            ExceptionOut(ex, "Ref2, UseAPI=" + SettingDialog.UseAPI.ToString)
         End Try
 
         '新着通知
@@ -5226,9 +5226,7 @@ RETRY2:
             bnd = LView.FocusedItem.Bounds
             flg = True
         End If
-        'For i As Integer = _curList.SelectedIndices.Count - 1 To 0 Step -1
-        '    LView.Items(i).Selected = False
-        'Next
+
         LView.SelectedIndices.Clear()
         LView.Items(Index).Selected = True
         LView.Items(Index).Focused = True
@@ -5243,14 +5241,10 @@ RETRY2:
             bnd = LView.FocusedItem.Bounds
             flg = True
         End If
-        'For i As Integer = LView.SelectedIndices.Count - 1 To 0 Step -1
-        '    LView.Items(LView.SelectedIndices(i)).Selected = False
-        'Next
 
         If Index IsNot Nothing AndAlso Index(0) > -1 Then
             LView.SelectedIndices.Clear()
             For Each idx As Integer In Index
-                'LView.Items(idx).Selected = True
                 LView.SelectedIndices.Add(idx)
             Next
         End If
