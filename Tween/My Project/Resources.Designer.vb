@@ -1235,7 +1235,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  http://search.twitter.com/search?q=&amp;amp;ands={0}&amp;amp;phrase=&amp;amp;ors=&amp;amp;nots=&amp;amp;tag=&amp;amp;lang=en&amp;amp;from=&amp;amp;to=&amp;amp;ref=&amp;amp;near=&amp;amp;within=15&amp;amp;units=mi&amp;amp;since=&amp;amp;until=&amp;amp;rpp=15 に類似しているローカライズされた文字列を検索します。
+        '''  http://search.twitter.com/search?q={0} に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property SearchItem4Url() As String
             Get
