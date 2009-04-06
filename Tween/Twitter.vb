@@ -1494,7 +1494,7 @@ RETRY:
                     follower.Clear()
                     follower.Add(_uid.ToLower())
                 End SyncLock
-                Return "NG"
+                Return "Can't get followers_count and invalid cache."
             Else
                 'キャッシュを読み出せたのでキャッシュを使う
                 SyncLock LockObj
@@ -1554,7 +1554,7 @@ RETRY:
                 follower.Clear()
                 follower.Add(_uid.ToLower())
             End SyncLock
-            Return "NG"
+            Return "Can't get followers."
         End If
 
         follower = tmpFollower
