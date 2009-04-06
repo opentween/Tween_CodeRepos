@@ -5383,7 +5383,24 @@ RETRY2:
         If _curPost IsNot Nothing Then
             If SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Or _
                Not StatusText.Enabled Then Exit Sub
-            StatusText.Text = "RT:" + _curPost.Data + " (via @" + _curPost.Name + ")"
+
+            Dim rtdata As String = _curPost.OriginalData
+            ' Twitterにより省略されているURLを含むaタグをキャプチャしてリンク先URLへ置き換える
+            Dim rx As Regex = New Regex("<a target=""_self"" href=""(?<url>.*?)"" rel=""nofollow"" target=""_blank"">(?<link>.*?)</a>")
+            For Each m As Match In rx.Matches(_curPost.OriginalData)
+                If m.Result("${link}").EndsWith("...") Then
+                    rtdata = rtdata.Replace(m.Captures.Item(0).Value, m.Result("${url}"))
+                End If
+                rtdata = rtdata.Replace(m.Captures.Item(0).Value, m.Result("${link}"))
+            Next
+
+            'その他のリンク(@IDなど)を置き換える
+            rx = New Regex("<a target=""_self"" href=""(?<url>.*?)"">(?<link>.*?)</a>")
+            For Each m As Match In rx.Matches(_curPost.OriginalData)
+                rtdata = rtdata.Replace(m.Captures.Item(0).Value, m.Result("${link}"))
+            Next
+
+            StatusText.Text = "RT:" + rtdata + " (via @" + _curPost.Name + ")"
             _reply_to_id = 0
             _reply_to_name = Nothing
             StatusText.SelectionStart = StatusText.Text.Length
