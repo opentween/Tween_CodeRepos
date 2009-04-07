@@ -2120,13 +2120,17 @@ Public Class TweenMain
                 DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
                 If _curTab.Equals(tb) Then
                     _curList.SelectedIndices.Clear()
-                    If _statuses.Tabs(tb.Text).AllCount - 1 > fidx Then
-                        _curList.SelectedIndices.Add(fidx)
-                    Else
-                        _curList.SelectedIndices.Add(_statuses.Tabs(tb.Text).AllCount - 1)
+                    If _statuses.Tabs(tb.Text).AllCount > 0 Then
+                        If _statuses.Tabs(tb.Text).AllCount - 1 > fidx AndAlso fidx > -1 Then
+                            _curList.SelectedIndices.Add(fidx)
+                        Else
+                            _curList.SelectedIndices.Add(_statuses.Tabs(tb.Text).AllCount - 1)
+                        End If
+                        If _curList.SelectedIndices.Count > 0 Then
+                            _curList.EnsureVisible(_curList.SelectedIndices(0))
+                            _curList.FocusedItem = _curList.Items(_curList.SelectedIndices(0))
+                        End If
                     End If
-                    _curList.EnsureVisible(_curList.SelectedIndices(0))
-                    _curList.FocusedItem = _curList.Items(_curList.SelectedIndices(0))
                 End If
                 If _statuses.Tabs(tb.Text).UnreadCount = 0 AndAlso tb.ImageIndex = 0 Then tb.ImageIndex = -1
             Next
