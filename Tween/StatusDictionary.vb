@@ -470,7 +470,7 @@ Public NotInheritable Class TabInformations
                 Tab.OldestUnreadId = -1
             ElseIf Tab.OldestUnreadId = CurrentId Then
                 '最古IDを既読にしたタイミング→次のIDから続けて探索
-                Dim idx As Integer = Tab.GetIndex(CurrentId)
+                Dim idx As Integer = Tab.IndexOf(CurrentId)
                 If idx > -1 Then
                     '続きから探索
                     FindUnreadId(idx, Tab)
@@ -491,15 +491,17 @@ Public NotInheritable Class TabInformations
     Private Sub FindUnreadId(ByVal StartIdx As Integer, ByVal Tab As TabClass)
         If Tab.AllCount = 0 Then
             Tab.OldestUnreadId = -1
+            Tab.UnreadCount = 0
             Exit Sub
         End If
         Dim toIdx As Integer = 0
         Dim stp As Integer = 1
+        Tab.OldestUnreadId = -1
         If _sorter.Order = Windows.Forms.SortOrder.Ascending Then
             If StartIdx = -1 Then
                 StartIdx = 0
             Else
-                StartIdx += 1
+                'StartIdx += 1
                 If StartIdx > Tab.AllCount - 1 Then StartIdx = Tab.AllCount - 1 '念のため
             End If
             toIdx = Tab.AllCount - 1
@@ -509,7 +511,7 @@ Public NotInheritable Class TabInformations
             If StartIdx = -1 Then
                 StartIdx = Tab.AllCount - 1
             Else
-                StartIdx -= 1
+                'StartIdx -= 1
             End If
             If StartIdx < 0 Then StartIdx = 0 '念のため
             toIdx = 0
@@ -521,6 +523,7 @@ Public NotInheritable Class TabInformations
                 Exit For
             End If
         Next
+        If Tab.OldestUnreadId = -1 Then Tab.UnreadCount = 0
     End Sub
 
     'Public Sub BeginUpdate(ByVal EditMode As EDITMODE)
@@ -647,7 +650,9 @@ Public NotInheritable Class TabInformations
             Me.SetNextUnreadId(Id, tb)  '次の未読セット
             '他タブの最古未読ＩＤはタブ切り替え時に。
             For Each key As String In _tabs.Keys
-                If Not key = TabName AndAlso _tabs(key).UnreadManage AndAlso _tabs(key).Contains(Id) Then
+                If key <> TabName AndAlso _
+                   _tabs(key).UnreadManage AndAlso _
+                   _tabs(key).Contains(Id) Then
                     _tabs(key).UnreadCount -= 1
                     If _tabs(key).OldestUnreadId = Id Then _tabs(key).OldestUnreadId = -1
                 End If
@@ -794,18 +799,18 @@ Public NotInheritable Class TabInformations
         Return _tabs(TabName).GetId(Index)
     End Function
 
-    Public Function GetIndex(ByVal TabName As String, ByVal Ids() As Long) As Integer()
+    Public Function IndexOf(ByVal TabName As String, ByVal Ids() As Long) As Integer()
         If Ids Is Nothing Then Return Nothing
         Dim idx(Ids.Length - 1) As Integer
         Dim tb As TabClass = _tabs(TabName)
         For i As Integer = 0 To Ids.Length - 1
-            idx(i) = tb.GetIndex(Ids(i))
+            idx(i) = tb.IndexOf(Ids(i))
         Next
         Return idx
     End Function
 
-    Public Function GetIndex(ByVal TabName As String, ByVal Id As Long) As Integer
-        Return _tabs(TabName).GetIndex(Id)
+    Public Function IndexOf(ByVal TabName As String, ByVal Id As Long) As Integer
+        Return _tabs(TabName).IndexOf(Id)
     End Function
 
     Public Sub ClearTabIds(ByVal TabName As String)
@@ -1092,7 +1097,7 @@ Public NotInheritable Class TabClass
         Return _ids(Index)
     End Function
 
-    Public Function GetIndex(ByVal ID As Long) As Integer
+    Public Function IndexOf(ByVal ID As Long) As Integer
         Return _ids.IndexOf(ID)
     End Function
 
