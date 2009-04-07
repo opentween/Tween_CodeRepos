@@ -575,7 +575,7 @@ Public Class TweenMain
         Me.ClientSize = _cfg.FormSize
         _mySize = Me.ClientSize                     'サイズ保持（最小化・最大化されたまま終了した場合の対応用）
         Me.DesktopLocation = _cfg.FormLocation
-        _myLoc = Me.Location                        '位置保持（最小化・最大化されたまま終了した場合の対応用）
+        _myLoc = Me.DesktopLocation                        '位置保持（最小化・最大化されたまま終了した場合の対応用）
         Me.TopMost = SettingDialog.AlwaysTop
         _mySpDis = _cfg.SplitterDistance
         _mySpDis2 = _cfg.StatusTextHeight
@@ -1474,7 +1474,10 @@ Public Class TweenMain
             Case WORKERTYPE.PostMessage
                 bw.ReportProgress(200)
                 CheckReplyTo(args.status)
-                ret = Twitter.PostStatus(args.status, _reply_to_id)
+                For i As Integer = 0 To 1
+                    ret = Twitter.PostStatus(args.status, _reply_to_id)
+                    If ret = "" Then Exit For
+                Next
                 _reply_to_id = 0
                 _reply_to_name = Nothing
                 bw.ReportProgress(300)
@@ -2021,7 +2024,7 @@ Public Class TweenMain
 
     Private Sub Tween_LocationChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.LocationChanged
         If Me.WindowState = FormWindowState.Normal Then
-            _myLoc = Me.Location
+            _myLoc = Me.DesktopLocation
         End If
     End Sub
 
@@ -2117,13 +2120,17 @@ Public Class TweenMain
                 DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
                 If _curTab.Equals(tb) Then
                     _curList.SelectedIndices.Clear()
-                    If _statuses.Tabs(tb.Text).AllCount - 1 > fidx Then
-                        _curList.SelectedIndices.Add(fidx)
-                    Else
-                        _curList.SelectedIndices.Add(_statuses.Tabs(tb.Text).AllCount - 1)
+                    If _statuses.Tabs(tb.Text).AllCount > 0 Then
+                        If _statuses.Tabs(tb.Text).AllCount - 1 > fidx AndAlso fidx > -1 Then
+                            _curList.SelectedIndices.Add(fidx)
+                        Else
+                            _curList.SelectedIndices.Add(_statuses.Tabs(tb.Text).AllCount - 1)
+                        End If
+                        If _curList.SelectedIndices.Count > 0 Then
+                            _curList.EnsureVisible(_curList.SelectedIndices(0))
+                            _curList.FocusedItem = _curList.Items(_curList.SelectedIndices(0))
+                        End If
                     End If
-                    _curList.EnsureVisible(_curList.SelectedIndices(0))
-                    _curList.FocusedItem = _curList.Items(_curList.SelectedIndices(0))
                 End If
                 If _statuses.Tabs(tb.Text).UnreadCount = 0 AndAlso tb.ImageIndex = 0 Then tb.ImageIndex = -1
             Next
@@ -5380,7 +5387,24 @@ RETRY2:
         If _curPost IsNot Nothing Then
             If SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Or _
                Not StatusText.Enabled Then Exit Sub
-            StatusText.Text = "RT:" + _curPost.Data + " (via @" + _curPost.Name + ")"
+
+            Dim rtdata As String = _curPost.OriginalData
+            ' Twitterにより省略されているURLを含むaタグをキャプチャしてリンク先URLへ置き換える
+            Dim rx As Regex = New Regex("<a target=""_self"" href=""(?<url>.*?)"" rel=""nofollow"" target=""_blank"">(?<link>.*?)</a>")
+            For Each m As Match In rx.Matches(_curPost.OriginalData)
+                If m.Result("${link}").EndsWith("...") Then
+                    rtdata = rtdata.Replace(m.Captures.Item(0).Value, m.Result("${url}"))
+                End If
+                rtdata = rtdata.Replace(m.Captures.Item(0).Value, m.Result("${link}"))
+            Next
+
+            'その他のリンク(@IDなど)を置き換える
+            rx = New Regex("<a target=""_self"" href=""(?<url>.*?)"">(?<link>.*?)</a>")
+            For Each m As Match In rx.Matches(_curPost.OriginalData)
+                rtdata = rtdata.Replace(m.Captures.Item(0).Value, m.Result("${link}"))
+            Next
+
+            StatusText.Text = "RT:" + rtdata + " (via @" + _curPost.Name + ")"
             _reply_to_id = 0
             _reply_to_name = Nothing
             StatusText.SelectionStart = StatusText.Text.Length
