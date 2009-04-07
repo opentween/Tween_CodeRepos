@@ -226,10 +226,10 @@
     <value>Remove succeeded</value>
   </data>
   <data name="DMPeriod_ValidatingText1" xml:space="preserve">
-    <value>Fetching interval must a value in 0 or 30 to 600.</value>
+    <value>Fetching interval must a value in 0 or 30 to 6000.</value>
   </data>
   <data name="DMPeriod_ValidatingText2" xml:space="preserve">
-    <value>Fetching interval must a value in 0 or 30 to 600.</value>
+    <value>Fetching interval must a value in 0 or 30 to 6000.</value>
   </data>
   <data name="DoTabSearchText1" xml:space="preserve">
     <value>Invalid regular expression pattern.</value>
@@ -544,10 +544,10 @@
     <value>Port number must be number 0 to 65535.</value>
   </data>
   <data name="TimelinePeriod_ValidatingText1" xml:space="preserve">
-    <value>Refresh interval must be number 0 or 30 to 600</value>
+    <value>Refresh interval must be number 0 or 30 to 6000</value>
   </data>
   <data name="TimelinePeriod_ValidatingText2" xml:space="preserve">
-    <value>Refresh interval must be number 0 or 30 to 600</value>
+    <value>Refresh interval must be number 0 or 30 to 6000</value>
   </data>
   <data name="TimerDM_TickText1" xml:space="preserve">
     <value>DMRcv refreshing...</value>
