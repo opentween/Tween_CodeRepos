@@ -575,7 +575,7 @@ Public Class TweenMain
         Me.ClientSize = _cfg.FormSize
         _mySize = Me.ClientSize                     'サイズ保持（最小化・最大化されたまま終了した場合の対応用）
         Me.DesktopLocation = _cfg.FormLocation
-        _myLoc = Me.Location                        '位置保持（最小化・最大化されたまま終了した場合の対応用）
+        _myLoc = Me.DesktopLocation                        '位置保持（最小化・最大化されたまま終了した場合の対応用）
         Me.TopMost = SettingDialog.AlwaysTop
         _mySpDis = _cfg.SplitterDistance
         _mySpDis2 = _cfg.StatusTextHeight
@@ -2024,7 +2024,7 @@ Public Class TweenMain
 
     Private Sub Tween_LocationChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.LocationChanged
         If Me.WindowState = FormWindowState.Normal Then
-            _myLoc = Me.Location
+            _myLoc = Me.DesktopLocation
         End If
     End Sub
 
