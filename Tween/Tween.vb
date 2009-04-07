@@ -1063,7 +1063,7 @@ Public Class TweenMain
         If _endingFlag Then Exit Sub
         For Each tab As TabPage In ListTab.TabPages
             Dim lst As DetailsListView = DirectCast(tab.Controls(0), DetailsListView)
-            If lst.SelectedIndices.Count < 31 Then
+            If lst.SelectedIndices.Count > 0 AndAlso lst.SelectedIndices.Count < 31 Then
                 selId.Add(tab.Text, _statuses.GetId(tab.Text, lst.SelectedIndices))
             Else
                 selId.Add(tab.Text, New Long(0) {-1})
@@ -1115,7 +1115,7 @@ Public Class TweenMain
         'サウンド再生
         If Not _initial AndAlso SettingDialog.PlaySound AndAlso soundFile <> "" Then
             Try
-                My.Computer.Audio.Play(My.Application.Info.DirectoryPath.ToString() + "\" + soundFile, AudioPlayMode.Background)
+                My.Computer.Audio.Play(Path.Combine(My.Application.Info.DirectoryPath.ToString(), soundFile), AudioPlayMode.Background)
             Catch ex As Exception
 
             End Try
@@ -1341,6 +1341,8 @@ Public Class TweenMain
         Else
             TimerTimeline.Enabled = False
             TimerDM.Enabled = False
+            TimerColorize.Enabled = False
+            TimerRefreshIcon.Enabled = False
 
             _endingFlag = True
 
@@ -1350,7 +1352,7 @@ Public Class TweenMain
             End If
 
             For i As Integer = 0 To _bw.Length - 1
-                If _bw(i) IsNot Nothing Then _bw(i).CancelAsync()
+                If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then _bw(i).CancelAsync()
             Next
 
             Dim flg As Boolean = False
@@ -1686,19 +1688,22 @@ Public Class TweenMain
         End If
 
         If rslt.type = WORKERTYPE.FavRemove Then
-            Dim nm As Integer = 0
             DispSelectedPost()          ' 詳細画面書き直し
             For Each i As Long In rslt.sIds
                 _statuses.RemovePost(DEFAULTTAB.FAV, i)
-                nm += 1
             Next
             If _curTab.Text.Equals(DEFAULTTAB.FAV) Then
-                _curList.VirtualListSize -= nm
                 _itemCache = Nothing    'キャッシュ破棄
                 _postCache = Nothing
                 _curPost = Nothing
                 _curItemIndex = -1
             End If
+            For Each tp As TabPage In ListTab.TabPages
+                If tp.Text = DEFAULTTAB.FAV Then
+                    DirectCast(tp.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(DEFAULTTAB.FAV).AllCount
+                    Exit For
+                End If
+            Next
         End If
 
         'リストに反映
@@ -1737,10 +1742,10 @@ Public Class TweenMain
                     End If
                 End If
             Case WORKERTYPE.Reply
-                    _waitReply = False
-                    If rslt.newDM AndAlso Not _initial Then
-                        GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
-                    End If
+                _waitReply = False
+                If rslt.newDM AndAlso Not _initial Then
+                    GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
+                End If
             Case WORKERTYPE.DirectMessegeRcv
                     _waitDm = False
                     'Case WORKERTYPE.DirectMessegeSnt
@@ -1772,50 +1777,48 @@ Public Class TweenMain
                     ' Contributed by shuyoko <http://twitter.com/shuyoko> BEGIN:
                     ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
             Case WORKERTYPE.FavAdd, WORKERTYPE.BlackFavAdd, WORKERTYPE.FavRemove
-                    _curList.BeginUpdate()
-                    If rslt.type = WORKERTYPE.FavRemove AndAlso _curTab.Text.Equals(DEFAULTTAB.FAV) Then
-                        For i As Integer = 0 To _curList.VirtualListSize - 1
-                            '
-                        Next
-                    Else
-                        For i As Integer = 0 To rslt.sIds.Count - 1
-                            If _curTab.Text.Equals(rslt.tName) Then
+                _curList.BeginUpdate()
+                If rslt.type = WORKERTYPE.FavRemove AndAlso _curTab.Text.Equals(DEFAULTTAB.FAV) Then
+                    '色変えは不要
+                Else
+                    For i As Integer = 0 To rslt.sIds.Count - 1
+                        If _curTab.Text.Equals(rslt.tName) Then
                             Dim idx As Integer = _statuses.Tabs(rslt.tName).IndexOf(rslt.sIds(i))
-                                Dim post As PostClass = _statuses.Item(rslt.sIds(i))
-                                ChangeCacheStyleRead(post.IsRead, idx, _curTab)
-                                If idx = _curItemIndex Then DispSelectedPost() '選択アイテム再表示
-                            End If
-                        Next
-                    End If
-                    _curList.EndUpdate()
+                            Dim post As PostClass = _statuses.Item(rslt.sIds(i))
+                            ChangeCacheStyleRead(post.IsRead, idx, _curTab)
+                            If idx = _curItemIndex Then DispSelectedPost() '選択アイテム再表示
+                        End If
+                    Next
+                End If
+                _curList.EndUpdate()
             Case WORKERTYPE.PostMessage
-                    urlUndoBuffer = Nothing
-                    UrlUndoToolStripMenuItem.Enabled = False  'Undoをできないように設定
+                urlUndoBuffer = Nothing
+                UrlUndoToolStripMenuItem.Enabled = False  'Undoをできないように設定
 
-                    If rslt.retMsg.Length > 0 AndAlso Not rslt.retMsg.StartsWith("Outputz") Then
-                        StatusLabel.Text = rslt.retMsg
-                    Else
-                        _postTimestamps.Add(Now)
-                        Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
-                        For i As Integer = _postTimestamps.Count - 1 To 0 Step -1
-                            If _postTimestamps(i).CompareTo(oneHour) < 0 Then
-                                _postTimestamps.RemoveAt(i)
-                            End If
-                        Next
+                If rslt.retMsg.Length > 0 AndAlso Not rslt.retMsg.StartsWith("Outputz") Then
+                    StatusLabel.Text = rslt.retMsg
+                Else
+                    _postTimestamps.Add(Now)
+                    Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
+                    For i As Integer = _postTimestamps.Count - 1 To 0 Step -1
+                        If _postTimestamps(i).CompareTo(oneHour) < 0 Then
+                            _postTimestamps.RemoveAt(i)
+                        End If
+                    Next
 
-                        If rslt.retMsg.Length > 0 Then StatusLabel.Text = rslt.retMsg 'Outputz失敗時
+                    If rslt.retMsg.Length > 0 Then StatusLabel.Text = rslt.retMsg 'Outputz失敗時
 
-                        StatusText.Text = ""
-                        _history.Add("")
-                        _hisIdx = _history.Count - 1
-                        SetMainWindowTitle()
-                    End If
-                    If rslt.retMsg.Length = 0 Then GetTimeline(WORKERTYPE.Timeline, 1, 0)
+                    StatusText.Text = ""
+                    _history.Add("")
+                    _hisIdx = _history.Count - 1
+                    SetMainWindowTitle()
+                End If
+                If rslt.retMsg.Length = 0 Then GetTimeline(WORKERTYPE.Timeline, 1, 0)
             Case WORKERTYPE.Follower
-                    _waitFollower = False
-                    _itemCache = Nothing
-                    _postCache = Nothing
-                    _curList.Refresh()
+                _waitFollower = False
+                _itemCache = Nothing
+                _postCache = Nothing
+                _curList.Refresh()
         End Select
 
     End Sub
@@ -2744,7 +2747,9 @@ Public Class TweenMain
                                     _statuses.Item(tb.Text, e.ItemIndex), _
                                     e.ItemIndex)
             Catch ex As Exception
-                e.Item = New ListViewItem()
+                '不正な要求に対する間に合わせの応答
+                Dim sitem() As String = {"", "", "", "", "", "", "", ""}
+                e.Item = New ListViewItem(sitem, -1)
             End Try
         End If
     End Sub
@@ -4961,8 +4966,10 @@ RETRY2:
         If Me.Tag IsNot Nothing Then ' 設定された戻り先へ遷移
             DirectCast(Me.Tag, Control).Select()
         Else ' 戻り先が指定されていない (初期状態) 場合はタブに遷移
-            Me.Tag = ListTab.SelectedTab.Controls(0)
-            DirectCast(Me.Tag, Control).Select()
+            If ListTab.SelectedIndex > -1 AndAlso ListTab.SelectedTab.HasChildren Then
+                Me.Tag = ListTab.SelectedTab.Controls(0)
+                DirectCast(Me.Tag, Control).Select()
+            End If
         End If
         ' フォーカスがメニューに遷移したかどうかを表すフラグを降ろす
         MenuStrip1.Tag = Nothing
@@ -5393,19 +5400,12 @@ RETRY2:
 
             Dim rtdata As String = _curPost.OriginalData
             ' Twitterにより省略されているURLを含むaタグをキャプチャしてリンク先URLへ置き換える
-            Dim rx As Regex = New Regex("<a target=""_self"" href=""(?<url>.*?)"" rel=""nofollow"" target=""_blank"">(?<link>.*?)</a>")
-            For Each m As Match In rx.Matches(_curPost.OriginalData)
-                If m.Result("${link}").EndsWith("...") Then
-                    rtdata = rtdata.Replace(m.Captures.Item(0).Value, m.Result("${url}"))
-                End If
-                rtdata = rtdata.Replace(m.Captures.Item(0).Value, m.Result("${link}"))
-            Next
+            Dim rx As Regex = New Regex("<a target=""_self"" href=""(?<url>[^""]+)"" rel=""nofollow"" target=""_blank"">(?<link>[^<]+)</a>")
+            rtdata = rx.Replace(rtdata, "${url}")
 
             'その他のリンク(@IDなど)を置き換える
-            rx = New Regex("<a target=""_self"" href=""(?<url>.*?)"">(?<link>.*?)</a>")
-            For Each m As Match In rx.Matches(_curPost.OriginalData)
-                rtdata = rtdata.Replace(m.Captures.Item(0).Value, m.Result("${link}"))
-            Next
+            rx = New Regex("<a target=""_self"" href=""(?<url>[^""]+)"">(?<link>[^<]+)</a>")
+            rtdata = rx.Replace(rtdata, "${link}")
 
             StatusText.Text = "RT:" + rtdata + " (via @" + _curPost.Name + ")"
             _reply_to_id = 0
