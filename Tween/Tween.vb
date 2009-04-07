@@ -962,8 +962,8 @@ Public Class TweenMain
                     End If
                     lst.VirtualListSize = tabInfo.AllCount 'リスト件数更新
                     Me.SelectListItem(lst, _
-                                      _statuses.GetIndex(tab.Text, selId(tab.Text)), _
-                                      _statuses.GetIndex(tab.Text, focusedId(tab.Text)))
+                                      _statuses.IndexOf(tab.Text, selId(tab.Text)), _
+                                      _statuses.IndexOf(tab.Text, focusedId(tab.Text)))
                 End If
                 lst.EndUpdate()
                 If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
@@ -988,7 +988,7 @@ Public Class TweenMain
                         '表示位置キープ
                         If _curList.VirtualListSize > 0 Then
                             _curList.EnsureVisible(_curList.VirtualListSize - 1)
-                            _curList.EnsureVisible(_statuses.GetIndex(_curTab.Text, topId))
+                            _curList.EnsureVisible(_statuses.IndexOf(_curTab.Text, topId))
                         End If
                 End Select
             End If
@@ -1780,7 +1780,7 @@ Public Class TweenMain
                     Else
                         For i As Integer = 0 To rslt.sIds.Count - 1
                             If _curTab.Text.Equals(rslt.tName) Then
-                                Dim idx As Integer = _statuses.Tabs(rslt.tName).GetIndex(rslt.sIds(i))
+                            Dim idx As Integer = _statuses.Tabs(rslt.tName).IndexOf(rslt.sIds(i))
                                 Dim post As PostClass = _statuses.Item(rslt.sIds(i))
                                 ChangeCacheStyleRead(post.IsRead, idx, _curTab)
                                 If idx = _curItemIndex Then DispSelectedPost() '選択アイテム再表示
@@ -3046,14 +3046,17 @@ RETRY:
         Dim lst As DetailsListView = _curList
         Dim idx As Integer = 0
 RETRY:
-        If tb.OldestUnreadId > -1 AndAlso tb.Contains(tb.OldestUnreadId) AndAlso tb.UnreadCount > 0 Then
+        'タブに、最古未読IDあり＆タブが保持している＆未読件数もある
+        If tb.OldestUnreadId > -1 AndAlso _
+           tb.Contains(tb.OldestUnreadId) AndAlso _
+           tb.UnreadCount > 0 Then
             '未読アイテムへ
             If _statuses.Item(tb.OldestUnreadId).IsRead Then
-                '状態不整合
+                '状態不整合（最古未読ＩＤが実は既読）
                 _statuses.SetNextUnreadId(-1, tb)
                 GoTo RETRY
             End If
-            idx = tb.GetIndex(tb.OldestUnreadId)
+            idx = tb.IndexOf(tb.OldestUnreadId)
         Else
 RETRY2:
             Dim tidx As Integer = ListTab.TabPages.IndexOf(ListTab.SelectedTab)
@@ -3078,7 +3081,7 @@ RETRY2:
             If _statuses.SortOrder = SortOrder.Ascending Then idx = lst.VirtualListSize - 1
         End If
 
-        If lst.VirtualListSize > 0 AndAlso idx > -1 Then
+        If lst.VirtualListSize > 0 AndAlso idx > -1 AndAlso lst.VirtualListSize > idx Then
             SelectListItem(lst, idx)
             If _statuses.SortMode = IdComparerClass.ComparerMode.Id Then
                 If _statuses.SortOrder = SortOrder.Ascending AndAlso lst.Items(idx).Position.Y > lst.ClientSize.Height - _iconSz - 10 OrElse _
@@ -3638,7 +3641,7 @@ RETRY2:
 
     Private Sub GoAnchor()
         If _anchorPost Is Nothing Then Exit Sub
-        Dim idx As Integer = _statuses.Tabs(_curTab.Text).GetIndex(_anchorPost.Id)
+        Dim idx As Integer = _statuses.Tabs(_curTab.Text).IndexOf(_anchorPost.Id)
         If idx = -1 Then Exit Sub
 
         SelectListItem(_curList, idx)
