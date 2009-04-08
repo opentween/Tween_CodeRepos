@@ -89,6 +89,7 @@ Public Class Setting
     Private _MyDateTimeFormat As String
     Private _MyDefaultTimeOut As Integer
     Private _MyProtectNotInclude As Boolean
+    Private _MyLimitBalloon As Boolean
 
     Private Sub Save_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Save.Click
         If Username.Text.Trim = "" Or _
@@ -221,7 +222,7 @@ Public Class Setting
             _MyDateTimeFormat = CmbDateTimeFormat.Text
             _MyDefaultTimeOut = CType(ConnectionTimeOut.Text, Integer)      ' 0の場合はGetWebResponse()側でTimeOut.Infiniteへ読み替える
             _MyProtectNotInclude = CheckProtectNotInclude.Checked
-
+            _MyLimitBalloon = CheckBalloonLimit.Checked
         Catch ex As Exception
             MessageBox.Show(My.Resources.Save_ClickText3)
             Me.DialogResult = Windows.Forms.DialogResult.Cancel
@@ -386,7 +387,7 @@ Public Class Setting
         CmbDateTimeFormat.Text = _MyDateTimeFormat
         ConnectionTimeOut.Text = _MyDefaultTimeOut.ToString
         CheckProtectNotInclude.Checked = _MyProtectNotInclude
-
+        CheckBalloonLimit.Checked = _MyLimitBalloon
         'TweenMain.SetMainWindowTitle()
         'TweenMain.SetNotifyIconText()
 
@@ -1398,5 +1399,14 @@ Public Class Setting
             e.Cancel = True
         End If
     End Sub
+
+    Public Property LimitBalloon() As Boolean
+        Get
+            Return _MyLimitBalloon
+        End Get
+        Set(ByVal value As Boolean)
+            _MyLimitBalloon = value
+        End Set
+    End Property
 End Class
 
