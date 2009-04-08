@@ -3130,15 +3130,11 @@ RETRY2:
         Dim pinfo As New ProcessStartInfo
         pinfo.UseShellExecute = True
         pinfo.WorkingDirectory = Application.StartupPath
-        pinfo.FileName = Path.Combine(Path.GetTempPath(), "TweenUp.exe")
-        pinfo.Arguments = """" + Application.StartupPath + """"
-        If IsNT6() Then
-            pinfo.Verb = "runas"
-        End If
+        pinfo.FileName = Path.Combine(Application.StartupPath(), "TweenUp.exe")
         Try
             Process.Start(pinfo)
         Catch ex As Exception
-            MsgBox("TweenUp.exeの実行に失敗しました。(管理者権限が必要です。)")
+            MsgBox("TweenUp.exeの実行に失敗しました。")
         End Try
     End Sub
 
