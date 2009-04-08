@@ -164,6 +164,8 @@ Partial Class Setting
         Me.Label50 = New System.Windows.Forms.Label
         Me.Button3 = New System.Windows.Forms.Button
         Me.TabPage3 = New System.Windows.Forms.TabPage
+        Me.Label68 = New System.Windows.Forms.Label
+        Me.CheckBalloonLimit = New System.Windows.Forms.CheckBox
         Me.LabelDateTimeFormatApplied = New System.Windows.Forms.Label
         Me.Label62 = New System.Windows.Forms.Label
         Me.Label17 = New System.Windows.Forms.Label
@@ -1091,6 +1093,8 @@ Partial Class Setting
         '
         'TabPage3
         '
+        Me.TabPage3.Controls.Add(Me.Label68)
+        Me.TabPage3.Controls.Add(Me.CheckBalloonLimit)
         Me.TabPage3.Controls.Add(Me.LabelDateTimeFormatApplied)
         Me.TabPage3.Controls.Add(Me.Label62)
         Me.TabPage3.Controls.Add(Me.Label17)
@@ -1114,6 +1118,17 @@ Partial Class Setting
         resources.ApplyResources(Me.TabPage3, "TabPage3")
         Me.TabPage3.Name = "TabPage3"
         Me.TabPage3.UseVisualStyleBackColor = True
+        '
+        'Label68
+        '
+        resources.ApplyResources(Me.Label68, "Label68")
+        Me.Label68.Name = "Label68"
+        '
+        'CheckBalloonLimit
+        '
+        resources.ApplyResources(Me.CheckBalloonLimit, "CheckBalloonLimit")
+        Me.CheckBalloonLimit.Name = "CheckBalloonLimit"
+        Me.CheckBalloonLimit.UseVisualStyleBackColor = True
         '
         'LabelDateTimeFormatApplied
         '
@@ -1496,4 +1511,6 @@ Partial Class Setting
     Friend WithEvents CheckUseApi As System.Windows.Forms.CheckBox
     Friend WithEvents Label67 As System.Windows.Forms.Label
     Friend WithEvents TextCountApi As System.Windows.Forms.TextBox
+    Friend WithEvents Label68 As System.Windows.Forms.Label
+    Friend WithEvents CheckBalloonLimit As System.Windows.Forms.CheckBox
 End Class

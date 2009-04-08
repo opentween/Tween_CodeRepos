@@ -1346,4 +1346,13 @@ Public NotInheritable Class SettingToConfig
             Item("protectNotInclude") = value
         End Set
     End Property
+
+    Public Property LimitBalloon() As Boolean
+        Get
+            Return GetValueOrDefault("limitBalloon", False)
+        End Get
+        Set(ByVal value As Boolean)
+            Item("limitBalloon") = value
+        End Set
+    End Property
 End Class

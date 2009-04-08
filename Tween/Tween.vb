@@ -472,6 +472,7 @@ Public Class TweenMain
         SettingDialog.ProtectNotInclude = _cfg.ProtectNotInclude
         SettingDialog.PlaySound = _cfg.PlaySound
         SettingDialog.DateTimeFormat = _cfg.DateTimeFormat
+        SettingDialog.LimitBalloon = _cfg.LimitBalloon
 
         '書式指定文字列エラーチェック
         Try
@@ -1081,7 +1082,10 @@ Public Class TweenMain
         '新着通知
         If NewPostPopMenuItem.Checked AndAlso _
                notifyPosts IsNot Nothing AndAlso notifyPosts.Length > 0 AndAlso _
-               Not _initial Then
+               Not _initial AndAlso _
+               ((SettingDialog.LimitBalloon AndAlso _
+                 (Me.WindowState = FormWindowState.Minimized Or Not Me.Visible)) _
+                OrElse Not SettingDialog.LimitBalloon) Then
             Dim sb As New StringBuilder
             Dim reply As Boolean = False
             Dim dm As Boolean = False
@@ -3851,6 +3855,7 @@ RETRY2:
                 _cfg.DateTimeFormat = SettingDialog.DateTimeFormat
                 _cfg.DefaultTimeOut = SettingDialog.DefaultTimeOut
                 _cfg.ProtectNotInclude = SettingDialog.ProtectNotInclude
+                _cfg.LimitBalloon = SettingDialog.LimitBalloon
 
                 _cfg.SortOrder = _statuses.SortOrder
                 Select Case _statuses.SortMode
