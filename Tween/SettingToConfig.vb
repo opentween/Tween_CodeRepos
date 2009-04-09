@@ -1009,10 +1009,11 @@ Public NotInheritable Class SettingToConfig
 
     Public Property UsePostMethod() As Boolean
         Get
-            Return GetValueOrDefault("usePostMethod", False)
+            'Return GetValueOrDefault("usePostMethod", False)
+            Return False
         End Get
         Set(ByVal value As Boolean)
-            Item("usePostMethod") = value
+            Item("usePostMethod") = False
         End Set
     End Property
 

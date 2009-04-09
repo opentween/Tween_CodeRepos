@@ -437,7 +437,7 @@ Public Class TweenMain
         SettingDialog.PostCtrlEnter = _cfg.PostCtrlEnter
         SettingDialog.UseAPI = _cfg.UseAPI
         SettingDialog.CountApi = _cfg.CountApi
-        SettingDialog.UsePostMethod = _cfg.UsePostMethod
+        SettingDialog.UsePostMethod = False
         SettingDialog.HubServer = _cfg.HubServer
         SettingDialog.BrowserPath = _cfg.BrowserPath
         SettingDialog.CheckReply = _cfg.CheckReply
@@ -563,7 +563,7 @@ Public Class TweenMain
         Twitter.DefaultTimeOut = SettingDialog.DefaultTimeOut
         Twitter.CountApi = SettingDialog.CountApi
         Twitter.UseAPI = SettingDialog.UseAPI
-        Twitter.UsePostMethod = SettingDialog.UsePostMethod
+        Twitter.UsePostMethod = False
         Twitter.HubServer = SettingDialog.HubServer
         If IsNetworkAvailable() Then
             If SettingDialog.StartupFollowers Then
@@ -2231,7 +2231,7 @@ Public Class TweenMain
                 End If
                 Twitter.UseAPI = SettingDialog.UseAPI
                 Twitter.CountApi = SettingDialog.CountApi
-                Twitter.UsePostMethod = SettingDialog.UsePostMethod
+                Twitter.UsePostMethod = False
                 Twitter.HubServer = SettingDialog.HubServer
                 Twitter.TinyUrlResolve = SettingDialog.TinyUrlResolve
                 Twitter.RestrictFavCheck = SettingDialog.RestrictFavCheck
@@ -3821,7 +3821,7 @@ RETRY2:
                 _cfg.PostCtrlEnter = SettingDialog.PostCtrlEnter
                 _cfg.UseAPI = SettingDialog.UseAPI
                 _cfg.CountApi = SettingDialog.CountApi
-                _cfg.UsePostMethod = SettingDialog.UsePostMethod
+                _cfg.UsePostMethod = False
                 _cfg.HubServer = SettingDialog.HubServer
                 _cfg.BrowserPath = SettingDialog.BrowserPath
                 _cfg.CheckReply = SettingDialog.CheckReply

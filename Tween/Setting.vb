@@ -159,7 +159,7 @@ Public Class Setting
             End Select
             _MyPostCtrlEnter = CheckPostCtrlEnter.Checked
             _useAPI = CheckUseApi.Checked
-            _usePostMethod = CheckPostMethod.Checked
+            _usePostMethod = False
             _countApi = CType(TextCountApi.Text, Integer)
             _hubServer = "twitter.com"
             _browserpath = BrowserPathText.Text.Trim
@@ -311,10 +311,10 @@ Public Class Setting
         StartupReadPages.Enabled = Not CheckUseApi.Checked
         StartupReadReply.Enabled = Not CheckUseApi.Checked
         StartupReadDM.Enabled = Not CheckUseApi.Checked
-        CheckPostMethod.Enabled = CheckUseApi.Checked
+        CheckPostMethod.Enabled = False
         TextCountApi.Enabled = CheckUseApi.Checked
 
-        CheckPostMethod.Checked = _usePostMethod
+        CheckPostMethod.Checked = False
         TextCountApi.Text = _countApi.ToString
         'HubServerDomain.Text = _hubServer
         BrowserPathText.Text = _browserpath
@@ -982,7 +982,7 @@ Public Class Setting
             Return _usePostMethod
         End Get
         Set(ByVal value As Boolean)
-            _usePostMethod = value
+            _usePostMethod = False
         End Set
     End Property
 
@@ -1380,7 +1380,7 @@ Public Class Setting
         StartupReadPages.Enabled = Not CheckUseApi.Checked
         StartupReadReply.Enabled = Not CheckUseApi.Checked
         StartupReadDM.Enabled = Not CheckUseApi.Checked
-        CheckPostMethod.Enabled = CheckUseApi.Checked
+        CheckPostMethod.Enabled = False
         TextCountApi.Enabled = CheckUseApi.Checked
     End Sub
 

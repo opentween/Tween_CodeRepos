@@ -3189,6 +3189,9 @@
   <data name="Label66.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
+  <data name="Label66.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
   <data name="Label66.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
@@ -3218,6 +3221,9 @@
   </data>
   <data name="CheckPostMethod.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
+  </data>
+  <data name="CheckPostMethod.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
   </data>
   <data name="CheckPostMethod.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
@@ -3496,13 +3502,13 @@
     <value>12</value>
   </data>
   <data name="TabPage1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 21</value>
+    <value>4, 22</value>
   </data>
   <data name="TabPage1.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 3, 3, 3</value>
   </data>
   <data name="TabPage1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>399, 458</value>
+    <value>399, 457</value>
   </data>
   <data name="TabPage1.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -3847,13 +3853,13 @@
     <value>11</value>
   </data>
   <data name="TabPage2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 21</value>
+    <value>4, 22</value>
   </data>
   <data name="TabPage2.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 3, 3, 3</value>
   </data>
   <data name="TabPage2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>399, 458</value>
+    <value>399, 457</value>
   </data>
   <data name="TabPage2.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -4048,13 +4054,13 @@
     <value>5</value>
   </data>
   <data name="TabPage3.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 21</value>
+    <value>4, 22</value>
   </data>
   <data name="TabPage3.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 3, 3, 3</value>
   </data>
   <data name="TabPage3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>399, 458</value>
+    <value>399, 457</value>
   </data>
   <data name="TabPage3.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -4075,13 +4081,13 @@
     <value>2</value>
   </data>
   <data name="TabPage4.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 21</value>
+    <value>4, 22</value>
   </data>
   <data name="TabPage4.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 3, 3, 3</value>
   </data>
   <data name="TabPage4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>399, 458</value>
+    <value>399, 457</value>
   </data>
   <data name="TabPage4.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -4504,13 +4510,13 @@
     <value>3</value>
   </data>
   <data name="TabPage5.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 21</value>
+    <value>4, 22</value>
   </data>
   <data name="TabPage5.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 3, 3, 3</value>
   </data>
   <data name="TabPage5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>399, 458</value>
+    <value>399, 457</value>
   </data>
   <data name="TabPage5.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -4660,10 +4666,10 @@
     <value>4</value>
   </data>
   <data name="TabPage6.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 21</value>
+    <value>4, 22</value>
   </data>
   <data name="TabPage6.Size" type="System.Drawing.Size, System.Drawing">
-    <value>399, 458</value>
+    <value>399, 457</value>
   </data>
   <data name="TabPage6.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
