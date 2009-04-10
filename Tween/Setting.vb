@@ -90,6 +90,8 @@ Public Class Setting
     Private _MyDefaultTimeOut As Integer
     Private _MyProtectNotInclude As Boolean
     Private _MyLimitBalloon As Boolean
+    Private _MyPostAndGet As Boolean
+    Private _MyReplyPeriod As Integer
 
     Private Sub Save_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Save.Click
         If Username.Text.Trim = "" Or _
@@ -108,6 +110,7 @@ Public Class Setting
             _Mypassword = Password.Text.Trim()
             _MytimelinePeriod = CType(TimelinePeriod.Text, Integer)
             _MyDMPeriod = CType(DMPeriod.Text, Integer)
+            _MyReplyPeriod = CType(ReplyPeriod.Text, Integer)
             _MynextThreshold = CType(NextThreshold.Text, Integer)
             _MyNextPages = CType(NextPages.Text, Integer)
             _MyMaxPostNum = 125
@@ -164,6 +167,7 @@ Public Class Setting
             _hubServer = "twitter.com"
             _browserpath = BrowserPathText.Text.Trim
             _MyCheckReply = CheckboxReply.Checked
+            _MyPostAndGet = CheckPostAndGet.Checked
             _MyUseRecommendStatus = CheckUseRecommendStatus.Checked
             _MyDispUsername = CheckDispUsername.Checked
             _MyCloseToExit = CheckCloseToExit.Checked
@@ -234,6 +238,7 @@ Public Class Setting
         Username.Text = _MyuserID
         Password.Text = _Mypassword
         TimelinePeriod.Text = _MytimelinePeriod.ToString()
+        ReplyPeriod.Text = _MyReplyPeriod.ToString()
         DMPeriod.Text = _MyDMPeriod.ToString()
         NextThreshold.Text = _MynextThreshold.ToString()
         NextPages.Text = _MyNextPages.ToString()
@@ -319,6 +324,7 @@ Public Class Setting
         'HubServerDomain.Text = _hubServer
         BrowserPathText.Text = _browserpath
         CheckboxReply.Checked = _MyCheckReply
+        CheckPostAndGet.Checked = _MyPostAndGet
         CheckUseRecommendStatus.Checked = _MyUseRecommendStatus
         CheckDispUsername.Checked = _MyDispUsername
         CheckCloseToExit.Checked = _MyCloseToExit
@@ -401,6 +407,22 @@ Public Class Setting
         Dim prd As Integer
         Try
             prd = CType(TimelinePeriod.Text, Integer)
+        Catch ex As Exception
+            MessageBox.Show(My.Resources.TimelinePeriod_ValidatingText1)
+            e.Cancel = True
+            Exit Sub
+        End Try
+
+        If prd <> 0 And (prd < 30 Or prd > 6000) Then
+            MessageBox.Show(My.Resources.TimelinePeriod_ValidatingText2)
+            e.Cancel = True
+        End If
+    End Sub
+
+    Private Sub ReplyPeriod_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ReplyPeriod.Validating
+        Dim prd As Integer
+        Try
+            prd = CType(ReplyPeriod.Text, Integer)
         Catch ex As Exception
             MessageBox.Show(My.Resources.TimelinePeriod_ValidatingText1)
             e.Cancel = True
@@ -674,6 +696,15 @@ Public Class Setting
         End Get
         Set(ByVal value As Integer)
             _MytimelinePeriod = value
+        End Set
+    End Property
+
+    Public Property ReplyPeriodInt() As Integer
+        Get
+            Return _MyReplyPeriod
+        End Get
+        Set(ByVal value As Integer)
+            _MyReplyPeriod = value
         End Set
     End Property
 
@@ -1001,6 +1032,15 @@ Public Class Setting
         End Get
         Set(ByVal value As Boolean)
             _MyCheckReply = value
+        End Set
+    End Property
+
+    Public Property PostAndGet() As Boolean
+        Get
+            Return _MyPostAndGet
+        End Get
+        Set(ByVal value As Boolean)
+            _MyPostAndGet = value
         End Set
     End Property
 

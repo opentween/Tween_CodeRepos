@@ -392,6 +392,7 @@ Public Class TweenMain
         SettingDialog.UserID = _username                                'ユーザ名
         SettingDialog.PasswordStr = _password                           'パスワード
         SettingDialog.TimelinePeriodInt = _cfg.TimelinePeriod
+        SettingDialog.ReplyPeriodInt = _cfg.ReplyPeriod
         SettingDialog.DMPeriodInt = _cfg.DMPeriod
         SettingDialog.NextPageThreshold = _cfg.NextPageThreshold
         SettingDialog.NextPagesInt = _cfg.NextPages
@@ -441,6 +442,7 @@ Public Class TweenMain
         SettingDialog.HubServer = _cfg.HubServer
         SettingDialog.BrowserPath = _cfg.BrowserPath
         SettingDialog.CheckReply = _cfg.CheckReply
+        SettingDialog.PostAndGet = _cfg.PostAndGet
         SettingDialog.UseRecommendStatus = _cfg.UseRecommendStatus
         SettingDialog.DispUsername = _cfg.DispUsername
         SettingDialog.CloseToExit = _cfg.CloseToExit
@@ -594,17 +596,23 @@ Public Class TweenMain
         End If
 
         'タイマー設定
-        'Recent&Reply取得間隔
+        'Recent取得間隔
         If SettingDialog.TimelinePeriodInt > 0 Then
             TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
         Else
             TimerTimeline.Interval = 600000
         End If
+        'Reply取得間隔
+        If SettingDialog.ReplyPeriodInt > 0 Then
+            TimerReply.Interval = SettingDialog.ReplyPeriodInt * 1000
+        Else
+            TimerReply.Interval = 6000000
+        End If
         'DM取得間隔
         If SettingDialog.DMPeriodInt > 0 Then
             TimerDM.Interval = SettingDialog.DMPeriodInt * 1000
         Else
-            TimerDM.Interval = 600000
+            TimerDM.Interval = 6000000
         End If
         '更新中アイコンアニメーション間隔
         TimerRefreshIcon.Interval = 85
@@ -900,6 +908,7 @@ Public Class TweenMain
             If Not _initial Then
                 If SettingDialog.DMPeriodInt > 0 Then TimerDM.Enabled = True
                 If SettingDialog.TimelinePeriodInt > 0 Then TimerTimeline.Enabled = True
+                If SettingDialog.ReplyPeriodInt > 0 Then TimerReply.Enabled = True
             Else
                 GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
             End If
@@ -929,6 +938,12 @@ Public Class TweenMain
         If Not IsNetworkAvailable() Then Exit Sub
 
         GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
+    End Sub
+
+    Private Sub TimerReply_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerReply.Tick
+        If Not IsNetworkAvailable() Then Exit Sub
+
+        GetTimeline(WORKERTYPE.Reply, 1, 0)
     End Sub
 
     Private Sub RefreshTimeline()
@@ -1344,6 +1359,7 @@ Public Class TweenMain
             Me.Visible = False
         Else
             TimerTimeline.Enabled = False
+            TimerReply.Enabled = False
             TimerDM.Enabled = False
             TimerColorize.Enabled = False
             TimerRefreshIcon.Enabled = False
@@ -1676,6 +1692,7 @@ Public Class TweenMain
             'タイマー再始動
             If SettingDialog.TimelinePeriodInt > 0 AndAlso Not TimerTimeline.Enabled Then TimerTimeline.Enabled = True
             If SettingDialog.DMPeriodInt > 0 AndAlso Not TimerDM.Enabled Then TimerDM.Enabled = True
+            If SettingDialog.ReplyPeriodInt > 0 AndAlso Not TimerReply.Enabled Then TimerReply.Enabled = True
         Else
             NotifyIcon1.Icon = NIconAtSmoke
         End If
@@ -1684,11 +1701,6 @@ Public Class TweenMain
         If rslt.retMsg.Length > 0 Then
             If nw Then NotifyIcon1.Icon = NIconAtRed
             StatusLabel.Text = rslt.retMsg
-            '_waitTimeline = False
-            '_waitReply = False
-            '_waitFollower = False
-            '_waitDm = False
-            '_initial = False    '起動時モード終了
         End If
 
         If rslt.type = WORKERTYPE.FavRemove Then
@@ -1751,35 +1763,7 @@ Public Class TweenMain
                     GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
                 End If
             Case WORKERTYPE.DirectMessegeRcv
-                    _waitDm = False
-                    'Case WORKERTYPE.DirectMessegeSnt
-                    'If _initial Then
-                    '    If SettingDialog.ReadPagesDM >= rslt.page + 1 Then
-                    '        If rslt.page Mod 10 = 0 Then
-                    '            If NextPageMessage(rslt.page) = Windows.Forms.DialogResult.No Then
-                    '                If SettingDialog.ReadPages > 0 Then
-                    '                    GetTimeline(WORKERTYPE.Timeline, 1, 1)
-                    '                ElseIf SettingDialog.ReadPagesReply > 0 Then
-                    '                    GetTimeline(WORKERTYPE.Reply, 1, 1)
-                    '                Else
-                    '                    _initial = False
-                    '                End If
-                    '                Exit Sub   '抜ける
-                    '            End If
-                    '        End If
-                    '        GetTimeline(WORKERTYPE.DirectMessegeSnt, rslt.page + 1, rslt.endPage)
-                    '    Else
-                    '        If SettingDialog.ReadPages > 0 Then
-                    '            GetTimeline(WORKERTYPE.Timeline, 1, 1)
-                    '        ElseIf SettingDialog.ReadPagesReply > 0 Then
-                    '            GetTimeline(WORKERTYPE.Reply, 1, 1)
-                    '        Else
-                    '            _initial = False
-                    '        End If
-                    '    End If
-                    'End If
-                    ' Contributed by shuyoko <http://twitter.com/shuyoko> BEGIN:
-                    ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
+                _waitDm = False
             Case WORKERTYPE.FavAdd, WORKERTYPE.BlackFavAdd, WORKERTYPE.FavRemove
                 _curList.BeginUpdate()
                 If rslt.type = WORKERTYPE.FavRemove AndAlso _curTab.Text.Equals(DEFAULTTAB.FAV) Then
@@ -1817,7 +1801,7 @@ Public Class TweenMain
                     _hisIdx = _history.Count - 1
                     SetMainWindowTitle()
                 End If
-                If rslt.retMsg.Length = 0 Then GetTimeline(WORKERTYPE.Timeline, 1, 0)
+                If rslt.retMsg.Length = 0 AndAlso SettingDialog.PostAndGet Then GetTimeline(WORKERTYPE.Timeline, 1, 0)
             Case WORKERTYPE.Follower
                 _waitFollower = False
                 _itemCache = Nothing
@@ -1835,13 +1819,17 @@ Public Class TweenMain
             Select Case WkType
                 Case WORKERTYPE.Timeline
                     TimerTimeline.Enabled = False
-                Case WORKERTYPE.DirectMessegeRcv, WORKERTYPE.DirectMessegeSnt, WORKERTYPE.Reply
+                Case WORKERTYPE.Reply
+                    TimerReply.Enabled = False
+                Case WORKERTYPE.DirectMessegeRcv, WORKERTYPE.DirectMessegeSnt
                     TimerDM.Enabled = False
             End Select
         Else
             Select Case WkType
-                Case WORKERTYPE.Timeline, WORKERTYPE.Reply
+                Case WORKERTYPE.Timeline
                     TimerTimeline.Enabled = False
+                Case WORKERTYPE.Reply
+                    TimerReply.Enabled = False
                 Case WORKERTYPE.DirectMessegeRcv, WORKERTYPE.DirectMessegeSnt
                     TimerDM.Enabled = False
             End Select
@@ -1853,24 +1841,18 @@ Public Class TweenMain
         args.type = WkType
 
         RunAsync(args)
-        If SettingDialog.UseAPI Then
-            'DM取得モードの場合はReplyも同時に取得
-            If Not _initial AndAlso (WkType = WORKERTYPE.DirectMessegeRcv OrElse WkType = WORKERTYPE.DirectMessegeSnt) Then
-                Dim _args As New GetWorkerArg
-                _args.page = fromPage
-                _args.endPage = toPage
-                _args.type = WORKERTYPE.Reply
-                RunAsync(_args)
-            End If
-        Else
-            'Timeline取得モードの場合はReplyも同時に取得
-            If Not _initial AndAlso WkType = WORKERTYPE.Timeline Then
-                Dim _args As New GetWorkerArg
-                _args.page = fromPage
-                _args.endPage = toPage
-                _args.type = WORKERTYPE.Reply
-                RunAsync(_args)
-            End If
+
+        'Timeline取得モードの場合はReplyも同時に取得
+        If Not SettingDialog.UseAPI AndAlso _
+           Not _initial AndAlso _
+           WkType = WORKERTYPE.Timeline AndAlso _
+           SettingDialog.CheckReply Then
+            TimerReply.Enabled = False
+            Dim _args As New GetWorkerArg
+            _args.page = fromPage
+            _args.endPage = toPage
+            _args.type = WORKERTYPE.Reply
+            RunAsync(_args)
         End If
     End Sub
 
@@ -2217,11 +2199,18 @@ Public Class TweenMain
                     TimerTimeline.Interval = 600000
                     TimerTimeline.Enabled = False
                 End If
+                If SettingDialog.ReplyPeriodInt > 0 Then
+                    TimerReply.Interval = SettingDialog.ReplyPeriodInt * 1000
+                    TimerReply.Enabled = True
+                Else
+                    TimerReply.Interval = 6000000
+                    TimerReply.Enabled = False
+                End If
                 If SettingDialog.DMPeriodInt > 0 Then
                     TimerDM.Interval = SettingDialog.DMPeriodInt * 1000
                     TimerDM.Enabled = True
                 Else
-                    TimerDM.Interval = 600000
+                    TimerDM.Interval = 6000000
                     TimerDM.Enabled = False
                 End If
                 Twitter.NextThreshold = SettingDialog.NextPageThreshold
@@ -3207,23 +3196,11 @@ RETRY:
 
     Private Sub TimerColorize_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerColorize.Tick
         If TimerColorize.Enabled = False Then Exit Sub
-        'If cMode = 0 Then Exit Sub
-        'My.Application.DoEvents()
-        'If cMode = 1 Then
-        '    cMode = 2
-        '    Exit Sub
-        'End If
-        'cMode = 0
 
         TimerColorize.Stop()
         TimerColorize.Enabled = False
         TimerColorize.Interval = 200
-        'If _itemCache IsNot Nothing Then CreateCache(-1, 0)
-        '_curList.BeginUpdate()
-        'ColorizeList()
-        'If _itemCache IsNot Nothing Then _curList.RedrawItems(_itemCacheIndex, _itemCacheIndex + _itemCache.Length - 1, False)
         DispSelectedPost()
-        '_curList.EndUpdate()
         '件数関連の場合、タイトル即時書き換え
         If SettingDialog.DispLatestPost <> DispTitleEnum.None AndAlso _
            SettingDialog.DispLatestPost <> DispTitleEnum.Post AndAlso _
@@ -3378,7 +3355,6 @@ RETRY:
             If e.KeyCode = Keys.Home OrElse e.KeyCode = Keys.End Then
                 TimerColorize.Stop()
                 TimerColorize.Start()
-                'cMode = 1
             End If
             If e.KeyCode = Keys.N Then SendKeys.Send("^{PGDN}")
             If e.KeyCode = Keys.P Then SendKeys.Send("^{PGUP}")
@@ -3787,6 +3763,7 @@ RETRY:
                 _cfg.NextPageThreshold = SettingDialog.NextPageThreshold
                 _cfg.NextPages = SettingDialog.NextPagesInt
                 _cfg.TimelinePeriod = SettingDialog.TimelinePeriodInt
+                _cfg.ReplyPeriod = SettingDialog.ReplyPeriodInt
                 _cfg.DMPeriod = SettingDialog.DMPeriodInt
                 _cfg.MaxPostNum = SettingDialog.MaxPostNum
                 _cfg.ReadPages = SettingDialog.ReadPages
@@ -3823,6 +3800,7 @@ RETRY:
                 _cfg.HubServer = SettingDialog.HubServer
                 _cfg.BrowserPath = SettingDialog.BrowserPath
                 _cfg.CheckReply = SettingDialog.CheckReply
+                _cfg.PostAndGet = SettingDialog.PostAndGet
                 _cfg.UseRecommendStatus = SettingDialog.UseRecommendStatus
                 _cfg.DispUsername = SettingDialog.DispUsername
                 _cfg.MinimizeToTray = SettingDialog.MinimizeToTray

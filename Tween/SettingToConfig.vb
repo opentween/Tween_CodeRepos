@@ -535,6 +535,15 @@ Public NotInheritable Class SettingToConfig
         End Set
     End Property
 
+    Public Property ReplyPeriod() As Integer
+        Get
+            Return GetValueOrDefault("replyPeriod", 600)
+        End Get
+        Set(ByVal value As Integer)
+            Item("replyPeriod") = value
+        End Set
+    End Property
+
     Public Property DMPeriod() As Integer
         Get
             Return GetValueOrDefault("dmPeriod", 600)
@@ -1046,6 +1055,15 @@ Public NotInheritable Class SettingToConfig
         End Get
         Set(ByVal value As Boolean)
             Item("checkReply") = value
+        End Set
+    End Property
+
+    Public Property PostAndGet() As Boolean
+        Get
+            Return GetValueOrDefault("postAndGet", True)
+        End Get
+        Set(ByVal value As Boolean)
+            Item("postAndGet") = value
         End Set
     End Property
 

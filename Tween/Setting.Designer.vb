@@ -137,6 +137,9 @@ Partial Class Setting
         Me.Label47 = New System.Windows.Forms.Label
         Me.TabControl1 = New System.Windows.Forms.TabControl
         Me.TabPage1 = New System.Windows.Forms.TabPage
+        Me.Label69 = New System.Windows.Forms.Label
+        Me.ReplyPeriod = New System.Windows.Forms.TextBox
+        Me.CheckPostAndGet = New System.Windows.Forms.CheckBox
         Me.Label67 = New System.Windows.Forms.Label
         Me.TextCountApi = New System.Windows.Forms.TextBox
         Me.Label66 = New System.Windows.Forms.Label
@@ -873,6 +876,9 @@ Partial Class Setting
         '
         'TabPage1
         '
+        Me.TabPage1.Controls.Add(Me.Label69)
+        Me.TabPage1.Controls.Add(Me.ReplyPeriod)
+        Me.TabPage1.Controls.Add(Me.CheckPostAndGet)
         Me.TabPage1.Controls.Add(Me.Label67)
         Me.TabPage1.Controls.Add(Me.TextCountApi)
         Me.TabPage1.Controls.Add(Me.Label66)
@@ -914,6 +920,22 @@ Partial Class Setting
         resources.ApplyResources(Me.TabPage1, "TabPage1")
         Me.TabPage1.Name = "TabPage1"
         Me.TabPage1.UseVisualStyleBackColor = True
+        '
+        'Label69
+        '
+        resources.ApplyResources(Me.Label69, "Label69")
+        Me.Label69.Name = "Label69"
+        '
+        'ReplyPeriod
+        '
+        resources.ApplyResources(Me.ReplyPeriod, "ReplyPeriod")
+        Me.ReplyPeriod.Name = "ReplyPeriod"
+        '
+        'CheckPostAndGet
+        '
+        resources.ApplyResources(Me.CheckPostAndGet, "CheckPostAndGet")
+        Me.CheckPostAndGet.Name = "CheckPostAndGet"
+        Me.CheckPostAndGet.UseVisualStyleBackColor = True
         '
         'Label67
         '
@@ -1513,4 +1535,7 @@ Partial Class Setting
     Friend WithEvents TextCountApi As System.Windows.Forms.TextBox
     Friend WithEvents Label68 As System.Windows.Forms.Label
     Friend WithEvents CheckBalloonLimit As System.Windows.Forms.CheckBox
+    Friend WithEvents CheckPostAndGet As System.Windows.Forms.CheckBox
+    Friend WithEvents Label69 As System.Windows.Forms.Label
+    Friend WithEvents ReplyPeriod As System.Windows.Forms.TextBox
 End Class
