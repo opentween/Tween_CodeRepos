@@ -3051,43 +3051,42 @@ RETRY:
     End Sub
 
     Private Sub JumpUnreadMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles JumpUnreadMenuItem.Click
-        Dim tb As TabClass = _statuses.Tabs(_curTab.Text)
-        Dim lst As DetailsListView = _curList
-        Dim idx As Integer = 0
-RETRY:
-        'タブに、最古未読IDあり＆タブが保持している＆未読件数もある
-        If tb.OldestUnreadId > -1 AndAlso _
-           tb.Contains(tb.OldestUnreadId) AndAlso _
-           tb.UnreadCount > 0 Then
-            '未読アイテムへ
-            If _statuses.Item(tb.OldestUnreadId).IsRead Then
-                '状態不整合（最古未読ＩＤが実は既読）
-                _statuses.SetNextUnreadId(-1, tb)
-                GoTo RETRY
+        Dim bgnIdx As Integer = ListTab.TabPages.IndexOf(_curTab)
+        Dim idx As Integer = -1
+        Dim lst As DetailsListView = Nothing
+
+        '現在タブから最終タブまで探索
+        For i As Integer = bgnIdx To ListTab.TabPages.Count - 1
+            '未読Index取得
+            idx = _statuses.GetOldestUnreadId(ListTab.TabPages(i).Text)
+            If idx > -1 Then
+                ListTab.SelectedIndex = i
+                lst = DirectCast(ListTab.TabPages(i).Controls(0), DetailsListView)
+                Exit For
             End If
-            idx = tb.IndexOf(tb.OldestUnreadId)
-        Else
-RETRY2:
-            Dim tidx As Integer = ListTab.TabPages.IndexOf(ListTab.SelectedTab)
-            For i As Integer = tidx To ListTab.TabPages.Count - 1
-                tb = _statuses.Tabs(ListTab.TabPages(i).Text)   'tb書き換え
-                If tb.UnreadCount > 0 Then
+        Next
+
+        '未読みつからず＆現在タブが先頭ではなかったら、先頭タブから現在タブの手前まで探索
+        If idx = -1 AndAlso bgnIdx > 0 Then
+            For i As Integer = 0 To bgnIdx - 1
+                idx = _statuses.GetOldestUnreadId(ListTab.TabPages(i).Text)
+                If idx > -1 Then
                     ListTab.SelectedIndex = i
                     lst = DirectCast(ListTab.TabPages(i).Controls(0), DetailsListView)
-                    _statuses.SetNextUnreadId(-1, tb)   '頭から未読探索
-                    GoTo RETRY
+                    Exit For
                 End If
             Next
-            If tidx > 0 Then
-                '最終タブなら、先頭タブから再探索
-                ListTab.SelectedIndex = 0
-                GoTo RETRY2
-            End If
-            '未読なし
+        End If
+
+        '全部調べたが未読見つからず→先頭タブの最新発言へ
+        If idx = -1 Then
             ListTab.SelectedIndex = 0
-            lst = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-            idx = 0
-            If _statuses.SortOrder = SortOrder.Ascending Then idx = lst.VirtualListSize - 1
+            lst = DirectCast(ListTab.TabPages(0).Controls(0), DetailsListView)
+            If _statuses.SortOrder = SortOrder.Ascending Then
+                idx = lst.VirtualListSize - 1
+            Else
+                idx = 0
+            End If
         End If
 
         If lst.VirtualListSize > 0 AndAlso idx > -1 AndAlso lst.VirtualListSize > idx Then
@@ -3104,7 +3103,6 @@ RETRY2:
             End If
         End If
         lst.Focus()
-        'lst.Update()
     End Sub
 
     Private Sub StatusOpenMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusOpenMenuItem.Click

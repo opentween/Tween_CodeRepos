@@ -312,6 +312,7 @@ Public NotInheritable Class TabInformations
     Private _soundFile As String
     Private _notifyPosts As List(Of PostClass)
     Private ReadOnly LockObj As New Object
+    Private ReadOnly LockUnread As New Object
 
     Private Shared _instance As TabInformations = New TabInformations
 
@@ -432,8 +433,10 @@ Public NotInheritable Class TabInformations
             Dim tab As TabClass = _tabs(Name)
             If tab.Contains(Id) Then
                 If tab.UnreadManage AndAlso Not post.IsRead Then    '未読管理
-                    tab.UnreadCount -= 1
-                    Me.SetNextUnreadId(Id, tab)
+                    SyncLock LockUnread
+                        tab.UnreadCount -= 1
+                        Me.SetNextUnreadId(Id, tab)
+                    End SyncLock
                 End If
                 tab.Remove(Id)
             End If
@@ -448,8 +451,10 @@ Public NotInheritable Class TabInformations
                 Dim tab As TabClass = _tabs(key)
                 If tab.Contains(Id) Then
                     If tab.UnreadManage AndAlso Not post.IsRead Then    '未読管理
-                        tab.UnreadCount -= 1
-                        Me.SetNextUnreadId(Id, tab)
+                        SyncLock LockUnread
+                            tab.UnreadCount -= 1
+                            Me.SetNextUnreadId(Id, tab)
+                        End SyncLock
                     End If
                     tab.Remove(Id)
                 End If
@@ -458,7 +463,43 @@ Public NotInheritable Class TabInformations
         End SyncLock
     End Sub
 
-    Public Sub SetNextUnreadId(ByVal CurrentId As Long, ByVal Tab As TabClass)
+    Public Function GetOldestUnreadId(ByVal TabName As String) As Integer
+        Dim tb As TabClass = _tabs(TabName)
+        If tb.OldestUnreadId > -1 AndAlso _
+           tb.Contains(tb.OldestUnreadId) AndAlso _
+           tb.UnreadCount > 0 Then
+            '未読アイテムへ
+            If _statuses.Item(tb.OldestUnreadId).IsRead Then
+                '状態不整合（最古未読ＩＤが実は既読）
+                SyncLock LockUnread
+                    Me.SetNextUnreadId(-1, tb)  '頭から探索
+                End SyncLock
+                If tb.OldestUnreadId = -1 Then
+                    Return -1
+                Else
+                    Return tb.IndexOf(tb.OldestUnreadId)
+                End If
+            Else
+                Return tb.IndexOf(tb.OldestUnreadId)    '最短経路
+            End If
+        Else
+            '一見未読なさそうだが、未読カウントはあるので探索
+            If tb.UnreadCount > 0 Then
+                SyncLock LockUnread
+                    Me.SetNextUnreadId(-1, tb)
+                End SyncLock
+                If tb.OldestUnreadId = -1 Then
+                    Return -1
+                Else
+                    Return tb.IndexOf(tb.OldestUnreadId)
+                End If
+            Else
+                Return -1
+            End If
+        End If
+    End Function
+
+    Private Sub SetNextUnreadId(ByVal CurrentId As Long, ByVal Tab As TabClass)
         'CurrentID:今既読にしたID(OldestIDの可能性あり)
         '最古未読が設定されていて、既読の場合（1発言以上存在）
         If Tab.OldestUnreadId > -1 AndAlso _
@@ -525,20 +566,6 @@ Public NotInheritable Class TabInformations
         Next
         If Tab.OldestUnreadId = -1 Then Tab.UnreadCount = 0
     End Sub
-
-    'Public Sub BeginUpdate(ByVal EditMode As EDITMODE)
-    '    If _addedIds IsNot Nothing Then Throw New Exception("You must call 'EndUpdate' before begin update.")
-
-    '    _editMode = EditMode
-
-    '    '初期化
-    '    _addedIds = New List(Of Long)  'タブ追加用IDコレクション準備
-    '    If _notifyPosts IsNot Nothing Then
-    '        _notifyPosts.Clear()
-    '        _notifyPosts = Nothing
-    '    End If
-    '    _soundFile = ""
-    'End Sub
 
     Public Function DistributePosts() As Integer
         SyncLock LockObj
@@ -645,28 +672,30 @@ Public NotInheritable Class TabInformations
 
         _statuses(Id).IsRead = Read '指定の状態に変更
 
-        If Read Then
-            tb.UnreadCount -= 1
-            Me.SetNextUnreadId(Id, tb)  '次の未読セット
-            '他タブの最古未読ＩＤはタブ切り替え時に。
-            For Each key As String In _tabs.Keys
-                If key <> TabName AndAlso _
-                   _tabs(key).UnreadManage AndAlso _
-                   _tabs(key).Contains(Id) Then
-                    _tabs(key).UnreadCount -= 1
-                    If _tabs(key).OldestUnreadId = Id Then _tabs(key).OldestUnreadId = -1
-                End If
-            Next
-        Else
-            tb.UnreadCount += 1
-            If tb.OldestUnreadId > Id OrElse tb.OldestUnreadId = -1 Then tb.OldestUnreadId = Id
-            For Each key As String In _tabs.Keys
-                If Not key = TabName AndAlso _tabs(key).UnreadManage AndAlso _tabs(key).Contains(Id) Then
-                    _tabs(key).UnreadCount += 1
-                    If _tabs(key).OldestUnreadId > Id Then _tabs(key).OldestUnreadId = Id
-                End If
-            Next
-        End If
+        SyncLock LockUnread
+            If Read Then
+                tb.UnreadCount -= 1
+                Me.SetNextUnreadId(Id, tb)  '次の未読セット
+                '他タブの最古未読ＩＤはタブ切り替え時に。
+                For Each key As String In _tabs.Keys
+                    If key <> TabName AndAlso _
+                       _tabs(key).UnreadManage AndAlso _
+                       _tabs(key).Contains(Id) Then
+                        _tabs(key).UnreadCount -= 1
+                        If _tabs(key).OldestUnreadId = Id Then _tabs(key).OldestUnreadId = -1
+                    End If
+                Next
+            Else
+                tb.UnreadCount += 1
+                If tb.OldestUnreadId > Id OrElse tb.OldestUnreadId = -1 Then tb.OldestUnreadId = Id
+                For Each key As String In _tabs.Keys
+                    If Not key = TabName AndAlso _tabs(key).UnreadManage AndAlso _tabs(key).Contains(Id) Then
+                        _tabs(key).UnreadCount += 1
+                        If _tabs(key).OldestUnreadId > Id Then _tabs(key).OldestUnreadId = Id
+                    End If
+                Next
+            End If
+        End SyncLock
     End Sub
 
 
@@ -712,24 +741,28 @@ Public NotInheritable Class TabInformations
             For Each key As String In _tabs.Keys
                 Dim tb As TabClass = _tabs(key)
                 If tb.UnreadManage Then
-                    Dim cnt As Integer = 0
-                    Dim oldest As Long = Long.MaxValue
-                    For Each id As Long In tb.BackupIds
-                        If Not _statuses(id).IsRead Then
-                            cnt += 1
-                            If oldest > id Then oldest = id
-                        End If
-                    Next
-                    tb.OldestUnreadId = oldest
-                    tb.UnreadCount = cnt
+                    SyncLock LockUnread
+                        Dim cnt As Integer = 0
+                        Dim oldest As Long = Long.MaxValue
+                        For Each id As Long In tb.BackupIds
+                            If Not _statuses(id).IsRead Then
+                                cnt += 1
+                                If oldest > id Then oldest = id
+                            End If
+                        Next
+                        tb.OldestUnreadId = oldest
+                        tb.UnreadCount = cnt
+                    End SyncLock
                 End If
             Next
         Else
             For Each key As String In _tabs.Keys
                 Dim tb As TabClass = _tabs(key)
                 If tb.UnreadManage AndAlso tb.UnreadCount > 0 Then
-                    tb.UnreadCount = 0
-                    tb.OldestUnreadId = -1
+                    SyncLock LockUnread
+                        tb.UnreadCount = 0
+                        tb.OldestUnreadId = -1
+                    End SyncLock
                 End If
             Next
         End If
@@ -831,21 +864,23 @@ Public NotInheritable Class TabInformations
 
     Public Sub SetTabUnreadManage(ByVal TabName As String, ByVal Manage As Boolean)
         Dim tb As TabClass = _tabs(TabName)
-        If Manage Then
-            Dim cnt As Integer = 0
-            Dim oldest As Long = Long.MaxValue
-            For Each id As Long In tb.BackupIds
-                If Not _statuses(id).IsRead Then
-                    cnt += 1
-                    If oldest > id Then oldest = id
-                End If
-            Next
-            tb.OldestUnreadId = oldest
-            tb.UnreadCount = cnt
-        Else
-            tb.OldestUnreadId = -1
-            tb.UnreadCount = 0
-        End If
+        SyncLock LockUnread
+            If Manage Then
+                Dim cnt As Integer = 0
+                Dim oldest As Long = Long.MaxValue
+                For Each id As Long In tb.BackupIds
+                    If Not _statuses(id).IsRead Then
+                        cnt += 1
+                        If oldest > id Then oldest = id
+                    End If
+                Next
+                tb.OldestUnreadId = oldest
+                tb.UnreadCount = cnt
+            Else
+                tb.OldestUnreadId = -1
+                tb.UnreadCount = 0
+            End If
+        End SyncLock
         tb.UnreadManage = Manage
     End Sub
 
@@ -887,6 +922,7 @@ Public NotInheritable Class TabClass
         _soundFile = ""
         _unreadManage = True
         _ids = New List(Of Long)
+        _oldestUnreadItem = -1
     End Sub
 
     Public Sub Sort(ByVal Sorter As IdComparerClass)
