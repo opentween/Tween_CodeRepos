@@ -220,9 +220,6 @@
   <data name="Label16.Text" xml:space="preserve">
     <value>Colorize One-way following</value>
   </data>
-  <data name="GroupBox1.Text" xml:space="preserve">
-    <value>Font &amp;&amp; Color</value>
-  </data>
   <data name="btnInputFont.Text" xml:space="preserve">
     <value>Font...</value>
   </data>
@@ -357,6 +354,9 @@
   </data>
   <data name="Label61.Text" xml:space="preserve">
     <value>Font of tweet list</value>
+  </data>
+  <data name="GroupBox1.Text" xml:space="preserve">
+    <value>Font &amp;&amp; Color</value>
   </data>
   <data name="cmbNameBalloon.Items" xml:space="preserve">
     <value>None</value>
@@ -526,44 +526,17 @@
   <data name="Label47.Text" xml:space="preserve">
     <value>Apply after restarting</value>
   </data>
-  <data name="TabPage1.Text" xml:space="preserve">
-    <value>Basic</value>
+  <data name="Label69.Size" type="System.Drawing.Size, System.Drawing">
+    <value>156, 12</value>
   </data>
-  <data name="TabPage2.Text" xml:space="preserve">
-    <value>Behavior</value>
+  <data name="Label69.Text" xml:space="preserve">
+    <value>Reply Fetching Interval (sec.)</value>
   </data>
-  <data name="Label68.Size" type="System.Drawing.Size, System.Drawing">
-    <value>148, 12</value>
+  <data name="CheckPostAndGet.Size" type="System.Drawing.Size, System.Drawing">
+    <value>88, 16</value>
   </data>
-  <data name="Label68.Text" xml:space="preserve">
-    <value>Limit the condition of popup</value>
-  </data>
-  <data name="CheckBaloonLimit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>184, 16</value>
-  </data>
-  <data name="CheckBaloonLimit.Text" xml:space="preserve">
-    <value>Only disp it minimized/iconized</value>
-  </data>
-  <data name="Label17.Size" type="System.Drawing.Size, System.Drawing">
-    <value>162, 12</value>
-  </data>
-  <data name="Label17.Text" xml:space="preserve">
-    <value>Unread styles(Font&amp;&amp;Forecolor)</value>
-  </data>
-  <data name="chkUnreadStyle.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 16</value>
-  </data>
-  <data name="chkUnreadStyle.Text" xml:space="preserve">
-    <value>Enable</value>
-  </data>
-  <data name="TabPage3.Text" xml:space="preserve">
-    <value>View</value>
-  </data>
-  <data name="TabPage4.Text" xml:space="preserve">
-    <value>Fonts &amp; Colors</value>
-  </data>
-  <data name="TabPage5.Text" xml:space="preserve">
-    <value>Connection</value>
+  <data name="CheckPostAndGet.Text" xml:space="preserve">
+    <value>Post &amp;&amp; fetch</value>
   </data>
   <data name="Label67.Size" type="System.Drawing.Size, System.Drawing">
     <value>201, 12</value>
@@ -637,6 +610,9 @@
   <data name="CheckPeriodAdjust.Text" xml:space="preserve">
     <value>Enable Auto-Adjustment</value>
   </data>
+  <data name="TabPage1.Text" xml:space="preserve">
+    <value>Basic</value>
+  </data>
   <data name="CheckProtectNotInclude.Size" type="System.Drawing.Size, System.Drawing">
     <value>160, 16</value>
   </data>
@@ -707,6 +683,33 @@
   <data name="Button3.Text" xml:space="preserve">
     <value>Open...</value>
   </data>
+  <data name="TabPage2.Text" xml:space="preserve">
+    <value>Behavior</value>
+  </data>
+  <data name="Label68.Size" type="System.Drawing.Size, System.Drawing">
+    <value>148, 12</value>
+  </data>
+  <data name="Label68.Text" xml:space="preserve">
+    <value>Limit the condition of popup</value>
+  </data>
+  <data name="Label17.Size" type="System.Drawing.Size, System.Drawing">
+    <value>162, 12</value>
+  </data>
+  <data name="Label17.Text" xml:space="preserve">
+    <value>Unread styles(Font&amp;&amp;Forecolor)</value>
+  </data>
+  <data name="chkUnreadStyle.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 16</value>
+  </data>
+  <data name="chkUnreadStyle.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="TabPage3.Text" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="TabPage4.Text" xml:space="preserve">
+    <value>Fonts &amp; Colors</value>
+  </data>
   <data name="Label64.Size" type="System.Drawing.Size, System.Drawing">
     <value>371, 12</value>
   </data>
@@ -718,9 +721,6 @@
   </data>
   <data name="Label63.Text" xml:space="preserve">
     <value>Connection timeout(sec)</value>
-  </data>
-  <data name="GroupBox2.Text" xml:space="preserve">
-    <value>Proxy Server</value>
   </data>
   <data name="Label55.Size" type="System.Drawing.Size, System.Drawing">
     <value>320, 12</value>
@@ -769,6 +769,12 @@
   </data>
   <data name="RadioProxyNone.Text" xml:space="preserve">
     <value>Don't Use</value>
+  </data>
+  <data name="GroupBox2.Text" xml:space="preserve">
+    <value>Proxy Server</value>
+  </data>
+  <data name="TabPage5.Text" xml:space="preserve">
+    <value>Connection</value>
   </data>
   <data name="Label60.Size" type="System.Drawing.Size, System.Drawing">
     <value>107, 12</value>
