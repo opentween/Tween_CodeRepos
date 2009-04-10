@@ -357,6 +357,20 @@ Public NotInheritable Class SettingToConfig
         End SyncLock
     End Function
 
+    Public Shadows Sub Save()
+        Dim cnt As Integer = 0
+        Do
+            Try
+                MyBase.Save()
+                Exit Do
+            Catch ex As IOException
+                If cnt = 1 Then Throw ex
+                Threading.Thread.Sleep(500)
+                cnt += 1
+            End Try
+        Loop While cnt < 2
+    End Sub
+
     Public Property Tabs() As Dictionary(Of String, TabClass)
         Get
             Dim tconf As List(Of XmlConfiguration) = Nothing
