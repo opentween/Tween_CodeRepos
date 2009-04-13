@@ -463,43 +463,7 @@ Public NotInheritable Class TabInformations
         End SyncLock
     End Sub
 
-    Public Function GetOldestUnreadId(ByVal TabName As String) As Integer
-        Dim tb As TabClass = _tabs(TabName)
-        If tb.OldestUnreadId > -1 AndAlso _
-           tb.Contains(tb.OldestUnreadId) AndAlso _
-           tb.UnreadCount > 0 Then
-            '未読アイテムへ
-            If _statuses.Item(tb.OldestUnreadId).IsRead Then
-                '状態不整合（最古未読ＩＤが実は既読）
-                SyncLock LockUnread
-                    Me.SetNextUnreadId(-1, tb)  '頭から探索
-                End SyncLock
-                If tb.OldestUnreadId = -1 Then
-                    Return -1
-                Else
-                    Return tb.IndexOf(tb.OldestUnreadId)
-                End If
-            Else
-                Return tb.IndexOf(tb.OldestUnreadId)    '最短経路
-            End If
-        Else
-            '一見未読なさそうだが、未読カウントはあるので探索
-            If tb.UnreadCount > 0 Then
-                SyncLock LockUnread
-                    Me.SetNextUnreadId(-1, tb)
-                End SyncLock
-                If tb.OldestUnreadId = -1 Then
-                    Return -1
-                Else
-                    Return tb.IndexOf(tb.OldestUnreadId)
-                End If
-            Else
-                Return -1
-            End If
-        End If
-    End Function
-
-    Private Sub SetNextUnreadId(ByVal CurrentId As Long, ByVal Tab As TabClass)
+    Public Sub SetNextUnreadId(ByVal CurrentId As Long, ByVal Tab As TabClass)
         'CurrentID:今既読にしたID(OldestIDの可能性あり)
         '最古未読が設定されていて、既読の場合（1発言以上存在）
         If Tab.OldestUnreadId > -1 AndAlso _
@@ -532,17 +496,15 @@ Public NotInheritable Class TabInformations
     Private Sub FindUnreadId(ByVal StartIdx As Integer, ByVal Tab As TabClass)
         If Tab.AllCount = 0 Then
             Tab.OldestUnreadId = -1
-            Tab.UnreadCount = 0
             Exit Sub
         End If
         Dim toIdx As Integer = 0
         Dim stp As Integer = 1
-        Tab.OldestUnreadId = -1
         If _sorter.Order = Windows.Forms.SortOrder.Ascending Then
             If StartIdx = -1 Then
                 StartIdx = 0
             Else
-                'StartIdx += 1
+                StartIdx += 1
                 If StartIdx > Tab.AllCount - 1 Then StartIdx = Tab.AllCount - 1 '念のため
             End If
             toIdx = Tab.AllCount - 1
@@ -552,7 +514,7 @@ Public NotInheritable Class TabInformations
             If StartIdx = -1 Then
                 StartIdx = Tab.AllCount - 1
             Else
-                'StartIdx -= 1
+                StartIdx -= 1
             End If
             If StartIdx < 0 Then StartIdx = 0 '念のため
             toIdx = 0
@@ -564,7 +526,6 @@ Public NotInheritable Class TabInformations
                 Exit For
             End If
         Next
-        If Tab.OldestUnreadId = -1 Then Tab.UnreadCount = 0
     End Sub
 
     Public Function DistributePosts() As Integer
