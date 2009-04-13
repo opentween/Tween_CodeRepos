@@ -392,6 +392,7 @@ Public Class TweenMain
         SettingDialog.UserID = _username                                'ユーザ名
         SettingDialog.PasswordStr = _password                           'パスワード
         SettingDialog.TimelinePeriodInt = _cfg.TimelinePeriod
+        SettingDialog.ReplyPeriodInt = _cfg.ReplyPeriod
         SettingDialog.DMPeriodInt = _cfg.DMPeriod
         SettingDialog.NextPageThreshold = _cfg.NextPageThreshold
         SettingDialog.NextPagesInt = _cfg.NextPages
@@ -437,10 +438,11 @@ Public Class TweenMain
         SettingDialog.PostCtrlEnter = _cfg.PostCtrlEnter
         SettingDialog.UseAPI = _cfg.UseAPI
         SettingDialog.CountApi = _cfg.CountApi
-        SettingDialog.UsePostMethod = _cfg.UsePostMethod
+        SettingDialog.UsePostMethod = False
         SettingDialog.HubServer = _cfg.HubServer
         SettingDialog.BrowserPath = _cfg.BrowserPath
         SettingDialog.CheckReply = _cfg.CheckReply
+        SettingDialog.PostAndGet = _cfg.PostAndGet
         SettingDialog.UseRecommendStatus = _cfg.UseRecommendStatus
         SettingDialog.DispUsername = _cfg.DispUsername
         SettingDialog.CloseToExit = _cfg.CloseToExit
@@ -472,6 +474,7 @@ Public Class TweenMain
         SettingDialog.ProtectNotInclude = _cfg.ProtectNotInclude
         SettingDialog.PlaySound = _cfg.PlaySound
         SettingDialog.DateTimeFormat = _cfg.DateTimeFormat
+        SettingDialog.LimitBalloon = _cfg.LimitBalloon
 
         '書式指定文字列エラーチェック
         Try
@@ -562,7 +565,7 @@ Public Class TweenMain
         Twitter.DefaultTimeOut = SettingDialog.DefaultTimeOut
         Twitter.CountApi = SettingDialog.CountApi
         Twitter.UseAPI = SettingDialog.UseAPI
-        Twitter.UsePostMethod = SettingDialog.UsePostMethod
+        Twitter.UsePostMethod = False
         Twitter.HubServer = SettingDialog.HubServer
         If IsNetworkAvailable() Then
             If SettingDialog.StartupFollowers Then
@@ -593,17 +596,23 @@ Public Class TweenMain
         End If
 
         'タイマー設定
-        'Recent&Reply取得間隔
+        'Recent取得間隔
         If SettingDialog.TimelinePeriodInt > 0 Then
             TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
         Else
             TimerTimeline.Interval = 600000
         End If
+        'Reply取得間隔
+        If SettingDialog.ReplyPeriodInt > 0 Then
+            TimerReply.Interval = SettingDialog.ReplyPeriodInt * 1000
+        Else
+            TimerReply.Interval = 6000000
+        End If
         'DM取得間隔
         If SettingDialog.DMPeriodInt > 0 Then
             TimerDM.Interval = SettingDialog.DMPeriodInt * 1000
         Else
-            TimerDM.Interval = 600000
+            TimerDM.Interval = 6000000
         End If
         '更新中アイコンアニメーション間隔
         TimerRefreshIcon.Interval = 85
@@ -899,6 +908,7 @@ Public Class TweenMain
             If Not _initial Then
                 If SettingDialog.DMPeriodInt > 0 Then TimerDM.Enabled = True
                 If SettingDialog.TimelinePeriodInt > 0 Then TimerTimeline.Enabled = True
+                If SettingDialog.ReplyPeriodInt > 0 Then TimerReply.Enabled = True
             Else
                 GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
             End If
@@ -928,6 +938,12 @@ Public Class TweenMain
         If Not IsNetworkAvailable() Then Exit Sub
 
         GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
+    End Sub
+
+    Private Sub TimerReply_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerReply.Tick
+        If Not IsNetworkAvailable() Then Exit Sub
+
+        GetTimeline(WORKERTYPE.Reply, 1, 0)
     End Sub
 
     Private Sub RefreshTimeline()
@@ -1063,7 +1079,7 @@ Public Class TweenMain
         If _endingFlag Then Exit Sub
         For Each tab As TabPage In ListTab.TabPages
             Dim lst As DetailsListView = DirectCast(tab.Controls(0), DetailsListView)
-            If lst.SelectedIndices.Count < 31 Then
+            If lst.SelectedIndices.Count > 0 AndAlso lst.SelectedIndices.Count < 31 Then
                 selId.Add(tab.Text, _statuses.GetId(tab.Text, lst.SelectedIndices))
             Else
                 selId.Add(tab.Text, New Long(0) {-1})
@@ -1081,7 +1097,10 @@ Public Class TweenMain
         '新着通知
         If NewPostPopMenuItem.Checked AndAlso _
                notifyPosts IsNot Nothing AndAlso notifyPosts.Length > 0 AndAlso _
-               Not _initial Then
+               Not _initial AndAlso _
+               ((SettingDialog.LimitBalloon AndAlso _
+                 (Me.WindowState = FormWindowState.Minimized Or Not Me.Visible)) _
+                OrElse Not SettingDialog.LimitBalloon) Then
             Dim sb As New StringBuilder
             Dim reply As Boolean = False
             Dim dm As Boolean = False
@@ -1115,7 +1134,7 @@ Public Class TweenMain
         'サウンド再生
         If Not _initial AndAlso SettingDialog.PlaySound AndAlso soundFile <> "" Then
             Try
-                My.Computer.Audio.Play(My.Application.Info.DirectoryPath.ToString() + "\" + soundFile, AudioPlayMode.Background)
+                My.Computer.Audio.Play(Path.Combine(My.Application.Info.DirectoryPath.ToString(), soundFile), AudioPlayMode.Background)
             Catch ex As Exception
 
             End Try
@@ -1340,7 +1359,10 @@ Public Class TweenMain
             Me.Visible = False
         Else
             TimerTimeline.Enabled = False
+            TimerReply.Enabled = False
             TimerDM.Enabled = False
+            TimerColorize.Enabled = False
+            TimerRefreshIcon.Enabled = False
 
             _endingFlag = True
 
@@ -1350,7 +1372,7 @@ Public Class TweenMain
             End If
 
             For i As Integer = 0 To _bw.Length - 1
-                If _bw(i) IsNot Nothing Then _bw(i).CancelAsync()
+                If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then _bw(i).CancelAsync()
             Next
 
             Dim flg As Boolean = False
@@ -1670,6 +1692,7 @@ Public Class TweenMain
             'タイマー再始動
             If SettingDialog.TimelinePeriodInt > 0 AndAlso Not TimerTimeline.Enabled Then TimerTimeline.Enabled = True
             If SettingDialog.DMPeriodInt > 0 AndAlso Not TimerDM.Enabled Then TimerDM.Enabled = True
+            If SettingDialog.ReplyPeriodInt > 0 AndAlso Not TimerReply.Enabled Then TimerReply.Enabled = True
         Else
             NotifyIcon1.Icon = NIconAtSmoke
         End If
@@ -1678,27 +1701,25 @@ Public Class TweenMain
         If rslt.retMsg.Length > 0 Then
             If nw Then NotifyIcon1.Icon = NIconAtRed
             StatusLabel.Text = rslt.retMsg
-            '_waitTimeline = False
-            '_waitReply = False
-            '_waitFollower = False
-            '_waitDm = False
-            '_initial = False    '起動時モード終了
         End If
 
         If rslt.type = WORKERTYPE.FavRemove Then
-            Dim nm As Integer = 0
             DispSelectedPost()          ' 詳細画面書き直し
             For Each i As Long In rslt.sIds
                 _statuses.RemovePost(DEFAULTTAB.FAV, i)
-                nm += 1
             Next
             If _curTab.Text.Equals(DEFAULTTAB.FAV) Then
-                _curList.VirtualListSize -= nm
                 _itemCache = Nothing    'キャッシュ破棄
                 _postCache = Nothing
                 _curPost = Nothing
                 _curItemIndex = -1
             End If
+            For Each tp As TabPage In ListTab.TabPages
+                If tp.Text = DEFAULTTAB.FAV Then
+                    DirectCast(tp.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(DEFAULTTAB.FAV).AllCount
+                    Exit For
+                End If
+            Next
         End If
 
         'リストに反映
@@ -1737,85 +1758,55 @@ Public Class TweenMain
                     End If
                 End If
             Case WORKERTYPE.Reply
-                    _waitReply = False
-                    If rslt.newDM AndAlso Not _initial Then
-                        GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
-                    End If
+                _waitReply = False
+                If rslt.newDM AndAlso Not _initial Then
+                    GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
+                End If
             Case WORKERTYPE.DirectMessegeRcv
-                    _waitDm = False
-                    'Case WORKERTYPE.DirectMessegeSnt
-                    'If _initial Then
-                    '    If SettingDialog.ReadPagesDM >= rslt.page + 1 Then
-                    '        If rslt.page Mod 10 = 0 Then
-                    '            If NextPageMessage(rslt.page) = Windows.Forms.DialogResult.No Then
-                    '                If SettingDialog.ReadPages > 0 Then
-                    '                    GetTimeline(WORKERTYPE.Timeline, 1, 1)
-                    '                ElseIf SettingDialog.ReadPagesReply > 0 Then
-                    '                    GetTimeline(WORKERTYPE.Reply, 1, 1)
-                    '                Else
-                    '                    _initial = False
-                    '                End If
-                    '                Exit Sub   '抜ける
-                    '            End If
-                    '        End If
-                    '        GetTimeline(WORKERTYPE.DirectMessegeSnt, rslt.page + 1, rslt.endPage)
-                    '    Else
-                    '        If SettingDialog.ReadPages > 0 Then
-                    '            GetTimeline(WORKERTYPE.Timeline, 1, 1)
-                    '        ElseIf SettingDialog.ReadPagesReply > 0 Then
-                    '            GetTimeline(WORKERTYPE.Reply, 1, 1)
-                    '        Else
-                    '            _initial = False
-                    '        End If
-                    '    End If
-                    'End If
-                    ' Contributed by shuyoko <http://twitter.com/shuyoko> BEGIN:
-                    ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
+                _waitDm = False
             Case WORKERTYPE.FavAdd, WORKERTYPE.BlackFavAdd, WORKERTYPE.FavRemove
-                    _curList.BeginUpdate()
-                    If rslt.type = WORKERTYPE.FavRemove AndAlso _curTab.Text.Equals(DEFAULTTAB.FAV) Then
-                        For i As Integer = 0 To _curList.VirtualListSize - 1
-                            '
-                        Next
-                    Else
-                        For i As Integer = 0 To rslt.sIds.Count - 1
-                            If _curTab.Text.Equals(rslt.tName) Then
+                _curList.BeginUpdate()
+                If rslt.type = WORKERTYPE.FavRemove AndAlso _curTab.Text.Equals(DEFAULTTAB.FAV) Then
+                    '色変えは不要
+                Else
+                    For i As Integer = 0 To rslt.sIds.Count - 1
+                        If _curTab.Text.Equals(rslt.tName) Then
                             Dim idx As Integer = _statuses.Tabs(rslt.tName).IndexOf(rslt.sIds(i))
-                                Dim post As PostClass = _statuses.Item(rslt.sIds(i))
-                                ChangeCacheStyleRead(post.IsRead, idx, _curTab)
-                                If idx = _curItemIndex Then DispSelectedPost() '選択アイテム再表示
-                            End If
-                        Next
-                    End If
-                    _curList.EndUpdate()
+                            Dim post As PostClass = _statuses.Item(rslt.sIds(i))
+                            ChangeCacheStyleRead(post.IsRead, idx, _curTab)
+                            If idx = _curItemIndex Then DispSelectedPost() '選択アイテム再表示
+                        End If
+                    Next
+                End If
+                _curList.EndUpdate()
             Case WORKERTYPE.PostMessage
-                    urlUndoBuffer = Nothing
-                    UrlUndoToolStripMenuItem.Enabled = False  'Undoをできないように設定
+                urlUndoBuffer = Nothing
+                UrlUndoToolStripMenuItem.Enabled = False  'Undoをできないように設定
 
-                    If rslt.retMsg.Length > 0 AndAlso Not rslt.retMsg.StartsWith("Outputz") Then
-                        StatusLabel.Text = rslt.retMsg
-                    Else
-                        _postTimestamps.Add(Now)
-                        Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
-                        For i As Integer = _postTimestamps.Count - 1 To 0 Step -1
-                            If _postTimestamps(i).CompareTo(oneHour) < 0 Then
-                                _postTimestamps.RemoveAt(i)
-                            End If
-                        Next
+                If rslt.retMsg.Length > 0 AndAlso Not rslt.retMsg.StartsWith("Outputz") Then
+                    StatusLabel.Text = rslt.retMsg
+                Else
+                    _postTimestamps.Add(Now)
+                    Dim oneHour As Date = Now.Subtract(New TimeSpan(1, 0, 0))
+                    For i As Integer = _postTimestamps.Count - 1 To 0 Step -1
+                        If _postTimestamps(i).CompareTo(oneHour) < 0 Then
+                            _postTimestamps.RemoveAt(i)
+                        End If
+                    Next
 
-                        If rslt.retMsg.Length > 0 Then StatusLabel.Text = rslt.retMsg 'Outputz失敗時
+                    If rslt.retMsg.Length > 0 Then StatusLabel.Text = rslt.retMsg 'Outputz失敗時
 
-                        StatusText.Text = ""
-                        _history.Add("")
-                        _hisIdx = _history.Count - 1
-                        SetMainWindowTitle()
-                    End If
-                    If rslt.retMsg.Length = 0 Then GetTimeline(WORKERTYPE.Timeline, 1, 0)
+                    StatusText.Text = ""
+                    _history.Add("")
+                    _hisIdx = _history.Count - 1
+                    SetMainWindowTitle()
+                End If
+                If rslt.retMsg.Length = 0 AndAlso SettingDialog.PostAndGet Then GetTimeline(WORKERTYPE.Timeline, 1, 0)
             Case WORKERTYPE.Follower
-                    _waitFollower = False
-                    _itemCache = Nothing
-                    _postCache = Nothing
-                    _curList.Refresh()
+                _waitFollower = False
+                _itemCache = Nothing
+                _postCache = Nothing
+                _curList.Refresh()
         End Select
 
     End Sub
@@ -1828,13 +1819,17 @@ Public Class TweenMain
             Select Case WkType
                 Case WORKERTYPE.Timeline
                     TimerTimeline.Enabled = False
-                Case WORKERTYPE.DirectMessegeRcv, WORKERTYPE.DirectMessegeSnt, WORKERTYPE.Reply
+                Case WORKERTYPE.Reply
+                    TimerReply.Enabled = False
+                Case WORKERTYPE.DirectMessegeRcv, WORKERTYPE.DirectMessegeSnt
                     TimerDM.Enabled = False
             End Select
         Else
             Select Case WkType
-                Case WORKERTYPE.Timeline, WORKERTYPE.Reply
+                Case WORKERTYPE.Timeline
                     TimerTimeline.Enabled = False
+                Case WORKERTYPE.Reply
+                    TimerReply.Enabled = False
                 Case WORKERTYPE.DirectMessegeRcv, WORKERTYPE.DirectMessegeSnt
                     TimerDM.Enabled = False
             End Select
@@ -1846,24 +1841,18 @@ Public Class TweenMain
         args.type = WkType
 
         RunAsync(args)
-        If SettingDialog.UseAPI Then
-            'DM取得モードの場合はReplyも同時に取得
-            If Not _initial AndAlso (WkType = WORKERTYPE.DirectMessegeRcv OrElse WkType = WORKERTYPE.DirectMessegeSnt) Then
-                Dim _args As New GetWorkerArg
-                _args.page = fromPage
-                _args.endPage = toPage
-                _args.type = WORKERTYPE.Reply
-                RunAsync(_args)
-            End If
-        Else
-            'Timeline取得モードの場合はReplyも同時に取得
-            If Not _initial AndAlso WkType = WORKERTYPE.Timeline Then
-                Dim _args As New GetWorkerArg
-                _args.page = fromPage
-                _args.endPage = toPage
-                _args.type = WORKERTYPE.Reply
-                RunAsync(_args)
-            End If
+
+        'Timeline取得モードの場合はReplyも同時に取得
+        If Not SettingDialog.UseAPI AndAlso _
+           Not _initial AndAlso _
+           WkType = WORKERTYPE.Timeline AndAlso _
+           SettingDialog.CheckReply Then
+            TimerReply.Enabled = False
+            Dim _args As New GetWorkerArg
+            _args.page = fromPage
+            _args.endPage = toPage
+            _args.type = WORKERTYPE.Reply
+            RunAsync(_args)
         End If
     End Sub
 
@@ -2210,11 +2199,18 @@ Public Class TweenMain
                     TimerTimeline.Interval = 600000
                     TimerTimeline.Enabled = False
                 End If
+                If SettingDialog.ReplyPeriodInt > 0 Then
+                    TimerReply.Interval = SettingDialog.ReplyPeriodInt * 1000
+                    TimerReply.Enabled = True
+                Else
+                    TimerReply.Interval = 6000000
+                    TimerReply.Enabled = False
+                End If
                 If SettingDialog.DMPeriodInt > 0 Then
                     TimerDM.Interval = SettingDialog.DMPeriodInt * 1000
                     TimerDM.Enabled = True
                 Else
-                    TimerDM.Interval = 600000
+                    TimerDM.Interval = 6000000
                     TimerDM.Enabled = False
                 End If
                 Twitter.NextThreshold = SettingDialog.NextPageThreshold
@@ -2224,7 +2220,7 @@ Public Class TweenMain
                 End If
                 Twitter.UseAPI = SettingDialog.UseAPI
                 Twitter.CountApi = SettingDialog.CountApi
-                Twitter.UsePostMethod = SettingDialog.UsePostMethod
+                Twitter.UsePostMethod = False
                 Twitter.HubServer = SettingDialog.HubServer
                 Twitter.TinyUrlResolve = SettingDialog.TinyUrlResolve
                 Twitter.RestrictFavCheck = SettingDialog.RestrictFavCheck
@@ -2744,7 +2740,9 @@ Public Class TweenMain
                                     _statuses.Item(tb.Text, e.ItemIndex), _
                                     e.ItemIndex)
             Catch ex As Exception
-                e.Item = New ListViewItem()
+                '不正な要求に対する間に合わせの応答
+                Dim sitem() As String = {"", "", "", "", "", "", "", ""}
+                e.Item = New ListViewItem(sitem, -1)
             End Try
         End If
     End Sub
@@ -3042,43 +3040,42 @@ RETRY:
     End Sub
 
     Private Sub JumpUnreadMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles JumpUnreadMenuItem.Click
-        Dim tb As TabClass = _statuses.Tabs(_curTab.Text)
-        Dim lst As DetailsListView = _curList
-        Dim idx As Integer = 0
-RETRY:
-        'タブに、最古未読IDあり＆タブが保持している＆未読件数もある
-        If tb.OldestUnreadId > -1 AndAlso _
-           tb.Contains(tb.OldestUnreadId) AndAlso _
-           tb.UnreadCount > 0 Then
-            '未読アイテムへ
-            If _statuses.Item(tb.OldestUnreadId).IsRead Then
-                '状態不整合（最古未読ＩＤが実は既読）
-                _statuses.SetNextUnreadId(-1, tb)
-                GoTo RETRY
+        Dim bgnIdx As Integer = ListTab.TabPages.IndexOf(_curTab)
+        Dim idx As Integer = -1
+        Dim lst As DetailsListView = Nothing
+
+        '現在タブから最終タブまで探索
+        For i As Integer = bgnIdx To ListTab.TabPages.Count - 1
+            '未読Index取得
+            idx = _statuses.GetOldestUnreadId(ListTab.TabPages(i).Text)
+            If idx > -1 Then
+                ListTab.SelectedIndex = i
+                lst = DirectCast(ListTab.TabPages(i).Controls(0), DetailsListView)
+                Exit For
             End If
-            idx = tb.IndexOf(tb.OldestUnreadId)
-        Else
-RETRY2:
-            Dim tidx As Integer = ListTab.TabPages.IndexOf(ListTab.SelectedTab)
-            For i As Integer = tidx To ListTab.TabPages.Count - 1
-                tb = _statuses.Tabs(ListTab.TabPages(i).Text)   'tb書き換え
-                If tb.UnreadCount > 0 Then
+        Next
+
+        '未読みつからず＆現在タブが先頭ではなかったら、先頭タブから現在タブの手前まで探索
+        If idx = -1 AndAlso bgnIdx > 0 Then
+            For i As Integer = 0 To bgnIdx - 1
+                idx = _statuses.GetOldestUnreadId(ListTab.TabPages(i).Text)
+                If idx > -1 Then
                     ListTab.SelectedIndex = i
                     lst = DirectCast(ListTab.TabPages(i).Controls(0), DetailsListView)
-                    _statuses.SetNextUnreadId(-1, tb)   '頭から未読探索
-                    GoTo RETRY
+                    Exit For
                 End If
             Next
-            If tidx > 0 Then
-                '最終タブなら、先頭タブから再探索
-                ListTab.SelectedIndex = 0
-                GoTo RETRY2
-            End If
-            '未読なし
+        End If
+
+        '全部調べたが未読見つからず→先頭タブの最新発言へ
+        If idx = -1 Then
             ListTab.SelectedIndex = 0
-            lst = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
-            idx = 0
-            If _statuses.SortOrder = SortOrder.Ascending Then idx = lst.VirtualListSize - 1
+            lst = DirectCast(ListTab.TabPages(0).Controls(0), DetailsListView)
+            If _statuses.SortOrder = SortOrder.Ascending Then
+                idx = lst.VirtualListSize - 1
+            Else
+                idx = 0
+            End If
         End If
 
         If lst.VirtualListSize > 0 AndAlso idx > -1 AndAlso lst.VirtualListSize > idx Then
@@ -3095,7 +3092,6 @@ RETRY2:
             End If
         End If
         lst.Focus()
-        'lst.Update()
     End Sub
 
     Private Sub StatusOpenMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusOpenMenuItem.Click
@@ -3121,15 +3117,11 @@ RETRY2:
         Dim pinfo As New ProcessStartInfo
         pinfo.UseShellExecute = True
         pinfo.WorkingDirectory = Application.StartupPath
-        pinfo.FileName = Path.Combine(Path.GetTempPath(), "TweenUp.exe")
-        pinfo.Arguments = """" + Application.StartupPath + """"
-        If IsNT6() Then
-            pinfo.Verb = "runas"
-        End If
+        pinfo.FileName = Path.Combine(Application.StartupPath(), "TweenUp.exe")
         Try
             Process.Start(pinfo)
         Catch ex As Exception
-            MsgBox("TweenUp.exeの実行に失敗しました。(管理者権限が必要です。)")
+            MsgBox("TweenUp.exeの実行に失敗しました。")
         End Try
     End Sub
 
@@ -3204,23 +3196,11 @@ RETRY2:
 
     Private Sub TimerColorize_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerColorize.Tick
         If TimerColorize.Enabled = False Then Exit Sub
-        'If cMode = 0 Then Exit Sub
-        'My.Application.DoEvents()
-        'If cMode = 1 Then
-        '    cMode = 2
-        '    Exit Sub
-        'End If
-        'cMode = 0
 
         TimerColorize.Stop()
         TimerColorize.Enabled = False
         TimerColorize.Interval = 200
-        'If _itemCache IsNot Nothing Then CreateCache(-1, 0)
-        '_curList.BeginUpdate()
-        'ColorizeList()
-        'If _itemCache IsNot Nothing Then _curList.RedrawItems(_itemCacheIndex, _itemCacheIndex + _itemCache.Length - 1, False)
         DispSelectedPost()
-        '_curList.EndUpdate()
         '件数関連の場合、タイトル即時書き換え
         If SettingDialog.DispLatestPost <> DispTitleEnum.None AndAlso _
            SettingDialog.DispLatestPost <> DispTitleEnum.Post AndAlso _
@@ -3375,7 +3355,6 @@ RETRY2:
             If e.KeyCode = Keys.Home OrElse e.KeyCode = Keys.End Then
                 TimerColorize.Stop()
                 TimerColorize.Start()
-                'cMode = 1
             End If
             If e.KeyCode = Keys.N Then SendKeys.Send("^{PGDN}")
             If e.KeyCode = Keys.P Then SendKeys.Send("^{PGUP}")
@@ -3784,6 +3763,7 @@ RETRY2:
                 _cfg.NextPageThreshold = SettingDialog.NextPageThreshold
                 _cfg.NextPages = SettingDialog.NextPagesInt
                 _cfg.TimelinePeriod = SettingDialog.TimelinePeriodInt
+                _cfg.ReplyPeriod = SettingDialog.ReplyPeriodInt
                 _cfg.DMPeriod = SettingDialog.DMPeriodInt
                 _cfg.MaxPostNum = SettingDialog.MaxPostNum
                 _cfg.ReadPages = SettingDialog.ReadPages
@@ -3816,10 +3796,11 @@ RETRY2:
                 _cfg.PostCtrlEnter = SettingDialog.PostCtrlEnter
                 _cfg.UseAPI = SettingDialog.UseAPI
                 _cfg.CountApi = SettingDialog.CountApi
-                _cfg.UsePostMethod = SettingDialog.UsePostMethod
+                _cfg.UsePostMethod = False
                 _cfg.HubServer = SettingDialog.HubServer
                 _cfg.BrowserPath = SettingDialog.BrowserPath
                 _cfg.CheckReply = SettingDialog.CheckReply
+                _cfg.PostAndGet = SettingDialog.PostAndGet
                 _cfg.UseRecommendStatus = SettingDialog.UseRecommendStatus
                 _cfg.DispUsername = SettingDialog.DispUsername
                 _cfg.MinimizeToTray = SettingDialog.MinimizeToTray
@@ -3846,6 +3827,7 @@ RETRY2:
                 _cfg.DateTimeFormat = SettingDialog.DateTimeFormat
                 _cfg.DefaultTimeOut = SettingDialog.DefaultTimeOut
                 _cfg.ProtectNotInclude = SettingDialog.ProtectNotInclude
+                _cfg.LimitBalloon = SettingDialog.LimitBalloon
 
                 _cfg.SortOrder = _statuses.SortOrder
                 Select Case _statuses.SortMode
@@ -4667,7 +4649,7 @@ RETRY2:
         Else
             slbl.Append((TimerTimeline.Interval / 1000).ToString() + My.Resources.SetStatusLabelText3)
         End If
-        If SettingDialog.UseAPI AndAlso Not SettingDialog.UsePostMethod AndAlso Twitter.RemainCountApi > -1 Then
+        If Twitter.RemainCountApi > -1 Then
             slbl.Append(" [API: " + Twitter.RemainCountApi.ToString + "]")
         End If
 
@@ -4961,8 +4943,10 @@ RETRY2:
         If Me.Tag IsNot Nothing Then ' 設定された戻り先へ遷移
             DirectCast(Me.Tag, Control).Select()
         Else ' 戻り先が指定されていない (初期状態) 場合はタブに遷移
-            Me.Tag = ListTab.SelectedTab.Controls(0)
-            DirectCast(Me.Tag, Control).Select()
+            If ListTab.SelectedIndex > -1 AndAlso ListTab.SelectedTab.HasChildren Then
+                Me.Tag = ListTab.SelectedTab.Controls(0)
+                DirectCast(Me.Tag, Control).Select()
+            End If
         End If
         ' フォーカスがメニューに遷移したかどうかを表すフラグを降ろす
         MenuStrip1.Tag = Nothing
@@ -5393,19 +5377,12 @@ RETRY2:
 
             Dim rtdata As String = _curPost.OriginalData
             ' Twitterにより省略されているURLを含むaタグをキャプチャしてリンク先URLへ置き換える
-            Dim rx As Regex = New Regex("<a target=""_self"" href=""(?<url>.*?)"" rel=""nofollow"" target=""_blank"">(?<link>.*?)</a>")
-            For Each m As Match In rx.Matches(_curPost.OriginalData)
-                If m.Result("${link}").EndsWith("...") Then
-                    rtdata = rtdata.Replace(m.Captures.Item(0).Value, m.Result("${url}"))
-                End If
-                rtdata = rtdata.Replace(m.Captures.Item(0).Value, m.Result("${link}"))
-            Next
+            Dim rx As Regex = New Regex("<a target=""_self"" href=""(?<url>[^""]+)"" rel=""nofollow"" target=""_blank"">(?<link>[^<]+)</a>")
+            rtdata = rx.Replace(rtdata, "${url}")
 
             'その他のリンク(@IDなど)を置き換える
-            rx = New Regex("<a target=""_self"" href=""(?<url>.*?)"">(?<link>.*?)</a>")
-            For Each m As Match In rx.Matches(_curPost.OriginalData)
-                rtdata = rtdata.Replace(m.Captures.Item(0).Value, m.Result("${link}"))
-            Next
+            rx = New Regex("<a target=""_self"" href=""(?<url>[^""]+)"">(?<link>[^<]+)</a>")
+            rtdata = rx.Replace(rtdata, "${link}")
 
             StatusText.Text = "RT:" + rtdata + " (via @" + _curPost.Name + ")"
             _reply_to_id = 0

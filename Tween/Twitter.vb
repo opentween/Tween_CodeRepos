@@ -1306,7 +1306,7 @@ RETRY:
 
         'http://twitter.com/statuses/show/id.xml APIを発行して本文を取得
 
-        resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _ShowStatus + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTEncodeProtoVer2), String)
+        resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _ShowStatus + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
 
         Try
             Using rd As Xml.XmlTextReader = New Xml.XmlTextReader(New System.IO.StringReader(resMsg))
@@ -1357,7 +1357,7 @@ RETRY:
         Dim resMsg As String = ""
 
         Try
-            resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _GetFollowers + _pageQry + Query.ToString, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
+            resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _GetFollowers + _pageQry + Query.ToString, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
             If resStatus.StartsWith("OK") = False Then
                 _threadErr = True
                 Return resStatus
@@ -1483,7 +1483,7 @@ RETRY:
         follower.Add(_uid.ToLower())
         tmpFollower.Add(_uid.ToLower())
 
-        resMsg = DirectCast(CreateSocket.GetWebResponse("https://twitter.com/users/show/" + _uid + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
+        resMsg = DirectCast(CreateSocket.GetWebResponse("https://twitter.com/users/show/" + _uid + ".xml", resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
         Dim xd As XmlDocument = New XmlDocument()
         Try
             xd.LoadXml(resMsg)
@@ -2015,12 +2015,17 @@ RETRY:
 
     Public WriteOnly Property UsePostMethod() As Boolean
         Set(ByVal value As Boolean)
-            _usePostMethod = value
+            _usePostMethod = False
+#If 0 Then
+            'POSTメソッドが弾かれるためGETに固定(2009/4/9)
             If value Then
                 _ApiMethod = MySocket.REQ_TYPE.ReqPOSTAPI
             Else
                 _ApiMethod = MySocket.REQ_TYPE.ReqGetAPI
             End If
+#Else
+            _ApiMethod = MySocket.REQ_TYPE.ReqGetAPI
+#End If
         End Set
     End Property
 

@@ -357,6 +357,20 @@ Public NotInheritable Class SettingToConfig
         End SyncLock
     End Function
 
+    Public Shadows Sub Save()
+        Dim cnt As Integer = 0
+        Do
+            Try
+                MyBase.Save()
+                Exit Do
+            Catch ex As IOException
+                If cnt = 1 Then Throw ex
+                Threading.Thread.Sleep(500)
+                cnt += 1
+            End Try
+        Loop While cnt < 2
+    End Sub
+
     Public Property Tabs() As Dictionary(Of String, TabClass)
         Get
             Dim tconf As List(Of XmlConfiguration) = Nothing
@@ -518,6 +532,15 @@ Public NotInheritable Class SettingToConfig
         End Get
         Set(ByVal value As Integer)
             Item("timelinePeriod") = value
+        End Set
+    End Property
+
+    Public Property ReplyPeriod() As Integer
+        Get
+            Return GetValueOrDefault("replyPeriod", 600)
+        End Get
+        Set(ByVal value As Integer)
+            Item("replyPeriod") = value
         End Set
     End Property
 
@@ -1009,10 +1032,11 @@ Public NotInheritable Class SettingToConfig
 
     Public Property UsePostMethod() As Boolean
         Get
-            Return GetValueOrDefault("usePostMethod", False)
+            'Return GetValueOrDefault("usePostMethod", False)
+            Return False
         End Get
         Set(ByVal value As Boolean)
-            Item("usePostMethod") = value
+            Item("usePostMethod") = False
         End Set
     End Property
 
@@ -1031,6 +1055,15 @@ Public NotInheritable Class SettingToConfig
         End Get
         Set(ByVal value As Boolean)
             Item("checkReply") = value
+        End Set
+    End Property
+
+    Public Property PostAndGet() As Boolean
+        Get
+            Return GetValueOrDefault("postAndGet", True)
+        End Get
+        Set(ByVal value As Boolean)
+            Item("postAndGet") = value
         End Set
     End Property
 
@@ -1344,6 +1377,15 @@ Public NotInheritable Class SettingToConfig
         End Get
         Set(ByVal value As Boolean)
             Item("protectNotInclude") = value
+        End Set
+    End Property
+
+    Public Property LimitBalloon() As Boolean
+        Get
+            Return GetValueOrDefault("limitBalloon", False)
+        End Get
+        Set(ByVal value As Boolean)
+            Item("limitBalloon") = value
         End Set
     End Property
 End Class
