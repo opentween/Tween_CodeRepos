@@ -163,6 +163,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Twitter.vb" />
+    <Compile Include="WebBrowserController.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DialogAsShieldIcon.resx">
