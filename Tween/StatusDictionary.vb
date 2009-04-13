@@ -564,7 +564,7 @@ Public NotInheritable Class TabInformations
                 Exit For
             End If
         Next
-        If Tab.OldestUnreadId = -1 Then Tab.UnreadCount = 0
+        'If Tab.OldestUnreadId = -1 Then Tab.UnreadCount = 0
     End Sub
 
     Public Function DistributePosts() As Integer
