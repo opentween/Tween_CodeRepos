@@ -255,56 +255,56 @@ Public Class TweenMain
     Private Sub LoadIcons()
         '着せ替えアイコン対応
         'タスクトレイ通常時アイコン
-        Dim dir As String = My.Application.Info.DirectoryPath
+        Dim dir As String = Application.StartupPath
 
         Try
-            NIconAt = New Icon(dir + "\Icons\At.ico")
+            NIconAt = New Icon(Path.Combine(dir, "Icons\At.ico"))
         Catch ex As Exception
             NIconAt = My.Resources.At
         End Try
         'タスクトレイエラー時アイコン
         Try
-            NIconAtRed = New Icon(dir + "\Icons\AtRed.ico")
+            NIconAtRed = New Icon(Path.Combine(dir, "Icons\AtRed.ico"))
         Catch ex As Exception
             NIconAtRed = My.Resources.AtRed
         End Try
         'タスクトレイオフライン時アイコン
         Try
-            NIconAtSmoke = New Icon(dir + "\Icons\AtSmoke.ico")
+            NIconAtSmoke = New Icon(Path.Combine(dir, "Icons\AtSmoke.ico"))
         Catch ex As Exception
             NIconAtSmoke = My.Resources.AtSmoke
         End Try
         'タスクトレイ更新中アイコン
         'アニメーション対応により4種類読み込み
         Try
-            NIconRefresh(0) = New Icon(dir + "\Icons\Refresh.ico")
+            NIconRefresh(0) = New Icon(Path.Combine(dir, "Icons\Refresh.ico"))
         Catch ex As Exception
             NIconRefresh(0) = My.Resources.Refresh
         End Try
         Try
-            NIconRefresh(1) = New Icon(dir + "\Icons\Refresh2.ico")
+            NIconRefresh(1) = New Icon(Path.Combine(dir, "Icons\Refresh2.ico"))
         Catch ex As Exception
             NIconRefresh(1) = My.Resources.Refresh2
         End Try
         Try
-            NIconRefresh(2) = New Icon(dir + "\Icons\Refresh3.ico")
+            NIconRefresh(2) = New Icon(Path.Combine(dir, "Icons\Refresh3.ico"))
         Catch ex As Exception
             NIconRefresh(2) = My.Resources.Refresh3
         End Try
         Try
-            NIconRefresh(3) = New Icon(dir + "\Icons\Refresh4.ico")
+            NIconRefresh(3) = New Icon(Path.Combine(dir, "Icons\Refresh4.ico"))
         Catch ex As Exception
             NIconRefresh(3) = My.Resources.Refresh4
         End Try
         'タブ見出し未読表示アイコン
         Try
-            TabIcon = New Icon(dir + "\Icons\Tab.ico")
+            TabIcon = New Icon(Path.Combine(dir, "Icons\Tab.ico"))
         Catch ex As Exception
             TabIcon = My.Resources.TabIcon
         End Try
         '画面のアイコン
         Try
-            MainIcon = New Icon(dir + "\Icons\MIcon.ico")
+            MainIcon = New Icon(Path.Combine(dir, "Icons\MIcon.ico"))
         Catch ex As Exception
             MainIcon = My.Resources.MIcon
         End Try
