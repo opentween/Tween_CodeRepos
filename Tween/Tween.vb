@@ -148,6 +148,7 @@ Public Class TweenMain
     Private cMode As Integer
     Private StatusLabel As New ToolStripLabelHistory
     Private shield As New ShieldIcon
+    Private SecurityManager As InternetSecurityManager
     '''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 #If DEBUG Then
@@ -312,6 +313,8 @@ Public Class TweenMain
 
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Me.Visible = False
+        PostBrowser.DocumentText = ""       ' WebBrowserコントロール ActiveX初期化
+        SecurityManager = New InternetSecurityManager(PostBrowser)
 
         VerUpMenuItem.Image = shield.Icon
         If Not My.Application.CommandLineArgs.Count = 0 AndAlso My.Application.CommandLineArgs.Contains("/d") Then TraceFlag = True
