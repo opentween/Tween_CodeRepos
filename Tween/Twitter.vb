@@ -1078,12 +1078,31 @@ RETRY:
         Return retStr
     End Function
 
+    ' htmlの簡易サニタイズ(詳細表示に不要なタグの除去)
+
+    Private Function SanitizeHtml(ByVal orgdata As String) As String
+        Dim retdata As String = orgdata
+
+        '  <script ～ </script>
+        Dim rx As Regex = New Regex( _
+            "<(script|object|applet|image|frameset|fieldset|legend|style).*" & _
+            "</(script|object|applet|image|frameset|fieldset|legend|style)>", RegexOptions.IgnoreCase)
+        retdata = rx.Replace(retdata, "")
+
+        ' <frame src="...">
+        rx = New Regex("<(frame|link|iframe|img)>", RegexOptions.IgnoreCase)
+        retdata = rx.Replace(retdata, "")
+
+        Return retdata
+    End Function
+
     Private Function AdjustHtml(ByVal orgData As String) As String
         Dim retStr As String = orgData
         retStr = retStr.Replace("<a href=""/", "<a href=""https://twitter.com/")
         retStr = retStr.Replace("<a href=", "<a target=""_self"" href=")
         retStr = retStr.Replace(vbLf, "<br>")
-        Return retStr
+
+        Return SanitizeHtml(retStr)
     End Function
 
     Private Sub GetIconImage(ByVal post As PostClass)
