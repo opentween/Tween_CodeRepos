@@ -307,7 +307,7 @@ Public Class InternetSecurityManager
         If WebBrowserAPI.URLACTION_SCRIPT_MIN <= dwAction And _
             dwAction <= WebBrowserAPI.URLACTION_SCRIPT_MAX Then
             ' スクリプト実行状態
-            If _Policy And POLICY.ALLOW_SCRIPT Then
+            If (_Policy And POLICY.ALLOW_SCRIPT) = POLICY.ALLOW_SCRIPT Then
                 pPolicy = WebBrowserAPI.URLPOLICY_ALLOW
             Else
                 pPolicy = WebBrowserAPI.URLPOLICY_DISALLOW
@@ -318,7 +318,7 @@ Public Class InternetSecurityManager
         If WebBrowserAPI.URLACTION_ACTIVEX_MIN <= dwAction And _
             dwAction <= WebBrowserAPI.URLACTION_ACTIVEX_MAX Then
             ' ActiveX実行状態
-            If _Policy And POLICY.ALLOW_ACTIVEX Then
+            If (_Policy And POLICY.ALLOW_ACTIVEX) = POLICY.ALLOW_ACTIVEX Then
                 pPolicy = WebBrowserAPI.URLPOLICY_ALLOW
             Else
                 pPolicy = WebBrowserAPI.URLPOLICY_DISALLOW
