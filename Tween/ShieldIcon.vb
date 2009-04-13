@@ -79,7 +79,9 @@ Public Class ShieldIcon
 
     Public ReadOnly Property Icon() As Image
         Get
-            Return icondata
+            'Return icondata
+            'シールドアイコンのデータを返さないように　あとでどうにかする
+            Return Nothing
         End Get
     End Property
 
