@@ -723,14 +723,17 @@ Public Class TweenMain
         Dim _config As Configuration    'アプリケーション構成ファイルクラス
         Dim _section As ListSection     '構成ファイル中のユーザー定義ListSectionクラス
 
-        If System.IO.File.Exists(Path.Combine(My.Application.Info.DirectoryPath, "TweenConf.xml")) Then
-            _cfg = SettingToConfig.Load()
-            If _cfg IsNot Nothing Then Exit Sub
-        End If
-        If System.IO.File.Exists(Path.Combine(My.Application.Info.DirectoryPath, My.Application.Info.AssemblyName + ".exe.config")) = False Then
-            _cfg = New SettingToConfig
+        _cfg = SettingToConfig.Load()
+        If _cfg IsNot Nothing Then Exit Sub
+
+        '新規作成
+        _cfg = New SettingToConfig
+
+        '旧設定ファイルがなければ初期状態の設定ファイル使用
+        If Not System.IO.File.Exists(Path.Combine(My.Application.Info.DirectoryPath, My.Application.Info.AssemblyName + ".exe.config")) Then
             Exit Sub
         End If
+
         '設定読み出し
         _config = ConfigurationManager.OpenExeConfiguration(Application.ExecutablePath)
         _section = DirectCast(_config.GetSection("TwitterSetting"), ListSection)
@@ -753,7 +756,7 @@ Public Class TweenMain
         If _section.ListElement.Item(DEFAULTTAB.FAV) Is Nothing Then
             _section.ListElement.Add(New ListElement(DEFAULTTAB.FAV))
         End If
-        _cfg = New SettingToConfig
+        '新設定ファイルへ変換
         _cfg.AlwaysTop = _section.AlwaysTop
         _cfg.BrowserPath = _section.BrowserPath
         _cfg.CheckReply = _section.CheckReply
@@ -890,6 +893,7 @@ Public Class TweenMain
         _cfg.Width6 = _section.Width6
         _cfg.Width7 = _section.Width7
         _cfg.Width8 = _section.Width8
+        '念のため保存
         _cfg.Save()
         _section = Nothing
         _config = Nothing

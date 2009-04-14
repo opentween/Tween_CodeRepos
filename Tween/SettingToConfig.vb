@@ -1,7 +1,7 @@
 ﻿' Tween - Client of Twitter
-' Copyright © 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
-'           © 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
-'           © 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
+' Copyright (c) 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
+'           (c) 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
+'           (c) 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
 ' All rights reserved.
 ' 
 ' This file is part of Tween.
@@ -341,14 +341,13 @@ Public NotInheritable Class SettingToConfig
     Public Sub New()
         If ConfigurationFile Is Nothing Then
             ConfigurationFile = New FileInfo(Path.Combine(My.Application.Info.DirectoryPath, "TweenConf.xml"))
-            If Not ConfigurationFile.Exists Then ConfigurationFile.Create()
         End If
     End Sub
 
     Public Shared Shadows Function Load() As SettingToConfig
         SyncLock _lockObj
             Dim fileConf As FileInfo = New FileInfo(Path.Combine(My.Application.Info.DirectoryPath, "TweenConf.xml"))
-            If Not fileConf.Exists Then fileConf.Create()
+            If Not fileConf.Exists Then Return Nothing
             Using reader As XmlReader = XmlReader.Create(fileConf.FullName)
                 Dim config As SettingToConfig = DirectCast(New XmlSerializer(GetType(SettingToConfig)).Deserialize(reader), SettingToConfig)
                 config.ConfigurationFile = fileConf
