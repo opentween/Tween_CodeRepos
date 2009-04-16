@@ -94,17 +94,6 @@ Public Class Setting
     Private _MyReplyPeriod As Integer
 
     Private Sub Save_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Save.Click
-        If Username.Text.Trim = "" Or _
-           Password.Text.Trim = "" Then
-            Me.DialogResult = Windows.Forms.DialogResult.Cancel
-            MessageBox.Show(My.Resources.Save_ClickText1)
-            Exit Sub
-        End If
-        If Username.Text.Contains("@") Then
-            Me.DialogResult = Windows.Forms.DialogResult.Cancel
-            MessageBox.Show(My.Resources.Save_ClickText2)
-            Exit Sub
-        End If
         Try
             _MyuserID = Username.Text.Trim()
             _Mypassword = Password.Text.Trim()
@@ -1448,5 +1437,30 @@ Public Class Setting
             _MyLimitBalloon = value
         End Set
     End Property
+
+    Private Sub Username_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles Username.Validating
+        If Username.Text.Trim = ""  Then
+            Me.DialogResult = Windows.Forms.DialogResult.Cancel
+            MessageBox.Show(My.Resources.Save_ClickText1)
+            e.Cancel = True
+            Exit Sub
+        End If
+        If Username.Text.Contains("@") Then
+            Me.DialogResult = Windows.Forms.DialogResult.Cancel
+            MessageBox.Show(My.Resources.Save_ClickText2)
+            e.Cancel = True
+            Exit Sub
+        End If
+
+    End Sub
+
+    Private Sub Password_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles Password.Validating
+        If Password.Text.Trim = "" Then
+            Me.DialogResult = Windows.Forms.DialogResult.Cancel
+            MessageBox.Show(My.Resources.Save_ClickText1)
+            e.Cancel = True
+            Exit Sub
+        End If
+    End Sub
 End Class
 
