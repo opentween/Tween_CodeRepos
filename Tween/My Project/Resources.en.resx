@@ -642,4 +642,10 @@
   <data name="AddNewTabText4_2" xml:space="preserve">
     <value>Date</value>
   </data>
+  <data name="Tabs_DoubleClickText1" xml:space="preserve">
+    <value>Tab ""{0}""　is already exists; please specify other name.</value>
+  </data>
+  <data name="Tabs_DoubleClickText2" xml:space="preserve">
+    <value>Rename tab</value>
+  </data>
 </root>

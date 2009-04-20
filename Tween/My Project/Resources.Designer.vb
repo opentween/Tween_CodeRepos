@@ -298,21 +298,22 @@ Namespace My.Resources
         '''<summary>
         '''  更新履歴
         '''
-        '''***Ver 0.4.1.0(2009/4/7)
-        '''-API使用時のreply判定漏れするバグ修正
-        '''-API使用時のHTMLデコードしないバグ修正
-        '''-設定が保存できない問題に対応
-        '''-バージョンアップ確認ダイアログのVista対応（管理者権限昇格を明示するアイコンをボタンに付加）
-        '''-設定画面で、API使用有無切り替えによる他項目の表示状態変更が正しく行われない問題を修正
-        '''-API制限時のステータスメッセージ変更（BadRequest(400)の場合に表示）
-        '''-follower取得失敗時のステータスメッセージ変更
-        '''-最短取得間隔を30秒に変更（Web取得での自動調整では最短15秒のままです）
-        '''-設定画面で取得間隔を伸ばしても反映されないバグ修正
-        '''-APIでGETメソッド使用時、ステータス欄にAPI残り回数を表示
-        '''-TwitterSearchへのクエリ修正
-        '''-API使用切り替え時に、follower情報を自動取得するよう変更（問題あればご指摘ください）
-        '''-API使用時に不正なXMLが帰ってきた場合に例外メッセージが表示される問題を修正
-        '''-発言投稿失敗時はリトライするよう変更 [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        '''***Ver 0.4.3.0(Unreleased)
+        '''-Reply(Mentions)取得間隔の設定を分離
+        '''-投稿時取得の設定を追加
+        '''-Reply同時取得の設定が効いていなかった問題を修正（常に同時取得していました）
+        '''***Ver 0.4.2.0(2009/4/9)
+        '''-取得間隔最大値を600秒から6000秒へ変更
+        '''-画面最小化orアイコン化時のみ新着通知を表示するオプション追加
+        '''-Web取得モードでFollowers取得とFav厳密チェックが動作しなくなっていたのを修正（API変更対応）
+        '''-API取得モードでPOSTメソッドを指定できないように（API変更対応）
+        '''-API残数を常に表示するように(起動直後に表示されないのは仕様です)
+        '''-バージョンアップ処理を0.3.8.0以前相当へ戻し(次回バージョンアップから反映）
+        '''-Web取得モードで一部クライアントから投稿された書き込みを正しくReTweetできなかったのを修正
+        '''-未読ジャンプ不具合対策を若干強化
+        '''-Fav削除でエラーを起こすことがあったのを修正
+        '''-終了時のタイマー停止処理を強化
+        '''***Ver 0.4.1.0 [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property ChangeLog() As String
             Get
@@ -1507,6 +1508,24 @@ Namespace My.Resources
         Friend ReadOnly Property TabMenuItem_ClickText3() As String
             Get
                 Return ResourceManager.GetString("TabMenuItem_ClickText3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  タブ　&quot;&quot;{0}&quot;&quot;　は既に存在するため、変更できません。別の名前を指定してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property Tabs_DoubleClickText1() As String
+            Get
+                Return ResourceManager.GetString("Tabs_DoubleClickText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  タブ名変更 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property Tabs_DoubleClickText2() As String
+            Get
+                Return ResourceManager.GetString("Tabs_DoubleClickText2", resourceCulture)
             End Get
         End Property
         

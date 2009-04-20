@@ -3935,6 +3935,14 @@ RETRY:
         inputName.Dispose()
         Me.TopMost = SettingDialog.AlwaysTop
         If newTabText <> "" Then
+            '新タブ名存在チェック
+            For i As Integer = 0 To ListTab.TabCount - 1
+                If ListTab.TabPages(i).Text = newTabText Then
+                    Dim tmp As String = String.Format(My.Resources.Tabs_DoubleClickText1, newTabText)
+                    MessageBox.Show(tmp, My.Resources.Tabs_DoubleClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                    Exit Sub
+                End If
+            Next
             _statuses.RenameTab(ListTab.SelectedTab.Text, newTabText)
             ListTab.SelectedTab.Text = newTabText
             'タブ名のリスト作り直し

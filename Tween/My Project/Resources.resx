@@ -697,4 +697,10 @@
   <data name="AddNewTabText4_2" xml:space="preserve">
     <value>日時</value>
   </data>
+  <data name="Tabs_DoubleClickText1" xml:space="preserve">
+    <value>タブ　""{0}""　は既に存在するため、変更できません。別の名前を指定してください。</value>
+  </data>
+  <data name="Tabs_DoubleClickText2" xml:space="preserve">
+    <value>タブ名変更</value>
+  </data>
 </root>
