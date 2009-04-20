@@ -4285,11 +4285,12 @@ RETRY:
     End Sub
 
     Private Sub AddTabMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AddTabMenuItem.Click
-        Dim inputName As New InputTabName()
-        inputName.TabName = "MyTab" + (ListTab.TabPages.Count + 1).ToString
-        inputName.ShowDialog()
-        Dim tabName As String = inputName.TabName
-        inputName.Dispose()
+        Dim tabName As String = Nothing
+        Using inputName As New InputTabName()
+            inputName.TabName = "MyTab" + (ListTab.TabPages.Count + 1).ToString
+            inputName.ShowDialog()
+            tabName = inputName.TabName
+        End Using
         Me.TopMost = SettingDialog.AlwaysTop
         If tabName <> "" Then
             If Not AddNewTab(tabName, False) Then
@@ -4319,11 +4320,11 @@ RETRY:
                 ListTab.SelectedTab.Focus()
                 '新規タブが選択→タブ追加
                 If tabName = My.Resources.TabMenuItem_ClickText1 Then
-                    Dim inputName As New InputTabName()
-                    inputName.TabName = "MyTab" + ListTab.TabPages.Count.ToString
-                    inputName.ShowDialog()
-                    tabName = inputName.TabName
-                    inputName.Dispose()
+                    Using inputName As New InputTabName()
+                        inputName.TabName = "MyTab" + ListTab.TabPages.Count.ToString
+                        inputName.ShowDialog()
+                        tabName = inputName.TabName
+                    End Using
                     Me.TopMost = SettingDialog.AlwaysTop
                     If tabName.Length > 0 Then
                         If Not AddNewTab(tabName, False) Then
@@ -4423,11 +4424,11 @@ RETRY:
             ListTab.SelectedTab.Focus()
             '新規タブを選択→タブ作成
             If tabName = My.Resources.IDRuleMenuItem_ClickText1 Then
-                Dim inputName As New InputTabName()
-                inputName.TabName = "MyTab" + ListTab.TabPages.Count.ToString
-                inputName.ShowDialog()
-                tabName = inputName.TabName
-                inputName.Dispose()
+                Using inputName As New InputTabName()
+                    inputName.TabName = "MyTab" + ListTab.TabPages.Count.ToString
+                    inputName.ShowDialog()
+                    tabName = inputName.TabName
+                End Using
                 Me.TopMost = SettingDialog.AlwaysTop
                 If tabName <> "" Then
                     If Not AddNewTab(tabName, False) Then
