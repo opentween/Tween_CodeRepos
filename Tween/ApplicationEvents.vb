@@ -89,7 +89,8 @@ Namespace My
         End Sub
 
         Private Sub MyApplication_UnhandledException(ByVal sender As Object, ByVal e As Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs) Handles Me.UnhandledException
-            If e.Exception.Message <> "A generic error occurred in GDI+." Then
+            If e.Exception.Message <> "A generic error occurred in GDI+." AndAlso _
+               e.Exception.Message <> "GDI+ で汎用エラーが発生しました。" Then
                 ExceptionOut(e.Exception)
                 e.ExitApplication = False
             End If
