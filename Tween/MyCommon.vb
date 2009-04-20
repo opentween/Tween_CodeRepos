@@ -152,7 +152,7 @@ Public Module MyCommon
         End SyncLock
     End Sub
 
-    Public Sub ExceptionOut(ByVal ex As Exception, ByVal customMessage As String)
+    Public Function ExceptionOut(ByVal ex As Exception, ByVal customMessage As String) As Boolean
         SyncLock LockObj
             Dim now As DateTime = DateTime.Now
             Dim fileName As String = String.Format("Tween-{0:0000}{1:00}{2:00}-{3:00}{4:00}{5:00}.log", now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second)
@@ -177,17 +177,22 @@ Public Module MyCommon
                 writer.WriteLine()
             End Using
 
-            If MessageBox.Show(String.Format(My.Resources.UnhandledExceptionText9, fileName, Environment.NewLine), _
-                               My.Resources.UnhandledExceptionText10, MessageBoxButtons.OKCancel, MessageBoxIcon.Error) = DialogResult.OK _
-            Then
-                Diagnostics.Process.Start(fileName)
-            End If
+            Select Case MessageBox.Show(String.Format(My.Resources.UnhandledExceptionText9, fileName, Environment.NewLine), _
+                               My.Resources.UnhandledExceptionText10, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Error)
+                Case DialogResult.Yes
+                    Diagnostics.Process.Start(fileName)
+                    Return False
+                Case DialogResult.No
+                    Return False
+                Case DialogResult.Cancel
+                    Return True
+            End Select
         End SyncLock
-    End Sub
+    End Function
 
-    Public Sub ExceptionOut(ByVal ex As Exception)
-        ExceptionOut(ex, "")
-    End Sub
+    Public Function ExceptionOut(ByVal ex As Exception) As Boolean
+        Return ExceptionOut(ex, "")
+    End Function
 
     ''' <summary>
     ''' URLに含まれているマルチバイト文字列を%xx形式でエンコードします。
