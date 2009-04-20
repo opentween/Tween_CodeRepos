@@ -574,6 +574,7 @@ Public Class TweenMain
         Twitter.UseAPI = SettingDialog.UseAPI
         Twitter.UsePostMethod = False
         Twitter.HubServer = SettingDialog.HubServer
+        Twitter.RestrictFavCheck = SettingDialog.RestrictFavCheck
         If IsNetworkAvailable() Then
             If SettingDialog.StartupFollowers Then
                 _waitFollower = True
