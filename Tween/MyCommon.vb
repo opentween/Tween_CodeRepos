@@ -175,6 +175,14 @@ Public Module MyCommon
                 writer.WriteLine(My.Resources.UnhandledExceptionText8, ex.GetType().FullName, ex.Message)
                 writer.WriteLine(ex.StackTrace)
                 writer.WriteLine()
+                If ex.InnerException IsNot Nothing Then
+                    Dim _ex As Exception = ex.InnerException
+                    writer.WriteLine("InnerException:")
+                    writer.WriteLine()
+                    writer.WriteLine(My.Resources.UnhandledExceptionText8, _ex.GetType().FullName, _ex.Message)
+                    writer.WriteLine(_ex.StackTrace)
+                    writer.WriteLine()
+                End If
             End Using
 
             Select Case MessageBox.Show(String.Format(My.Resources.UnhandledExceptionText9, fileName, Environment.NewLine), _
