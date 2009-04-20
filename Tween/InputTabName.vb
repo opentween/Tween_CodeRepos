@@ -44,4 +44,8 @@ Public Class InputTabName
             TextTabName.Text = value.Trim()
         End Set
     End Property
+
+    Private Sub InputTabName_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
+        ActiveControl = TextTabName
+    End Sub
 End Class
