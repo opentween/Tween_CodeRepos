@@ -3928,11 +3928,12 @@ RETRY:
     Private Sub Tabs_DoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListTab.MouseDoubleClick
         'タブ名変更
         If IsDefaultTab(ListTab.SelectedTab.Text) Then Exit Sub
-        Dim inputName As New InputTabName()
-        inputName.TabName = ListTab.SelectedTab.Text
-        inputName.ShowDialog()
-        Dim newTabText As String = inputName.TabName
-        inputName.Dispose()
+        Dim newTabText As String = Nothing
+        Using inputName As New InputTabName()
+            inputName.TabName = ListTab.SelectedTab.Text
+            inputName.ShowDialog()
+            newTabText = inputName.TabName
+        End Using
         Me.TopMost = SettingDialog.AlwaysTop
         If newTabText <> "" Then
             '新タブ名存在チェック
