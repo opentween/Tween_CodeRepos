@@ -231,7 +231,8 @@ Public Module Twitter
                 trslt = dlgt(idx).EndInvoke(epage, dm, ar(idx))
             Catch ex As Exception
                 '最後までendinvoke回す（ゾンビ化回避）
-                ExceptionOut(ex)
+                ex.Data("IsTerminatePermission") = False
+                Throw
                 rslt = "GetTimelineErr"
             End Try
             If trslt.Length > 0 AndAlso rslt.Length = 0 Then rslt = trslt
@@ -647,7 +648,8 @@ RETRY:
                     dlgt(i).EndInvoke(ar(i))
                 Catch ex As Exception
                     '最後までendinvoke回す（ゾンビ化回避）
-                    ExceptionOut(ex)
+                    ex.Data("IsTerminatePermission") = False
+                    Throw
                 End Try
             Next
 
@@ -690,7 +692,8 @@ RETRY:
                 trslt = dlgt(idx).EndInvoke(ar(idx))
             Catch ex As Exception
                 '最後までendinvoke回す（ゾンビ化回避）
-                ExceptionOut(ex)
+                ex.Data("IsTerminatePermission") = False
+                Throw
                 rslt = "GetDirectMessageErr"
             End Try
             If trslt.Length > 0 AndAlso rslt.Length = 0 Then rslt = trslt
@@ -707,7 +710,8 @@ RETRY:
                 trslt = dlgt(idx).EndInvoke(ar(idx))
             Catch ex As Exception
                 '最後までendinvoke回す（ゾンビ化回避）
-                ExceptionOut(ex)
+                ex.Data("IsTerminatePermission") = False
+                Throw
                 rslt = "GetDirectMessageErr"
             End Try
             If trslt.Length > 0 AndAlso rslt.Length = 0 Then rslt = trslt
@@ -966,7 +970,8 @@ RETRY:
                 Try
                     dlgt(i).EndInvoke(ar(i))
                 Catch ex As Exception
-                    ExceptionOut(ex)
+                    ex.Data("IsTerminatePermission") = False
+                    Throw
                 End Try
             Next
 
@@ -1419,7 +1424,8 @@ RETRY:
             End If
         Catch ex As Exception
             _threadErr = True
-            ExceptionOut(ex)
+            ex.Data("IsTerminatePermission") = False
+            Throw
         Finally
             semaphore.Release()                     ' セマフォから出る
             Interlocked.Decrement(threadNum)        ' スレッド数カウンタを-1
@@ -2157,7 +2163,8 @@ RETRY:
                 dlgt(i).EndInvoke(ar(i))
             Catch ex As Exception
                 '最後までendinvoke回す（ゾンビ化回避）
-                ExceptionOut(ex)
+                ex.Data("IsTerminatePermission") = False
+                Throw
             End Try
         Next
 
@@ -2266,7 +2273,8 @@ RETRY:
                 dlgt(i).EndInvoke(ar(i))
             Catch ex As Exception
                 '最後までendinvoke回す（ゾンビ化回避）
-                ExceptionOut(ex)
+                ex.Data("IsTerminatePermission") = False
+                Throw
             End Try
         Next
 

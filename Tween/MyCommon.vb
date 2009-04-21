@@ -152,8 +152,9 @@ Public Module MyCommon
         End SyncLock
     End Sub
 
-    Public Function ExceptionOut(ByVal ex As Exception, ByVal customMessage As String) As Boolean
+    Public Function ExceptionOut(ByVal ex As Exception) As Boolean
         SyncLock LockObj
+            Dim IsTerminatePermission As Boolean = True
             Dim now As DateTime = DateTime.Now
             Dim fileName As String = String.Format("Tween-{0:0000}{1:00}{2:00}-{3:00}{4:00}{5:00}.log", now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second)
 
@@ -166,13 +167,22 @@ Public Module MyCommon
                 writer.WriteLine(My.Resources.UnhandledExceptionText3)
                 writer.WriteLine(My.Resources.UnhandledExceptionText11 + princ.IsInRole(WindowsBuiltInRole.Administrator).ToString)
                 writer.WriteLine(My.Resources.UnhandledExceptionText12 + princ.IsInRole(WindowsBuiltInRole.User).ToString)
-                If customMessage <> "" Then writer.WriteLine("CustomMessage: " + customMessage)
                 writer.WriteLine()
                 writer.WriteLine(My.Resources.UnhandledExceptionText4)
                 writer.WriteLine(My.Resources.UnhandledExceptionText5, Environment.OSVersion.VersionString)
                 writer.WriteLine(My.Resources.UnhandledExceptionText6, Environment.Version.ToString())
                 writer.WriteLine(My.Resources.UnhandledExceptionText7, My.Application.Info.Version.ToString())
                 writer.WriteLine(My.Resources.UnhandledExceptionText8, ex.GetType().FullName, ex.Message)
+                If ex.Data IsNot Nothing Then
+                    writer.WriteLine("Extra Information: ")
+                    For Each dt As DictionaryEntry In ex.Data
+                        writer.WriteLine("{0}  :  {1}", dt.Key, dt.Value)
+                        If dt.Key.Equals("IsTerminatePermission") Then
+                            IsTerminatePermission = CBool(dt.Value)
+                        End If
+                    Next
+                    writer.WriteLine("End Extra Information: ")
+                End If
                 writer.WriteLine(ex.StackTrace)
                 writer.WriteLine()
                 If ex.InnerException IsNot Nothing Then
@@ -180,6 +190,16 @@ Public Module MyCommon
                     writer.WriteLine("InnerException:")
                     writer.WriteLine()
                     writer.WriteLine(My.Resources.UnhandledExceptionText8, _ex.GetType().FullName, _ex.Message)
+                    If _ex.Data IsNot Nothing Then
+                        writer.WriteLine("Extra Information: ")
+                        For Each dt As DictionaryEntry In ex.Data
+                            writer.WriteLine("{0}  :  {1}", dt.Key, dt.Value)
+                            If dt.Key.Equals("IsTerminatePermission") Then
+                                IsTerminatePermission = CBool(dt.Value)
+                            End If
+                        Next
+                        writer.WriteLine("End Extra Information: ")
+                    End If
                     writer.WriteLine(_ex.StackTrace)
                     writer.WriteLine()
                 End If
@@ -193,13 +213,9 @@ Public Module MyCommon
                 Case DialogResult.No
                     Return False
                 Case DialogResult.Cancel
-                    Return True
+                    Return IsTerminatePermission
             End Select
         End SyncLock
-    End Function
-
-    Public Function ExceptionOut(ByVal ex As Exception) As Boolean
-        Return ExceptionOut(ex, "")
     End Function
 
     ''' <summary>

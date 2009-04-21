@@ -997,7 +997,8 @@ Public Class TweenMain
                 If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
             Next
         Catch ex As Exception
-            ExceptionOut(ex, "Ref1, UseAPI=" + SettingDialog.UseAPI.ToString)
+            ex.Data("Msg") = "Ref1, UseAPI=" + SettingDialog.UseAPI.ToString
+            Throw
         End Try
 
         'スクロール制御後処理
@@ -1021,7 +1022,8 @@ Public Class TweenMain
                 End Select
             End If
         Catch ex As Exception
-            ExceptionOut(ex, "Ref2, UseAPI=" + SettingDialog.UseAPI.ToString)
+            ex.Data("Msg") = "Ref2, UseAPI=" + SettingDialog.UseAPI.ToString
+            Throw
         End Try
 
         '新着通知
@@ -1685,7 +1687,7 @@ Public Class TweenMain
 
         If e.Error IsNot Nothing Then
             If nw Then NotifyIcon1.Icon = NIconAtRed
-            ExceptionOut(e.Error)
+            Throw e.Error
             _waitTimeline = False
             _waitReply = False
             _waitFollower = False
