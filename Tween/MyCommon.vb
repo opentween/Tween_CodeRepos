@@ -192,7 +192,7 @@ Public Module MyCommon
                     writer.WriteLine(My.Resources.UnhandledExceptionText8, _ex.GetType().FullName, _ex.Message)
                     If _ex.Data IsNot Nothing Then
                         writer.WriteLine("Extra Information: ")
-                        For Each dt As DictionaryEntry In ex.Data
+                        For Each dt As DictionaryEntry In _ex.Data
                             writer.WriteLine("{0}  :  {1}", dt.Key, dt.Value)
                             If dt.Key.Equals("IsTerminatePermission") Then
                                 IsTerminatePermission = CBool(dt.Value)
