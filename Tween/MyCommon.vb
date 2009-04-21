@@ -24,6 +24,7 @@
 Imports System.Text
 Imports System.Globalization
 Imports System.Security.Principal
+Imports System.Reflection
 
 Public Module MyCommon
     Private ReadOnly LockObj As New Object
@@ -164,40 +165,55 @@ Public Module MyCommon
         buf.AppendFormat(My.Resources.UnhandledExceptionText8, ex.GetType().FullName, ex.Message)
         buf.AppendLine()
         If ex.Data IsNot Nothing Then
-            buf.AppendLine()
-            buf.AppendLine("Extra Information: ")
+            Dim needHeader As Boolean = True
             For Each dt As DictionaryEntry In ex.Data
+                If needHeader Then
+                    buf.AppendLine()
+                    buf.AppendLine("-------Extra Information-------")
+                    needHeader = False
+                End If
                 buf.AppendFormat("{0}  :  {1}", dt.Key, dt.Value)
                 buf.AppendLine()
                 If dt.Key.Equals("IsTerminatePermission") Then
                     IsTerminatePermission = CBool(dt.Value)
                 End If
             Next
-            buf.AppendLine("End Extra Information: ")
+            If Not needHeader Then
+                buf.AppendLine("-----End Extra Information-----")
+            End If
         End If
         buf.AppendLine(ex.StackTrace)
         buf.AppendLine()
 
         'InnerExceptionが存在する場合書き出す
         Dim _ex As Exception = ex.InnerException
+        Dim nesting As Integer = 0
         While _ex IsNot Nothing
-            buf.AppendLine("InnerException:")
+            buf.AppendFormat("-----InnerException[{0}]-----" + vbCrLf, nesting)
             buf.AppendLine()
             buf.AppendFormat(My.Resources.UnhandledExceptionText8, _ex.GetType().FullName, _ex.Message)
             buf.AppendLine()
             If _ex.Data IsNot Nothing Then
-                buf.AppendLine()
-                buf.AppendLine("Extra Information: ")
+                Dim needHeader As Boolean = True
+
                 For Each dt As DictionaryEntry In _ex.Data
+                    If needHeader Then
+                        buf.AppendLine()
+                        buf.AppendLine("-------Extra Information-------")
+                        needHeader = False
+                    End If
                     buf.AppendFormat("{0}  :  {1}", dt.Key, dt.Value)
                     If dt.Key.Equals("IsTerminatePermission") Then
                         IsTerminatePermission = CBool(dt.Value)
                     End If
                 Next
-                buf.AppendLine("End Extra Information: ")
+                If Not needHeader Then
+                    buf.AppendLine("-----End Extra Information-----")
+                End If
             End If
             buf.AppendLine(_ex.StackTrace)
             buf.AppendLine()
+            nesting += 1
             _ex = _ex.InnerException
         End While
         buffer = buf.ToString()

@@ -1688,8 +1688,7 @@ Public Class TweenMain
         If e.Error IsNot Nothing Then
             If nw Then NotifyIcon1.Icon = NIconAtRed
             Dim buf As String = Nothing
-            e.Error.Data("ExceptionData") = ExceptionOut(e.Error, buf)
-            Throw e.Error
+            Throw New Exception("BackgroundWorker Exception", e.Error)
             _waitTimeline = False
             _waitReply = False
             _waitFollower = False
