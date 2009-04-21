@@ -152,6 +152,54 @@ Public Module MyCommon
         End SyncLock
     End Sub
 
+    ' エラー内容をバッファに書き出し
+    ' 注意：最終的にファイル出力されるエラーログに記録されるため次の情報は書き出さない
+    ' 文頭メッセージ、権限、動作環境
+    ' Dataプロパティにある終了許可フラグのパースもここで行う
+
+    Public Function ExceptionOut(ByVal ex As Exception, ByVal buffer As String, _
+                                 Optional ByRef IsTerminatePermission As Boolean = True) As String
+        Using writer As IO.StringWriter = New IO.StringWriter()
+
+            writer.WriteLine(My.Resources.UnhandledExceptionText8, ex.GetType().FullName, ex.Message)
+            If ex.Data IsNot Nothing Then
+                writer.WriteLine("Extra Information: ")
+                For Each dt As DictionaryEntry In ex.Data
+                    writer.WriteLine("{0}  :  {1}", dt.Key, dt.Value)
+                    If dt.Key.Equals("IsTerminatePermission") Then
+                        IsTerminatePermission = CBool(dt.Value)
+                    End If
+                Next
+                writer.WriteLine("End Extra Information: ")
+            End If
+            writer.WriteLine(ex.StackTrace)
+            writer.WriteLine()
+
+            'InnerExceptionが存在する場合書き出す
+            Dim _ex As Exception = ex.InnerException
+            While _ex IsNot Nothing
+                writer.WriteLine("InnerException:")
+                writer.WriteLine()
+                writer.WriteLine(My.Resources.UnhandledExceptionText8, _ex.GetType().FullName, _ex.Message)
+                If _ex.Data IsNot Nothing Then
+                    writer.WriteLine("Extra Information: ")
+                    For Each dt As DictionaryEntry In _ex.Data
+                        writer.WriteLine("{0}  :  {1}", dt.Key, dt.Value)
+                        If dt.Key.Equals("IsTerminatePermission") Then
+                            IsTerminatePermission = CBool(dt.Value)
+                        End If
+                    Next
+                    writer.WriteLine("End Extra Information: ")
+                End If
+                writer.WriteLine(_ex.StackTrace)
+                writer.WriteLine()
+                _ex = _ex.InnerException
+            End While
+            buffer = writer.ToString()
+        End Using
+        Return buffer
+    End Function
+
     Public Function ExceptionOut(ByVal ex As Exception) As Boolean
         SyncLock LockObj
             Dim IsTerminatePermission As Boolean = True
@@ -165,44 +213,18 @@ Public Module MyCommon
                 writer.WriteLine(My.Resources.UnhandledExceptionText1, DateTime.Now.ToString())
                 writer.WriteLine(My.Resources.UnhandledExceptionText2)
                 writer.WriteLine(My.Resources.UnhandledExceptionText3)
+                ' 権限書き出し
                 writer.WriteLine(My.Resources.UnhandledExceptionText11 + princ.IsInRole(WindowsBuiltInRole.Administrator).ToString)
                 writer.WriteLine(My.Resources.UnhandledExceptionText12 + princ.IsInRole(WindowsBuiltInRole.User).ToString)
                 writer.WriteLine()
+                ' OSVersion,AppVersion書き出し
                 writer.WriteLine(My.Resources.UnhandledExceptionText4)
                 writer.WriteLine(My.Resources.UnhandledExceptionText5, Environment.OSVersion.VersionString)
                 writer.WriteLine(My.Resources.UnhandledExceptionText6, Environment.Version.ToString())
                 writer.WriteLine(My.Resources.UnhandledExceptionText7, My.Application.Info.Version.ToString())
-                writer.WriteLine(My.Resources.UnhandledExceptionText8, ex.GetType().FullName, ex.Message)
-                If ex.Data IsNot Nothing Then
-                    writer.WriteLine("Extra Information: ")
-                    For Each dt As DictionaryEntry In ex.Data
-                        writer.WriteLine("{0}  :  {1}", dt.Key, dt.Value)
-                        If dt.Key.Equals("IsTerminatePermission") Then
-                            IsTerminatePermission = CBool(dt.Value)
-                        End If
-                    Next
-                    writer.WriteLine("End Extra Information: ")
-                End If
-                writer.WriteLine(ex.StackTrace)
-                writer.WriteLine()
-                If ex.InnerException IsNot Nothing Then
-                    Dim _ex As Exception = ex.InnerException
-                    writer.WriteLine("InnerException:")
-                    writer.WriteLine()
-                    writer.WriteLine(My.Resources.UnhandledExceptionText8, _ex.GetType().FullName, _ex.Message)
-                    If _ex.Data IsNot Nothing Then
-                        writer.WriteLine("Extra Information: ")
-                        For Each dt As DictionaryEntry In _ex.Data
-                            writer.WriteLine("{0}  :  {1}", dt.Key, dt.Value)
-                            If dt.Key.Equals("IsTerminatePermission") Then
-                                IsTerminatePermission = CBool(dt.Value)
-                            End If
-                        Next
-                        writer.WriteLine("End Extra Information: ")
-                    End If
-                    writer.WriteLine(_ex.StackTrace)
-                    writer.WriteLine()
-                End If
+
+                Dim buffer As String = Nothing
+                writer.Write(ExceptionOut(ex, buffer, IsTerminatePermission))
             End Using
 
             Select Case MessageBox.Show(String.Format(My.Resources.UnhandledExceptionText9, fileName, Environment.NewLine), _
