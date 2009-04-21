@@ -1372,7 +1372,7 @@ Public NotInheritable Class SettingToConfig
 
     Public Property ProtectNotInclude() As Boolean
         Get
-            Return GetValueOrDefault("protectNotInclude", False)
+            Return GetValueOrDefault("protectNotInclude", True)
         End Get
         Set(ByVal value As Boolean)
             Item("protectNotInclude") = value
