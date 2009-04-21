@@ -131,9 +131,9 @@ Public Module MyCommon
         TraceOut(TraceFlag, Message)
     End Sub
 
-    Public Sub TraceOut(ByVal Flag As Boolean, ByVal Message As String)
+    Public Sub TraceOut(ByVal OutputFlag As Boolean, ByVal Message As String)
         SyncLock LockObj
-            If Not Flag Then Exit Sub
+            If Not OutputFlag Then Exit Sub
             Dim now As DateTime = DateTime.Now
             Dim fileName As String = String.Format("TweenTrace-{0:0000}{1:00}{2:00}-{3:00}{4:00}{5:00}.log", now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second)
 
