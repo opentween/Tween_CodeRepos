@@ -5409,7 +5409,7 @@ RETRY:
             rx = New Regex("<a target=""_self"" href=""(?<url>[^""]+)"">(?<link>[^<]+)</a>")
             rtdata = rx.Replace(rtdata, "${link}")
 
-            StatusText.Text = "RT:" + rtdata + " (via @" + _curPost.Name + ")"
+            StatusText.Text = "RT @" + _curPost.Name + ":" + rtdata
             _reply_to_id = 0
             _reply_to_name = Nothing
             StatusText.SelectionStart = StatusText.Text.Length
