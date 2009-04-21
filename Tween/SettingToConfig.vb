@@ -332,6 +332,9 @@ Public Class XmlConfiguration
         Return Me.GetValueOrDefault(Of Object)(key)
     End Function
 
+    Public Functioon GetChild(ByVal key As String) As XmlConfiguration
+        Return Me.GetValueOrDefault(key, New XmlConfiguration())
+    End Function
 End Class
 
 <XmlRoot(ElementName:="configuration", Namespace:="urn:XSpect.Configuration.XmlConfiguration")> _
