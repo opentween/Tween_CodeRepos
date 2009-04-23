@@ -1113,7 +1113,7 @@ Public Class TweenMain
                notifyPosts IsNot Nothing AndAlso notifyPosts.Length > 0 AndAlso _
                Not _initial AndAlso _
                ((SettingDialog.LimitBalloon AndAlso _
-                 (Me.WindowState = FormWindowState.Minimized Or Not Me.Visible)) _
+                 (Me.WindowState = FormWindowState.Minimized OrElse Not Me.Visible OrElse Form.ActiveForm Is Nothing)) _
                 OrElse Not SettingDialog.LimitBalloon) Then
             Dim sb As New StringBuilder
             Dim reply As Boolean = False
