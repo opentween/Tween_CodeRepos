@@ -103,7 +103,8 @@ Public Module Twitter
             "http://rubyurl.com/", _
             "http://budurl.com/", _
             "http://ff.im/", _
-            "http://twitthis.com/" _
+            "http://twitthis.com/", _
+            "http://blip.fm/" _
         }
 
     Private Const _baseUrlStr As String = "twitter.com"
@@ -1032,7 +1033,13 @@ RETRY:
                             Dim retUrlStr As String = ""
                             retUrlStr = DirectCast(CreateSocket.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
                             If retUrlStr.Length > 0 Then
-                                If Not retUrlStr.StartsWith("http") Then Exit Do
+                                If Not retUrlStr.StartsWith("http") Then
+                                    If retUrlStr.StartsWith("/") Then
+                                        retUrlStr = svc + retUrlStr.Substring(1)
+                                    Else
+                                        retUrlStr = retUrlStr.Insert(0, svc)
+                                    End If
+                                End If
                                 orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + urlEncodeMultibyteChar(retUrlStr))
                                 posl2 = 0   '置換した場合は頭から再探索（複数同時置換での例外対応）
                             End If
