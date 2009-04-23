@@ -5131,15 +5131,28 @@ RETRY:
         Else
             ToolStripMenuItem4.Enabled = False
         End If
+        ' 文字列選択されていないときは選択文字列関係の項目を非表示に
+        Dim _selText As String = PostBrowser_GetSelectionText()
+        If _selText Is Nothing Then
+            ToolStripMenuItem2.Enabled = False
+            ToolStripMenuItem3.Enabled = False
+        Else
+            ToolStripMenuItem2.Enabled = True
+            ToolStripMenuItem3.Enabled = True
+        End If
         e.Cancel = False
     End Sub
 
-    Private Sub CurrentTabToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CurrentTabToolStripMenuItem.Click
-        '発言詳細の選択文字列で現在のタブを検索
+    Private Function PostBrowser_GetSelectionText() As String
         Dim typ As Type = PostBrowser.ActiveXInstance.GetType()
         Dim _SelObj As Object = typ.InvokeMember("selection", BindingFlags.GetProperty, Nothing, PostBrowser.Document.DomDocument, Nothing)
         Dim _objRange As Object = _SelObj.GetType().InvokeMember("createRange", BindingFlags.InvokeMethod, Nothing, _SelObj, Nothing)
-        Dim _selText As String = DirectCast(_objRange.GetType().InvokeMember("text", BindingFlags.GetProperty, Nothing, _objRange, Nothing), String)
+        Return DirectCast(_objRange.GetType().InvokeMember("text", BindingFlags.GetProperty, Nothing, _objRange, Nothing), String)
+    End Function
+
+    Private Sub CurrentTabToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CurrentTabToolStripMenuItem.Click
+        '発言詳細の選択文字列で現在のタブを検索
+        Dim _selText As String = PostBrowser_GetSelectionText()
 
         If _selText IsNot Nothing Then
             SearchDialog.SWord = _selText
