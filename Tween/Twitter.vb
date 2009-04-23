@@ -104,7 +104,8 @@ Public Module Twitter
             "http://budurl.com/", _
             "http://ff.im/", _
             "http://twitthis.com/", _
-            "http://blip.fm/" _
+            "http://blip.fm/", _
+            "http://tumblr.com/" _
         }
 
     Private Const _baseUrlStr As String = "twitter.com"
@@ -1031,7 +1032,26 @@ RETRY:
                             urlStr = orgData.Substring(posl1, posl2 - posl1)
                             Dim Response As String = ""
                             Dim retUrlStr As String = ""
-                            retUrlStr = DirectCast(CreateSocket.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
+                            Dim tmpurlStr As String = urlStr
+                            For i As Integer = 0 To 4   'とりあえず5回試す
+                                retUrlStr = DirectCast(CreateSocket.GetWebResponse(tmpurlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
+                                If retUrlStr.Length > 0 Then
+                                    ' 転送先URLが返された (まだ転送されるかもしれないので返値を引数にしてもう一度)
+                                    ' 取得試行回数オーバーの場合は取得結果を転送先とする
+                                    tmpurlStr = retUrlStr
+                                    Continue For
+                                Else
+                                    ' 転送先URLが返されなかった
+                                    If tmpurlStr <> urlStr Then
+                                        '少なくとも一度以上転送されている (前回の結果を転送先とする)
+                                        retUrlStr = tmpurlStr
+                                    Else
+                                        ' 一度も転送されていない
+                                        retUrlStr = ""
+                                    End If
+                                    Exit For
+                                End If
+                            Next
                             If retUrlStr.Length > 0 Then
                                 If Not retUrlStr.StartsWith("http") Then
                                     If retUrlStr.StartsWith("/") Then
