@@ -50,7 +50,9 @@ Namespace My
                     Using config As New IO.StreamReader(filename)
                         Dim xmlDoc As New Xml.XmlDocument
                         xmlDoc.Load(config)
-                        ChangeUICulture(xmlDoc.SelectSingleNode("/configuration/entry[@key='cultureCode']").SelectSingleNode("string").InnerText)
+                        Dim ns As New Xml.XmlNamespaceManager(xmlDoc.NameTable)
+                        ns.AddNamespace("conf", "urn:XSpect.Configuration.XmlConfiguration")
+                        ChangeUICulture(xmlDoc.SelectSingleNode("//conf:configuration/entry[@key='cultureCode']", ns).SelectSingleNode("string").InnerText)
                     End Using
                 Catch ex As Exception
 
