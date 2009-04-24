@@ -648,4 +648,10 @@
   <data name="Tabs_DoubleClickText2" xml:space="preserve">
     <value>Rename tab</value>
   </data>
+  <data name="UnhandledExceptionText11" xml:space="preserve">
+    <value>Administrator  authority：</value>
+  </data>
+  <data name="UnhandledExceptionText12" xml:space="preserve">
+    <value>Users  authority：</value>
+  </data>
 </root>
