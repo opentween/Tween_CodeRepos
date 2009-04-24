@@ -797,4 +797,7 @@
   <data name="$this.Text" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="CheckBalloonLimit.Text" xml:space="preserve">
+    <value>only at the minimization and icon</value>
+  </data>
 </root>
