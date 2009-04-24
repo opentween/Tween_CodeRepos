@@ -105,7 +105,8 @@ Public Module Twitter
             "http://ff.im/", _
             "http://twitthis.com/", _
             "http://blip.fm/", _
-            "http://tumblr.com/" _
+            "http://tumblr.com/", _
+            "http://www.qurl.com/" _
         }
 
     Private Const _baseUrlStr As String = "twitter.com"
