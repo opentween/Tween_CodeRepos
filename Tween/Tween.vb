@@ -1372,38 +1372,44 @@ Public Class TweenMain
             e.Cancel = True
             Me.Visible = False
         Else
-            TimerTimeline.Enabled = False
-            TimerReply.Enabled = False
-            TimerDM.Enabled = False
-            TimerColorize.Enabled = False
-            TimerRefreshIcon.Enabled = False
+            Try
+                My.Application.DoEvents()
+                Me.Cursor = Cursors.WaitCursor
+                TimerTimeline.Enabled = False
+                TimerReply.Enabled = False
+                TimerDM.Enabled = False
+                TimerColorize.Enabled = False
+                TimerRefreshIcon.Enabled = False
 
-            _endingFlag = True
+                _endingFlag = True
 
-            'sgenのdllがあれば不要か？
-            If e.CloseReason <> CloseReason.WindowsShutDown AndAlso e.CloseReason <> CloseReason.TaskManagerClosing Then
-                SaveConfigs()
-            End If
+                'sgenのdllがあれば不要か？
+                If e.CloseReason <> CloseReason.WindowsShutDown AndAlso e.CloseReason <> CloseReason.TaskManagerClosing Then
+                    SaveConfigs()
+                End If
 
-            For i As Integer = 0 To _bw.Length - 1
-                If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then _bw(i).CancelAsync()
-            Next
-
-            Dim flg As Boolean = False
-            Do
-                flg = True
                 For i As Integer = 0 To _bw.Length - 1
-                    If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then
-                        flg = False
-                        Exit For
-                    End If
+                    If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then _bw(i).CancelAsync()
                 Next
-                Threading.Thread.Sleep(500)
-                Application.DoEvents()
-            Loop Until flg = True
 
-            Me.Visible = False
-            NotifyIcon1.Visible = False
+                Dim flg As Boolean = False
+                Do
+                    flg = True
+                    For i As Integer = 0 To _bw.Length - 1
+                        If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then
+                            flg = False
+                            Exit For
+                        End If
+                    Next
+                    Threading.Thread.Sleep(500)
+                    Application.DoEvents()
+                Loop Until flg = True
+
+                Me.Visible = False
+                NotifyIcon1.Visible = False
+            Finally
+                Me.Cursor = Cursors.Default
+            End Try
         End If
     End Sub
 
