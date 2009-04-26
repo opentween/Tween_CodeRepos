@@ -132,6 +132,7 @@ Public Module Twitter
     Private Const _parseLink3 As String = "</a>"
     Private Const _GetFollowers As String = "/statuses/followers.xml"
     Private Const _ShowStatus As String = "/statuses/show/"
+    Private Const _rateLimitStatus As String = "/account/rate_limit_status.xml"
 
     '''Wedata対応
     Private Const wedataUrl As String = "http://wedata.net/databases/Tween/items.json"
@@ -2375,6 +2376,23 @@ RETRY:
     Public ReadOnly Property RemainCountApi() As Integer
         Get
             Return _remainCountApi
+        End Get
+    End Property
+
+    Public ReadOnly Property MaxCountApi() As Integer
+        Get
+            Dim _maxcnt As Integer = 0
+            Dim resMsg As String = ""
+            Dim resStatus As String = ""
+            resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _rateLimitStatus, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+            Dim xdoc As New XmlDocument
+            Try
+                xdoc.LoadXml(resMsg)
+                _maxcnt = Integer.Parse(xdoc.SelectSingleNode("/hash/hourly-limit").InnerText)
+            Catch ex As Exception
+
+            End Try
+            Return _maxcnt
         End Get
     End Property
 

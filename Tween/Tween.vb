@@ -5370,6 +5370,18 @@ RETRY:
                 CheckNewVersion(True)
             End If
 
+            ' APIモードで起動した場合に警告する
+            If SettingDialog.UseAPI Then
+                If MessageBox.Show("現在APIモードです。APIモードではタイムライン取得に回数制限があり、制限回数を超えるとタイムライン取得が行えなくなります。この制限について理解していますか？Web取得モードではタイムライン取得にAPIを使用せず、API回数制限の影響を受けません。Web取得モードに切り替える場合は「OK」を押してください。", "警告", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) = Windows.Forms.DialogResult.OK Then
+                    SettingDialog.UseAPI = False
+                    SaveConfigs()
+                    MessageBox.Show("APIモードをオフにし、Web取得モードへ切り替えました。")
+                Else
+                    MessageBox.Show("APIモードを維持することを選択しました。Web取得に戻す場合は設定の動作タブにある「API使用」のチェックを外すと戻すことができます。")
+                    MessageBox.Show("取得間隔に注意してください。タイムライン取得系APIはRecent,Reply,DMの合計で1時間に" + MaxCountApi.ToString() + "回までしか使えません。", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                End If
+            End If
+
         Else
             TimerRefreshIcon.Enabled = False
             NotifyIcon1.Icon = NIconAtSmoke
