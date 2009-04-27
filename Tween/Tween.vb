@@ -1430,6 +1430,7 @@ Public Class TweenMain
 
         Threading.Thread.CurrentThread.Priority = Threading.ThreadPriority.BelowNormal
 
+        My.Application.InitCulture()
         Dim ret As String = ""
         Dim rslt As New GetWorkerResult()
 
