@@ -156,6 +156,7 @@ Partial Class TweenMain
         Me.TimerRefreshIcon = New System.Windows.Forms.Timer(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog
         Me.TimerReply = New System.Windows.Forms.Timer(Me.components)
+        Me.TwurlnlToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripContainer1.BottomToolStripPanel.SuspendLayout()
         Me.ToolStripContainer1.ContentPanel.SuspendLayout()
         Me.ToolStripContainer1.TopToolStripPanel.SuspendLayout()
@@ -754,7 +755,7 @@ Partial Class TweenMain
         '
         'TinyUrlConvertToolStripMenuItem
         '
-        Me.TinyUrlConvertToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.UrlConvertAutoToolStripMenuItem, Me.UrlUndoToolStripMenuItem, Me.TinyURLToolStripMenuItem, Me.IsgdToolStripMenuItem})
+        Me.TinyUrlConvertToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.UrlConvertAutoToolStripMenuItem, Me.UrlUndoToolStripMenuItem, Me.TinyURLToolStripMenuItem, Me.IsgdToolStripMenuItem, Me.TwurlnlToolStripMenuItem})
         Me.TinyUrlConvertToolStripMenuItem.Name = "TinyUrlConvertToolStripMenuItem"
         resources.ApplyResources(Me.TinyUrlConvertToolStripMenuItem, "TinyUrlConvertToolStripMenuItem")
         '
@@ -938,6 +939,11 @@ Partial Class TweenMain
         '
         Me.TimerReply.Interval = 600000
         '
+        'TwurlnlToolStripMenuItem
+        '
+        Me.TwurlnlToolStripMenuItem.Name = "TwurlnlToolStripMenuItem"
+        resources.ApplyResources(Me.TwurlnlToolStripMenuItem, "TwurlnlToolStripMenuItem")
+        '
         'TweenMain
         '
         Me.AllowDrop = True
@@ -1107,5 +1113,6 @@ Partial Class TweenMain
     Friend WithEvents DumpPostClassToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents TraceOutToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents TimerReply As System.Windows.Forms.Timer
+    Friend WithEvents TwurlnlToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class
