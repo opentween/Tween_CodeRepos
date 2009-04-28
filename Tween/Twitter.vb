@@ -1990,6 +1990,25 @@ RETRY:
                 If Not ret.StartsWith("http://is.gd/") Then
                     Return "Can't convert"
                 End If
+            Case UrlConverter.Twurl
+                If SrcUrl.StartsWith("http") Then
+                    If SrcUrl.StartsWith("http://twurl.nl/") Then
+                        Return "Can't convert"
+                    End If
+                    If "http://twurl.nl/xxxxxx".Length > src.Length AndAlso Not src.Contains("?") AndAlso Not src.Contains("#") Then
+                        ' 明らかに長くなると推測できる場合は圧縮しない
+                        ret = src
+                        Exit Select
+                    End If
+                    Try
+                        ret = DirectCast(CreateSocket.GetWebResponse("http://tweetburner.com/links", resStatus, MySocket.REQ_TYPE.ReqPOSTEncode, "link[url]=" + SrcUrl), String)
+                    Catch ex As Exception
+                        Return "Can't convert"
+                    End Try
+                End If
+                If Not ret.StartsWith("http://twurl.nl/") Then
+                    Return "Can't convert"
+                End If
         End Select
 
         If src.Length < ret.Length Then ret = src ' 圧縮の結果逆に長くなった場合は圧縮前のURLを返す

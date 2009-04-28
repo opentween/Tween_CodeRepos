@@ -4947,6 +4947,10 @@ RETRY:
         UrlConvert(UrlConverter.Isgd)
     End Sub
 
+    Private Sub TwurlnlToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TwurlnlToolStripMenuItem.Click
+        UrlConvert(UrlConverter.Twurl)
+    End Sub
+
     Private Sub UrlConvertAutoToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UrlConvertAutoToolStripMenuItem.Click
         If Not UrlConvert(UrlConverter.TinyUrl) Then
             UrlConvert(UrlConverter.Isgd)

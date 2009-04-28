@@ -69,6 +69,7 @@ Public Module MyCommon
     Public Enum UrlConverter
         TinyUrl
         Isgd
+        Twurl
     End Enum
 
     Public Enum OutputzUrlmode
