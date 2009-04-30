@@ -79,6 +79,7 @@ Public Class Setting
     Private _MyStartupVersion As Boolean
     Private _MyStartupKey As Boolean
     Private _MyStartupFollowers As Boolean
+    Private _MyStartupAPImodeNoWarning As Boolean
     Private _MyRestrictFavCheck As Boolean
     Private _MyAlwaysTop As Boolean
     Private _MyUrlConvertAuto As Boolean
@@ -193,6 +194,7 @@ Public Class Setting
             _MyPeriodAdjust = CheckPeriodAdjust.Checked
             _MyStartupVersion = CheckStartupVersion.Checked
             _MyStartupKey = CheckStartupKey.Checked
+            _MyStartupAPImodeNoWarning = CheckStartupAPImodeNoWarning.Checked
             _MyStartupFollowers = CheckStartupFollowers.Checked
             _MyRestrictFavCheck = CheckFavRestrict.Checked
             _MyAlwaysTop = CheckAlwaysTop.Checked
@@ -363,6 +365,7 @@ Public Class Setting
         CheckStartupVersion.Checked = _MyStartupVersion
         CheckStartupKey.Checked = _MyStartupKey
         CheckStartupFollowers.Checked = _MyStartupFollowers
+        CheckStartupAPImodeNoWarning.Checked = _MyStartupAPImodeNoWarning
         CheckFavRestrict.Checked = _MyRestrictFavCheck
         CheckAlwaysTop.Checked = _MyAlwaysTop
         CheckAutoConvertUrl.Checked = _MyUrlConvertAuto
@@ -1200,6 +1203,15 @@ Public Class Setting
         End Get
         Set(ByVal value As Boolean)
             _MyStartupFollowers = value
+        End Set
+    End Property
+
+    Public Property StartupAPImodeNoWarning() As Boolean
+        Get
+            Return _MyStartupAPImodeNoWarning
+        End Get
+        Set(ByVal value As Boolean)
+            _MyStartupAPImodeNoWarning = value
         End Set
     End Property
 

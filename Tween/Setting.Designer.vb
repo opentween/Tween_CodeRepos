@@ -197,6 +197,8 @@ Partial Class Setting
         Me.Label59 = New System.Windows.Forms.Label
         Me.TextBoxOutputzKey = New System.Windows.Forms.TextBox
         Me.CheckOutputz = New System.Windows.Forms.CheckBox
+        Me.Label70 = New System.Windows.Forms.Label
+        Me.CheckStartupAPImodeNoWarning = New System.Windows.Forms.CheckBox
         Me.GroupBox1.SuspendLayout()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
@@ -876,6 +878,8 @@ Partial Class Setting
         '
         'TabPage1
         '
+        Me.TabPage1.Controls.Add(Me.Label70)
+        Me.TabPage1.Controls.Add(Me.CheckStartupAPImodeNoWarning)
         Me.TabPage1.Controls.Add(Me.Label69)
         Me.TabPage1.Controls.Add(Me.ReplyPeriod)
         Me.TabPage1.Controls.Add(Me.CheckPostAndGet)
@@ -1332,6 +1336,17 @@ Partial Class Setting
         Me.CheckOutputz.Name = "CheckOutputz"
         Me.CheckOutputz.UseVisualStyleBackColor = True
         '
+        'Label70
+        '
+        resources.ApplyResources(Me.Label70, "Label70")
+        Me.Label70.Name = "Label70"
+        '
+        'CheckStartupAPImodeNoWarning
+        '
+        resources.ApplyResources(Me.CheckStartupAPImodeNoWarning, "CheckStartupAPImodeNoWarning")
+        Me.CheckStartupAPImodeNoWarning.Name = "CheckStartupAPImodeNoWarning"
+        Me.CheckStartupAPImodeNoWarning.UseVisualStyleBackColor = True
+        '
         'Setting
         '
         Me.AcceptButton = Me.Save
@@ -1538,4 +1553,6 @@ Partial Class Setting
     Friend WithEvents CheckPostAndGet As System.Windows.Forms.CheckBox
     Friend WithEvents Label69 As System.Windows.Forms.Label
     Friend WithEvents ReplyPeriod As System.Windows.Forms.TextBox
+    Friend WithEvents Label70 As System.Windows.Forms.Label
+    Friend WithEvents CheckStartupAPImodeNoWarning As System.Windows.Forms.CheckBox
 End Class

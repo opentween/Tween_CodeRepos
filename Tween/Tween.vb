@@ -468,6 +468,7 @@ Public Class TweenMain
         SettingDialog.StartupVersion = _cfg.StartupVersion
         SettingDialog.StartupKey = _cfg.StartupKey
         SettingDialog.StartupFollowers = _cfg.StartupFollowers
+        SettingDialog.StartupAPImodeNoWarning = _cfg.StartupAPImodeNoWarning
         SettingDialog.RestrictFavCheck = _cfg.RestrictFavCheck
         SettingDialog.AlwaysTop = _cfg.AlwaysTop
         SettingDialog.UrlConvertAuto = _cfg.UrlConvertAuto
@@ -763,6 +764,7 @@ Public Class TweenMain
             _section.ListElement.Add(New ListElement(DEFAULTTAB.FAV))
         End If
         '新設定ファイルへ変換
+        '新しくエントリを増設する場合はここに書く必要はない
         _cfg.AlwaysTop = _section.AlwaysTop
         _cfg.BrowserPath = _section.BrowserPath
         _cfg.CheckReply = _section.CheckReply
@@ -3839,6 +3841,7 @@ RETRY:
                 _cfg.StartupVersion = SettingDialog.StartupVersion
                 _cfg.StartupKey = SettingDialog.StartupKey
                 _cfg.StartupFollowers = SettingDialog.StartupFollowers
+                _cfg.StartupAPImodeNoWarning = SettingDialog.StartupAPImodeNoWarning
                 _cfg.RestrictFavCheck = SettingDialog.RestrictFavCheck
                 _cfg.AlwaysTop = SettingDialog.AlwaysTop
                 _cfg.UrlConvertAuto = SettingDialog.UrlConvertAuto
@@ -5376,7 +5379,7 @@ RETRY:
             End If
 
             ' APIモードで起動した場合に警告する
-            If SettingDialog.UseAPI Then
+            If Not SettingDialog.StartupAPImodeNoWarning AndAlso SettingDialog.UseAPI Then
                 If MessageBox.Show("現在APIモードです。APIモードではタイムライン取得に回数制限があり、制限回数を超えるとタイムライン取得が行えなくなります。この制限について理解していますか？Web取得モードではタイムライン取得にAPIを使用せず、API回数制限の影響を受けません。Web取得モードに切り替える場合は「OK」を押してください。", "警告", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) = Windows.Forms.DialogResult.OK Then
                     SettingDialog.UseAPI = False
                     SaveConfigs()
