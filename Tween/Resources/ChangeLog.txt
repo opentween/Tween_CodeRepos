@@ -3,7 +3,7 @@
 ***Ver 0.4.4.0(Unrelease)
 -APIモードで起動した場合は警告を出し、Web取得モードへ切り替えることができるように
 -APIモードで起動した場合に警告しない設定を追加
--digg.comのURL展開に対応
+-digg.com,u.nuのURL展開に対応
 -tweetburner(twurl.nl)のURL圧縮に対応
 ***Ver 0.4.3.0(2009/4/26)
 -Reply(Mentions)取得間隔の設定を分離
