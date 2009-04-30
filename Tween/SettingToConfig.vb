@@ -1248,6 +1248,15 @@ Public NotInheritable Class SettingToConfig
         End Set
     End Property
 
+    Public Property StartupAPImodeNoWarning() As Boolean
+        Get
+            Return GetValueOrDefault("startupAPImodeNoWarning", False)
+        End Get
+        Set(ByVal value As Boolean)
+            Item("startupAPImodeNoWarning") = value
+        End Set
+    End Property
+
     Public Property RestrictFavCheck() As Boolean
         Get
             Return GetValueOrDefault("restrictFavCheck", False)
