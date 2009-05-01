@@ -1037,11 +1037,17 @@ RETRY:
                             Dim Response As String = ""
                             Dim retUrlStr As String = ""
                             Dim tmpurlStr As String = urlStr
+                            Dim SchemeAndDomain As Regex = New Regex("http://.+?/+?")
+                            Dim tmpSchemeAndDomain As String = ""
                             For i As Integer = 0 To 4   'とりあえず5回試す
                                 retUrlStr = DirectCast(CreateSocket.GetWebResponse(tmpurlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
                                 If retUrlStr.Length > 0 Then
                                     ' 転送先URLが返された (まだ転送されるかもしれないので返値を引数にしてもう一度)
                                     ' 取得試行回数オーバーの場合は取得結果を転送先とする
+                                    Dim scd As Match = SchemeAndDomain.Match(retUrlStr)
+                                    If scd.Success AndAlso scd.Value <> svc Then
+                                        svc = scd.Value()
+                                    End If
                                     tmpurlStr = retUrlStr
                                     Continue For
                                 Else
