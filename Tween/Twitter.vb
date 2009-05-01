@@ -115,8 +115,8 @@ Public Module Twitter
     Private Const _loginPath As String = "/sessions"
     Private Const _homePath As String = "/home"
     Private Const _replyPath As String = "/replies"
-    Private Const _DMPathRcv As String = "/direct_messages"
-    Private Const _DMPathSnt As String = "/direct_messages/sent"
+    Private Const _DMPathRcv As String = "/inbox"
+    Private Const _DMPathSnt As String = "/sent"
     Private Const _DMDestroyPath As String = "/direct_messages/destroy/"
     Private Const _StDestroyPath As String = "/status/destroy/"
     Private Const _uidHeader As String = "session[username_or_email]="
@@ -282,7 +282,7 @@ Public Module Twitter
 RETRY:
             If gType = WORKERTYPE.Timeline Then
                 If redirectToTimeline = "" Then
-                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _homePath + pageQuery, resStatus), String)
+                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _homePath + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
                     If resStatus.StartsWith("Found") Then
                         redirectToTimeline = resStatus.Substring(6)
                         If redirectToTimeline.Contains("?") Then
@@ -291,11 +291,11 @@ RETRY:
                         GoTo RETRY
                     End If
                 Else
-                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToTimeline + pageQuery, resStatus), String)
+                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToTimeline + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
                 End If
             Else
                 If redirectToReply = "" Then
-                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _replyPath + pageQuery, resStatus), String)
+                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _replyPath + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
                     If resStatus.StartsWith("Found") Then
                         redirectToReply = resStatus.Substring(6)
                         If redirectToReply.Contains("?") Then
@@ -304,7 +304,7 @@ RETRY:
                         GoTo RETRY
                     End If
                 Else
-                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToReply + pageQuery, resStatus), String)
+                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToReply + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
                 End If
             End If
 
@@ -754,7 +754,7 @@ RETRY:
 RETRY:
             If gType = WORKERTYPE.DirectMessegeRcv Then
                 If redirectToDmRcv = "" Then
-                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathRcv + pageQuery, resStatus), String)
+                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathRcv + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
                     If resStatus.StartsWith("Found") Then
                         redirectToDmRcv = resStatus.Substring(6)
                         If redirectToDmRcv.Contains("?") Then
@@ -763,11 +763,11 @@ RETRY:
                         GoTo RETRY
                     End If
                 Else
-                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToDmRcv + pageQuery, resStatus), String)
+                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToDmRcv + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
                 End If
             Else
                 If redirectToDmSnd = "" Then
-                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathSnt + pageQuery, resStatus), String)
+                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathSnt + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
                     If resStatus.StartsWith("Found") Then
                         redirectToDmSnd = resStatus.Substring(6)
                         If redirectToDmSnd.Contains("?") Then
@@ -776,7 +776,7 @@ RETRY:
                         GoTo RETRY
                     End If
                 Else
-                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToDmSnd + pageQuery, resStatus), String)
+                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToDmSnd + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
                 End If
             End If
 

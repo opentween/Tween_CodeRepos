@@ -5385,7 +5385,7 @@ RETRY:
                     SaveConfigs()
                     MessageBox.Show("APIモードをオフにし、Web取得モードへ切り替えました。")
                 Else
-                    MessageBox.Show("APIモードを維持することを選択しました。Web取得に戻す場合は設定の動作タブにある「API使用」のチェックを外すと戻すことができます。")
+                    MessageBox.Show("APIモードを維持することを選択しました。Web取得に戻す場合は設定の動作タブにある「API使用」のチェックを外すと戻すことができます。" + Environment.NewLine + Environment.NewLine + "※APIモードの制限を理解された方のみ、次回より警告を表示しないよう設定画面で変更してください※")
                     MessageBox.Show("取得間隔に注意してください。タイムライン取得系APIはRecent,Reply,DMの合計で1時間に" + MaxCountApi.ToString() + "回までしか使えません。", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 End If
             End If
