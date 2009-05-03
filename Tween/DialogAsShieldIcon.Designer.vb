@@ -75,6 +75,7 @@ Partial Class DialogAsShieldIcon
         Me.MinimizeBox = False
         Me.Name = "DialogAsShieldIcon"
         Me.ShowInTaskbar = False
+        Me.TopMost = True
         Me.TableLayoutPanel1.ResumeLayout(False)
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
