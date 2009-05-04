@@ -108,7 +108,7 @@ Public Module MyCommon
         Const RECENT As String = "Recent"
         Const REPLY As String = "Reply"
         Const DM As String = "Direct"
-        Const FAV As String = "Favourites"
+        Const FAV As String = "Favorites"
 
         Private dummy As String
 
