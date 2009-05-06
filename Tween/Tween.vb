@@ -2059,6 +2059,11 @@ Public Class TweenMain
                 'BlackFavRemoveToolStripMenuItem.Enabled = True
             End If
         End If
+        If SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Then
+            ReTweetStripMenuItem.Enabled = False
+        Else
+            ReTweetStripMenuItem.Enabled = True
+        End If
     End Sub
 
     Private Sub ReplyStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ReplyStripMenuItem.Click
@@ -5493,5 +5498,13 @@ RETRY:
     Private Sub TweenMain_Deactivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Deactivate
         '画面が非アクティブになったら、発言欄の背景色をデフォルトへ
         Me.StatusText_Leave(StatusText, System.EventArgs.Empty)
+    End Sub
+
+    Private Sub MenuItemOperate_DropDownOpening(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemOperate.DropDownOpening
+        If SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Then
+            ReTweetStripMenuItem.Enabled = False
+        Else
+            ReTweetStripMenuItem.Enabled = True
+        End If
     End Sub
 End Class
