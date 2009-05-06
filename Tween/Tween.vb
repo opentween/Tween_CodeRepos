@@ -483,6 +483,7 @@ Public Class TweenMain
         SettingDialog.PlaySound = _cfg.PlaySound
         SettingDialog.DateTimeFormat = _cfg.DateTimeFormat
         SettingDialog.LimitBalloon = _cfg.LimitBalloon
+        SettingDialog.AutoShortUrlFirst = _cfg.AutoShortUrlFirst
 
         '書式指定文字列エラーチェック
         Try
@@ -3858,6 +3859,7 @@ RETRY:
                 _cfg.DefaultTimeOut = SettingDialog.DefaultTimeOut
                 _cfg.ProtectNotInclude = SettingDialog.ProtectNotInclude
                 _cfg.LimitBalloon = SettingDialog.LimitBalloon
+                _cfg.AutoShortUrlFirst = SettingDialog.AutoShortUrlFirst
 
                 _cfg.SortOrder = _statuses.SortOrder
                 Select Case _statuses.SortMode
@@ -4964,8 +4966,14 @@ RETRY:
     End Sub
 
     Private Sub UrlConvertAutoToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UrlConvertAutoToolStripMenuItem.Click
-        If Not UrlConvert(UrlConverter.TinyUrl) Then
-            UrlConvert(UrlConverter.Isgd)
+        If Not UrlConvert(SettingDialog.AutoShortUrlFirst) Then
+            Dim svc As UrlConverter = SettingDialog.AutoShortUrlFirst
+            Dim rnd As New Random()
+            ' 前回使用した短縮URLサービス以外を選択する
+            Do
+                svc = CType(rnd.Next(System.Enum.GetNames(GetType(UrlConverter)).Length), UrlConverter)
+            Loop Until svc <> SettingDialog.AutoShortUrlFirst
+            UrlConvert(svc)
         End If
     End Sub
 
