@@ -800,4 +800,13 @@
   <data name="CheckBalloonLimit.Text" xml:space="preserve">
     <value>only at the minimization and icon</value>
   </data>
+  <data name="CheckStartupAPImodeNoWarning.Text" xml:space="preserve">
+    <value>it doesn't warning</value>
+  </data>
+  <data name="Label70.Text" xml:space="preserve">
+    <value>API mode use warning in starting</value>
+  </data>
+  <data name="Label71.Text" xml:space="preserve">
+    <value>Primary URLshorten service</value>
+  </data>
 </root>
