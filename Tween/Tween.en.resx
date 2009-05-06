@@ -619,4 +619,7 @@
   <data name="ToolStripMenuItemUrlMultibyteSplit.Text" xml:space="preserve">
     <value>Separation of multibyte character string from URL</value>
   </data>
+  <data name="TabRenameMenuItem.Text" xml:space="preserve">
+    <value>Rename Tab</value>
+  </data>
 </root>

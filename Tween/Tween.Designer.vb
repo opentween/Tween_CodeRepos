@@ -32,6 +32,7 @@ Partial Class TweenMain
         Me.ListTab = New System.Windows.Forms.TabControl
         Me.ContextMenuTabProperty = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.AddTabMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.TabRenameMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator20 = New System.Windows.Forms.ToolStripSeparator
         Me.UreadManageMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.NotifyDispMenuItem = New System.Windows.Forms.ToolStripMenuItem
@@ -124,6 +125,7 @@ Partial Class TweenMain
         Me.UrlUndoToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.TinyURLToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.IsgdToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.TwurlnlToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.UpdateFollowersMenuItem1 = New System.Windows.Forms.ToolStripMenuItem
         Me.GetFollowersDiffToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.GetFollowersAllToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
@@ -156,7 +158,6 @@ Partial Class TweenMain
         Me.TimerRefreshIcon = New System.Windows.Forms.Timer(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog
         Me.TimerReply = New System.Windows.Forms.Timer(Me.components)
-        Me.TwurlnlToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripContainer1.BottomToolStripPanel.SuspendLayout()
         Me.ToolStripContainer1.ContentPanel.SuspendLayout()
         Me.ToolStripContainer1.TopToolStripPanel.SuspendLayout()
@@ -242,7 +243,7 @@ Partial Class TweenMain
         '
         'ContextMenuTabProperty
         '
-        Me.ContextMenuTabProperty.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AddTabMenuItem, Me.ToolStripSeparator20, Me.UreadManageMenuItem, Me.NotifyDispMenuItem, Me.SoundFileComboBox, Me.ToolStripSeparator18, Me.FilterEditMenuItem, Me.ToolStripSeparator19, Me.ClearTabMenuItem, Me.ToolStripSeparator11, Me.DeleteTabMenuItem})
+        Me.ContextMenuTabProperty.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AddTabMenuItem, Me.TabRenameMenuItem, Me.ToolStripSeparator20, Me.UreadManageMenuItem, Me.NotifyDispMenuItem, Me.SoundFileComboBox, Me.ToolStripSeparator18, Me.FilterEditMenuItem, Me.ToolStripSeparator19, Me.ClearTabMenuItem, Me.ToolStripSeparator11, Me.DeleteTabMenuItem})
         Me.ContextMenuTabProperty.Name = "ContextMenuStrip3"
         Me.ContextMenuTabProperty.OwnerItem = Me.MenuItemTab
         Me.ContextMenuTabProperty.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
@@ -252,6 +253,11 @@ Partial Class TweenMain
         '
         Me.AddTabMenuItem.Name = "AddTabMenuItem"
         resources.ApplyResources(Me.AddTabMenuItem, "AddTabMenuItem")
+        '
+        'TabRenameMenuItem
+        '
+        Me.TabRenameMenuItem.Name = "TabRenameMenuItem"
+        resources.ApplyResources(Me.TabRenameMenuItem, "TabRenameMenuItem")
         '
         'ToolStripSeparator20
         '
@@ -779,6 +785,11 @@ Partial Class TweenMain
         Me.IsgdToolStripMenuItem.Name = "IsgdToolStripMenuItem"
         resources.ApplyResources(Me.IsgdToolStripMenuItem, "IsgdToolStripMenuItem")
         '
+        'TwurlnlToolStripMenuItem
+        '
+        Me.TwurlnlToolStripMenuItem.Name = "TwurlnlToolStripMenuItem"
+        resources.ApplyResources(Me.TwurlnlToolStripMenuItem, "TwurlnlToolStripMenuItem")
+        '
         'UpdateFollowersMenuItem1
         '
         Me.UpdateFollowersMenuItem1.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.GetFollowersDiffToolStripMenuItem, Me.GetFollowersAllToolStripMenuItem})
@@ -938,11 +949,6 @@ Partial Class TweenMain
         'TimerReply
         '
         Me.TimerReply.Interval = 600000
-        '
-        'TwurlnlToolStripMenuItem
-        '
-        Me.TwurlnlToolStripMenuItem.Name = "TwurlnlToolStripMenuItem"
-        resources.ApplyResources(Me.TwurlnlToolStripMenuItem, "TwurlnlToolStripMenuItem")
         '
         'TweenMain
         '
@@ -1114,5 +1120,6 @@ Partial Class TweenMain
     Friend WithEvents TraceOutToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents TimerReply As System.Windows.Forms.Timer
     Friend WithEvents TwurlnlToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents TabRenameMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class

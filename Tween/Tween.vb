@@ -3944,7 +3944,7 @@ RETRY:
         End If
     End Sub
 
-    Private Sub Tabs_DoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListTab.MouseDoubleClick
+    Private Sub TabRename()
         'タブ名変更
         If IsDefaultTab(ListTab.SelectedTab.Text) Then Exit Sub
         Dim newTabText As String = Nothing
@@ -3980,6 +3980,10 @@ RETRY:
             SaveConfigs()
             _rclickTabName = newTabText
         End If
+    End Sub
+
+    Private Sub Tabs_DoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListTab.MouseDoubleClick
+        TabRename()
     End Sub
 
     Private Sub Tabs_MouseDown(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListTab.MouseDown
@@ -5506,5 +5510,9 @@ RETRY:
         Else
             ReTweetStripMenuItem.Enabled = True
         End If
+    End Sub
+
+    Private Sub TabRenameMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TabRenameMenuItem.Click
+        TabRename()
     End Sub
 End Class
