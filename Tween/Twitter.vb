@@ -2007,6 +2007,22 @@ RETRY:
                 If Not ret.StartsWith("http://twurl.nl/") Then
                     Return "Can't convert"
                 End If
+            Case UrlConverter.Unu
+                If SrcUrl.StartsWith("http") Then
+                    If "http://u.nu/xxxx".Length > src.Length AndAlso Not src.Contains("?") AndAlso Not src.Contains("#") Then
+                        ' 明らかに長くなると推測できる場合は圧縮しない
+                        ret = src
+                        Exit Select
+                    End If
+                    Try
+                        ret = DirectCast(CreateSocket.GetWebResponse("http://u.nu/unu-api-simple?url=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
+                    Catch ex As Exception
+                        Return "Can't convert"
+                    End Try
+                End If
+                If Not ret.StartsWith("http://u.nu") Then
+                    Return "Can't convert"
+                End If
         End Select
 
         If src.Length < ret.Length Then ret = src ' 圧縮の結果逆に長くなった場合は圧縮前のURLを返す

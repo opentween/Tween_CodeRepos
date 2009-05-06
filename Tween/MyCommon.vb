@@ -70,6 +70,7 @@ Public Module MyCommon
         TinyUrl
         Isgd
         Twurl
+        Unu
     End Enum
 
     Public Enum OutputzUrlmode
