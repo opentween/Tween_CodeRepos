@@ -2059,7 +2059,7 @@ Public Class TweenMain
                 'BlackFavRemoveToolStripMenuItem.Enabled = True
             End If
         End If
-        If SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Then
+        If _curPost.IsDm OrElse SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Then
             ReTweetStripMenuItem.Enabled = False
         Else
             ReTweetStripMenuItem.Enabled = True
@@ -5441,7 +5441,7 @@ RETRY:
     Private Sub ReTweetStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ReTweetStripMenuItem.Click
         'RT:内容 (via @id)
         If _curPost IsNot Nothing Then
-            If SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Or _
+            If _curPost.IsDm OrElse SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Or _
                Not StatusText.Enabled Then Exit Sub
 
             Dim rtdata As String = _curPost.OriginalData
@@ -5501,7 +5501,7 @@ RETRY:
     End Sub
 
     Private Sub MenuItemOperate_DropDownOpening(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemOperate.DropDownOpening
-        If SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Then
+        If _curPost.IsDm OrElse SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Then
             ReTweetStripMenuItem.Enabled = False
         Else
             ReTweetStripMenuItem.Enabled = True
