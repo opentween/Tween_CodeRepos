@@ -1346,6 +1346,15 @@ Public NotInheritable Class SettingToConfig
         End Set
     End Property
 
+    Public Property AutoShortUrlFirst() As UrlConverter
+        Get
+            Return GetValueOrDefault("AutoShortUrlFirst", UrlConverter.TinyUrl)
+        End Get
+        Set(ByVal value As UrlConverter)
+            Item("AutoShortUrlFirst") = value
+        End Set
+    End Property
+
     Public Property OutputzUrlmode() As OutputzUrlmode
         Get
             Return GetValueOrDefault("outputzUrlMode", OutputzUrlmode.twittercom)
@@ -1354,7 +1363,6 @@ Public NotInheritable Class SettingToConfig
             Item("outputzUrlMode") = value
         End Set
     End Property
-
     Public Property UseUnreadStyle() As Boolean
         Get
             Return GetValueOrDefault("useUnreadStyle", True)

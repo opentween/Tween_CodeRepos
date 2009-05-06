@@ -93,6 +93,7 @@ Public Class Setting
     Private _MyLimitBalloon As Boolean
     Private _MyPostAndGet As Boolean
     Private _MyReplyPeriod As Integer
+    Private _MyAutoShortUrlFirst As UrlConverter
 
     Private Sub Save_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Save.Click
         Try
@@ -218,6 +219,7 @@ Public Class Setting
             _MyDefaultTimeOut = CType(ConnectionTimeOut.Text, Integer)      ' 0の場合はGetWebResponse()側でTimeOut.Infiniteへ読み替える
             _MyProtectNotInclude = CheckProtectNotInclude.Checked
             _MyLimitBalloon = CheckBalloonLimit.Checked
+            _MyAutoShortUrlFirst = CType(ComboBoxAutoShortUrlFirst.SelectedIndex, UrlConverter)
         Catch ex As Exception
             MessageBox.Show(My.Resources.Save_ClickText3)
             Me.DialogResult = Windows.Forms.DialogResult.Cancel
@@ -386,8 +388,7 @@ Public Class Setting
         ConnectionTimeOut.Text = _MyDefaultTimeOut.ToString
         CheckProtectNotInclude.Checked = _MyProtectNotInclude
         CheckBalloonLimit.Checked = _MyLimitBalloon
-        'TweenMain.SetMainWindowTitle()
-        'TweenMain.SetNotifyIconText()
+        ComboBoxAutoShortUrlFirst.SelectedIndex = _MyAutoShortUrlFirst
 
         TabControl1.SelectedIndex = 0
         ActiveControl = Username
@@ -1266,6 +1267,15 @@ Public Class Setting
         End Set
     End Property
 
+    Public Property AutoShortUrlFirst() As UrlConverter
+        Get
+            Return _MyAutoShortUrlFirst
+        End Get
+        Set(ByVal value As UrlConverter)
+            _MyAutoShortUrlFirst = value
+        End Set
+    End Property
+
     Public Property UseUnreadStyle() As Boolean
         Get
             Return _MyUnreadStyle
@@ -1471,5 +1481,6 @@ Public Class Setting
             Exit Sub
         End If
     End Sub
+
 End Class
 

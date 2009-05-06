@@ -126,6 +126,7 @@ Partial Class TweenMain
         Me.TinyURLToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.IsgdToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.TwurlnlToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.UnuToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.UpdateFollowersMenuItem1 = New System.Windows.Forms.ToolStripMenuItem
         Me.GetFollowersDiffToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.GetFollowersAllToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
@@ -158,7 +159,6 @@ Partial Class TweenMain
         Me.TimerRefreshIcon = New System.Windows.Forms.Timer(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog
         Me.TimerReply = New System.Windows.Forms.Timer(Me.components)
-        Me.UnuToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripContainer1.BottomToolStripPanel.SuspendLayout()
         Me.ToolStripContainer1.ContentPanel.SuspendLayout()
         Me.ToolStripContainer1.TopToolStripPanel.SuspendLayout()
@@ -791,6 +791,11 @@ Partial Class TweenMain
         Me.TwurlnlToolStripMenuItem.Name = "TwurlnlToolStripMenuItem"
         resources.ApplyResources(Me.TwurlnlToolStripMenuItem, "TwurlnlToolStripMenuItem")
         '
+        'UnuToolStripMenuItem
+        '
+        Me.UnuToolStripMenuItem.Name = "UnuToolStripMenuItem"
+        resources.ApplyResources(Me.UnuToolStripMenuItem, "UnuToolStripMenuItem")
+        '
         'UpdateFollowersMenuItem1
         '
         Me.UpdateFollowersMenuItem1.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.GetFollowersDiffToolStripMenuItem, Me.GetFollowersAllToolStripMenuItem})
@@ -950,11 +955,6 @@ Partial Class TweenMain
         'TimerReply
         '
         Me.TimerReply.Interval = 600000
-        '
-        'UnuToolStripMenuItem
-        '
-        Me.UnuToolStripMenuItem.Name = "UnuToolStripMenuItem"
-        resources.ApplyResources(Me.UnuToolStripMenuItem, "UnuToolStripMenuItem")
         '
         'TweenMain
         '
