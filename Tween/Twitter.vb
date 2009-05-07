@@ -108,7 +108,8 @@ Public Module Twitter
             "http://tumblr.com/", _
             "http://www.qurl.com/", _
             "http://digg.com/", _
-            "http://u.nu/" _
+            "http://u.nu/", _
+            "http://ustre.am/" _
         }
 
     Private Const _baseUrlStr As String = "twitter.com"
@@ -511,8 +512,10 @@ RETRY:
                             TraceOut("TM-Body:" + strPost)
                             Return "GetTimeline -> Err: Can't get body."
                         End Try
+#If 0 Then
                         '原文リンク削除
                         orgData = Regex.Replace(orgData, "<a href=""https://twitter\.com/" + post.Name + "/status/[0-9]+"">\.\.\.</a>$", "")
+#End If
                         'ハート変換
                         orgData = orgData.Replace("&lt;3", "♡")
                     End If
