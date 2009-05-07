@@ -1,6 +1,6 @@
 ﻿更新履歴
 
-***Ver 0.4.5.0(Unrelease)
+***Ver 0.4.5.0(2009/5/7)
 -ff.imのURL展開が正常に行われていなかったバグ修正
 -Fav発言タブの名前を変更（Favourites→Favorites）お手数ですが旧名称のタブは削除をお願いします。
 -設定の「STOTコピーとReTweet　Protect発言を含めない」が有効になっているときにReTweetメニューを無効にするようにした
