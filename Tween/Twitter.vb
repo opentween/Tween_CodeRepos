@@ -557,24 +557,34 @@ RETRY:
 
 
                     'from Sourceの取得
-                    Try
-                        pos1 = strPost.IndexOf(_parseSourceFrom, pos2, StringComparison.Ordinal)
-                        If pos1 > -1 Then
-                            pos1 = strPost.IndexOf(_parseSource2, pos1 + 19, StringComparison.Ordinal)
-                            pos2 = strPost.IndexOf(_parseSourceTo, pos1 + 2, StringComparison.Ordinal)
-                            post.Source = HttpUtility.HtmlDecode(strPost.Substring(pos1 + 2, pos2 - pos1 - 2))
-                        Else
-                            post.Source = "Web"
-                        End If
-                    Catch ex As Exception
-                        _signed = False
-                        TraceOut("TM-Src:" + strPost)
-                        Return "GetTimeline -> Err: Can't get src."
-                    End Try
+                    'ToDo: _parseSourceFromを正規表現へ。wedataからの取得へ変更（次版より）
+                    Dim rg As New Regex("<span>.+>(?<name>.+)</a>.*</span> ")
+                    Dim m As Match = rg.Match(strPost)
+                    If m.Success Then
+                        post.Source = m.Result("${name}")
+                    Else
+                        post.Source = "Web"
+                    End If
+                    'Try
+                    '    pos1 = strPost.IndexOf(_parseSourceFrom, pos2, StringComparison.Ordinal)
+                    '    If pos1 = -1 Then pos1 = strPost.IndexOf(_parseSourceFrom2, pos2, StringComparison.Ordinal)
+                    '    If pos1 > -1 Then
+                    '        pos1 = strPost.IndexOf(_parseSource2, pos1 + 19, StringComparison.Ordinal)
+                    '        pos2 = strPost.IndexOf(_parseSourceTo, pos1 + 2, StringComparison.Ordinal)
+                    '        post.Source = HttpUtility.HtmlDecode(strPost.Substring(pos1 + 2, pos2 - pos1 - 2))
+                    '    Else
+                    '        post.Source = "Web"
+                    '    End If
+                    'Catch ex As Exception
+                    '    _signed = False
+                    '    TraceOut("TM-Src:" + strPost)
+                    '    Return "GetTimeline -> Err: Can't get src."
+                    'End Try
 
                     'Get Reply(in_reply_to_user/id)
-                    Dim rg As New Regex("<a href=""https?:\/\/twitter\.com\/(?<name>[a-zA-Z0-9_]+)\/status\/(?<id>[0-9]+)"">(?:in reply to |u8fd4u4fe1: )")
-                    Dim m As Match = rg.Match(strPost)
+                    'ToDo: _isReplyEngを正規表現へ。wedataからの取得へ変更（次版より）
+                    rg = New Regex("<a href=""https?:\/\/twitter\.com\/(?<name>[a-zA-Z0-9_]+)\/status\/(?<id>[0-9]+)"">(in reply to )*\k<name>")
+                    m = rg.Match(strPost)
                     If m.Success Then
                         post.InReplyToUser = m.Result("${name}")
                         post.InReplyToId = Long.Parse(m.Result("${id}"))
