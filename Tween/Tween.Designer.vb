@@ -159,6 +159,7 @@ Partial Class TweenMain
         Me.TimerRefreshIcon = New System.Windows.Forms.Timer(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog
         Me.TimerReply = New System.Windows.Forms.Timer(Me.components)
+        Me.BitlyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripContainer1.BottomToolStripPanel.SuspendLayout()
         Me.ToolStripContainer1.ContentPanel.SuspendLayout()
         Me.ToolStripContainer1.TopToolStripPanel.SuspendLayout()
@@ -762,7 +763,7 @@ Partial Class TweenMain
         '
         'TinyUrlConvertToolStripMenuItem
         '
-        Me.TinyUrlConvertToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.UrlConvertAutoToolStripMenuItem, Me.UrlUndoToolStripMenuItem, Me.TinyURLToolStripMenuItem, Me.IsgdToolStripMenuItem, Me.TwurlnlToolStripMenuItem, Me.UnuToolStripMenuItem})
+        Me.TinyUrlConvertToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.UrlConvertAutoToolStripMenuItem, Me.UrlUndoToolStripMenuItem, Me.TinyURLToolStripMenuItem, Me.IsgdToolStripMenuItem, Me.TwurlnlToolStripMenuItem, Me.UnuToolStripMenuItem, Me.BitlyToolStripMenuItem})
         Me.TinyUrlConvertToolStripMenuItem.Name = "TinyUrlConvertToolStripMenuItem"
         resources.ApplyResources(Me.TinyUrlConvertToolStripMenuItem, "TinyUrlConvertToolStripMenuItem")
         '
@@ -956,6 +957,11 @@ Partial Class TweenMain
         '
         Me.TimerReply.Interval = 600000
         '
+        'BitlyToolStripMenuItem
+        '
+        Me.BitlyToolStripMenuItem.Name = "BitlyToolStripMenuItem"
+        resources.ApplyResources(Me.BitlyToolStripMenuItem, "BitlyToolStripMenuItem")
+        '
         'TweenMain
         '
         Me.AllowDrop = True
@@ -1128,5 +1134,6 @@ Partial Class TweenMain
     Friend WithEvents TwurlnlToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents TabRenameMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents UnuToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents BitlyToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class

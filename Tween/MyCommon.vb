@@ -71,6 +71,7 @@ Public Module MyCommon
         Isgd
         Twurl
         Unu
+        Bitly
     End Enum
 
     Public Enum OutputzUrlmode
