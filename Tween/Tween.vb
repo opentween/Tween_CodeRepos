@@ -5519,4 +5519,8 @@ RETRY:
     Private Sub UnuToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UnuToolStripMenuItem.Click
         UrlConvert(UrlConverter.Unu)
     End Sub
+
+    Private Sub BitlyToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BitlyToolStripMenuItem.Click
+        UrlConvert(UrlConverter.Bitly)
+    End Sub
 End Class

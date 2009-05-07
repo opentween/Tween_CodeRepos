@@ -2036,6 +2036,33 @@ RETRY:
                 If Not ret.StartsWith("http://u.nu") Then
                     Return "Can't convert"
                 End If
+            Case UrlConverter.Bitly
+                Const BitlyLogin As String = "tweenapi"
+                Const BitlyApiKey As String = "R_c5ee0e30bdfff88723c4457cc331886b"
+                Const BitlyApiVersion As String = "2.0.1"
+                If SrcUrl.StartsWith("http") Then
+                    If "http://bit.ly/xxxx".Length > src.Length AndAlso Not src.Contains("?") AndAlso Not src.Contains("#") Then
+                        ' 明らかに長くなると推測できる場合は圧縮しない
+                        ret = src
+                        Exit Select
+                    End If
+                    Try
+                        ret = DirectCast(CreateSocket.GetWebResponse( _
+                            "http://api.bit.ly/shorten?version=" + BitlyApiVersion + _
+                            "&login=" + BitlyLogin + _
+                            "&apiKey=" + BitlyApiKey + _
+                            "&longUrl=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
+                        Dim rx As Regex = New Regex("""shortUrl"": ""(?<ShortUrl>.*?)""")
+                        If rx.Match(ret).Success Then
+                            ret = rx.Match(ret).Groups("ShortUrl").Value
+                        End If
+                    Catch ex As Exception
+                        Return "Can't convert"
+                    End Try
+                End If
+                If Not ret.StartsWith("http://bit.ly") Then
+                    Return "Can't convert"
+                End If
         End Select
 
         If src.Length < ret.Length Then ret = src ' 圧縮の結果逆に長くなった場合は圧縮前のURLを返す
