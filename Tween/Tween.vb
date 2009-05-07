@@ -2060,7 +2060,7 @@ Public Class TweenMain
                 'BlackFavRemoveToolStripMenuItem.Enabled = True
             End If
         End If
-        If _curPost.IsDm OrElse SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Then
+        If _curPost Is Nothing OrElse (_curPost.IsDm OrElse SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect) Then
             ReTweetStripMenuItem.Enabled = False
         Else
             ReTweetStripMenuItem.Enabled = True
@@ -5510,14 +5510,6 @@ RETRY:
     Private Sub TweenMain_Deactivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Deactivate
         '画面が非アクティブになったら、発言欄の背景色をデフォルトへ
         Me.StatusText_Leave(StatusText, System.EventArgs.Empty)
-    End Sub
-
-    Private Sub MenuItemOperate_DropDownOpening(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuItemOperate.DropDownOpening
-        If _curPost.IsDm OrElse SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Then
-            ReTweetStripMenuItem.Enabled = False
-        Else
-            ReTweetStripMenuItem.Enabled = True
-        End If
     End Sub
 
     Private Sub TabRenameMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TabRenameMenuItem.Click
