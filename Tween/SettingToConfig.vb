@@ -1348,7 +1348,7 @@ Public NotInheritable Class SettingToConfig
 
     Public Property AutoShortUrlFirst() As UrlConverter
         Get
-            Return GetValueOrDefault("AutoShortUrlFirst", UrlConverter.TinyUrl)
+            Return GetValueOrDefault("AutoShortUrlFirst", UrlConverter.Bitly)
         End Get
         Set(ByVal value As UrlConverter)
             Item("AutoShortUrlFirst") = value
