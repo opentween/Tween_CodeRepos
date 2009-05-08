@@ -4880,6 +4880,7 @@ RETRY:
                 result = Twitter.MakeShortUrl(Converter_Type, StatusText.SelectedText)
 
                 If result.Equals("Can't convert") Then
+                    StatusLabel.Text = result.Insert(0, Converter_Type.ToString() + ":")
                     Return False
                 End If
 
@@ -4917,6 +4918,7 @@ RETRY:
                 result = Twitter.MakeShortUrl(Converter_Type, StatusText.SelectedText)
 
                 If result.Equals("Can't convert") Then
+                    StatusLabel.Text = result.Insert(0, Converter_Type.ToString() + ":")
                     Return False
                 End If
 
