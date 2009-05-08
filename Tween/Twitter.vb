@@ -188,6 +188,8 @@ Public Module Twitter
                 Return "SignIn Failed -> " + msg
             ElseIf resMsg.Contains("https://twitter.com:443/") Then '302 FOUND
                 'OK
+            ElseIf resMsg.Contains("https://twitter.com/") Then '302 FOUND
+                'OK
             ElseIf resStatus.StartsWith("Err:") Then
                 ' その他プロトコルエラー
                 Return "SignIn Failed -> " + resMsg
