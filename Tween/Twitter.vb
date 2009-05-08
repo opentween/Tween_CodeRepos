@@ -913,7 +913,9 @@ RETRY:
                             pos2 = strPost.IndexOf(_parseDM2, pos1, StringComparison.Ordinal)
                             orgData = strPost.Substring(pos1 + _parseDM11.Length, pos2 - pos1 - _parseDM11.Length).Trim()
                         End If
+#If 0 Then
                         orgData = Regex.Replace(orgData, "<a href=""https://twitter\.com/" + post.Name + "/status/[0-9]+"">\.\.\.</a>$", "")
+#End If
                         orgData = orgData.Replace("&lt;3", "♡")
                     Catch ex As Exception
                         _signed = False
