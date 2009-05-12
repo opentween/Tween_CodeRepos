@@ -1522,7 +1522,7 @@ Public Class TweenMain
                 CheckReplyTo(args.status)
                 For i As Integer = 0 To 1
                     ret = Twitter.PostStatus(args.status, _reply_to_id)
-                    If ret = "" Then Exit For
+                    If ret = "" OrElse ret.StartsWith("Outputz:") Then Exit For
                 Next
                 _reply_to_id = 0
                 _reply_to_name = Nothing
