@@ -315,12 +315,12 @@ retry:
 
     ''' <summary>
     ''' URLのドメイン名をPunycode展開します。
-    ''' <newpara>
+    ''' <para>
     ''' ドメイン名がIDNでない場合はそのまま返します。
     ''' ドメインラベルの区切り文字はFULLSTOP(.、U002E)に置き換えられます。
-    ''' </newpara>
+    ''' </para>
     ''' </summary>
-    ''' <param name = input>展開対象のURL</param>
+    ''' <param name="input">展開対象のURL</param>
     ''' <returns>IDNが含まれていた場合はPunycodeに展開したURLをを返します。Punycode展開時にエラーが発生した場合はNothingを返します。</returns>
 
     Public Function IDNDecode(ByVal input As String) As String
@@ -474,9 +474,6 @@ retry:
 
     Public Function IsNT6() As Boolean
         'NT6 kernelかどうか検査
-        If Environment.OSVersion.Platform <> PlatformID.Win32NT OrElse Environment.OSVersion.Version.Major <> 6 Then
-            Return False
-        End If
-        Return True
+        Return Environment.OSVersion.Platform = PlatformID.Win32NT AndAlso Environment.OSVersion.Version.Major = 6
     End Function
 End Module
