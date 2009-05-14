@@ -127,6 +127,7 @@ Partial Class TweenMain
         Me.IsgdToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.TwurlnlToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.UnuToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.BitlyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.UpdateFollowersMenuItem1 = New System.Windows.Forms.ToolStripMenuItem
         Me.GetFollowersDiffToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.GetFollowersAllToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
@@ -159,7 +160,7 @@ Partial Class TweenMain
         Me.TimerRefreshIcon = New System.Windows.Forms.Timer(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog
         Me.TimerReply = New System.Windows.Forms.Timer(Me.components)
-        Me.BitlyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.ApiInfoMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripContainer1.BottomToolStripPanel.SuspendLayout()
         Me.ToolStripContainer1.ContentPanel.SuspendLayout()
         Me.ToolStripContainer1.TopToolStripPanel.SuspendLayout()
@@ -797,6 +798,11 @@ Partial Class TweenMain
         Me.UnuToolStripMenuItem.Name = "UnuToolStripMenuItem"
         resources.ApplyResources(Me.UnuToolStripMenuItem, "UnuToolStripMenuItem")
         '
+        'BitlyToolStripMenuItem
+        '
+        Me.BitlyToolStripMenuItem.Name = "BitlyToolStripMenuItem"
+        resources.ApplyResources(Me.BitlyToolStripMenuItem, "BitlyToolStripMenuItem")
+        '
         'UpdateFollowersMenuItem1
         '
         Me.UpdateFollowersMenuItem1.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.GetFollowersDiffToolStripMenuItem, Me.GetFollowersAllToolStripMenuItem})
@@ -826,7 +832,7 @@ Partial Class TweenMain
         '
         'MenuItemHelp
         '
-        Me.MenuItemHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MatomeMenuItem, Me.ToolStripSeparator12, Me.OfficialMenuItem, Me.DLPageMenuItem, Me.ToolStripSeparator16, Me.VerUpMenuItem, Me.WedataMenuItem, Me.ToolStripSeparator14, Me.InfoTwitterMenuItem, Me.ToolStripSeparator7, Me.AboutMenuItem, Me.DebugModeToolStripMenuItem})
+        Me.MenuItemHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MatomeMenuItem, Me.ToolStripSeparator12, Me.OfficialMenuItem, Me.DLPageMenuItem, Me.ToolStripSeparator16, Me.VerUpMenuItem, Me.WedataMenuItem, Me.ToolStripSeparator14, Me.ApiInfoMenuItem, Me.InfoTwitterMenuItem, Me.ToolStripSeparator7, Me.AboutMenuItem, Me.DebugModeToolStripMenuItem})
         Me.MenuItemHelp.Name = "MenuItemHelp"
         resources.ApplyResources(Me.MenuItemHelp, "MenuItemHelp")
         '
@@ -957,10 +963,10 @@ Partial Class TweenMain
         '
         Me.TimerReply.Interval = 600000
         '
-        'BitlyToolStripMenuItem
+        'ApiInfoMenuItem
         '
-        Me.BitlyToolStripMenuItem.Name = "BitlyToolStripMenuItem"
-        resources.ApplyResources(Me.BitlyToolStripMenuItem, "BitlyToolStripMenuItem")
+        Me.ApiInfoMenuItem.Name = "ApiInfoMenuItem"
+        resources.ApplyResources(Me.ApiInfoMenuItem, "ApiInfoMenuItem")
         '
         'TweenMain
         '
@@ -1135,5 +1141,6 @@ Partial Class TweenMain
     Friend WithEvents TabRenameMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents UnuToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents BitlyToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ApiInfoMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class
