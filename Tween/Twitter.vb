@@ -1966,7 +1966,7 @@ RETRY:
     Public Function MakeShortUrl(ByVal ConverterType As UrlConverter, ByVal SrcUrl As String) As String
         Dim ret As String = ""
         Dim resStatus As String = ""
-        Dim src As String = SrcUrl
+        Dim src As String = urlEncodeMultibyteChar(SrcUrl)
 
         For Each svc As String In _ShortUrlService
             If SrcUrl.StartsWith(svc) Then
