@@ -5406,7 +5406,7 @@ RETRY:
                     MessageBox.Show("APIモードをオフにし、Web取得モードへ切り替えました。")
                 Else
                     MessageBox.Show("APIモードを維持することを選択しました。Web取得に戻す場合は設定の動作タブにある「API使用」のチェックを外すと戻すことができます。" + Environment.NewLine + Environment.NewLine + "※APIモードの制限を理解された方のみ、次回より警告を表示しないよう設定画面で変更してください※")
-                    MessageBox.Show("取得間隔に注意してください。タイムライン取得系APIはRecent,Reply,DMの合計で1時間に" + MaxCountApi.ToString() + "回までしか使えません。", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    MessageBox.Show("取得間隔に注意してください。タイムライン取得系APIはRecent,Reply,DMの合計で1時間に" + GetMaxCountApi.ToString() + "回までしか使えません。", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 End If
             End If
 
@@ -5525,5 +5525,13 @@ RETRY:
 
     Private Sub BitlyToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BitlyToolStripMenuItem.Click
         UrlConvert(UrlConverter.Bitly)
+    End Sub
+
+    Private Sub ApiInfoMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ApiInfoMenuItem.Click
+        MessageBox.Show("1時間あたりの取得系API使用最大回数 " + GetMaxCountApi.ToString() + "回" + vbCrLf + _
+                        "現在の取得系API使用回数 " + (GetMaxCountApi() - GetRemainCountApi()).ToString + "回" + vbCrLf + _
+                        "あと " + GetRemainCountApi.ToString + " 回 取得系APIを使用できます" + vbCrLf + _
+                        "使用回数のカウントは " + GetResetTimeApi.ToString() + "にリセットされます", _
+                        caption:="API使用回数情報")
     End Sub
 End Class

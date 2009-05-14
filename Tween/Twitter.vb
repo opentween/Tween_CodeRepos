@@ -2459,22 +2459,50 @@ RETRY:
         End Get
     End Property
 
-    Public ReadOnly Property MaxCountApi() As Integer
-        Get
-            Dim _maxcnt As Integer = 0
-            Dim resMsg As String = ""
-            Dim resStatus As String = ""
-            resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _rateLimitStatus, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
-            Dim xdoc As New XmlDocument
-            Try
-                xdoc.LoadXml(resMsg)
-                _maxcnt = Integer.Parse(xdoc.SelectSingleNode("/hash/hourly-limit").InnerText)
-            Catch ex As Exception
+    Public Function GetMaxCountApi() As Integer
+        Dim _maxcnt As Integer = 0
+        Dim resMsg As String = ""
+        Dim resStatus As String = ""
+        resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _rateLimitStatus, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        Dim xdoc As New XmlDocument
+        Try
+            xdoc.LoadXml(resMsg)
+            _maxcnt = Integer.Parse(xdoc.SelectSingleNode("/hash/hourly-limit").InnerText)
+        Catch ex As Exception
+            _maxcnt = 0
+        End Try
+        Return _maxcnt
+    End Function
 
-            End Try
-            Return _maxcnt
-        End Get
-    End Property
+    Public Function GetRemainCountApi() As Integer
+        Dim _remain As Integer = 0
+        Dim resMsg As String = ""
+        Dim resStatus As String = ""
+        resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _rateLimitStatus, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        Dim xdoc As New XmlDocument
+        Try
+            xdoc.LoadXml(resMsg)
+            _remain = Integer.Parse(xdoc.SelectSingleNode("/hash/remaining-hits").InnerText)
+        Catch ex As Exception
+            _remain = 0
+        End Try
+        Return _remain
+    End Function
+
+    Public Function GetResetTimeApi() As DateTime
+        Dim _tm As DateTime
+        Dim resMsg As String = ""
+        Dim resStatus As String = ""
+        resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _rateLimitStatus, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        Dim xdoc As New XmlDocument
+        Try
+            xdoc.LoadXml(resMsg)
+            _tm = DateTime.Parse(xdoc.SelectSingleNode("/hash/reset-time").InnerText)
+        Catch ex As Exception
+            _tm = Nothing
+        End Try
+        Return _tm
+    End Function
 
 #Region "デバッグモード解析キー自動生成"
 #If DEBUG Then
