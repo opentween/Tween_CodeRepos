@@ -2068,7 +2068,9 @@ RETRY:
                     Return "Can't convert"
                 End If
         End Select
-
+        '変換結果から改行を除去
+        Dim ch As Char() = {ControlChars.Cr, ControlChars.Lf}
+        ret = ret.TrimEnd(ch)
         If src.Length < ret.Length Then ret = src ' 圧縮の結果逆に長くなった場合は圧縮前のURLを返す
         Return ret
     End Function
