@@ -5528,10 +5528,17 @@ RETRY:
     End Sub
 
     Private Sub ApiInfoMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ApiInfoMenuItem.Click
-        MessageBox.Show("1時間あたりの取得系API使用最大回数 " + GetMaxCountApi.ToString() + "回" + vbCrLf + _
-                        "現在の取得系API使用回数 " + (GetMaxCountApi() - GetRemainCountApi()).ToString + "回" + vbCrLf + _
-                        "あと " + GetRemainCountApi.ToString + " 回 取得系APIを使用できます" + vbCrLf + _
-                        "使用回数のカウントは " + GetResetTimeApi.ToString() + "にリセットされます", _
-                        caption:="API使用回数情報")
+        Dim info As New ApiInfo
+        Dim tmp As String
+
+        If GetInfoApi(info) Then
+            tmp = "1時間あたりの取得系API使用最大回数 " + info.MaxCount.ToString() + "回" + vbCrLf + _
+                "現在の取得系API使用回数 " + (info.MaxCount - info.RemainCount).ToString + "回" + vbCrLf + _
+                "あと " + info.RemainCount.ToString + " 回 取得系APIを使用できます" + vbCrLf + _
+                "使用回数のカウントは " + info.ResetTime.ToString() + "にリセットされます"
+        Else
+            tmp = "API情報の取得に失敗しました"
+        End If
+        MessageBox.Show(tmp, "API使用回数情報", MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 End Class

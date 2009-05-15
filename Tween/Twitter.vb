@@ -2504,6 +2504,24 @@ RETRY:
         Return _tm
     End Function
 
+    Public Function GetInfoApi(ByRef info As ApiInfo) As Boolean
+
+        Dim resMsg As String = ""
+        Dim resStatus As String = ""
+        resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _rateLimitStatus, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        Dim xdoc As New XmlDocument
+        Try
+            xdoc.LoadXml(resMsg)
+            info.MaxCount = Integer.Parse(xdoc.SelectSingleNode("/hash/hourly-limit").InnerText)
+            info.RemainCount = Integer.Parse(xdoc.SelectSingleNode("/hash/remaining-hits").InnerText)
+            info.ResetTime = DateTime.Parse(xdoc.SelectSingleNode("/hash/reset-time").InnerText)
+            info.ResetTimeInSeconds = Integer.Parse(xdoc.SelectSingleNode("/hash/reset-time-in-seconds").InnerText)
+        Catch ex As Exception
+            Return False
+        End Try
+        Return True
+    End Function
+
 #Region "デバッグモード解析キー自動生成"
 #If DEBUG Then
     Public Sub GenerateAnalyzeKey()

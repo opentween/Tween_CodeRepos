@@ -131,6 +131,13 @@ Public Module MyCommon
     Public DebugBuild As Boolean = False
 #End If
 
+    Public Structure ApiInfo
+        Dim MaxCount As Integer
+        Dim RemainCount As Integer
+        Dim ResetTime As DateTime
+        Dim ResetTimeInSeconds As Integer
+    End Structure
+
     Public Sub TraceOut(ByVal Message As String)
         TraceOut(TraceFlag, Message)
     End Sub
