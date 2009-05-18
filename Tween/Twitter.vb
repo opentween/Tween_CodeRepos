@@ -109,7 +109,8 @@ Public Module Twitter
             "http://www.qurl.com/", _
             "http://digg.com/", _
             "http://u.nu/", _
-            "http://ustre.am/" _
+            "http://ustre.am/", _
+            "http://bctiny.com/" _
         }
 
     Private Const _baseUrlStr As String = "twitter.com"
