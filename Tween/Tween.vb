@@ -3936,7 +3936,7 @@ RETRY:
     End Sub
 
     Private Sub PostBrowser_PreviewKeyDown(ByVal sender As System.Object, ByVal e As System.Windows.Forms.PreviewKeyDownEventArgs) Handles PostBrowser.PreviewKeyDown
-        If e.KeyCode = Keys.F5 Then
+        If e.KeyCode = Keys.F5 OrElse e.KeyCode = Keys.R Then
             e.IsInputKey = True
             DoRefresh()
         End If
