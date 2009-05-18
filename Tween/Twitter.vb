@@ -110,6 +110,8 @@ Public Module Twitter
             "http://digg.com/", _
             "http://u.nu/", _
             "http://ustre.am/", _
+            "http://pic.gd/", _
+            "http://airme.us/", _
             "http://bctiny.com/" _
         }
 
