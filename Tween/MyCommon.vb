@@ -304,7 +304,7 @@ retry:
                     sb.Length = 0
                     GoTo retry
                 Else
-                    sb.Append("%" + Convert.ToInt16(c).ToString("X2"))
+                    sb.Append("%" + Convert.ToInt16(c).ToString("X2").ToUpper())
                 End If
             Else
                 sb.Append(c)
