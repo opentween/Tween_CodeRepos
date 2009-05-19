@@ -5468,6 +5468,13 @@ RETRY:
             rx = New Regex("<a target=""_self"" href=""(?<url>[^""]+)"">(?<link>[^<]+)</a>")
             rtdata = rx.Replace(rtdata, "${link}")
 
+            '<br>タグ除去
+            If StatusText.Multiline Then
+                rtdata = Regex.Replace(rtdata, "\r<br>", vbCrLf, RegexOptions.IgnoreCase Or RegexOptions.Multiline)
+            Else
+                rtdata = Regex.Replace(rtdata, "\r<br>", "", RegexOptions.IgnoreCase Or RegexOptions.Multiline)
+            End If
+
             StatusText.Text = "RT @" + _curPost.Name + ": " + rtdata
             _reply_to_id = 0
             _reply_to_name = Nothing
