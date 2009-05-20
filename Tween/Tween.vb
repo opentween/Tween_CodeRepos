@@ -3248,7 +3248,14 @@ RETRY:
         If _curList.SelectedIndices.Count = 0 OrElse _curPost Is Nothing Then Exit Sub
 
         Dim dTxt As String = detailHtmlFormat + _curPost.OriginalData + detailHtmlFormat4
-        NameLabel.Text = _curPost.Name + "/" + _curPost.Nickname
+        If _curTab.Text = DEFAULTTAB.DM AndAlso _curPost.IsOwl Then
+            NameLabel.Text = "DirectMessage To "
+        ElseIf _curTab.Text = DEFAULTTAB.DM Then
+            NameLabel.Text = "DirectMessage From "
+        Else
+            NameLabel.Text = ""
+        End If
+        NameLabel.Text += _curPost.Name + "/" + _curPost.Nickname
         'If UserPicture.Image IsNot Nothing Then UserPicture.Image.Dispose()
         If _curPost.ImageIndex > -1 Then
             UserPicture.Image = TIconDic(_curPost.ImageUrl)
