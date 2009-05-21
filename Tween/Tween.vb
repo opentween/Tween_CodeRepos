@@ -1216,7 +1216,7 @@ Public Class TweenMain
         Dim cl As Color
         If Post.IsFav Then
             cl = _clFav
-        ElseIf Post.IsOwl AndAlso SettingDialog.OneWayLove Then
+        ElseIf Post.IsOwl AndAlso (Post.IsDm OrElse SettingDialog.OneWayLove) Then
             cl = _clOWL
         ElseIf Read OrElse Not SettingDialog.UseUnreadStyle Then
             cl = _clReaded
