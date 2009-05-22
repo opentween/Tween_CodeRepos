@@ -2344,7 +2344,9 @@ Public Class TweenMain
     End Sub
 
     Private Sub PostBrowser_Navigating(ByVal sender As System.Object, ByVal e As System.Windows.Forms.WebBrowserNavigatingEventArgs) Handles PostBrowser.Navigating
-        If e.Url.AbsoluteUri <> "about:blank" Then
+        If e.Url.Scheme = "data" Then
+            StatusLabelUrl.Text = PostBrowser.StatusText
+        ElseIf e.Url.AbsoluteUri <> "about:blank" Then
             e.Cancel = True
             OpenUriAsync(e.Url.AbsoluteUri)
         End If
@@ -2709,7 +2711,8 @@ Public Class TweenMain
     End Sub
 
     Private Sub PostBrowser_StatusTextChanged(ByVal sender As Object, ByVal e As EventArgs) Handles PostBrowser.StatusTextChanged
-        If PostBrowser.StatusText.StartsWith("http") OrElse PostBrowser.StatusText.StartsWith("ftp") Then
+        If PostBrowser.StatusText.StartsWith("http") OrElse PostBrowser.StatusText.StartsWith("ftp") _
+                OrElse PostBrowser.StatusText.StartsWith("data") Then
             StatusLabelUrl.Text = PostBrowser.StatusText
             ToolStripMenuItem4.Enabled = True
         Else
