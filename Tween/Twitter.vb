@@ -1062,6 +1062,10 @@ RETRY:
                             For i As Integer = 0 To 4   'とりあえず5回試す
                                 retUrlStr = urlEncodeMultibyteChar(DirectCast(CreateSocket.GetWebResponse(tmpurlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String))
                                 If retUrlStr.Length > 0 Then
+                                    If retUrlStr.StartsWith("data:") Then
+                                        retUrlStr = "data:安全でない可能性があるためこのURLを無効にしました"
+                                        Exit For
+                                    End If
                                     ' 転送先URLが返された (まだ転送されるかもしれないので返値を引数にしてもう一度)
                                     ' 取得試行回数オーバーの場合は取得結果を転送先とする
                                     Dim scd As Match = SchemeAndDomain.Match(retUrlStr)
@@ -1085,12 +1089,16 @@ RETRY:
                             If retUrlStr.Length > 0 Then
                                 If Not retUrlStr.StartsWith("http") Then
                                     If retUrlStr.StartsWith("/") Then
-                                        retUrlStr = svc + retUrlStr.Substring(1)
+                                        retUrlStr = urlEncodeMultibyteChar(svc + retUrlStr.Substring(1))
+                                    ElseIf retUrlStr.StartsWith("data:") Then
+                                        '
                                     Else
-                                        retUrlStr = retUrlStr.Insert(0, svc)
+                                        retUrlStr = urlEncodeMultibyteChar(retUrlStr.Insert(0, svc))
                                     End If
+                                Else
+                                    retUrlStr = urlEncodeMultibyteChar(retUrlStr)
                                 End If
-                                orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + urlEncodeMultibyteChar(retUrlStr))
+                                orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
                                 posl2 = 0   '置換した場合は頭から再探索（複数同時置換での例外対応）
                             End If
                         Catch ex As Exception
