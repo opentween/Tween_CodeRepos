@@ -142,6 +142,7 @@ Partial Class TweenMain
         Me.VerUpMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.WedataMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator14 = New System.Windows.Forms.ToolStripSeparator
+        Me.ApiInfoMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.InfoTwitterMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator7 = New System.Windows.Forms.ToolStripSeparator
         Me.AboutMenuItem = New System.Windows.Forms.ToolStripMenuItem
@@ -160,7 +161,6 @@ Partial Class TweenMain
         Me.TimerRefreshIcon = New System.Windows.Forms.Timer(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog
         Me.TimerReply = New System.Windows.Forms.Timer(Me.components)
-        Me.ApiInfoMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripContainer1.BottomToolStripPanel.SuspendLayout()
         Me.ToolStripContainer1.ContentPanel.SuspendLayout()
         Me.ToolStripContainer1.TopToolStripPanel.SuspendLayout()
@@ -248,7 +248,6 @@ Partial Class TweenMain
         '
         Me.ContextMenuTabProperty.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AddTabMenuItem, Me.TabRenameMenuItem, Me.ToolStripSeparator20, Me.UreadManageMenuItem, Me.NotifyDispMenuItem, Me.SoundFileComboBox, Me.ToolStripSeparator18, Me.FilterEditMenuItem, Me.ToolStripSeparator19, Me.ClearTabMenuItem, Me.ToolStripSeparator11, Me.DeleteTabMenuItem})
         Me.ContextMenuTabProperty.Name = "ContextMenuStrip3"
-        Me.ContextMenuTabProperty.OwnerItem = Me.MenuItemTab
         Me.ContextMenuTabProperty.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
         resources.ApplyResources(Me.ContextMenuTabProperty, "ContextMenuTabProperty")
         '
@@ -412,7 +411,7 @@ Partial Class TweenMain
         '
         'ToolStripMenuItem2
         '
-        Me.ToolStripMenuItem2.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SearchItem1ToolStripMenuItem, Me.SearchItem2ToolStripMenuItem, Me.SearchItem3ToolStripMenuItem, Me.SearchItem4ToolStripMenuItem, Me.CurrentTabToolStripMenuItem})
+        Me.ToolStripMenuItem2.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SearchItem2ToolStripMenuItem, Me.SearchItem1ToolStripMenuItem, Me.SearchItem3ToolStripMenuItem, Me.SearchItem4ToolStripMenuItem, Me.CurrentTabToolStripMenuItem})
         Me.ToolStripMenuItem2.Name = "ToolStripMenuItem2"
         resources.ApplyResources(Me.ToolStripMenuItem2, "ToolStripMenuItem2")
         '
@@ -507,7 +506,6 @@ Partial Class TweenMain
         '
         Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SettingStripMenuItem, Me.ToolStripSeparator9, Me.SaveLogMenuItem, Me.ToolStripSeparator17, Me.NewPostPopMenuItem, Me.PlaySoundMenuItem, Me.ListLockMenuItem, Me.ToolStripSeparator15, Me.MultiLineMenuItem, Me.ToolStripSeparator21, Me.EndToolStripMenuItem})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip1.OwnerItem = Me.MenuItemFile
         Me.ContextMenuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
         Me.ContextMenuStrip1.ShowCheckMargin = True
         Me.ContextMenuStrip1.ShowImageMargin = False
@@ -876,6 +874,11 @@ Partial Class TweenMain
         Me.ToolStripSeparator14.Name = "ToolStripSeparator14"
         resources.ApplyResources(Me.ToolStripSeparator14, "ToolStripSeparator14")
         '
+        'ApiInfoMenuItem
+        '
+        Me.ApiInfoMenuItem.Name = "ApiInfoMenuItem"
+        resources.ApplyResources(Me.ApiInfoMenuItem, "ApiInfoMenuItem")
+        '
         'InfoTwitterMenuItem
         '
         Me.InfoTwitterMenuItem.Name = "InfoTwitterMenuItem"
@@ -962,11 +965,6 @@ Partial Class TweenMain
         'TimerReply
         '
         Me.TimerReply.Interval = 600000
-        '
-        'ApiInfoMenuItem
-        '
-        Me.ApiInfoMenuItem.Name = "ApiInfoMenuItem"
-        resources.ApplyResources(Me.ApiInfoMenuItem, "ApiInfoMenuItem")
         '
         'TweenMain
         '
