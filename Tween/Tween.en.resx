@@ -622,4 +622,7 @@
   <data name="TabRenameMenuItem.Text" xml:space="preserve">
     <value>Rename Tab</value>
   </data>
+  <data name="IdeographicSpaceToSpaceToolStripMenuItem.Text" xml:space="preserve">
+    <value>Convert IdeographicSpace to Space</value>
+  </data>
 </root>
