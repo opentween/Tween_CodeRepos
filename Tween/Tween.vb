@@ -4729,8 +4729,7 @@ RETRY:
 
     Friend Sub CheckReplyTo(ByVal StatusText As String)
         ' 本当にリプライ先指定すべきかどうかの判定
-        Dim id As New Regex("@[a-zA-Z0-9_]+")                           '通常判定用
-        Dim rt As New Regex("^RT:.*\(via @(?<id>[a-zA-Z0-9_]+)\)")      'ReTweet判定用
+        Dim id As New Regex("(^|[ -/:-@[-^`{-~])@[a-zA-Z0-9_]+")
         Dim m As MatchCollection
 
         ' リプライ先ステータスIDの指定がない場合は指定しない
@@ -4745,9 +4744,11 @@ RETRY:
         m = id.Matches(StatusText)
 
         ' 通常Reply
-        ' 次の条件を満たす場合に指定
-        ' 1. @idが文中に1つ含まれる 2. リプライ先ステータスIDが設定されている(リストをダブルクリックで返信している)
+        ' 次の条件を満たす場合に in_reply_to_status_id 指定
+        ' 1. Twitterによりリンクと判定される @idが文中に1つ含まれる (2009/5/28 リンク化される@IDのみカウントするように修正)
+        ' 2. リプライ先ステータスIDが設定されている(リストをダブルクリックで返信している)
         ' 3. 文中に含まれた@idがリプライ先のポスト者のIDと一致する
+
         If m IsNot Nothing AndAlso m.Count = 1 AndAlso m.Item(0).Value = "@" + _reply_to_name AndAlso Not StatusText.StartsWith(". ") Then
             Exit Sub
         End If
