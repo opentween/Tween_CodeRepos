@@ -1088,11 +1088,12 @@ Public NotInheritable Class TabClass
         'End Try
     End Sub
 
-    Public Sub AddFilter(ByVal filter As FiltersClass)
-        If _filters.Contains(filter) Then Exit Sub
+    Public Function AddFilter(ByVal filter As FiltersClass) As Boolean
+        If _filters.Contains(filter) Then Return False
         _filters.Add(filter)
         _filterMod = True
-    End Sub
+        Return True
+    End Function
 
     Public Sub EditFilter(ByVal original As FiltersClass, ByVal modified As FiltersClass)
         'If _filters.Contains(modified) AndAlso original.ReferenceEquals(modified) Then
