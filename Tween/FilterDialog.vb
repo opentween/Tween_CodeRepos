@@ -295,7 +295,9 @@ Public Class FilterDialog
         ft.SearchUrl = CheckURL.Checked
 
         If _mode = EDITMODE.AddNew Then
-            _sts.Tabs(ComboTabs.SelectedItem.ToString()).AddFilter(ft)
+            If Not _sts.Tabs(ComboTabs.SelectedItem.ToString()).AddFilter(ft) Then
+                MessageBox.Show(My.Resources.ButtonOK_ClickText4, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End If
         Else
             _sts.Tabs(ComboTabs.SelectedItem.ToString()).EditFilter(DirectCast(ListFilters.SelectedItem, FiltersClass), ft)
         End If

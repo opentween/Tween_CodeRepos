@@ -703,4 +703,7 @@
   <data name="Tabs_DoubleClickText2" xml:space="preserve">
     <value>タブ名変更</value>
   </data>
+  <data name="ButtonOK_ClickText4" xml:space="preserve">
+    <value>既に存在するルールは追加できません</value>
+  </data>
 </root>

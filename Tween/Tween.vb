@@ -1329,6 +1329,8 @@ Public Class TweenMain
 
         _history(_history.Count - 1) = StatusText.Text.Trim
 
+        If SettingDialog.UrlConvertAuto Then UrlConvertAutoToolStripMenuItem_Click(Nothing, Nothing)
+
         Dim args As New GetWorkerArg()
         args.page = 0
         args.endPage = 0
@@ -1361,8 +1363,6 @@ Public Class TweenMain
             ' 文中の全角スペースを半角スペースにする
             args.status = args.status.Replace("　"c, " "c)
         End If
-
-        If SettingDialog.UrlConvertAuto Then UrlConvertAutoToolStripMenuItem_Click(Nothing, Nothing)
 
         RunAsync(args)
 
