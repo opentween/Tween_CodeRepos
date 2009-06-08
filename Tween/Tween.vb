@@ -5129,7 +5129,12 @@ RETRY:
     Private Sub ToolStripMenuItem3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripMenuItem3.Click
         '発言詳細で「選択文字列をコピー」
         'PostBrowser.Document.ExecCommand("Copy", False, Nothing)
-        SendKeys.Send("^c")
+        'SendKeys.Send("^c")
+        Dim typ As Type = PostBrowser.ActiveXInstance.GetType()
+        Dim _SelObj As Object = typ.InvokeMember("selection", BindingFlags.GetProperty, Nothing, PostBrowser.Document.DomDocument, Nothing)
+        Dim _objRange As Object = _SelObj.GetType().InvokeMember("createRange", BindingFlags.InvokeMethod, Nothing, _SelObj, Nothing)
+        Dim _selText As String = DirectCast(_objRange.GetType().InvokeMember("text", BindingFlags.GetProperty, Nothing, _objRange, Nothing), String)
+        Clipboard.SetText(_selText)
     End Sub
 
     Private Sub doSearchToolStrip(ByVal url As String)
