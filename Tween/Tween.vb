@@ -5134,7 +5134,7 @@ RETRY:
         Dim _SelObj As Object = typ.InvokeMember("selection", BindingFlags.GetProperty, Nothing, PostBrowser.Document.DomDocument, Nothing)
         Dim _objRange As Object = _SelObj.GetType().InvokeMember("createRange", BindingFlags.InvokeMethod, Nothing, _SelObj, Nothing)
         Dim _selText As String = DirectCast(_objRange.GetType().InvokeMember("text", BindingFlags.GetProperty, Nothing, _objRange, Nothing), String)
-        Clipboard.SetText(_selText)
+        Clipboard.SetDataObject(_selText, False, 5, 100)
     End Sub
 
     Private Sub doSearchToolStrip(ByVal url As String)
