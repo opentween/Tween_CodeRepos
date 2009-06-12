@@ -3981,11 +3981,10 @@ RETRY:
                 End If
             Next
             _statuses.RenameTab(ListTab.SelectedTab.Text, newTabText)
-            ListTab.SelectedTab.Text = newTabText
-            'タブ名のリスト作り直し
+            ListTab.SelectedTab.Text = newTabText   'タブ名変更反映
+            'タブ名のリスト作り直し（デフォルトタブ以外は再作成）
             For i As Integer = 0 To ListTab.TabCount - 1
-                If Not IsDefaultTab(ListTab.TabPages(i).Text) AndAlso _
-                   ListTab.TabPages(i).Text <> newTabText Then
+                If Not IsDefaultTab(ListTab.TabPages(i).Text) Then
                     TabDialog.RemoveTab(ListTab.TabPages(i).Text)
                 End If
             Next
@@ -4453,6 +4452,10 @@ RETRY:
 
     Private Sub IDRuleMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles IDRuleMenuItem.Click
         Dim tabName As String = ""
+
+        '未選択なら処理終了
+        If _curList.SelectedIndices.Count = 0 Then Exit Sub
+
         Do
             '振り分け先タブ選択
             If TabDialog.ShowDialog = Windows.Forms.DialogResult.Cancel Then
