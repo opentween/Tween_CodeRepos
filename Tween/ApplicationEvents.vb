@@ -1,7 +1,7 @@
 ﻿' Tween - Client of Twitter
-' Copyright © 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
-'           © 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
-'           © 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
+' Copyright (c) 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
+'           (c) 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
+'           (c) 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
 ' All rights reserved.
 ' 
 ' This file is part of Tween.
@@ -44,18 +44,8 @@ Namespace My
         End Sub
 
         Private Sub MyApplication_Startup(ByVal sender As Object, ByVal e As Microsoft.VisualBasic.ApplicationServices.StartupEventArgs) Handles Me.Startup
-            Dim filename As String = System.IO.Path.Combine(Application.Info.DirectoryPath, "TweenConf.xml")
-            If IO.File.Exists(filename) Then
-                Try
-                    Using config As New IO.StreamReader(filename)
-                        Dim xmlDoc As New Xml.XmlDocument
-                        xmlDoc.Load(config)
-                        ChangeUICulture(xmlDoc.SelectSingleNode("/configuration/entry[@key='cultureCode']").SelectSingleNode("string").InnerText)
-                    End Using
-                Catch ex As Exception
 
-                End Try
-            End If
+            InitCulture()
 
             Dim pt As String = Application.Info.DirectoryPath.Replace("\", "/") + "/" + Application.Info.ProductName
             mt = New System.Threading.Mutex(False, pt)
@@ -89,10 +79,49 @@ Namespace My
         End Sub
 
         Private Sub MyApplication_UnhandledException(ByVal sender As Object, ByVal e As Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs) Handles Me.UnhandledException
-            If e.Exception.Message <> "A generic error occurred in GDI+." Then
-                ExceptionOut(e.Exception)
-                e.ExitApplication = False
+            If e.Exception.Message <> "A generic error occurred in GDI+." AndAlso _
+               e.Exception.Message <> "GDI+ で汎用エラーが発生しました。" Then
+                e.ExitApplication = ExceptionOut(e.Exception)
             End If
+        End Sub
+
+        Public ReadOnly Property CultureCode() As String
+            Get
+                Static _ccode As String = Nothing
+                If _ccode Is Nothing Then
+                    Dim filename As String = System.IO.Path.Combine(Application.Info.DirectoryPath, "TweenConf.xml")
+                    If IO.File.Exists(filename) Then
+                        Try
+                            Using config As New IO.StreamReader(filename)
+                                Dim xmlDoc As New Xml.XmlDocument
+                                xmlDoc.Load(config)
+                                Dim ns As New Xml.XmlNamespaceManager(xmlDoc.NameTable)
+                                ns.AddNamespace("conf", "urn:XSpect.Configuration.XmlConfiguration")
+                                _ccode = xmlDoc.SelectSingleNode("//conf:configuration/entry[@key='cultureCode']", ns).SelectSingleNode("string").InnerText
+                            End Using
+                        Catch ex As Exception
+
+                        End Try
+
+                    End If
+                End If
+                Return _ccode
+            End Get
+        End Property
+
+        Public Overloads Sub InitCulture(ByVal code As String)
+            Try
+                ChangeUICulture(code)
+            Catch ex As Exception
+
+            End Try
+        End Sub
+        Public Overloads Sub InitCulture()
+            Try
+                ChangeUICulture(Me.CultureCode)
+            Catch ex As Exception
+
+            End Try
         End Sub
     End Class
 

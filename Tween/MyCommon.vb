@@ -1,7 +1,7 @@
 ﻿' Tween - Client of Twitter
-' Copyright © 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
-'           © 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
-'           © 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
+' Copyright (c) 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
+'           (c) 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
+'           (c) 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
 ' All rights reserved.
 ' 
 ' This file is part of Tween.
@@ -24,6 +24,7 @@
 Imports System.Text
 Imports System.Globalization
 Imports System.Security.Principal
+Imports System.Reflection
 
 Public Module MyCommon
     Private ReadOnly LockObj As New Object
@@ -68,6 +69,9 @@ Public Module MyCommon
     Public Enum UrlConverter
         TinyUrl
         Isgd
+        Twurl
+        Unu
+        Bitly
     End Enum
 
     Public Enum OutputzUrlmode
@@ -106,7 +110,7 @@ Public Module MyCommon
         Const RECENT As String = "Recent"
         Const REPLY As String = "Reply"
         Const DM As String = "Direct"
-        Const FAV As String = "Favourites"
+        Const FAV As String = "Favorites"
 
         Private dummy As String
 
@@ -127,13 +131,20 @@ Public Module MyCommon
     Public DebugBuild As Boolean = False
 #End If
 
+    Public Structure ApiInfo
+        Dim MaxCount As Integer
+        Dim RemainCount As Integer
+        Dim ResetTime As DateTime
+        Dim ResetTimeInSeconds As Integer
+    End Structure
+
     Public Sub TraceOut(ByVal Message As String)
         TraceOut(TraceFlag, Message)
     End Sub
 
-    Public Sub TraceOut(ByVal Flag As Boolean, ByVal Message As String)
+    Public Sub TraceOut(ByVal OutputFlag As Boolean, ByVal Message As String)
         SyncLock LockObj
-            If Not Flag Then Exit Sub
+            If Not OutputFlag Then Exit Sub
             Dim now As DateTime = DateTime.Now
             Dim fileName As String = String.Format("TweenTrace-{0:0000}{1:00}{2:00}-{3:00}{4:00}{5:00}.log", now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second)
 
@@ -152,8 +163,76 @@ Public Module MyCommon
         End SyncLock
     End Sub
 
-    Public Sub ExceptionOut(ByVal ex As Exception, ByVal customMessage As String)
+    ' エラー内容をバッファに書き出し
+    ' 注意：最終的にファイル出力されるエラーログに記録されるため次の情報は書き出さない
+    ' 文頭メッセージ、権限、動作環境
+    ' Dataプロパティにある終了許可フラグのパースもここで行う
+
+    Public Function ExceptionOut(ByVal ex As Exception, ByVal buffer As String, _
+                                 Optional ByRef IsTerminatePermission As Boolean = True) As String
+        Dim buf As New StringBuilder
+
+        buf.AppendFormat(My.Resources.UnhandledExceptionText8, ex.GetType().FullName, ex.Message)
+        buf.AppendLine()
+        If ex.Data IsNot Nothing Then
+            Dim needHeader As Boolean = True
+            For Each dt As DictionaryEntry In ex.Data
+                If needHeader Then
+                    buf.AppendLine()
+                    buf.AppendLine("-------Extra Information-------")
+                    needHeader = False
+                End If
+                buf.AppendFormat("{0}  :  {1}", dt.Key, dt.Value)
+                buf.AppendLine()
+                If dt.Key.Equals("IsTerminatePermission") Then
+                    IsTerminatePermission = CBool(dt.Value)
+                End If
+            Next
+            If Not needHeader Then
+                buf.AppendLine("-----End Extra Information-----")
+            End If
+        End If
+        buf.AppendLine(ex.StackTrace)
+        buf.AppendLine()
+
+        'InnerExceptionが存在する場合書き出す
+        Dim _ex As Exception = ex.InnerException
+        Dim nesting As Integer = 0
+        While _ex IsNot Nothing
+            buf.AppendFormat("-----InnerException[{0}]-----" + vbCrLf, nesting)
+            buf.AppendLine()
+            buf.AppendFormat(My.Resources.UnhandledExceptionText8, _ex.GetType().FullName, _ex.Message)
+            buf.AppendLine()
+            If _ex.Data IsNot Nothing Then
+                Dim needHeader As Boolean = True
+
+                For Each dt As DictionaryEntry In _ex.Data
+                    If needHeader Then
+                        buf.AppendLine()
+                        buf.AppendLine("-------Extra Information-------")
+                        needHeader = False
+                    End If
+                    buf.AppendFormat("{0}  :  {1}", dt.Key, dt.Value)
+                    If dt.Key.Equals("IsTerminatePermission") Then
+                        IsTerminatePermission = CBool(dt.Value)
+                    End If
+                Next
+                If Not needHeader Then
+                    buf.AppendLine("-----End Extra Information-----")
+                End If
+            End If
+            buf.AppendLine(_ex.StackTrace)
+            buf.AppendLine()
+            nesting += 1
+            _ex = _ex.InnerException
+        End While
+        buffer = buf.ToString()
+        Return buffer
+    End Function
+
+    Public Function ExceptionOut(ByVal ex As Exception) As Boolean
         SyncLock LockObj
+            Dim IsTerminatePermission As Boolean = True
             Dim now As DateTime = DateTime.Now
             Dim fileName As String = String.Format("Tween-{0:0000}{1:00}{2:00}-{3:00}{4:00}{5:00}.log", now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second)
 
@@ -164,30 +243,33 @@ Public Module MyCommon
                 writer.WriteLine(My.Resources.UnhandledExceptionText1, DateTime.Now.ToString())
                 writer.WriteLine(My.Resources.UnhandledExceptionText2)
                 writer.WriteLine(My.Resources.UnhandledExceptionText3)
+                ' 権限書き出し
                 writer.WriteLine(My.Resources.UnhandledExceptionText11 + princ.IsInRole(WindowsBuiltInRole.Administrator).ToString)
                 writer.WriteLine(My.Resources.UnhandledExceptionText12 + princ.IsInRole(WindowsBuiltInRole.User).ToString)
-                If customMessage <> "" Then writer.WriteLine("CustomMessage: " + customMessage)
                 writer.WriteLine()
+                ' OSVersion,AppVersion書き出し
                 writer.WriteLine(My.Resources.UnhandledExceptionText4)
                 writer.WriteLine(My.Resources.UnhandledExceptionText5, Environment.OSVersion.VersionString)
                 writer.WriteLine(My.Resources.UnhandledExceptionText6, Environment.Version.ToString())
                 writer.WriteLine(My.Resources.UnhandledExceptionText7, My.Application.Info.Version.ToString())
-                writer.WriteLine(My.Resources.UnhandledExceptionText8, ex.GetType().FullName, ex.Message)
-                writer.WriteLine(ex.StackTrace)
-                writer.WriteLine()
+
+                Dim buffer As String = Nothing
+                writer.Write(ExceptionOut(ex, buffer, IsTerminatePermission))
+                writer.Flush()
             End Using
 
-            If MessageBox.Show(String.Format(My.Resources.UnhandledExceptionText9, fileName, Environment.NewLine), _
-                               My.Resources.UnhandledExceptionText10, MessageBoxButtons.OKCancel, MessageBoxIcon.Error) = DialogResult.OK _
-            Then
-                Diagnostics.Process.Start(fileName)
-            End If
+            Select Case MessageBox.Show(String.Format(My.Resources.UnhandledExceptionText9, fileName, Environment.NewLine), _
+                               My.Resources.UnhandledExceptionText10, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Error)
+                Case DialogResult.Yes
+                    Diagnostics.Process.Start(fileName)
+                    Return False
+                Case DialogResult.No
+                    Return False
+                Case DialogResult.Cancel
+                    Return IsTerminatePermission
+            End Select
         End SyncLock
-    End Sub
-
-    Public Sub ExceptionOut(ByVal ex As Exception)
-        ExceptionOut(ex, "")
-    End Sub
+    End Function
 
     ''' <summary>
     ''' URLに含まれているマルチバイト文字列を%xx形式でエンコードします。
@@ -222,7 +304,7 @@ retry:
                     sb.Length = 0
                     GoTo retry
                 Else
-                    sb.Append("%" + Convert.ToInt16(c).ToString("X2"))
+                    sb.Append("%" + Convert.ToInt16(c).ToString("X2").ToUpper())
                 End If
             Else
                 sb.Append(c)
@@ -240,12 +322,12 @@ retry:
 
     ''' <summary>
     ''' URLのドメイン名をPunycode展開します。
-    ''' <newpara>
+    ''' <para>
     ''' ドメイン名がIDNでない場合はそのまま返します。
     ''' ドメインラベルの区切り文字はFULLSTOP(.、U002E)に置き換えられます。
-    ''' </newpara>
+    ''' </para>
     ''' </summary>
-    ''' <param name = input>展開対象のURL</param>
+    ''' <param name="input">展開対象のURL</param>
     ''' <returns>IDNが含まれていた場合はPunycodeに展開したURLをを返します。Punycode展開時にエラーが発生した場合はNothingを返します。</returns>
 
     Public Function IDNDecode(ByVal input As String) As String
@@ -399,9 +481,6 @@ retry:
 
     Public Function IsNT6() As Boolean
         'NT6 kernelかどうか検査
-        If Environment.OSVersion.Platform <> PlatformID.Win32NT OrElse Environment.OSVersion.Version.Major <> 6 Then
-            Return False
-        End If
-        Return True
+        Return Environment.OSVersion.Platform = PlatformID.Win32NT AndAlso Environment.OSVersion.Version.Major = 6
     End Function
 End Module

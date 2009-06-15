@@ -1,5 +1,5 @@
 ﻿Public Module AnalyzeKey
-'    このファイルはデバッグビルドのTweenにより自動作成されました   作成日時  2009/02/03 11:12:03
+'    このファイルはデバッグビルドのTweenにより自動作成されました   作成日時  2009/05/08 10:59:14
 
     Public _splitPost As String = "<li id=""status_"
     Public _splitPostRecent As String = "<li id=""status_"
@@ -27,7 +27,7 @@
     Public _followerMbr1 As String = "/option>"
     Public _followerMbr2 As String = """>"
     Public _followerMbr3 As String = "<"
-    Public _getInfoTwitter As String = "<div id=""top_alert"">"
+    Public _getInfoTwitter As String = "<div class=""bulletin info"">"
     Public _getInfoTwitterTo As String = "</div>"
     Public _isProtect As String = "<img alt=""Icon_lock"""
     Public _isReplyEng As String = ">in reply to "
@@ -40,5 +40,5 @@
     Public _parseSourceFrom As String = "<span>from <a href="
     Public _parseSource2 As String = """>"
     Public _parseSourceTo As String = "</a>"
-    Public _removeClass As String = "<li class=""hentry"
+    Public _removeClass As String = "<li class="""
 End Module

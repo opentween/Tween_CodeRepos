@@ -592,4 +592,37 @@
   <data name="MenuItemHelp.Text" xml:space="preserve">
     <value>&amp;Help</value>
   </data>
+  <data name="BlackFavAddToolStripMenuItem.Text" xml:space="preserve">
+    <value>Add BlackFav(&amp;F)</value>
+  </data>
+  <data name="GetFollowersAllToolStripMenuItem.Text" xml:space="preserve">
+    <value>Re-acquisition of all</value>
+  </data>
+  <data name="GetFollowersDiffToolStripMenuItem.Text" xml:space="preserve">
+    <value>An increase from present is acquired</value>
+  </data>
+  <data name="ToolStripMenuItem11.Text" xml:space="preserve">
+    <value>Change unread state</value>
+  </data>
+  <data name="ToolStripMenuItem6.Text" xml:space="preserve">
+    <value>Open as ...</value>
+  </data>
+  <data name="ToolStripMenuItem7.Text" xml:space="preserve">
+    <value>Make filter as ...</value>
+  </data>
+  <data name="ToolStripMenuItemApiCommandEvasion.Text" xml:space="preserve">
+    <value>The collision with API command is evaded</value>
+  </data>
+  <data name="ToolStripMenuItemUrlAutoShorten.Text" xml:space="preserve">
+    <value>URL is automatically shortened</value>
+  </data>
+  <data name="ToolStripMenuItemUrlMultibyteSplit.Text" xml:space="preserve">
+    <value>Separation of multibyte character string from URL</value>
+  </data>
+  <data name="TabRenameMenuItem.Text" xml:space="preserve">
+    <value>Rename Tab</value>
+  </data>
+  <data name="IdeographicSpaceToSpaceToolStripMenuItem.Text" xml:space="preserve">
+    <value>Convert IdeographicSpace to Space</value>
+  </data>
 </root>

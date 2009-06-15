@@ -137,6 +137,8 @@ Partial Class Setting
         Me.Label47 = New System.Windows.Forms.Label
         Me.TabControl1 = New System.Windows.Forms.TabControl
         Me.TabPage1 = New System.Windows.Forms.TabPage
+        Me.Label70 = New System.Windows.Forms.Label
+        Me.CheckStartupAPImodeNoWarning = New System.Windows.Forms.CheckBox
         Me.Label69 = New System.Windows.Forms.Label
         Me.ReplyPeriod = New System.Windows.Forms.TextBox
         Me.CheckPostAndGet = New System.Windows.Forms.CheckBox
@@ -154,6 +156,8 @@ Partial Class Setting
         Me.CheckStartupVersion = New System.Windows.Forms.CheckBox
         Me.CheckPeriodAdjust = New System.Windows.Forms.CheckBox
         Me.TabPage2 = New System.Windows.Forms.TabPage
+        Me.ComboBoxAutoShortUrlFirst = New System.Windows.Forms.ComboBox
+        Me.Label71 = New System.Windows.Forms.Label
         Me.CheckProtectNotInclude = New System.Windows.Forms.CheckBox
         Me.Label42 = New System.Windows.Forms.Label
         Me.CheckAutoConvertUrl = New System.Windows.Forms.CheckBox
@@ -876,6 +880,8 @@ Partial Class Setting
         '
         'TabPage1
         '
+        Me.TabPage1.Controls.Add(Me.Label70)
+        Me.TabPage1.Controls.Add(Me.CheckStartupAPImodeNoWarning)
         Me.TabPage1.Controls.Add(Me.Label69)
         Me.TabPage1.Controls.Add(Me.ReplyPeriod)
         Me.TabPage1.Controls.Add(Me.CheckPostAndGet)
@@ -920,6 +926,17 @@ Partial Class Setting
         resources.ApplyResources(Me.TabPage1, "TabPage1")
         Me.TabPage1.Name = "TabPage1"
         Me.TabPage1.UseVisualStyleBackColor = True
+        '
+        'Label70
+        '
+        resources.ApplyResources(Me.Label70, "Label70")
+        Me.Label70.Name = "Label70"
+        '
+        'CheckStartupAPImodeNoWarning
+        '
+        resources.ApplyResources(Me.CheckStartupAPImodeNoWarning, "CheckStartupAPImodeNoWarning")
+        Me.CheckStartupAPImodeNoWarning.Name = "CheckStartupAPImodeNoWarning"
+        Me.CheckStartupAPImodeNoWarning.UseVisualStyleBackColor = True
         '
         'Label69
         '
@@ -1010,6 +1027,8 @@ Partial Class Setting
         '
         'TabPage2
         '
+        Me.TabPage2.Controls.Add(Me.ComboBoxAutoShortUrlFirst)
+        Me.TabPage2.Controls.Add(Me.Label71)
         Me.TabPage2.Controls.Add(Me.CheckProtectNotInclude)
         Me.TabPage2.Controls.Add(Me.Label42)
         Me.TabPage2.Controls.Add(Me.CheckAutoConvertUrl)
@@ -1045,6 +1064,19 @@ Partial Class Setting
         resources.ApplyResources(Me.TabPage2, "TabPage2")
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.UseVisualStyleBackColor = True
+        '
+        'ComboBoxAutoShortUrlFirst
+        '
+        Me.ComboBoxAutoShortUrlFirst.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBoxAutoShortUrlFirst.FormattingEnabled = True
+        Me.ComboBoxAutoShortUrlFirst.Items.AddRange(New Object() {resources.GetString("ComboBoxAutoShortUrlFirst.Items"), resources.GetString("ComboBoxAutoShortUrlFirst.Items1"), resources.GetString("ComboBoxAutoShortUrlFirst.Items2"), resources.GetString("ComboBoxAutoShortUrlFirst.Items3"), resources.GetString("ComboBoxAutoShortUrlFirst.Items4")})
+        resources.ApplyResources(Me.ComboBoxAutoShortUrlFirst, "ComboBoxAutoShortUrlFirst")
+        Me.ComboBoxAutoShortUrlFirst.Name = "ComboBoxAutoShortUrlFirst"
+        '
+        'Label71
+        '
+        resources.ApplyResources(Me.Label71, "Label71")
+        Me.Label71.Name = "Label71"
         '
         'CheckProtectNotInclude
         '
@@ -1538,4 +1570,8 @@ Partial Class Setting
     Friend WithEvents CheckPostAndGet As System.Windows.Forms.CheckBox
     Friend WithEvents Label69 As System.Windows.Forms.Label
     Friend WithEvents ReplyPeriod As System.Windows.Forms.TextBox
+    Friend WithEvents Label70 As System.Windows.Forms.Label
+    Friend WithEvents CheckStartupAPImodeNoWarning As System.Windows.Forms.CheckBox
+    Friend WithEvents ComboBoxAutoShortUrlFirst As System.Windows.Forms.ComboBox
+    Friend WithEvents Label71 As System.Windows.Forms.Label
 End Class

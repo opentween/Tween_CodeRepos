@@ -1,7 +1,7 @@
 ﻿' Tween - Client of Twitter
-' Copyright © 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
-'           © 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
-'           © 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
+' Copyright (c) 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
+'           (c) 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
+'           (c) 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
 ' All rights reserved.
 ' 
 ' This file is part of Tween.
@@ -52,6 +52,7 @@ Public NotInheritable Class MySocket
         ReqGetNoCache
         ReqPOSTAPI
         ReqGetAPI
+        ReqGetApp
     End Enum
 
     Public Sub New(ByVal EncodeType As String, _
@@ -179,6 +180,10 @@ Public NotInheritable Class MySocket
                 webReq.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
                 webReq.Headers.Add("Accept-Language", "ja,en-us;q=0.7,en;q=0.3")
                 webReq.Headers.Add("Accept-Charset", "Shift_JIS,utf-8;q=0.7,*;q=0.7")
+            ElseIf reqType = REQ_TYPE.ReqGetApp Then
+                webReq.Accept = "image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, application/x-shockwave-flash, application/vnd.ms-powerpoint, application/vnd.ms-excel, application/msword, application/x-ms-application, application/x-ms-xbap, application/vnd.ms-xpsdocument, application/xaml+xml, */*"
+                webReq.Headers.Add("Accept-Language", "ja,en-us;q=0.7,en;q=0.3")
+                webReq.Headers.Add("Accept-Charset", "Shift_JIS,utf-8;q=0.7,*;q=0.7")
             ElseIf reqType = REQ_TYPE.ReqGetAPI Then
                 webReq.ContentType = "application/x-www-form-urlencoded"
                 webReq.Accept = "text/html, */*"
@@ -209,7 +214,7 @@ Public NotInheritable Class MySocket
 
                 Using strm As Stream = webRes.GetResponseStream()
                     Select Case reqType
-                        Case REQ_TYPE.ReqGET, REQ_TYPE.ReqPOST, REQ_TYPE.ReqPOSTEncode, REQ_TYPE.ReqPOSTEncodeProtoVer1, REQ_TYPE.ReqPOSTEncodeProtoVer2, REQ_TYPE.ReqPOSTEncodeProtoVer3, REQ_TYPE.ReqGetNoCache, REQ_TYPE.ReqPOSTAPI, REQ_TYPE.ReqGetAPI
+                        Case REQ_TYPE.ReqGET, REQ_TYPE.ReqPOST, REQ_TYPE.ReqPOSTEncode, REQ_TYPE.ReqPOSTEncodeProtoVer1, REQ_TYPE.ReqPOSTEncodeProtoVer2, REQ_TYPE.ReqPOSTEncodeProtoVer3, REQ_TYPE.ReqGetNoCache, REQ_TYPE.ReqPOSTAPI, REQ_TYPE.ReqGetAPI, REQ_TYPE.ReqGetApp
                             Dim rtStr As String
                             Using sr As New StreamReader(strm, _enc)
                                 rtStr = sr.ReadToEnd()

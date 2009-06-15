@@ -1,7 +1,7 @@
 ﻿' Tween - Client of Twitter
-' Copyright © 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
-'           © 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
-'           © 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
+' Copyright (c) 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
+'           (c) 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
+'           (c) 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
 ' All rights reserved.
 ' 
 ' This file is part of Tween.
@@ -54,6 +54,6 @@ Imports System.Runtime.InteropServices
 ' 既定値にすることができます:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("0.4.2.0")> 
-<Assembly: AssemblyFileVersion("0.4.2.0")> 
+<Assembly: AssemblyVersion("0.5.0.0")> 
+<Assembly: AssemblyFileVersion("0.5.0.0")> 
 

@@ -1,7 +1,7 @@
 ﻿' Tween - Client of Twitter
-' Copyright © 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
-'           © 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
-'           © 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
+' Copyright (c) 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
+'           (c) 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
+'           (c) 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
 ' All rights reserved.
 ' 
 ' This file is part of Tween.
@@ -564,7 +564,6 @@ Public NotInheritable Class TabInformations
                 Exit For
             End If
         Next
-        'If Tab.OldestUnreadId = -1 Then Tab.UnreadCount = 0
     End Sub
 
     Public Function DistributePosts() As Integer
@@ -1089,11 +1088,12 @@ Public NotInheritable Class TabClass
         'End Try
     End Sub
 
-    Public Sub AddFilter(ByVal filter As FiltersClass)
-        If _filters.Contains(filter) Then Exit Sub
+    Public Function AddFilter(ByVal filter As FiltersClass) As Boolean
+        If _filters.Contains(filter) Then Return False
         _filters.Add(filter)
         _filterMod = True
-    End Sub
+        Return True
+    End Function
 
     Public Sub EditFilter(ByVal original As FiltersClass, ByVal modified As FiltersClass)
         'If _filters.Contains(modified) AndAlso original.ReferenceEquals(modified) Then
