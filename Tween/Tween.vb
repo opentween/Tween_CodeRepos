@@ -2350,7 +2350,7 @@ Public Class TweenMain
 
     Private Sub PostBrowser_Navigating(ByVal sender As System.Object, ByVal e As System.Windows.Forms.WebBrowserNavigatingEventArgs) Handles PostBrowser.Navigating
         If e.Url.Scheme = "data" Then
-            StatusLabelUrl.Text = PostBrowser.StatusText
+            StatusLabelUrl.Text = PostBrowser.StatusText.Replace("&", "&&")
         ElseIf e.Url.AbsoluteUri <> "about:blank" Then
             e.Cancel = True
             OpenUriAsync(e.Url.AbsoluteUri)
@@ -2718,7 +2718,7 @@ Public Class TweenMain
     Private Sub PostBrowser_StatusTextChanged(ByVal sender As Object, ByVal e As EventArgs) Handles PostBrowser.StatusTextChanged
         If PostBrowser.StatusText.StartsWith("http") OrElse PostBrowser.StatusText.StartsWith("ftp") _
                 OrElse PostBrowser.StatusText.StartsWith("data") Then
-            StatusLabelUrl.Text = PostBrowser.StatusText
+            StatusLabelUrl.Text = PostBrowser.StatusText.Replace("&", "&&")
             ToolStripMenuItem4.Enabled = True
         Else
             ToolStripMenuItem4.Enabled = False

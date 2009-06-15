@@ -325,6 +325,11 @@ Public Class InternetSecurityManager
     Private Function MapUrlToZone(ByVal pwszUrl As String, ByRef pdwZone As Integer, ByVal dwFlags As Integer) As Integer _
             Implements WebBrowserAPI.IInternetSecurityManager.MapUrlToZone
         pdwZone = 0
+        Try
+            Dim url As New Uri(pwszUrl)
+        Catch ex As Exception
+            Return WebBrowserAPI.URLPOLICY_DISALLOW
+        End Try
         Return WebBrowserAPI.INET_E_DEFAULT_ACTION
     End Function
 
