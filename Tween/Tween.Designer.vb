@@ -32,6 +32,7 @@ Partial Class TweenMain
         Me.ListTab = New System.Windows.Forms.TabControl
         Me.ContextMenuTabProperty = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.AddTabMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.TabRenameMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator20 = New System.Windows.Forms.ToolStripSeparator
         Me.UreadManageMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.NotifyDispMenuItem = New System.Windows.Forms.ToolStripMenuItem
@@ -55,8 +56,8 @@ Partial Class TweenMain
         Me.PostBrowser = New System.Windows.Forms.WebBrowser
         Me.ContextMenuStrip4 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.ToolStripMenuItem2 = New System.Windows.Forms.ToolStripMenuItem
-        Me.SearchItem1ToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.SearchItem2ToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.SearchItem1ToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.SearchItem3ToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.SearchItem4ToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.CurrentTabToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
@@ -124,6 +125,9 @@ Partial Class TweenMain
         Me.UrlUndoToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.TinyURLToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.IsgdToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.TwurlnlToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.UnuToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.BitlyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.UpdateFollowersMenuItem1 = New System.Windows.Forms.ToolStripMenuItem
         Me.GetFollowersDiffToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.GetFollowersAllToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
@@ -138,6 +142,7 @@ Partial Class TweenMain
         Me.VerUpMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.WedataMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator14 = New System.Windows.Forms.ToolStripSeparator
+        Me.ApiInfoMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.InfoTwitterMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator7 = New System.Windows.Forms.ToolStripSeparator
         Me.AboutMenuItem = New System.Windows.Forms.ToolStripMenuItem
@@ -148,6 +153,7 @@ Partial Class TweenMain
         Me.ToolStripMenuItemUrlMultibyteSplit = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripMenuItemApiCommandEvasion = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripMenuItemUrlAutoShorten = New System.Windows.Forms.ToolStripMenuItem
+        Me.IdeographicSpaceToSpaceToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.TimerTimeline = New System.Windows.Forms.Timer(Me.components)
         Me.NotifyIcon1 = New System.Windows.Forms.NotifyIcon(Me.components)
         Me.TimerDM = New System.Windows.Forms.Timer(Me.components)
@@ -241,7 +247,7 @@ Partial Class TweenMain
         '
         'ContextMenuTabProperty
         '
-        Me.ContextMenuTabProperty.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AddTabMenuItem, Me.ToolStripSeparator20, Me.UreadManageMenuItem, Me.NotifyDispMenuItem, Me.SoundFileComboBox, Me.ToolStripSeparator18, Me.FilterEditMenuItem, Me.ToolStripSeparator19, Me.ClearTabMenuItem, Me.ToolStripSeparator11, Me.DeleteTabMenuItem})
+        Me.ContextMenuTabProperty.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AddTabMenuItem, Me.TabRenameMenuItem, Me.ToolStripSeparator20, Me.UreadManageMenuItem, Me.NotifyDispMenuItem, Me.SoundFileComboBox, Me.ToolStripSeparator18, Me.FilterEditMenuItem, Me.ToolStripSeparator19, Me.ClearTabMenuItem, Me.ToolStripSeparator11, Me.DeleteTabMenuItem})
         Me.ContextMenuTabProperty.Name = "ContextMenuStrip3"
         Me.ContextMenuTabProperty.OwnerItem = Me.MenuItemTab
         Me.ContextMenuTabProperty.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
@@ -251,6 +257,11 @@ Partial Class TweenMain
         '
         Me.AddTabMenuItem.Name = "AddTabMenuItem"
         resources.ApplyResources(Me.AddTabMenuItem, "AddTabMenuItem")
+        '
+        'TabRenameMenuItem
+        '
+        Me.TabRenameMenuItem.Name = "TabRenameMenuItem"
+        resources.ApplyResources(Me.TabRenameMenuItem, "TabRenameMenuItem")
         '
         'ToolStripSeparator20
         '
@@ -402,19 +413,19 @@ Partial Class TweenMain
         '
         'ToolStripMenuItem2
         '
-        Me.ToolStripMenuItem2.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SearchItem1ToolStripMenuItem, Me.SearchItem2ToolStripMenuItem, Me.SearchItem3ToolStripMenuItem, Me.SearchItem4ToolStripMenuItem, Me.CurrentTabToolStripMenuItem})
+        Me.ToolStripMenuItem2.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SearchItem2ToolStripMenuItem, Me.SearchItem1ToolStripMenuItem, Me.SearchItem3ToolStripMenuItem, Me.SearchItem4ToolStripMenuItem, Me.CurrentTabToolStripMenuItem})
         Me.ToolStripMenuItem2.Name = "ToolStripMenuItem2"
         resources.ApplyResources(Me.ToolStripMenuItem2, "ToolStripMenuItem2")
-        '
-        'SearchItem1ToolStripMenuItem
-        '
-        Me.SearchItem1ToolStripMenuItem.Name = "SearchItem1ToolStripMenuItem"
-        resources.ApplyResources(Me.SearchItem1ToolStripMenuItem, "SearchItem1ToolStripMenuItem")
         '
         'SearchItem2ToolStripMenuItem
         '
         Me.SearchItem2ToolStripMenuItem.Name = "SearchItem2ToolStripMenuItem"
         resources.ApplyResources(Me.SearchItem2ToolStripMenuItem, "SearchItem2ToolStripMenuItem")
+        '
+        'SearchItem1ToolStripMenuItem
+        '
+        Me.SearchItem1ToolStripMenuItem.Name = "SearchItem1ToolStripMenuItem"
+        resources.ApplyResources(Me.SearchItem1ToolStripMenuItem, "SearchItem1ToolStripMenuItem")
         '
         'SearchItem3ToolStripMenuItem
         '
@@ -754,7 +765,7 @@ Partial Class TweenMain
         '
         'TinyUrlConvertToolStripMenuItem
         '
-        Me.TinyUrlConvertToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.UrlConvertAutoToolStripMenuItem, Me.UrlUndoToolStripMenuItem, Me.TinyURLToolStripMenuItem, Me.IsgdToolStripMenuItem})
+        Me.TinyUrlConvertToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.UrlConvertAutoToolStripMenuItem, Me.UrlUndoToolStripMenuItem, Me.TinyURLToolStripMenuItem, Me.IsgdToolStripMenuItem, Me.TwurlnlToolStripMenuItem, Me.UnuToolStripMenuItem, Me.BitlyToolStripMenuItem})
         Me.TinyUrlConvertToolStripMenuItem.Name = "TinyUrlConvertToolStripMenuItem"
         resources.ApplyResources(Me.TinyUrlConvertToolStripMenuItem, "TinyUrlConvertToolStripMenuItem")
         '
@@ -777,6 +788,21 @@ Partial Class TweenMain
         '
         Me.IsgdToolStripMenuItem.Name = "IsgdToolStripMenuItem"
         resources.ApplyResources(Me.IsgdToolStripMenuItem, "IsgdToolStripMenuItem")
+        '
+        'TwurlnlToolStripMenuItem
+        '
+        Me.TwurlnlToolStripMenuItem.Name = "TwurlnlToolStripMenuItem"
+        resources.ApplyResources(Me.TwurlnlToolStripMenuItem, "TwurlnlToolStripMenuItem")
+        '
+        'UnuToolStripMenuItem
+        '
+        Me.UnuToolStripMenuItem.Name = "UnuToolStripMenuItem"
+        resources.ApplyResources(Me.UnuToolStripMenuItem, "UnuToolStripMenuItem")
+        '
+        'BitlyToolStripMenuItem
+        '
+        Me.BitlyToolStripMenuItem.Name = "BitlyToolStripMenuItem"
+        resources.ApplyResources(Me.BitlyToolStripMenuItem, "BitlyToolStripMenuItem")
         '
         'UpdateFollowersMenuItem1
         '
@@ -807,7 +833,7 @@ Partial Class TweenMain
         '
         'MenuItemHelp
         '
-        Me.MenuItemHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MatomeMenuItem, Me.ToolStripSeparator12, Me.OfficialMenuItem, Me.DLPageMenuItem, Me.ToolStripSeparator16, Me.VerUpMenuItem, Me.WedataMenuItem, Me.ToolStripSeparator14, Me.InfoTwitterMenuItem, Me.ToolStripSeparator7, Me.AboutMenuItem, Me.DebugModeToolStripMenuItem})
+        Me.MenuItemHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MatomeMenuItem, Me.ToolStripSeparator12, Me.OfficialMenuItem, Me.DLPageMenuItem, Me.ToolStripSeparator16, Me.VerUpMenuItem, Me.WedataMenuItem, Me.ToolStripSeparator14, Me.ApiInfoMenuItem, Me.InfoTwitterMenuItem, Me.ToolStripSeparator7, Me.AboutMenuItem, Me.DebugModeToolStripMenuItem})
         Me.MenuItemHelp.Name = "MenuItemHelp"
         resources.ApplyResources(Me.MenuItemHelp, "MenuItemHelp")
         '
@@ -851,6 +877,11 @@ Partial Class TweenMain
         Me.ToolStripSeparator14.Name = "ToolStripSeparator14"
         resources.ApplyResources(Me.ToolStripSeparator14, "ToolStripSeparator14")
         '
+        'ApiInfoMenuItem
+        '
+        Me.ApiInfoMenuItem.Name = "ApiInfoMenuItem"
+        resources.ApplyResources(Me.ApiInfoMenuItem, "ApiInfoMenuItem")
+        '
         'InfoTwitterMenuItem
         '
         Me.InfoTwitterMenuItem.Name = "InfoTwitterMenuItem"
@@ -886,7 +917,7 @@ Partial Class TweenMain
         '
         'ContextMenuStripPostMode
         '
-        Me.ContextMenuStripPostMode.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripMenuItemUrlMultibyteSplit, Me.ToolStripMenuItemApiCommandEvasion, Me.ToolStripMenuItemUrlAutoShorten})
+        Me.ContextMenuStripPostMode.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripMenuItemUrlMultibyteSplit, Me.ToolStripMenuItemApiCommandEvasion, Me.ToolStripMenuItemUrlAutoShorten, Me.IdeographicSpaceToSpaceToolStripMenuItem})
         Me.ContextMenuStripPostMode.Name = "ContextMenuStripPostMode"
         resources.ApplyResources(Me.ContextMenuStripPostMode, "ContextMenuStripPostMode")
         '
@@ -909,6 +940,14 @@ Partial Class TweenMain
         Me.ToolStripMenuItemUrlAutoShorten.CheckOnClick = True
         Me.ToolStripMenuItemUrlAutoShorten.Name = "ToolStripMenuItemUrlAutoShorten"
         resources.ApplyResources(Me.ToolStripMenuItemUrlAutoShorten, "ToolStripMenuItemUrlAutoShorten")
+        '
+        'IdeographicSpaceToSpaceToolStripMenuItem
+        '
+        Me.IdeographicSpaceToSpaceToolStripMenuItem.Checked = True
+        Me.IdeographicSpaceToSpaceToolStripMenuItem.CheckOnClick = True
+        Me.IdeographicSpaceToSpaceToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.IdeographicSpaceToSpaceToolStripMenuItem.Name = "IdeographicSpaceToSpaceToolStripMenuItem"
+        resources.ApplyResources(Me.IdeographicSpaceToSpaceToolStripMenuItem, "IdeographicSpaceToSpaceToolStripMenuItem")
         '
         'TimerTimeline
         '
@@ -1107,5 +1146,11 @@ Partial Class TweenMain
     Friend WithEvents DumpPostClassToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents TraceOutToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents TimerReply As System.Windows.Forms.Timer
+    Friend WithEvents TwurlnlToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents TabRenameMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents UnuToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents BitlyToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ApiInfoMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents IdeographicSpaceToSpaceToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class

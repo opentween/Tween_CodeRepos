@@ -1,7 +1,7 @@
 ﻿' Tween - Client of Twitter
-' Copyright © 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
-'           © 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
-'           © 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
+' Copyright (c) 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
+'           (c) 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
+'           (c) 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
 ' All rights reserved.
 ' 
 ' This file is part of Tween.
@@ -295,7 +295,9 @@ Public Class FilterDialog
         ft.SearchUrl = CheckURL.Checked
 
         If _mode = EDITMODE.AddNew Then
-            _sts.Tabs(ComboTabs.SelectedItem.ToString()).AddFilter(ft)
+            If Not _sts.Tabs(ComboTabs.SelectedItem.ToString()).AddFilter(ft) Then
+                MessageBox.Show(My.Resources.ButtonOK_ClickText4, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End If
         Else
             _sts.Tabs(ComboTabs.SelectedItem.ToString()).EditFilter(DirectCast(ListFilters.SelectedItem, FiltersClass), ft)
         End If

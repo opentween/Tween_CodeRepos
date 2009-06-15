@@ -79,6 +79,7 @@ Public Class Setting
     Private _MyStartupVersion As Boolean
     Private _MyStartupKey As Boolean
     Private _MyStartupFollowers As Boolean
+    Private _MyStartupAPImodeNoWarning As Boolean
     Private _MyRestrictFavCheck As Boolean
     Private _MyAlwaysTop As Boolean
     Private _MyUrlConvertAuto As Boolean
@@ -92,19 +93,9 @@ Public Class Setting
     Private _MyLimitBalloon As Boolean
     Private _MyPostAndGet As Boolean
     Private _MyReplyPeriod As Integer
+    Private _MyAutoShortUrlFirst As UrlConverter
 
     Private Sub Save_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Save.Click
-        If Username.Text.Trim = "" Or _
-           Password.Text.Trim = "" Then
-            Me.DialogResult = Windows.Forms.DialogResult.Cancel
-            MessageBox.Show(My.Resources.Save_ClickText1)
-            Exit Sub
-        End If
-        If Username.Text.Contains("@") Then
-            Me.DialogResult = Windows.Forms.DialogResult.Cancel
-            MessageBox.Show(My.Resources.Save_ClickText2)
-            Exit Sub
-        End If
         Try
             _MyuserID = Username.Text.Trim()
             _Mypassword = Password.Text.Trim()
@@ -204,6 +195,7 @@ Public Class Setting
             _MyPeriodAdjust = CheckPeriodAdjust.Checked
             _MyStartupVersion = CheckStartupVersion.Checked
             _MyStartupKey = CheckStartupKey.Checked
+            _MyStartupAPImodeNoWarning = CheckStartupAPImodeNoWarning.Checked
             _MyStartupFollowers = CheckStartupFollowers.Checked
             _MyRestrictFavCheck = CheckFavRestrict.Checked
             _MyAlwaysTop = CheckAlwaysTop.Checked
@@ -227,6 +219,7 @@ Public Class Setting
             _MyDefaultTimeOut = CType(ConnectionTimeOut.Text, Integer)      ' 0の場合はGetWebResponse()側でTimeOut.Infiniteへ読み替える
             _MyProtectNotInclude = CheckProtectNotInclude.Checked
             _MyLimitBalloon = CheckBalloonLimit.Checked
+            _MyAutoShortUrlFirst = CType(ComboBoxAutoShortUrlFirst.SelectedIndex, UrlConverter)
         Catch ex As Exception
             MessageBox.Show(My.Resources.Save_ClickText3)
             Me.DialogResult = Windows.Forms.DialogResult.Cancel
@@ -374,6 +367,7 @@ Public Class Setting
         CheckStartupVersion.Checked = _MyStartupVersion
         CheckStartupKey.Checked = _MyStartupKey
         CheckStartupFollowers.Checked = _MyStartupFollowers
+        CheckStartupAPImodeNoWarning.Checked = _MyStartupAPImodeNoWarning
         CheckFavRestrict.Checked = _MyRestrictFavCheck
         CheckAlwaysTop.Checked = _MyAlwaysTop
         CheckAutoConvertUrl.Checked = _MyUrlConvertAuto
@@ -394,8 +388,7 @@ Public Class Setting
         ConnectionTimeOut.Text = _MyDefaultTimeOut.ToString
         CheckProtectNotInclude.Checked = _MyProtectNotInclude
         CheckBalloonLimit.Checked = _MyLimitBalloon
-        'TweenMain.SetMainWindowTitle()
-        'TweenMain.SetNotifyIconText()
+        ComboBoxAutoShortUrlFirst.SelectedIndex = _MyAutoShortUrlFirst
 
         TabControl1.SelectedIndex = 0
         ActiveControl = Username
@@ -1214,6 +1207,15 @@ Public Class Setting
         End Set
     End Property
 
+    Public Property StartupAPImodeNoWarning() As Boolean
+        Get
+            Return _MyStartupAPImodeNoWarning
+        End Get
+        Set(ByVal value As Boolean)
+            _MyStartupAPImodeNoWarning = value
+        End Set
+    End Property
+
     Public Property RestrictFavCheck() As Boolean
         Get
             Return _MyRestrictFavCheck
@@ -1262,6 +1264,15 @@ Public Class Setting
         End Get
         Set(ByVal value As OutputzUrlmode)
             _MyOutputzUrlmode = value
+        End Set
+    End Property
+
+    Public Property AutoShortUrlFirst() As UrlConverter
+        Get
+            Return _MyAutoShortUrlFirst
+        End Get
+        Set(ByVal value As UrlConverter)
+            _MyAutoShortUrlFirst = value
         End Set
     End Property
 
@@ -1448,5 +1459,28 @@ Public Class Setting
             _MyLimitBalloon = value
         End Set
     End Property
+
+    Private Sub Username_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles Username.Validating
+        If Username.Text.Trim = ""  Then
+            MessageBox.Show(My.Resources.Save_ClickText1)
+            e.Cancel = True
+            Exit Sub
+        End If
+        If Username.Text.Contains("@") Then
+            MessageBox.Show(My.Resources.Save_ClickText2)
+            e.Cancel = True
+            Exit Sub
+        End If
+
+    End Sub
+
+    Private Sub Password_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles Password.Validating
+        If Password.Text.Trim = "" Then
+            MessageBox.Show(My.Resources.Save_ClickText1)
+            e.Cancel = True
+            Exit Sub
+        End If
+    End Sub
+
 End Class
 

@@ -1,7 +1,7 @@
 ﻿' Tween - Client of Twitter
-' Copyright © 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
-'           © 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
-'           © 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
+' Copyright (c) 2007-2009 kiri_feather (@kiri_feather) <kiri_feather@gmail.com>
+'           (c) 2008-2009 Moz (@syo68k) <http://iddy.jp/profile/moz/>
+'           (c) 2008-2009 takeshik (@takeshik) <http://www.takeshik.org/>
 ' All rights reserved.
 ' 
 ' This file is part of Tween.
@@ -102,15 +102,25 @@ Public Module Twitter
             "http://cli.gs/", _
             "http://rubyurl.com/", _
             "http://budurl.com/", _
-            "http://ff.im/" _
+            "http://ff.im/", _
+            "http://twitthis.com/", _
+            "http://blip.fm/", _
+            "http://tumblr.com/", _
+            "http://www.qurl.com/", _
+            "http://digg.com/", _
+            "http://u.nu/", _
+            "http://ustre.am/", _
+            "http://pic.gd/", _
+            "http://airme.us/", _
+            "http://bctiny.com/" _
         }
 
     Private Const _baseUrlStr As String = "twitter.com"
     Private Const _loginPath As String = "/sessions"
     Private Const _homePath As String = "/home"
     Private Const _replyPath As String = "/replies"
-    Private Const _DMPathRcv As String = "/direct_messages"
-    Private Const _DMPathSnt As String = "/direct_messages/sent"
+    Private Const _DMPathRcv As String = "/inbox"
+    Private Const _DMPathSnt As String = "/sent"
     Private Const _DMDestroyPath As String = "/direct_messages/destroy/"
     Private Const _StDestroyPath As String = "/status/destroy/"
     Private Const _uidHeader As String = "session[username_or_email]="
@@ -128,6 +138,7 @@ Public Module Twitter
     Private Const _parseLink3 As String = "</a>"
     Private Const _GetFollowers As String = "/statuses/followers.xml"
     Private Const _ShowStatus As String = "/statuses/show/"
+    Private Const _rateLimitStatus As String = "/account/rate_limit_status.xml"
 
     '''Wedata対応
     Private Const wedataUrl As String = "http://wedata.net/databases/Tween/items.json"
@@ -180,6 +191,8 @@ Public Module Twitter
                 Return "SignIn Failed -> " + msg
             ElseIf resMsg.Contains("https://twitter.com:443/") Then '302 FOUND
                 'OK
+            ElseIf resMsg.Contains("https://twitter.com/") Then '302 FOUND
+                'OK
             ElseIf resStatus.StartsWith("Err:") Then
                 ' その他プロトコルエラー
                 Return "SignIn Failed -> " + resMsg
@@ -230,7 +243,8 @@ Public Module Twitter
                 trslt = dlgt(idx).EndInvoke(epage, dm, ar(idx))
             Catch ex As Exception
                 '最後までendinvoke回す（ゾンビ化回避）
-                ExceptionOut(ex)
+                ex.Data("IsTerminatePermission") = False
+                Throw
                 rslt = "GetTimelineErr"
             End Try
             If trslt.Length > 0 AndAlso rslt.Length = 0 Then rslt = trslt
@@ -274,7 +288,7 @@ Public Module Twitter
 RETRY:
             If gType = WORKERTYPE.Timeline Then
                 If redirectToTimeline = "" Then
-                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _homePath + pageQuery, resStatus), String)
+                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _homePath + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
                     If resStatus.StartsWith("Found") Then
                         redirectToTimeline = resStatus.Substring(6)
                         If redirectToTimeline.Contains("?") Then
@@ -283,11 +297,11 @@ RETRY:
                         GoTo RETRY
                     End If
                 Else
-                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToTimeline + pageQuery, resStatus), String)
+                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToTimeline + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
                 End If
             Else
                 If redirectToReply = "" Then
-                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _replyPath + pageQuery, resStatus), String)
+                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _replyPath + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
                     If resStatus.StartsWith("Found") Then
                         redirectToReply = resStatus.Substring(6)
                         If redirectToReply.Contains("?") Then
@@ -296,7 +310,7 @@ RETRY:
                         GoTo RETRY
                     End If
                 Else
-                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToReply + pageQuery, resStatus), String)
+                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToReply + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
                 End If
             End If
 
@@ -503,8 +517,10 @@ RETRY:
                             TraceOut("TM-Body:" + strPost)
                             Return "GetTimeline -> Err: Can't get body."
                         End Try
+#If 0 Then
                         '原文リンク削除
                         orgData = Regex.Replace(orgData, "<a href=""https://twitter\.com/" + post.Name + "/status/[0-9]+"">\.\.\.</a>$", "")
+#End If
                         'ハート変換
                         orgData = orgData.Replace("&lt;3", "♡")
                     End If
@@ -549,24 +565,34 @@ RETRY:
 
 
                     'from Sourceの取得
-                    Try
-                        pos1 = strPost.IndexOf(_parseSourceFrom, pos2, StringComparison.Ordinal)
-                        If pos1 > -1 Then
-                            pos1 = strPost.IndexOf(_parseSource2, pos1 + 19, StringComparison.Ordinal)
-                            pos2 = strPost.IndexOf(_parseSourceTo, pos1 + 2, StringComparison.Ordinal)
-                            post.Source = HttpUtility.HtmlDecode(strPost.Substring(pos1 + 2, pos2 - pos1 - 2))
-                        Else
-                            post.Source = "Web"
-                        End If
-                    Catch ex As Exception
-                        _signed = False
-                        TraceOut("TM-Src:" + strPost)
-                        Return "GetTimeline -> Err: Can't get src."
-                    End Try
+                    'ToDo: _parseSourceFromを正規表現へ。wedataからの取得へ変更（次版より）
+                    Dim rg As New Regex("<span>.+>(?<name>.+)</a>.*</span> ")
+                    Dim m As Match = rg.Match(strPost)
+                    If m.Success Then
+                        post.Source = m.Result("${name}")
+                    Else
+                        post.Source = "Web"
+                    End If
+                    'Try
+                    '    pos1 = strPost.IndexOf(_parseSourceFrom, pos2, StringComparison.Ordinal)
+                    '    If pos1 = -1 Then pos1 = strPost.IndexOf(_parseSourceFrom2, pos2, StringComparison.Ordinal)
+                    '    If pos1 > -1 Then
+                    '        pos1 = strPost.IndexOf(_parseSource2, pos1 + 19, StringComparison.Ordinal)
+                    '        pos2 = strPost.IndexOf(_parseSourceTo, pos1 + 2, StringComparison.Ordinal)
+                    '        post.Source = HttpUtility.HtmlDecode(strPost.Substring(pos1 + 2, pos2 - pos1 - 2))
+                    '    Else
+                    '        post.Source = "Web"
+                    '    End If
+                    'Catch ex As Exception
+                    '    _signed = False
+                    '    TraceOut("TM-Src:" + strPost)
+                    '    Return "GetTimeline -> Err: Can't get src."
+                    'End Try
 
                     'Get Reply(in_reply_to_user/id)
-                    Dim rg As New Regex("<a href=""https?:\/\/twitter\.com\/(?<name>[a-zA-Z0-9_]+)\/status\/(?<id>[0-9]+)"">(?:in reply to |u8fd4u4fe1: )")
-                    Dim m As Match = rg.Match(strPost)
+                    'ToDo: _isReplyEngを正規表現へ。wedataからの取得へ変更（次版より）
+                    rg = New Regex("<a href=""https?:\/\/twitter\.com\/(?<name>[a-zA-Z0-9_]+)\/status\/(?<id>[0-9]+)"">(in reply to )*\k<name>")
+                    m = rg.Match(strPost)
                     If m.Success Then
                         post.InReplyToUser = m.Result("${name}")
                         post.InReplyToId = Long.Parse(m.Result("${id}"))
@@ -646,7 +672,8 @@ RETRY:
                     dlgt(i).EndInvoke(ar(i))
                 Catch ex As Exception
                     '最後までendinvoke回す（ゾンビ化回避）
-                    ExceptionOut(ex)
+                    ex.Data("IsTerminatePermission") = False
+                    Throw
                 End Try
             Next
 
@@ -689,7 +716,8 @@ RETRY:
                 trslt = dlgt(idx).EndInvoke(ar(idx))
             Catch ex As Exception
                 '最後までendinvoke回す（ゾンビ化回避）
-                ExceptionOut(ex)
+                ex.Data("IsTerminatePermission") = False
+                Throw
                 rslt = "GetDirectMessageErr"
             End Try
             If trslt.Length > 0 AndAlso rslt.Length = 0 Then rslt = trslt
@@ -706,7 +734,8 @@ RETRY:
                 trslt = dlgt(idx).EndInvoke(ar(idx))
             Catch ex As Exception
                 '最後までendinvoke回す（ゾンビ化回避）
-                ExceptionOut(ex)
+                ex.Data("IsTerminatePermission") = False
+                Throw
                 rslt = "GetDirectMessageErr"
             End Try
             If trslt.Length > 0 AndAlso rslt.Length = 0 Then rslt = trslt
@@ -743,7 +772,7 @@ RETRY:
 RETRY:
             If gType = WORKERTYPE.DirectMessegeRcv Then
                 If redirectToDmRcv = "" Then
-                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathRcv + pageQuery, resStatus), String)
+                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathRcv + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
                     If resStatus.StartsWith("Found") Then
                         redirectToDmRcv = resStatus.Substring(6)
                         If redirectToDmRcv.Contains("?") Then
@@ -752,11 +781,11 @@ RETRY:
                         GoTo RETRY
                     End If
                 Else
-                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToDmRcv + pageQuery, resStatus), String)
+                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToDmRcv + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
                 End If
             Else
                 If redirectToDmSnd = "" Then
-                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathSnt + pageQuery, resStatus), String)
+                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathSnt + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
                     If resStatus.StartsWith("Found") Then
                         redirectToDmSnd = resStatus.Substring(6)
                         If redirectToDmSnd.Contains("?") Then
@@ -765,7 +794,7 @@ RETRY:
                         GoTo RETRY
                     End If
                 Else
-                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToDmSnd + pageQuery, resStatus), String)
+                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToDmSnd + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
                 End If
             End If
 
@@ -889,7 +918,9 @@ RETRY:
                             pos2 = strPost.IndexOf(_parseDM2, pos1, StringComparison.Ordinal)
                             orgData = strPost.Substring(pos1 + _parseDM11.Length, pos2 - pos1 - _parseDM11.Length).Trim()
                         End If
+#If 0 Then
                         orgData = Regex.Replace(orgData, "<a href=""https://twitter\.com/" + post.Name + "/status/[0-9]+"">\.\.\.</a>$", "")
+#End If
                         orgData = orgData.Replace("&lt;3", "♡")
                     Catch ex As Exception
                         _signed = False
@@ -965,7 +996,8 @@ RETRY:
                 Try
                     dlgt(i).EndInvoke(ar(i))
                 Catch ex As Exception
-                    ExceptionOut(ex)
+                    ex.Data("IsTerminatePermission") = False
+                    Throw
                 End Try
             Next
 
@@ -1024,10 +1056,49 @@ RETRY:
                             urlStr = orgData.Substring(posl1, posl2 - posl1)
                             Dim Response As String = ""
                             Dim retUrlStr As String = ""
-                            retUrlStr = DirectCast(CreateSocket.GetWebResponse(urlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String)
+                            Dim tmpurlStr As String = urlStr
+                            Dim SchemeAndDomain As Regex = New Regex("http://.+?/+?")
+                            Dim tmpSchemeAndDomain As String = ""
+                            For i As Integer = 0 To 4   'とりあえず5回試す
+                                retUrlStr = urlEncodeMultibyteChar(DirectCast(CreateSocket.GetWebResponse(tmpurlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String))
+                                If retUrlStr.Length > 0 Then
+                                    If retUrlStr.StartsWith("data:") Then
+                                        retUrlStr = "data:安全でない可能性があるためこのURLを無効にしました"
+                                        Exit For
+                                    End If
+                                    ' 転送先URLが返された (まだ転送されるかもしれないので返値を引数にしてもう一度)
+                                    ' 取得試行回数オーバーの場合は取得結果を転送先とする
+                                    Dim scd As Match = SchemeAndDomain.Match(retUrlStr)
+                                    If scd.Success AndAlso scd.Value <> svc Then
+                                        svc = scd.Value()
+                                    End If
+                                    tmpurlStr = retUrlStr
+                                    Continue For
+                                Else
+                                    ' 転送先URLが返されなかった
+                                    If tmpurlStr <> urlStr Then
+                                        '少なくとも一度以上転送されている (前回の結果を転送先とする)
+                                        retUrlStr = tmpurlStr
+                                    Else
+                                        ' 一度も転送されていない
+                                        retUrlStr = ""
+                                    End If
+                                    Exit For
+                                End If
+                            Next
                             If retUrlStr.Length > 0 Then
-                                If Not retUrlStr.StartsWith("http") Then Exit Do
-                                orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + urlEncodeMultibyteChar(retUrlStr))
+                                If Not retUrlStr.StartsWith("http") Then
+                                    If retUrlStr.StartsWith("/") Then
+                                        retUrlStr = urlEncodeMultibyteChar(svc + retUrlStr.Substring(1))
+                                    ElseIf retUrlStr.StartsWith("data:") Then
+                                        '
+                                    Else
+                                        retUrlStr = urlEncodeMultibyteChar(retUrlStr.Insert(0, svc))
+                                    End If
+                                Else
+                                    retUrlStr = urlEncodeMultibyteChar(retUrlStr)
+                                End If
+                                orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
                                 posl2 = 0   '置換した場合は頭から再探索（複数同時置換での例外対応）
                             End If
                         Catch ex As Exception
@@ -1078,12 +1149,31 @@ RETRY:
         Return retStr
     End Function
 
+    ' htmlの簡易サニタイズ(詳細表示に不要なタグの除去)
+
+    Private Function SanitizeHtml(ByVal orgdata As String) As String
+        Dim retdata As String = orgdata
+
+        '  <script ～ </script>
+        Dim rx As Regex = New Regex( _
+            "<(script|object|applet|image|frameset|fieldset|legend|style).*" & _
+            "</(script|object|applet|image|frameset|fieldset|legend|style)>", RegexOptions.IgnoreCase)
+        retdata = rx.Replace(retdata, "")
+
+        ' <frame src="...">
+        rx = New Regex("<(frame|link|iframe|img)>", RegexOptions.IgnoreCase)
+        retdata = rx.Replace(retdata, "")
+
+        Return retdata
+    End Function
+
     Private Function AdjustHtml(ByVal orgData As String) As String
         Dim retStr As String = orgData
         retStr = retStr.Replace("<a href=""/", "<a href=""https://twitter.com/")
         retStr = retStr.Replace("<a href=", "<a target=""_self"" href=")
         retStr = retStr.Replace(vbLf, "<br>")
-        Return retStr
+
+        Return SanitizeHtml(retStr)
     End Function
 
     Private Sub GetIconImage(ByVal post As PostClass)
@@ -1399,7 +1489,8 @@ RETRY:
             End If
         Catch ex As Exception
             _threadErr = True
-            ExceptionOut(ex)
+            ex.Data("IsTerminatePermission") = False
+            Throw
         Finally
             semaphore.Release()                     ' セマフォから出る
             Interlocked.Decrement(threadNum)        ' スレッド数カウンタを-1
@@ -1886,7 +1977,7 @@ RETRY:
     Public Function MakeShortUrl(ByVal ConverterType As UrlConverter, ByVal SrcUrl As String) As String
         Dim ret As String = ""
         Dim resStatus As String = ""
-        Dim src As String = SrcUrl
+        Dim src As String = urlEncodeMultibyteChar(SrcUrl)
 
         For Each svc As String In _ShortUrlService
             If SrcUrl.StartsWith(svc) Then
@@ -1898,9 +1989,6 @@ RETRY:
         Select Case ConverterType
             Case UrlConverter.TinyUrl       'tinyurl
                 If SrcUrl.StartsWith("http") Then
-                    If SrcUrl.StartsWith("http://tinyurl.com/") Then
-                        Return "Can't convert"
-                    End If
                     If "http://tinyurl.com/xxxxxx".Length > src.Length AndAlso Not src.Contains("?") AndAlso Not src.Contains("#") Then
                         ' 明らかに長くなると推測できる場合は圧縮しない
                         ret = src
@@ -1917,9 +2005,6 @@ RETRY:
                 End If
             Case UrlConverter.Isgd
                 If SrcUrl.StartsWith("http") Then
-                    If SrcUrl.StartsWith("http://is.gd/") Then
-                        Return "Can't convert"
-                    End If
                     If "http://is.gd/xxxx".Length > src.Length AndAlso Not src.Contains("?") AndAlso Not src.Contains("#") Then
                         ' 明らかに長くなると推測できる場合は圧縮しない
                         ret = src
@@ -1934,8 +2019,69 @@ RETRY:
                 If Not ret.StartsWith("http://is.gd/") Then
                     Return "Can't convert"
                 End If
+            Case UrlConverter.Twurl
+                If SrcUrl.StartsWith("http") Then
+                    If "http://twurl.nl/xxxxxx".Length > src.Length AndAlso Not src.Contains("?") AndAlso Not src.Contains("#") Then
+                        ' 明らかに長くなると推測できる場合は圧縮しない
+                        ret = src
+                        Exit Select
+                    End If
+                    Try
+                        ret = DirectCast(CreateSocket.GetWebResponse("http://tweetburner.com/links", resStatus, MySocket.REQ_TYPE.ReqPOSTEncode, "link[url]=" + SrcUrl), String)
+                    Catch ex As Exception
+                        Return "Can't convert"
+                    End Try
+                End If
+                If Not ret.StartsWith("http://twurl.nl/") Then
+                    Return "Can't convert"
+                End If
+            Case UrlConverter.Unu
+                If SrcUrl.StartsWith("http") Then
+                    If "http://u.nu/xxxx".Length > src.Length AndAlso Not src.Contains("?") AndAlso Not src.Contains("#") Then
+                        ' 明らかに長くなると推測できる場合は圧縮しない
+                        ret = src
+                        Exit Select
+                    End If
+                    Try
+                        ret = DirectCast(CreateSocket.GetWebResponse("http://u.nu/unu-api-simple?url=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
+                    Catch ex As Exception
+                        Return "Can't convert"
+                    End Try
+                End If
+                If Not ret.StartsWith("http://u.nu") Then
+                    Return "Can't convert"
+                End If
+            Case UrlConverter.Bitly
+                Const BitlyLogin As String = "tweenapi"
+                Const BitlyApiKey As String = "R_c5ee0e30bdfff88723c4457cc331886b"
+                Const BitlyApiVersion As String = "2.0.1"
+                If SrcUrl.StartsWith("http") Then
+                    If "http://bit.ly/xxxx".Length > src.Length AndAlso Not src.Contains("?") AndAlso Not src.Contains("#") Then
+                        ' 明らかに長くなると推測できる場合は圧縮しない
+                        ret = src
+                        Exit Select
+                    End If
+                    Try
+                        ret = DirectCast(CreateSocket.GetWebResponse( _
+                            "http://api.bit.ly/shorten?version=" + BitlyApiVersion + _
+                            "&login=" + BitlyLogin + _
+                            "&apiKey=" + BitlyApiKey + _
+                            "&longUrl=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
+                        Dim rx As Regex = New Regex("""shortUrl"": ""(?<ShortUrl>.*?)""")
+                        If rx.Match(ret).Success Then
+                            ret = rx.Match(ret).Groups("ShortUrl").Value
+                        End If
+                    Catch ex As Exception
+                        Return "Can't convert"
+                    End Try
+                End If
+                If Not ret.StartsWith("http://bit.ly") Then
+                    Return "Can't convert"
+                End If
         End Select
-
+        '変換結果から改行を除去
+        Dim ch As Char() = {ControlChars.Cr, ControlChars.Lf}
+        ret = ret.TrimEnd(ch)
         If src.Length < ret.Length Then ret = src ' 圧縮の結果逆に長くなった場合は圧縮前のURLを返す
         Return ret
     End Function
@@ -2039,7 +2185,7 @@ RETRY:
         'スレッド取得は行わず、countで調整
         Const COUNT_QUERY As String = "count="
         Const FRIEND_PATH As String = "/statuses/friends_timeline.xml"
-        Const REPLY_PATH As String = "/statuses/replies.xml"
+        Const REPLY_PATH As String = "/statuses/mentions.xml"
 
         If gType = WORKERTYPE.Timeline Then
             retMsg = DirectCast(sck.GetWebResponse("https://" + _hubServer + FRIEND_PATH + "?" + COUNT_QUERY + _countApi.ToString(), resStatus, _ApiMethod), String)
@@ -2137,7 +2283,8 @@ RETRY:
                 dlgt(i).EndInvoke(ar(i))
             Catch ex As Exception
                 '最後までendinvoke回す（ゾンビ化回避）
-                ExceptionOut(ex)
+                ex.Data("IsTerminatePermission") = False
+                Throw
             End Try
         Next
 
@@ -2246,7 +2393,8 @@ RETRY:
                 dlgt(i).EndInvoke(ar(i))
             Catch ex As Exception
                 '最後までendinvoke回す（ゾンビ化回避）
-                ExceptionOut(ex)
+                ex.Data("IsTerminatePermission") = False
+                Throw
             End Try
         Next
 
@@ -2321,6 +2469,69 @@ RETRY:
             Return _remainCountApi
         End Get
     End Property
+
+    Public Function GetMaxCountApi() As Integer
+        Dim _maxcnt As Integer = 0
+        Dim resMsg As String = ""
+        Dim resStatus As String = ""
+        resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _rateLimitStatus, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        Dim xdoc As New XmlDocument
+        Try
+            xdoc.LoadXml(resMsg)
+            _maxcnt = Integer.Parse(xdoc.SelectSingleNode("/hash/hourly-limit").InnerText)
+        Catch ex As Exception
+            _maxcnt = 0
+        End Try
+        Return _maxcnt
+    End Function
+
+    Public Function GetRemainCountApi() As Integer
+        Dim _remain As Integer = 0
+        Dim resMsg As String = ""
+        Dim resStatus As String = ""
+        resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _rateLimitStatus, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        Dim xdoc As New XmlDocument
+        Try
+            xdoc.LoadXml(resMsg)
+            _remain = Integer.Parse(xdoc.SelectSingleNode("/hash/remaining-hits").InnerText)
+        Catch ex As Exception
+            _remain = 0
+        End Try
+        Return _remain
+    End Function
+
+    Public Function GetResetTimeApi() As DateTime
+        Dim _tm As DateTime
+        Dim resMsg As String = ""
+        Dim resStatus As String = ""
+        resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _rateLimitStatus, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        Dim xdoc As New XmlDocument
+        Try
+            xdoc.LoadXml(resMsg)
+            _tm = DateTime.Parse(xdoc.SelectSingleNode("/hash/reset-time").InnerText)
+        Catch ex As Exception
+            _tm = Nothing
+        End Try
+        Return _tm
+    End Function
+
+    Public Function GetInfoApi(ByRef info As ApiInfo) As Boolean
+
+        Dim resMsg As String = ""
+        Dim resStatus As String = ""
+        resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _rateLimitStatus, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        Dim xdoc As New XmlDocument
+        Try
+            xdoc.LoadXml(resMsg)
+            info.MaxCount = Integer.Parse(xdoc.SelectSingleNode("/hash/hourly-limit").InnerText)
+            info.RemainCount = Integer.Parse(xdoc.SelectSingleNode("/hash/remaining-hits").InnerText)
+            info.ResetTime = DateTime.Parse(xdoc.SelectSingleNode("/hash/reset-time").InnerText)
+            info.ResetTimeInSeconds = Integer.Parse(xdoc.SelectSingleNode("/hash/reset-time-in-seconds").InnerText)
+        Catch ex As Exception
+            Return False
+        End Try
+        Return True
+    End Function
 
 #Region "デバッグモード解析キー自動生成"
 #If DEBUG Then

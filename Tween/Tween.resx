@@ -192,6 +192,12 @@
   <data name="AddTabMenuItem.Text" xml:space="preserve">
     <value>タブ作成(&amp;N)...</value>
   </data>
+  <data name="TabRenameMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>187, 22</value>
+  </data>
+  <data name="TabRenameMenuItem.Text" xml:space="preserve">
+    <value>タブ名の変更</value>
+  </data>
   <data name="ToolStripSeparator20.Size" type="System.Drawing.Size, System.Drawing">
     <value>184, 6</value>
   </data>
@@ -247,7 +253,7 @@
     <value>タブ(&amp;T)</value>
   </data>
   <data name="ContextMenuTabProperty.Size" type="System.Drawing.Size, System.Drawing">
-    <value>188, 184</value>
+    <value>188, 206</value>
   </data>
   <data name="&gt;&gt;ContextMenuTabProperty.Name" xml:space="preserve">
     <value>ContextMenuTabProperty</value>
@@ -274,7 +280,7 @@
     <value>0, 0, 0, 0</value>
   </data>
   <data name="ListTab.Size" type="System.Drawing.Size, System.Drawing">
-    <value>457, 173</value>
+    <value>457, 170</value>
   </data>
   <data name="ListTab.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
@@ -406,19 +412,19 @@
     <value>1</value>
   </data>
   <metadata name="ContextMenuStrip4.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>337, 0</value>
+    <value>337, 7</value>
   </metadata>
-  <data name="SearchItem1ToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>145, 22</value>
-  </data>
-  <data name="SearchItem1ToolStripMenuItem.Text" xml:space="preserve">
-    <value>Wikipedia</value>
-  </data>
   <data name="SearchItem2ToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>145, 22</value>
   </data>
   <data name="SearchItem2ToolStripMenuItem.Text" xml:space="preserve">
     <value>Google</value>
+  </data>
+  <data name="SearchItem1ToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>145, 22</value>
+  </data>
+  <data name="SearchItem1ToolStripMenuItem.Text" xml:space="preserve">
+    <value>Wikipedia</value>
   </data>
   <data name="SearchItem3ToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>145, 22</value>
@@ -484,7 +490,7 @@
     <value>58, 20</value>
   </data>
   <data name="PostBrowser.Size" type="System.Drawing.Size, System.Drawing">
-    <value>396, 78</value>
+    <value>396, 81</value>
   </data>
   <data name="PostBrowser.TabIndex" type="System.Int32, mscorlib">
     <value>12</value>
@@ -544,7 +550,7 @@
     <value>2</value>
   </data>
   <data name="TableLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>457, 101</value>
+    <value>457, 104</value>
   </data>
   <data name="TableLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
     <value>20</value>
@@ -706,10 +712,10 @@
     <value>19</value>
   </data>
   <data name="SplitContainer2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>457, 124</value>
+    <value>457, 127</value>
   </data>
   <data name="SplitContainer2.SplitterDistance" type="System.Int32, mscorlib">
-    <value>101</value>
+    <value>104</value>
   </data>
   <data name="SplitContainer2.SplitterWidth" type="System.Int32, mscorlib">
     <value>2</value>
@@ -748,7 +754,7 @@
     <value>461, 307</value>
   </data>
   <data name="SplitContainer1.SplitterDistance" type="System.Int32, mscorlib">
-    <value>177</value>
+    <value>174</value>
   </data>
   <data name="SplitContainer1.SplitterWidth" type="System.Int32, mscorlib">
     <value>2</value>
@@ -1200,6 +1206,24 @@
   <data name="IsgdToolStripMenuItem.Text" xml:space="preserve">
     <value>is.gd</value>
   </data>
+  <data name="TwurlnlToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>215, 22</value>
+  </data>
+  <data name="TwurlnlToolStripMenuItem.Text" xml:space="preserve">
+    <value>twurl.nl</value>
+  </data>
+  <data name="UnuToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>215, 22</value>
+  </data>
+  <data name="UnuToolStripMenuItem.Text" xml:space="preserve">
+    <value>u.nu</value>
+  </data>
+  <data name="BitlyToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>215, 22</value>
+  </data>
+  <data name="BitlyToolStripMenuItem.Text" xml:space="preserve">
+    <value>bit.ly</value>
+  </data>
   <data name="TinyUrlConvertToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>195, 22</value>
   </data>
@@ -1283,6 +1307,12 @@
   </data>
   <data name="ToolStripSeparator14.Size" type="System.Drawing.Size, System.Drawing">
     <value>188, 6</value>
+  </data>
+  <data name="ApiInfoMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>191, 22</value>
+  </data>
+  <data name="ApiInfoMenuItem.Text" xml:space="preserve">
+    <value>API情報</value>
   </data>
   <data name="InfoTwitterMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>191, 22</value>
@@ -1395,8 +1425,14 @@
   <data name="ToolStripMenuItemUrlAutoShorten.Text" xml:space="preserve">
     <value>自動的にURLを短縮する</value>
   </data>
+  <data name="IdeographicSpaceToSpaceToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>231, 22</value>
+  </data>
+  <data name="IdeographicSpaceToSpaceToolStripMenuItem.Text" xml:space="preserve">
+    <value>全角スペースを半角スペースにする</value>
+  </data>
   <data name="ContextMenuStripPostMode.Size" type="System.Drawing.Size, System.Drawing">
-    <value>232, 70</value>
+    <value>232, 92</value>
   </data>
   <data name="&gt;&gt;ContextMenuStripPostMode.Name" xml:space="preserve">
     <value>ContextMenuStripPostMode</value>
@@ -1438,7 +1474,7 @@
     <value>True</value>
   </metadata>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>113</value>
+    <value>121</value>
   </metadata>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
     <value>6, 12</value>
@@ -1462,6 +1498,12 @@
     <value>AddTabMenuItem</value>
   </data>
   <data name="&gt;&gt;AddTabMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;TabRenameMenuItem.Name" xml:space="preserve">
+    <value>TabRenameMenuItem</value>
+  </data>
+  <data name="&gt;&gt;TabRenameMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;ToolStripSeparator20.Name" xml:space="preserve">
@@ -1560,16 +1602,16 @@
   <data name="&gt;&gt;ToolStripMenuItem2.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;SearchItem1ToolStripMenuItem.Name" xml:space="preserve">
-    <value>SearchItem1ToolStripMenuItem</value>
-  </data>
-  <data name="&gt;&gt;SearchItem1ToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="&gt;&gt;SearchItem2ToolStripMenuItem.Name" xml:space="preserve">
     <value>SearchItem2ToolStripMenuItem</value>
   </data>
   <data name="&gt;&gt;SearchItem2ToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;SearchItem1ToolStripMenuItem.Name" xml:space="preserve">
+    <value>SearchItem1ToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;SearchItem1ToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;SearchItem3ToolStripMenuItem.Name" xml:space="preserve">
@@ -1926,6 +1968,24 @@
   <data name="&gt;&gt;IsgdToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;TwurlnlToolStripMenuItem.Name" xml:space="preserve">
+    <value>TwurlnlToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;TwurlnlToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;UnuToolStripMenuItem.Name" xml:space="preserve">
+    <value>UnuToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;UnuToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;BitlyToolStripMenuItem.Name" xml:space="preserve">
+    <value>BitlyToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;BitlyToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;UpdateFollowersMenuItem1.Name" xml:space="preserve">
     <value>UpdateFollowersMenuItem1</value>
   </data>
@@ -2010,6 +2070,12 @@
   <data name="&gt;&gt;ToolStripSeparator14.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;ApiInfoMenuItem.Name" xml:space="preserve">
+    <value>ApiInfoMenuItem</value>
+  </data>
+  <data name="&gt;&gt;ApiInfoMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;InfoTwitterMenuItem.Name" xml:space="preserve">
     <value>InfoTwitterMenuItem</value>
   </data>
@@ -2062,6 +2128,12 @@
     <value>ToolStripMenuItemUrlAutoShorten</value>
   </data>
   <data name="&gt;&gt;ToolStripMenuItemUrlAutoShorten.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;IdeographicSpaceToSpaceToolStripMenuItem.Name" xml:space="preserve">
+    <value>IdeographicSpaceToSpaceToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;IdeographicSpaceToSpaceToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;TimerTimeline.Name" xml:space="preserve">
