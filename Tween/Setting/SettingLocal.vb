@@ -1,5 +1,17 @@
 ﻿<Serializable()> _
 Public Class SettingLocal
+    Inherits SettingBase(Of SettingLocal)
+
+#Region "Settingクラス基本"
+    Public Shared Function Load() As SettingLocal
+        Return LoadSettings()
+    End Function
+
+    Public Sub Save()
+        SaveSettings(Me)
+    End Sub
+#End Region
+
     Private _fc As New FontConverter
     Private _cc As New ColorConverter
 
@@ -197,10 +209,23 @@ Public Class SettingLocal
         End Set
     End Property
 
-    Private _encryptProxyPassword As String = ""
-    Public Property ProxyPassword() As String
+    <Xml.Serialization.XmlIgnore()> _
+    Public ProxyPassword As String = ""
+    Public Property EncryptProxyPassword() As String
         Get
-            Dim pwd As String = _encryptProxyPassword
+            Dim pwd As String = ProxyPassword
+            If pwd.Length > 0 Then
+                Try
+                    Return EncryptString(pwd)
+                Catch ex As Exception
+                    Return ""
+                End Try
+            Else
+                Return ""
+            End If
+        End Get
+        Set(ByVal value As String)
+            Dim pwd As String = value
             If pwd.Length > 0 Then
                 Try
                     pwd = DecryptString(pwd)
@@ -208,21 +233,7 @@ Public Class SettingLocal
                     pwd = ""
                 End Try
             End If
-            Return pwd
-        End Get
-        Set(ByVal value As String)
-            Dim pwd As String = value.Trim()
-            If pwd.Length > 0 Then
-                Try
-                    _encryptProxyPassword = EncryptString(pwd)
-                Catch ex As Exception
-                    _encryptProxyPassword = ""
-                End Try
-            Else
-                _encryptProxyPassword = ""
-            End If
+            ProxyPassword = pwd
         End Set
     End Property
-
-
 End Class

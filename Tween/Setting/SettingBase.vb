@@ -28,7 +28,7 @@
         SaveSettings(Instance, "")
     End Sub
 
-    Private Shared Function GetSettingFilePath(ByVal FileId As String) As String
+    Public Shared Function GetSettingFilePath(ByVal FileId As String) As String
         Return IO.Path.Combine(My.Application.Info.DirectoryPath, GetType(T).Name + FileId + ".config")
     End Function
 End Class

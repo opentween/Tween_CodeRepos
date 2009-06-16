@@ -892,6 +892,7 @@ Public NotInheritable Class TabInformations
     End Sub
 End Class
 
+<Serializable()> _
 Public NotInheritable Class TabClass
     Private _unreadManage As Boolean
     Private _notify As Boolean
@@ -916,6 +917,16 @@ Public NotInheritable Class TabClass
     End Structure
 
     Public Sub New()
+        _filters = New List(Of FiltersClass)
+        _notify = True
+        _soundFile = ""
+        _unreadManage = True
+        _ids = New List(Of Long)
+        _oldestUnreadItem = -1
+    End Sub
+
+    Public Sub New(ByVal TabName As String)
+        Me.TabName = TabName
         _filters = New List(Of FiltersClass)
         _notify = True
         _soundFile = ""
@@ -1036,6 +1047,7 @@ Public NotInheritable Class TabClass
         End Set
     End Property
 
+    <Xml.Serialization.XmlIgnore()> _
     Public Property OldestUnreadId() As Long
         Get
             Return _oldestUnreadItem
@@ -1045,6 +1057,7 @@ Public NotInheritable Class TabClass
         End Set
     End Property
 
+    <Xml.Serialization.XmlIgnore()> _
     Public Property UnreadCount() As Integer
         Get
             Return _unreadCount
@@ -1060,32 +1073,13 @@ Public NotInheritable Class TabClass
         End Get
     End Property
 
-    'Public Property Filters() As List(Of FiltersClass)
-    '    Get
-    '        Return _filters
-    '    End Get
-    '    Set(ByVal value As List(Of FiltersClass))
-    '        _filters = value
-    '    End Set
-    'End Property
-
     Public Function GetFilters() As FiltersClass()
-        'Try
-        '    rwLock.AcquireReaderLock(System.Threading.Timeout.Infinite) '読み取りロック取得
         Return _filters.ToArray()
-        'Finally
-        '    rwLock.ReleaseReaderLock()
-        'End Try
     End Function
 
     Public Sub RemoveFilter(ByVal filter As FiltersClass)
-        'Try
-        '    rwLock.AcquireWriterLock(System.Threading.Timeout.Infinite) '書き込みロック取得
         _filters.Remove(filter)
         _filterMod = True
-        'Finally
-        '    rwLock.ReleaseWriterLock()
-        'End Try
     End Sub
 
     Public Function AddFilter(ByVal filter As FiltersClass) As Boolean
@@ -1096,9 +1090,6 @@ Public NotInheritable Class TabClass
     End Function
 
     Public Sub EditFilter(ByVal original As FiltersClass, ByVal modified As FiltersClass)
-        'If _filters.Contains(modified) AndAlso original.ReferenceEquals(modified) Then
-        '    Exit Sub
-        'Else
         original.BodyFilter = modified.BodyFilter
         original.MoveFrom = modified.MoveFrom
         original.NameFilter = modified.NameFilter
@@ -1106,16 +1097,27 @@ Public NotInheritable Class TabClass
         original.SearchUrl = modified.SearchUrl
         original.SetMark = modified.SetMark
         original.UseRegex = modified.UseRegex
-        'End If
         _filterMod = True
     End Sub
 
+    <Xml.Serialization.XmlIgnore()> _
     Public Property Filters() As List(Of FiltersClass)
         Get
             Return _filters
         End Get
         Set(ByVal value As List(Of FiltersClass))
             _filters = value
+        End Set
+    End Property
+
+    Public Property FilterArray() As FiltersClass()
+        Get
+            Return _filters.ToArray
+        End Get
+        Set(ByVal value As FiltersClass())
+            For Each filters As FiltersClass In value
+                _filters.Add(filters)
+            Next
         End Set
     End Property
 
@@ -1137,6 +1139,7 @@ Public NotInheritable Class TabClass
         Return _ids.IndexOf(ID)
     End Function
 
+    <Xml.Serialization.XmlIgnore()> _
     Public Property FilterModified() As Boolean
         Get
             Return _filterMod
@@ -1160,6 +1163,7 @@ Public NotInheritable Class TabClass
     End Property
 End Class
 
+<Serializable()> _
 Public NotInheritable Class FiltersClass
     Implements System.IEquatable(Of FiltersClass)
     Private _name As String
@@ -1261,12 +1265,25 @@ Public NotInheritable Class FiltersClass
         End Set
     End Property
 
+    <Xml.Serialization.XmlIgnore()> _
     Public Property BodyFilter() As List(Of String)
         Get
             Return _body
         End Get
         Set(ByVal value As List(Of String))
             _body = value
+        End Set
+    End Property
+
+    Public Property BodyFilterArray() As String()
+        Get
+            Return _body.ToArray
+        End Get
+        Set(ByVal value As String())
+            _body = New List(Of String)
+            For Each filter As String In value
+                _body.Add(filter)
+            Next
         End Set
     End Property
 
