@@ -327,6 +327,9 @@ Public Class InternetSecurityManager
         pdwZone = 0
         Try
             Dim url As New Uri(pwszUrl)
+            If url.Scheme = "data" Then
+                Return WebBrowserAPI.URLPOLICY_DISALLOW
+            End If
         Catch ex As Exception
             Return WebBrowserAPI.URLPOLICY_DISALLOW
         End Try
