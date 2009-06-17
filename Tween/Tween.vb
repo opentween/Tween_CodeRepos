@@ -57,7 +57,7 @@ Public Class TweenMain
     Private detailHtmlFormat As String
 
     '設定ファイル関連
-    'Private _cfg As SettingToConfig '旧
+    Private _cfg As SettingToConfig '旧
     Private _cfgLocal As SettingLocal
     Private _cfgCommon As SettingCommon
 
@@ -701,10 +701,10 @@ Public Class TweenMain
 
         '<<<<<<<<タブ関連>>>>>>>
         'デフォルトタブの存在チェック、ない場合には追加
-        If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.RECENT) Then _statuses.Tabs.Add(DEFAULTTAB.RECENT, New TabClass)
-        If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.REPLY) Then _statuses.Tabs.Add(DEFAULTTAB.REPLY, New TabClass)
-        If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.DM) Then _statuses.Tabs.Add(DEFAULTTAB.DM, New TabClass)
-        If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.FAV) Then _statuses.Tabs.Add(DEFAULTTAB.FAV, New TabClass)
+        If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.RECENT) Then _statuses.Tabs.Add(DEFAULTTAB.RECENT, New TabClass(DEFAULTTAB.RECENT))
+        If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.REPLY) Then _statuses.Tabs.Add(DEFAULTTAB.REPLY, New TabClass(DEFAULTTAB.REPLY))
+        If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.DM) Then _statuses.Tabs.Add(DEFAULTTAB.DM, New TabClass(DEFAULTTAB.DM))
+        If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.FAV) Then _statuses.Tabs.Add(DEFAULTTAB.FAV, New TabClass(DEFAULTTAB.FAV))
         For Each tn As String In _statuses.Tabs.Keys
             If Not AddNewTab(tn, True) Then Throw New Exception("タブ作成エラー")
         Next
@@ -750,117 +750,117 @@ Public Class TweenMain
     Private Sub ConvertConfig()
         If LoadConfig() Then Exit Sub
 
-        '_cfg = SettingToConfig.Load()
-        'If _cfg Is Nothing Then Exit Sub
+        _cfg = SettingToConfig.Load()
+        If _cfg Is Nothing Then Exit Sub
 
-        ''新設定ファイルへ変換
-        ''新しくエントリを増設する場合はここに書く必要はない
-        '_cfgCommon.AlwaysTop = _cfg.AlwaysTop
-        '_cfgCommon.AutoShortUrlFirst = _cfg.AutoShortUrlFirst
-        '_cfgLocal.BrowserPath = _cfg.BrowserPath
-        '_cfgCommon.CheckReply = _cfg.CheckReply
-        '_cfgCommon.CloseToExit = _cfg.CloseToExit
-        '_cfgLocal.ColorAtFromTarget = _cfg.ColorAtFromTarget
-        '_cfgLocal.ColorAtSelf = _cfg.ColorAtSelf
-        '_cfgLocal.ColorAtTarget = _cfg.ColorAtTarget
-        '_cfgLocal.ColorFav = _cfg.ColorFav
-        '_cfgLocal.ColorOWL = _cfg.ColorOWL
-        '_cfgLocal.ColorRead = _cfg.ColorRead
-        '_cfgLocal.ColorSelf = _cfg.ColorSelf
-        '_cfgLocal.ColorTarget = _cfg.ColorTarget
-        '_cfgLocal.ColorUnread = _cfg.ColorUnread
-        '_cfgLocal.ColorInputBackcolor = _cfg.ColorInputBackcolor
-        '_cfgLocal.ColorInputFont = _cfg.ColorInputFont
-        '_cfgCommon.CountApi = _cfg.CountApi
-        '_cfgCommon.CultureCode = _cfg.cultureCode
-        '_cfgCommon.DateTimeFormat = _cfg.DateTimeFormat
-        '_cfgCommon.DefaultTimeOut = _cfg.DefaultTimeOut
-        '_cfgCommon.DispLatestPost = _cfg.DispLatestPost
-        '_cfgLocal.DisplayIndex1 = _cfg.DisplayIndex1
-        '_cfgLocal.DisplayIndex2 = _cfg.DisplayIndex2
-        '_cfgLocal.DisplayIndex3 = _cfg.DisplayIndex3
-        '_cfgLocal.DisplayIndex4 = _cfg.DisplayIndex4
-        '_cfgLocal.DisplayIndex5 = _cfg.DisplayIndex5
-        '_cfgLocal.DisplayIndex6 = _cfg.DisplayIndex6
-        '_cfgLocal.DisplayIndex7 = _cfg.DisplayIndex7
-        '_cfgLocal.DisplayIndex8 = _cfg.DisplayIndex8
-        '_cfgCommon.DispUsername = _cfg.DispUsername
-        '_cfgCommon.DMPeriod = _cfg.DMPeriod
-        '_cfgLocal.FontDetail = _cfg.FontDetail
-        '_cfgLocal.FontRead = _cfg.FontRead
-        '_cfgLocal.FontUnread = _cfg.FontUnread
-        '_cfgLocal.FontInputFont = _cfg.FontInputFont
-        '_cfgLocal.FormLocation = _cfg.FormLocation
-        '_cfgLocal.FormSize = _cfg.FormSize
-        '_cfgCommon.HubServer = _cfg.HubServer
-        '_cfgCommon.IconSize = _cfg.IconSize
-        '_cfgCommon.LimitBalloon = _cfg.LimitBalloon
-        '_cfgCommon.ListLock = _cfg.ListLock
-        '_cfgCommon.MaxPostNum = _cfg.MaxPostNum
-        '_cfgCommon.MinimizeToTray = _cfg.MinimizeToTray
-        '_cfgCommon.NameBalloon = _cfg.NameBalloon
-        '_cfgCommon.NewAllPop = _cfg.NewAllPop
-        '_cfgCommon.NextPages = _cfg.NextPages
-        '_cfgCommon.NextPageThreshold = _cfg.NextPageThreshold
-        '_cfgCommon.OneWayLove = _cfg.OneWayLove
-        '_cfgCommon.Outputz = _cfg.Outputz
-        '_cfgCommon.OutputzKey = _cfg.OutputzKey
-        '_cfgCommon.OutputzUrlMode = _cfg.OutputzUrlmode
-        '_cfgCommon.Password = _cfg.Password
-        '_cfgCommon.PeriodAdjust = _cfg.PeriodAdjust
-        '_cfgCommon.PlaySound = _cfg.PlaySound
-        '_cfgCommon.PostAndGet = _cfg.PostAndGet
-        '_cfgCommon.PostCtrlEnter = _cfg.PostCtrlEnter
-        '_cfgCommon.ProtectNotInclude = _cfg.ProtectNotInclude
-        '_cfgLocal.ProxyAddress = _cfg.ProxyAddress
-        '_cfgLocal.ProxyPassword = _cfg.ProxyPassword
-        '_cfgLocal.ProxyPort = _cfg.ProxyPort
-        '_cfgLocal.ProxyType = _cfg.ProxyType
-        '_cfgLocal.ProxyUser = _cfg.ProxyUser
-        '_cfgCommon.Read = _cfg.Read
-        '_cfgCommon.ReadPages = _cfg.ReadPages
-        '_cfgCommon.ReadPagesDM = _cfg.ReadPagesDM
-        '_cfgCommon.ReadPagesReply = _cfg.ReadPagesReply
-        '_cfgCommon.RestrictFavCheck = _cfg.RestrictFavCheck
-        '_cfgCommon.SortColumn = _cfg.SortColumn
-        '_cfgCommon.SortOrder = _cfg.SortOrder
-        '_cfgCommon.SortOrderLock = _cfg.SortOrderLock
-        '_cfgLocal.SplitterDistance = _cfg.SplitterDistance
-        '_cfgCommon.StartupFollowers = _cfg.StartupFollowers
-        '_cfgCommon.StartupKey = _cfg.StartupKey
-        '_cfgCommon.StartupVersion = _cfg.StartupVersion
-        '_cfgCommon.StartupApiModeNoWarning = _cfg.StartupAPImodeNoWarning
-        '_cfgLocal.StatusMultiline = _cfg.StatusMultiline
-        '_cfgLocal.StatusText = _cfg.StatusText
-        '_cfgLocal.StatusTextHeight = _cfg.StatusTextHeight
+        '新設定ファイルへ変換
+        '新しくエントリを増設する場合はここに書く必要はない
+        _cfgCommon.AlwaysTop = _cfg.AlwaysTop
+        _cfgCommon.AutoShortUrlFirst = _cfg.AutoShortUrlFirst
+        _cfgLocal.BrowserPath = _cfg.BrowserPath
+        _cfgCommon.CheckReply = _cfg.CheckReply
+        _cfgCommon.CloseToExit = _cfg.CloseToExit
+        _cfgLocal.ColorAtFromTarget = _cfg.ColorAtFromTarget
+        _cfgLocal.ColorAtSelf = _cfg.ColorAtSelf
+        _cfgLocal.ColorAtTarget = _cfg.ColorAtTarget
+        _cfgLocal.ColorFav = _cfg.ColorFav
+        _cfgLocal.ColorOWL = _cfg.ColorOWL
+        _cfgLocal.ColorRead = _cfg.ColorRead
+        _cfgLocal.ColorSelf = _cfg.ColorSelf
+        _cfgLocal.ColorTarget = _cfg.ColorTarget
+        _cfgLocal.ColorUnread = _cfg.ColorUnread
+        _cfgLocal.ColorInputBackcolor = _cfg.ColorInputBackcolor
+        _cfgLocal.ColorInputFont = _cfg.ColorInputFont
+        _cfgCommon.CountApi = _cfg.CountApi
+        _cfgCommon.CultureCode = _cfg.cultureCode
+        _cfgCommon.DateTimeFormat = _cfg.DateTimeFormat
+        _cfgCommon.DefaultTimeOut = _cfg.DefaultTimeOut
+        _cfgCommon.DispLatestPost = _cfg.DispLatestPost
+        _cfgLocal.DisplayIndex1 = _cfg.DisplayIndex1
+        _cfgLocal.DisplayIndex2 = _cfg.DisplayIndex2
+        _cfgLocal.DisplayIndex3 = _cfg.DisplayIndex3
+        _cfgLocal.DisplayIndex4 = _cfg.DisplayIndex4
+        _cfgLocal.DisplayIndex5 = _cfg.DisplayIndex5
+        _cfgLocal.DisplayIndex6 = _cfg.DisplayIndex6
+        _cfgLocal.DisplayIndex7 = _cfg.DisplayIndex7
+        _cfgLocal.DisplayIndex8 = _cfg.DisplayIndex8
+        _cfgCommon.DispUsername = _cfg.DispUsername
+        _cfgCommon.DMPeriod = _cfg.DMPeriod
+        _cfgLocal.FontDetail = _cfg.FontDetail
+        _cfgLocal.FontRead = _cfg.FontRead
+        _cfgLocal.FontUnread = _cfg.FontUnread
+        _cfgLocal.FontInputFont = _cfg.FontInputFont
+        _cfgLocal.FormLocation = _cfg.FormLocation
+        _cfgLocal.FormSize = _cfg.FormSize
+        _cfgCommon.HubServer = _cfg.HubServer
+        _cfgCommon.IconSize = _cfg.IconSize
+        _cfgCommon.LimitBalloon = _cfg.LimitBalloon
+        _cfgCommon.ListLock = _cfg.ListLock
+        _cfgCommon.MaxPostNum = _cfg.MaxPostNum
+        _cfgCommon.MinimizeToTray = _cfg.MinimizeToTray
+        _cfgCommon.NameBalloon = _cfg.NameBalloon
+        _cfgCommon.NewAllPop = _cfg.NewAllPop
+        _cfgCommon.NextPages = _cfg.NextPages
+        _cfgCommon.NextPageThreshold = _cfg.NextPageThreshold
+        _cfgCommon.OneWayLove = _cfg.OneWayLove
+        _cfgCommon.Outputz = _cfg.Outputz
+        _cfgCommon.OutputzKey = _cfg.OutputzKey
+        _cfgCommon.OutputzUrlMode = _cfg.OutputzUrlmode
+        _cfgCommon.Password = _cfg.Password
+        _cfgCommon.PeriodAdjust = _cfg.PeriodAdjust
+        _cfgCommon.PlaySound = _cfg.PlaySound
+        _cfgCommon.PostAndGet = _cfg.PostAndGet
+        _cfgCommon.PostCtrlEnter = _cfg.PostCtrlEnter
+        _cfgCommon.ProtectNotInclude = _cfg.ProtectNotInclude
+        _cfgLocal.ProxyAddress = _cfg.ProxyAddress
+        _cfgLocal.ProxyPassword = _cfg.ProxyPassword
+        _cfgLocal.ProxyPort = _cfg.ProxyPort
+        _cfgLocal.ProxyType = _cfg.ProxyType
+        _cfgLocal.ProxyUser = _cfg.ProxyUser
+        _cfgCommon.Read = _cfg.Read
+        _cfgCommon.ReadPages = _cfg.ReadPages
+        _cfgCommon.ReadPagesDM = _cfg.ReadPagesDM
+        _cfgCommon.ReadPagesReply = _cfg.ReadPagesReply
+        _cfgCommon.RestrictFavCheck = _cfg.RestrictFavCheck
+        _cfgCommon.SortColumn = _cfg.SortColumn
+        _cfgCommon.SortOrder = _cfg.SortOrder
+        _cfgCommon.SortOrderLock = _cfg.SortOrderLock
+        _cfgLocal.SplitterDistance = _cfg.SplitterDistance
+        _cfgCommon.StartupFollowers = _cfg.StartupFollowers
+        _cfgCommon.StartupKey = _cfg.StartupKey
+        _cfgCommon.StartupVersion = _cfg.StartupVersion
+        _cfgCommon.StartupApiModeNoWarning = _cfg.StartupAPImodeNoWarning
+        _cfgLocal.StatusMultiline = _cfg.StatusMultiline
+        _cfgLocal.StatusText = _cfg.StatusText
+        _cfgLocal.StatusTextHeight = _cfg.StatusTextHeight
 
-        'For Each item As KeyValuePair(Of String, TabClass) In _cfg.Tabs
-        '    Dim tabSetting As New SettingTab
-        '    tabSetting.Tab = item.Value
-        '    tabSetting.Save()
-        '    _cfgCommon.TabList.Add(item.Key)
-        'Next
-        '_statuses.Tabs = _cfg.tabs
-        '_cfgCommon.TimelinePeriod = _cfg.TimelinePeriod
-        '_cfgCommon.TinyUrlResolve = _cfg.TinyURLResolve
-        '_cfgCommon.UnreadManage = _cfg.UnreadManage
-        '_cfgCommon.UrlConvertAuto = _cfg.UrlConvertAuto
-        '_cfgCommon.UseApi = _cfg.UseAPI
-        '_cfgCommon.UsePostMethod = _cfg.UsePostMethod
-        '_cfgLocal.UseRecommendStatus = _cfg.UseRecommendStatus
-        '_cfgCommon.UserName = _cfg.UserName
-        '_cfgCommon.UseUnreadStyle = _cfg.UseUnreadStyle
-        '_cfgLocal.Width1 = _cfg.Width1
-        '_cfgLocal.Width2 = _cfg.Width2
-        '_cfgLocal.Width3 = _cfg.Width3
-        '_cfgLocal.Width4 = _cfg.Width4
-        '_cfgLocal.Width5 = _cfg.Width5
-        '_cfgLocal.Width6 = _cfg.Width6
-        '_cfgLocal.Width7 = _cfg.Width7
-        '_cfgLocal.Width8 = _cfg.Width8
-        ''念のため保存
-        '_cfgCommon.Save()
-        '_cfgLocal.Save()
+        For Each item As KeyValuePair(Of String, TabClass) In _cfg.Tabs
+            Dim tabSetting As New SettingTab
+            tabSetting.Tab = item.Value
+            tabSetting.Save()
+            _cfgCommon.TabList.Add(item.Key)
+        Next
+        _statuses.Tabs = _cfg.Tabs
+        _cfgCommon.TimelinePeriod = _cfg.TimelinePeriod
+        _cfgCommon.TinyUrlResolve = _cfg.TinyURLResolve
+        _cfgCommon.UnreadManage = _cfg.UnreadManage
+        _cfgCommon.UrlConvertAuto = _cfg.UrlConvertAuto
+        _cfgCommon.UseApi = _cfg.UseAPI
+        _cfgCommon.UsePostMethod = _cfg.UsePostMethod
+        _cfgLocal.UseRecommendStatus = _cfg.UseRecommendStatus
+        _cfgCommon.UserName = _cfg.UserName
+        _cfgCommon.UseUnreadStyle = _cfg.UseUnreadStyle
+        _cfgLocal.Width1 = _cfg.Width1
+        _cfgLocal.Width2 = _cfg.Width2
+        _cfgLocal.Width3 = _cfg.Width3
+        _cfgLocal.Width4 = _cfg.Width4
+        _cfgLocal.Width5 = _cfg.Width5
+        _cfgLocal.Width6 = _cfg.Width6
+        _cfgLocal.Width7 = _cfg.Width7
+        _cfgLocal.Width8 = _cfg.Width8
+        '念のため保存
+        _cfgCommon.Save()
+        _cfgLocal.Save()
     End Sub
 
     Private Sub Network_NetworkAvailabilityChanged(ByVal sender As Object, ByVal e As Devices.NetworkAvailableEventArgs)
