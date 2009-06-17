@@ -131,6 +131,7 @@
     <Compile Include="Setting.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="SettingToConfig.vb" />
     <Compile Include="Setting\SettingBase.vb" />
     <Compile Include="Setting\SettingCommon.vb" />
     <Compile Include="Setting\SettingLocal.vb" />

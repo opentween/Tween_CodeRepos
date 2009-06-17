@@ -330,7 +330,7 @@ Public NotInheritable Class TabInformations
     End Function
 
     Public Sub AddTab(ByVal TabName As String)
-        _tabs.Add(TabName, New TabClass())
+        _tabs.Add(TabName, New TabClass(TabName))
     End Sub
 
     Public Sub AddTab(ByVal TabName As String, ByVal Tab As TabClass)
@@ -770,6 +770,7 @@ Public NotInheritable Class TabInformations
     Public Sub RenameTab(ByVal Original As String, ByVal NewName As String)
         Dim tb As TabClass = _tabs(Original)
         _tabs.Remove(Original)
+        tb.TabName = NewName
         _tabs.Add(NewName, tb)
     End Sub
 
