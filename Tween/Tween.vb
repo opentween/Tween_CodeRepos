@@ -2919,55 +2919,58 @@ Public Class TweenMain
             regOpt = RegexOptions.IgnoreCase
             fndOpt = StringComparison.OrdinalIgnoreCase
         End If
+        Try
 RETRY:
-        If UseRegex Then
-            ' 正規表現検索
-            Dim _search As Regex
-            Try
-                _search = New Regex(_word)
+            If UseRegex Then
+                ' 正規表現検索
+                Dim _search As Regex
+                Try
+                    _search = New Regex(_word)
+                    For idx As Integer = cidx To toIdx Step stp
+                        Dim post As PostClass = _statuses.Item(_curTab.Text, idx)
+                        If _search.IsMatch(post.Nickname, regOpt) _
+                            OrElse _search.IsMatch(post.Data, regOpt) _
+                            OrElse _search.IsMatch(post.Name, regOpt) _
+                        Then
+                            SelectListItem(_curList, idx)
+                            _curList.EnsureVisible(idx)
+                            Exit Sub
+                        End If
+                    Next
+                Catch ex As ArgumentException
+                    MsgBox(My.Resources.DoTabSearchText1, MsgBoxStyle.Critical)
+                    Exit Sub
+                End Try
+            Else
+                ' 通常検索
                 For idx As Integer = cidx To toIdx Step stp
                     Dim post As PostClass = _statuses.Item(_curTab.Text, idx)
-                    If _search.IsMatch(post.Nickname, regOpt) _
-                        OrElse _search.IsMatch(post.Data, regOpt) _
-                        OrElse _search.IsMatch(post.Name, regOpt) _
+                    If post.Nickname.IndexOf(_word, fndOpt) > -1 _
+                        OrElse post.Data.IndexOf(_word, fndOpt) > -1 _
+                        OrElse post.Name.IndexOf(_word, fndOpt) > -1 _
                     Then
                         SelectListItem(_curList, idx)
                         _curList.EnsureVisible(idx)
                         Exit Sub
                     End If
                 Next
-            Catch ex As ArgumentException
-                MsgBox(My.Resources.DoTabSearchText1, MsgBoxStyle.Critical)
-                Exit Sub
-            End Try
-        Else
-            ' 通常検索
-            For idx As Integer = cidx To toIdx Step stp
-                Dim post As PostClass = _statuses.Item(_curTab.Text, idx)
-                If post.Nickname.IndexOf(_word, fndOpt) > -1 _
-                    OrElse post.Data.IndexOf(_word, fndOpt) > -1 _
-                    OrElse post.Name.IndexOf(_word, fndOpt) > -1 _
-                Then
-                    SelectListItem(_curList, idx)
-                    _curList.EnsureVisible(idx)
-                    Exit Sub
-                End If
-            Next
-        End If
+            End If
 
-        If Not fnd Then
-            Select Case SType
-                Case SEARCHTYPE.DialogSearch, SEARCHTYPE.NextSearch
-                    toIdx = cidx
-                    cidx = 0
-                Case SEARCHTYPE.PrevSearch
-                    toIdx = cidx
-                    cidx = _curList.Items.Count - 1
-            End Select
-            fnd = True
-            GoTo RETRY
-        End If
+            If Not fnd Then
+                Select Case SType
+                    Case SEARCHTYPE.DialogSearch, SEARCHTYPE.NextSearch
+                        toIdx = cidx
+                        cidx = 0
+                    Case SEARCHTYPE.PrevSearch
+                        toIdx = cidx
+                        cidx = _curList.Items.Count - 1
+                End Select
+                fnd = True
+                GoTo RETRY
+            End If
+        Catch ex As ArgumentOutOfRangeException
 
+        End Try
         MessageBox.Show(My.Resources.DoTabSearchText2, My.Resources.DoTabSearchText3, MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 
