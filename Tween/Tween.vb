@@ -5494,9 +5494,9 @@ RETRY:
 
             '<br>タグ除去
             If StatusText.Multiline Then
-                rtdata = Regex.Replace(rtdata, "\r<br>", vbCrLf, RegexOptions.IgnoreCase Or RegexOptions.Multiline)
+                rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)<br>", vbCrLf, RegexOptions.IgnoreCase Or RegexOptions.Multiline)
             Else
-                rtdata = Regex.Replace(rtdata, "\r<br>", "", RegexOptions.IgnoreCase Or RegexOptions.Multiline)
+                rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)<br>", "", RegexOptions.IgnoreCase Or RegexOptions.Multiline)
             End If
 
             StatusText.Text = "RT @" + _curPost.Name + ": " + rtdata
