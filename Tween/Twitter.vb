@@ -1054,7 +1054,7 @@ RETRY:
                         posl1 = orgData.IndexOf("<a href=""" + svc, posl2, StringComparison.Ordinal)
                         posl1 = orgData.IndexOf(svc, posl1, StringComparison.Ordinal)
                         posl2 = orgData.IndexOf("""", posl1, StringComparison.Ordinal)
-                        urlStr = orgData.Substring(posl1, posl2 - posl1)
+                        urlStr = New Uri(urlEncodeMultibyteChar(orgData.Substring(posl1, posl2 - posl1))).GetLeftPart(UriPartial.Path)
                         Dim Response As String = ""
                         Dim retUrlStr As String = ""
                         Dim tmpurlStr As String = urlStr
