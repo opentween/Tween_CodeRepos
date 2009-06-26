@@ -1040,72 +1040,83 @@ RETRY:
         Return orgData
     End Function
 
+    Private Function doShortUrlResolve(ByRef orgData As String) As Boolean
+        Dim replaced As Boolean = False
+        For Each _svc As String In _ShortUrlService
+            Dim svc As String = _svc
+            Dim posl1 As Integer
+            Dim posl2 As Integer = 0
+
+            Do While True
+                If orgData.IndexOf("<a href=""" + svc, posl2, StringComparison.Ordinal) > -1 Then
+                    Dim urlStr As String = ""
+                    Try
+                        posl1 = orgData.IndexOf("<a href=""" + svc, posl2, StringComparison.Ordinal)
+                        posl1 = orgData.IndexOf(svc, posl1, StringComparison.Ordinal)
+                        posl2 = orgData.IndexOf("""", posl1, StringComparison.Ordinal)
+                        urlStr = orgData.Substring(posl1, posl2 - posl1)
+                        Dim Response As String = ""
+                        Dim retUrlStr As String = ""
+                        Dim tmpurlStr As String = urlStr
+                        Dim SchemeAndDomain As Regex = New Regex("http://.+?/+?")
+                        Dim tmpSchemeAndDomain As String = ""
+                        For i As Integer = 0 To 4   'とりあえず5回試す
+                            retUrlStr = urlEncodeMultibyteChar(DirectCast(CreateSocket.GetWebResponse(tmpurlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String))
+                            If retUrlStr.Length > 0 Then
+                                ' 転送先URLが返された (まだ転送されるかもしれないので返値を引数にしてもう一度)
+                                ' 取得試行回数オーバーの場合は取得結果を転送先とする
+                                Dim scd As Match = SchemeAndDomain.Match(retUrlStr)
+                                If scd.Success AndAlso scd.Value <> svc Then
+                                    svc = scd.Value()
+                                End If
+                                tmpurlStr = retUrlStr
+                                Continue For
+                            Else
+                                ' 転送先URLが返されなかった
+                                If tmpurlStr <> urlStr Then
+                                    '少なくとも一度以上転送されている (前回の結果を転送先とする)
+                                    retUrlStr = tmpurlStr
+                                Else
+                                    ' 一度も転送されていない
+                                    retUrlStr = ""
+                                End If
+                                Exit For
+                            End If
+                        Next
+                        If retUrlStr.Length > 0 Then
+                            If Not retUrlStr.StartsWith("http") Then
+                                If retUrlStr.StartsWith("/") Then
+                                    retUrlStr = urlEncodeMultibyteChar(svc + retUrlStr.Substring(1))
+                                ElseIf retUrlStr.StartsWith("data:") Then
+                                    '
+                                Else
+                                    retUrlStr = urlEncodeMultibyteChar(retUrlStr.Insert(0, svc))
+                                End If
+                            Else
+                                retUrlStr = urlEncodeMultibyteChar(retUrlStr)
+                            End If
+                            orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
+                            posl2 = 0   '置換した場合は頭から再探索（複数同時置換での例外対応）
+                            replaced = True
+                        End If
+                    Catch ex As Exception
+                        '_signed = False
+                        'Return "GetTimeline -> Err: Can't get tinyurl."
+                    End Try
+                Else
+                    Exit Do
+                End If
+            Loop
+        Next
+        Return replaced
+    End Function
+
+
     Private Function ShortUrlResolve(ByVal orgData As String) As String
         If _tinyUrlResolve Then
-            For Each svc As String In _ShortUrlService
-                Dim posl1 As Integer
-                Dim posl2 As Integer = 0
+            Do
 
-                Do While True
-                    If orgData.IndexOf("<a href=""" + svc, posl2, StringComparison.Ordinal) > -1 Then
-                        Dim urlStr As String = ""
-                        Try
-                            posl1 = orgData.IndexOf("<a href=""" + svc, posl2, StringComparison.Ordinal)
-                            posl1 = orgData.IndexOf(svc, posl1, StringComparison.Ordinal)
-                            posl2 = orgData.IndexOf("""", posl1, StringComparison.Ordinal)
-                            urlStr = orgData.Substring(posl1, posl2 - posl1)
-                            Dim Response As String = ""
-                            Dim retUrlStr As String = ""
-                            Dim tmpurlStr As String = urlStr
-                            Dim SchemeAndDomain As Regex = New Regex("http://.+?/+?")
-                            Dim tmpSchemeAndDomain As String = ""
-                            For i As Integer = 0 To 4   'とりあえず5回試す
-                                retUrlStr = urlEncodeMultibyteChar(DirectCast(CreateSocket.GetWebResponse(tmpurlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo), String))
-                                If retUrlStr.Length > 0 Then
-                                    ' 転送先URLが返された (まだ転送されるかもしれないので返値を引数にしてもう一度)
-                                    ' 取得試行回数オーバーの場合は取得結果を転送先とする
-                                    Dim scd As Match = SchemeAndDomain.Match(retUrlStr)
-                                    If scd.Success AndAlso scd.Value <> svc Then
-                                        svc = scd.Value()
-                                    End If
-                                    tmpurlStr = retUrlStr
-                                    Continue For
-                                Else
-                                    ' 転送先URLが返されなかった
-                                    If tmpurlStr <> urlStr Then
-                                        '少なくとも一度以上転送されている (前回の結果を転送先とする)
-                                        retUrlStr = tmpurlStr
-                                    Else
-                                        ' 一度も転送されていない
-                                        retUrlStr = ""
-                                    End If
-                                    Exit For
-                                End If
-                            Next
-                            If retUrlStr.Length > 0 Then
-                                If Not retUrlStr.StartsWith("http") Then
-                                    If retUrlStr.StartsWith("/") Then
-                                        retUrlStr = urlEncodeMultibyteChar(svc + retUrlStr.Substring(1))
-                                    ElseIf retUrlStr.StartsWith("data:") Then
-                                        '
-                                    Else
-                                        retUrlStr = urlEncodeMultibyteChar(retUrlStr.Insert(0, svc))
-                                    End If
-                                Else
-                                    retUrlStr = urlEncodeMultibyteChar(retUrlStr)
-                                End If
-                                orgData = orgData.Replace("<a href=""" + urlStr, "<a href=""" + retUrlStr)
-                                posl2 = 0   '置換した場合は頭から再探索（複数同時置換での例外対応）
-                            End If
-                        Catch ex As Exception
-                            '_signed = False
-                            'Return "GetTimeline -> Err: Can't get tinyurl."
-                        End Try
-                    Else
-                        Exit Do
-                    End If
-                Loop
-            Next
+            Loop While doShortUrlResolve(orgData)
         End If
         Return orgData
     End Function
