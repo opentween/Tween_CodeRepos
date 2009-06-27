@@ -1360,8 +1360,8 @@ Public Class TweenMain
         End If
 
         If IdeographicSpaceToSpaceToolStripMenuItem.Checked Then
-            ' 文中の全角スペースを半角スペースにする
-            args.status = args.status.Replace("　"c, " "c)
+            ' 文中の全角スペースを半角スペース2個にする
+            args.status = args.status.Replace("　", "  ")
         End If
 
         RunAsync(args)
