@@ -379,17 +379,17 @@ Public NotInheritable Class SettingToConfig
             tconf = GetValueOrDefault("tabs", New List(Of XmlConfiguration))
             If tconf.Count = 0 Then
                 Dim tdic As New Dictionary(Of String, TabClass)
-                tdic.Add(DEFAULTTAB.RECENT, New TabClass)
-                tdic.Add(DEFAULTTAB.REPLY, New TabClass)
-                tdic.Add(DEFAULTTAB.DM, New TabClass)
-                tdic.Add(DEFAULTTAB.FAV, New TabClass)
+                tdic.Add(DEFAULTTAB.RECENT, New TabClass(DEFAULTTAB.RECENT))
+                tdic.Add(DEFAULTTAB.REPLY, New TabClass(DEFAULTTAB.REPLY))
+                tdic.Add(DEFAULTTAB.DM, New TabClass(DEFAULTTAB.DM))
+                tdic.Add(DEFAULTTAB.FAV, New TabClass(DEFAULTTAB.FAV))
                 Return tdic
             End If
             Dim tbd As New Dictionary(Of String, TabClass)
             For Each tc As XmlConfiguration In tconf
                 Dim name As String = tc.GetValueOrDefault("tabName", "")
                 If name = "" Then Exit For
-                Dim tb As New TabClass
+                Dim tb As New TabClass(name)
                 tb.Notify = tc.GetValueOrDefault("notify", True)
                 tb.SoundFile = tc.GetValueOrDefault("soundFile", "")
                 tb.UnreadManage = tc.GetValueOrDefault("unreadManage", True)

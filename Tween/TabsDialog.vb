@@ -47,9 +47,9 @@ Public Class TabsDialog
     End Sub
 
     Public Sub RemoveTab(ByVal tabName As String)
-        For Each obj As String In TabList.Items
-            If obj = tabName Then
-                TabList.Items.Remove(obj)
+        For i As Integer = 0 To TabList.Items.Count - 1
+            If CType(TabList.Items.Item(i), String) = tabName Then
+                TabList.Items.RemoveAt(i)
                 Exit Sub
             End If
         Next
