@@ -29,6 +29,6 @@
     End Sub
 
     Public Shared Function GetSettingFilePath(ByVal FileId As String) As String
-        Return IO.Path.Combine(My.Application.Info.DirectoryPath, GetType(T).Name + FileId + ".config")
+        Return IO.Path.Combine(My.Application.Info.DirectoryPath, GetType(T).Name + FileId + ".xml")
     End Function
 End Class
