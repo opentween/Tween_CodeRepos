@@ -4699,7 +4699,7 @@ RETRY:
         Else
             slbl.Append((TimerTimeline.Interval / 1000).ToString() + My.Resources.SetStatusLabelText3)
         End If
-        If Twitter.RemainCountApi > -1 Then
+        If Twitter.RemainCountApi > -1 AndAlso SettingDialog.UseAPI Then
             slbl.Append(" [API: " + Twitter.RemainCountApi.ToString + "]")
         End If
 
