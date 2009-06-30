@@ -84,7 +84,6 @@ Public Module Twitter
     Private _getDm As Boolean
     Private _remainCountApi As Integer = -1
 
-#If 0 Then
     Private _ShortUrlService() As String = { _
             "http://tinyurl.com/", _
             "http://is.gd/", _
@@ -116,7 +115,6 @@ Public Module Twitter
             "http://airme.us/", _
             "http://bctiny.com/" _
         }
-#End If
 
     Private Const _baseUrlStr As String = "twitter.com"
     Private Const _loginPath As String = "/sessions"
