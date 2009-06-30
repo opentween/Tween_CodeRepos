@@ -177,6 +177,17 @@ Public Class SettingLocal
     End Property
 
     <Xml.Serialization.XmlIgnore()> _
+    Public ColorAtTo As Color = Color.FromKnownColor(System.Drawing.KnownColor.Pink)
+    Public Property ColorAtToStr() As String
+        Get
+            Return _cc.ConvertToString(ColorAtTo)
+        End Get
+        Set(ByVal value As String)
+            ColorAtTo = DirectCast(_cc.ConvertFromString(value), Color)
+        End Set
+    End Property
+
+    <Xml.Serialization.XmlIgnore()> _
     Public ColorInputBackcolor As Color = Color.FromKnownColor(System.Drawing.KnownColor.LemonChiffon)
     Public Property ColorInputBackcolorStr() As String
         Get

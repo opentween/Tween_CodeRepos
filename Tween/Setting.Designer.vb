@@ -63,8 +63,8 @@ Partial Class Setting
         Me.btnUnread = New System.Windows.Forms.Button
         Me.lblUnread = New System.Windows.Forms.Label
         Me.Label20 = New System.Windows.Forms.Label
-        Me.Button4 = New System.Windows.Forms.Button
-        Me.Label48 = New System.Windows.Forms.Label
+        Me.btnAtTo = New System.Windows.Forms.Button
+        Me.lblAtTo = New System.Windows.Forms.Label
         Me.Label49 = New System.Windows.Forms.Label
         Me.Button2 = New System.Windows.Forms.Button
         Me.Label13 = New System.Windows.Forms.Label
@@ -380,8 +380,8 @@ Partial Class Setting
         Me.GroupBox1.Controls.Add(Me.btnUnread)
         Me.GroupBox1.Controls.Add(Me.lblUnread)
         Me.GroupBox1.Controls.Add(Me.Label20)
-        Me.GroupBox1.Controls.Add(Me.Button4)
-        Me.GroupBox1.Controls.Add(Me.Label48)
+        Me.GroupBox1.Controls.Add(Me.btnAtTo)
+        Me.GroupBox1.Controls.Add(Me.lblAtTo)
         Me.GroupBox1.Controls.Add(Me.Label49)
         Me.GroupBox1.Controls.Add(Me.Button2)
         Me.GroupBox1.Controls.Add(Me.Label13)
@@ -471,17 +471,17 @@ Partial Class Setting
         resources.ApplyResources(Me.Label20, "Label20")
         Me.Label20.Name = "Label20"
         '
-        'Button4
+        'btnAtTo
         '
-        resources.ApplyResources(Me.Button4, "Button4")
-        Me.Button4.Name = "Button4"
-        Me.Button4.UseVisualStyleBackColor = True
+        resources.ApplyResources(Me.btnAtTo, "btnAtTo")
+        Me.btnAtTo.Name = "btnAtTo"
+        Me.btnAtTo.UseVisualStyleBackColor = True
         '
-        'Label48
+        'lblAtTo
         '
-        Me.Label48.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        resources.ApplyResources(Me.Label48, "Label48")
-        Me.Label48.Name = "Label48"
+        Me.lblAtTo.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        resources.ApplyResources(Me.lblAtTo, "lblAtTo")
+        Me.lblAtTo.Name = "lblAtTo"
         '
         'Label49
         '
@@ -1499,8 +1499,8 @@ Partial Class Setting
     Friend WithEvents TabPage3 As System.Windows.Forms.TabPage
     Friend WithEvents TabPage4 As System.Windows.Forms.TabPage
     Friend WithEvents Button3 As System.Windows.Forms.Button
-    Friend WithEvents Button4 As System.Windows.Forms.Button
-    Friend WithEvents Label48 As System.Windows.Forms.Label
+    Friend WithEvents btnAtTo As System.Windows.Forms.Button
+    Friend WithEvents lblAtTo As System.Windows.Forms.Label
     Friend WithEvents Label49 As System.Windows.Forms.Label
     Friend WithEvents CheckTinyURL As System.Windows.Forms.CheckBox
     Friend WithEvents Label50 As System.Windows.Forms.Label

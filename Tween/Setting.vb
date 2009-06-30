@@ -51,6 +51,7 @@ Public Class Setting
     Private _clTarget As Color
     Private _clAtTarget As Color
     Private _clAtFromTarget As Color
+    Private _clAtTo As Color
     Private _clInputBackcolor As Color
     Private _clInputFont As Color
     Private _fntInputFont As Font
@@ -140,6 +141,7 @@ Public Class Setting
             _clTarget = lblTarget.BackColor
             _clAtTarget = lblAtTarget.BackColor
             _clAtFromTarget = lblAtFromTarget.BackColor
+            _clAtTo = lblAtTo.BackColor
             _clInputBackcolor = lblInputBackcolor.BackColor
             _clInputFont = lblInputFont.ForeColor
             _fntInputFont = lblInputFont.Font
@@ -286,6 +288,7 @@ Public Class Setting
         lblTarget.BackColor = _clTarget
         lblAtTarget.BackColor = _clAtTarget
         lblAtFromTarget.BackColor = _clAtFromTarget
+        lblAtTo.BackColor = _clAtTo
         lblInputBackcolor.BackColor = _clInputBackcolor
         lblInputFont.ForeColor = _clInputFont
         lblInputFont.Font = _fntInputFont
@@ -605,7 +608,7 @@ Public Class Setting
 
     End Sub
 
-    Private Sub btnColor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSelf.Click, btnAtSelf.Click, btnTarget.Click, btnAtTarget.Click, btnAtFromTarget.Click, btnFav.Click, btnOWL.Click, btnInputBackcolor.Click
+    Private Sub btnColor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSelf.Click, btnAtSelf.Click, btnTarget.Click, btnAtTarget.Click, btnAtFromTarget.Click, btnFav.Click, btnOWL.Click, btnInputBackcolor.Click, btnAtTo.Click
         Dim Btn As Button = CType(sender, Button)
         Dim rtn As DialogResult
 
@@ -635,6 +638,8 @@ Public Class Setting
                 '    'ColorDialog1.Color = lblReaded.ForeColor
             Case "btnInputBackcolor"
                 ColorDialog1.Color = lblInputBackcolor.BackColor
+            Case "btnAtTo"
+                ColorDialog1.Color = lblAtTo.BackColor
         End Select
 
         rtn = ColorDialog1.ShowDialog
@@ -662,6 +667,8 @@ Public Class Setting
                 '    'lblReaded.ForeColor = ColorDialog1.Color
             Case "btnInputBackcolor"
                 lblInputBackcolor.BackColor = ColorDialog1.Color
+            Case "btnAtTo"
+                lblAtTo.BackColor = ColorDialog1.Color
         End Select
     End Sub
 
@@ -944,6 +951,15 @@ Public Class Setting
         End Get
         Set(ByVal value As Color)
             _clAtFromTarget = value
+        End Set
+    End Property
+
+    Public Property ColorAtTo() As Color
+        Get
+            Return _clAtTo
+        End Get
+        Set(ByVal value As Color)
+            _clAtTo = value
         End Set
     End Property
 

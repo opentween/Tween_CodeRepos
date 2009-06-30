@@ -83,6 +83,7 @@ Public Class TweenMain
     Private _clTarget As Color            '選択発言者の他の発言用背景色
     Private _clAtTarget As Color          '選択発言中の返信先用背景色
     Private _clAtFromTarget As Color      '選択発言者への返信発言用背景色
+    Private _clAtTo As Color              '選択発言の唯一＠先
     Private _clInputBackcolor As Color      '入力欄背景色
     Private _clInputFont As Color           '入力欄文字色
     Private _fntInputFont As Font           '入力欄フォント
@@ -125,6 +126,7 @@ Public Class TweenMain
     Private _brsBackColorAt As SolidBrush
     Private _brsBackColorYou As SolidBrush
     Private _brsBackColorAtYou As SolidBrush
+    Private _brsBackColorAtFromTarget As SolidBrush
     Private _brsBackColorAtTo As SolidBrush
     Private _brsBackColorNone As SolidBrush
     Private _brsDeactiveSelection As New SolidBrush(Color.FromKnownColor(KnownColor.ButtonFace))
@@ -250,6 +252,7 @@ Public Class TweenMain
         If _brsBackColorAt IsNot Nothing Then _brsBackColorAt.Dispose()
         If _brsBackColorYou IsNot Nothing Then _brsBackColorYou.Dispose()
         If _brsBackColorAtYou IsNot Nothing Then _brsBackColorAtYou.Dispose()
+        If _brsBackColorAtFromTarget IsNot Nothing Then _brsBackColorAtFromTarget.Dispose()
         If _brsBackColorAtTo IsNot Nothing Then _brsBackColorAtTo.Dispose()
         If _brsBackColorNone IsNot Nothing Then _brsBackColorNone.Dispose()
         If _brsDeactiveSelection IsNot Nothing Then _brsDeactiveSelection.Dispose()
@@ -376,6 +379,7 @@ Public Class TweenMain
         _clTarget = _cfgLocal.ColorTarget
         _clAtTarget = _cfgLocal.ColorAtTarget
         _clAtFromTarget = _cfgLocal.ColorAtFromTarget
+        _clAtTo = _cfgLocal.ColorAtTo
         _clInputBackcolor = _cfgLocal.ColorInputBackcolor
         _clInputFont = _cfgLocal.ColorInputFont
         _fntInputFont = _cfgLocal.FontInputFont
@@ -388,7 +392,8 @@ Public Class TweenMain
         _brsBackColorAt = New SolidBrush(_clAtSelf)
         _brsBackColorYou = New SolidBrush(_clTarget)
         _brsBackColorAtYou = New SolidBrush(_clAtTarget)
-        _brsBackColorAtTo = New SolidBrush(_clAtFromTarget)
+        _brsBackColorAtFromTarget = New SolidBrush(_clAtFromTarget)
+        _brsBackColorAtTo = New SolidBrush(_clAtTo)
         _brsBackColorNone = New SolidBrush(Color.FromKnownColor(KnownColor.Window))
         detailHtmlFormat = detailHtmlFormat1 + _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3
 
@@ -438,6 +443,7 @@ Public Class TweenMain
         SettingDialog.ColorTarget = _clTarget
         SettingDialog.ColorAtTarget = _clAtTarget
         SettingDialog.ColorAtFromTarget = _clAtFromTarget
+        SettingDialog.ColorAtTo = _clAtTo
         SettingDialog.ColorInputBackcolor = _clInputBackcolor
         SettingDialog.ColorInputFont = _clInputFont
         SettingDialog.FontInputFont = _fntInputFont
@@ -537,6 +543,7 @@ Public Class TweenMain
             _clTarget = SettingDialog.ColorTarget
             _clAtTarget = SettingDialog.ColorAtTarget
             _clAtFromTarget = SettingDialog.ColorAtFromTarget
+            _clAtTo = SettingDialog.ColorAtTo
             _clInputBackcolor = SettingDialog.ColorInputBackcolor
             _clInputFont = SettingDialog.ColorInputFont
             _fntInputFont = SettingDialog.FontInputFont
@@ -552,12 +559,14 @@ Public Class TweenMain
             _brsBackColorAt.Dispose()
             _brsBackColorYou.Dispose()
             _brsBackColorAtYou.Dispose()
+            _brsBackColorAtFromTarget.Dispose()
             _brsBackColorAtTo.Dispose()
             _brsBackColorMine = New SolidBrush(_clSelf)
             _brsBackColorAt = New SolidBrush(_clAtSelf)
             _brsBackColorYou = New SolidBrush(_clTarget)
             _brsBackColorAtYou = New SolidBrush(_clAtTarget)
-            _brsBackColorAtTo = New SolidBrush(_clAtFromTarget)
+            _brsBackColorAtFromTarget = New SolidBrush(_clAtFromTarget)
+            _brsBackColorAtTo = New SolidBrush(_clAtTo)
             detailHtmlFormat = detailHtmlFormat1 + _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3
             '他の設定項目は、随時設定画面で保持している値を読み出して使用
         End If
@@ -1254,7 +1263,10 @@ Public Class TweenMain
 
     Private Function JudgeColor(ByVal BasePost As PostClass, ByVal TargetPost As PostClass) As Color
         Dim cl As Color
-        If TargetPost.IsMe Then
+        If TargetPost.Id = BasePost.InReplyToId Then
+            '@先
+            cl = _clAtTo
+        ElseIf TargetPost.IsMe Then
             '自分=発言者
             cl = _clSelf
         ElseIf TargetPost.Name.Equals(BasePost.Name, StringComparison.OrdinalIgnoreCase) Then
@@ -2244,6 +2256,7 @@ Public Class TweenMain
                 _clTarget = SettingDialog.ColorTarget
                 _clAtTarget = SettingDialog.ColorAtTarget
                 _clAtFromTarget = SettingDialog.ColorAtFromTarget
+                _clAtTo = SettingDialog.ColorAtTo
                 _clInputBackcolor = SettingDialog.ColorInputBackcolor
                 _clInputFont = SettingDialog.ColorInputFont
                 _fntInputFont = SettingDialog.FontInputFont
@@ -2262,12 +2275,14 @@ Public Class TweenMain
                 _brsBackColorAt.Dispose()
                 _brsBackColorYou.Dispose()
                 _brsBackColorAtYou.Dispose()
+                _brsBackColorAtFromTarget.Dispose()
                 _brsBackColorAtTo.Dispose()
                 _brsBackColorMine = New SolidBrush(_clSelf)
                 _brsBackColorAt = New SolidBrush(_clAtSelf)
                 _brsBackColorYou = New SolidBrush(_clTarget)
                 _brsBackColorAtYou = New SolidBrush(_clAtTarget)
-                _brsBackColorAtTo = New SolidBrush(_clAtFromTarget)
+                _brsBackColorAtFromTarget = New SolidBrush(_clAtFromTarget)
+                _brsBackColorAtTo = New SolidBrush(_clAtTo)
                 detailHtmlFormat = detailHtmlFormat1 + _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3
                 _statuses.SetUnreadManage(SettingDialog.UnreadManage)
                 For Each tb As TabPage In ListTab.TabPages
@@ -2801,6 +2816,8 @@ Public Class TweenMain
                 Case _clAtTarget
                     brs2 = _brsBackColorAtYou
                 Case _clAtFromTarget
+                    brs2 = _brsBackColorAtFromTarget
+                Case _clAtTo
                     brs2 = _brsBackColorAtTo
                 Case Else
                     brs2 = _brsBackColorNone
@@ -3852,6 +3869,7 @@ RETRY:
             _cfgLocal.ColorTarget = _clTarget
             _cfgLocal.ColorAtTarget = _clAtTarget
             _cfgLocal.ColorAtFromTarget = _clAtFromTarget
+            _cfgLocal.ColorAtTo = _clAtTo
             _cfgLocal.ColorInputBackcolor = _clInputBackcolor
             _cfgLocal.ColorInputFont = _clInputFont
             _cfgLocal.FontInputFont = _fntInputFont
@@ -4769,6 +4787,7 @@ RETRY:
 
     Private Sub RepliedStatusOpenMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RepliedStatusOpenMenuItem.Click
         If _curPost IsNot Nothing AndAlso _curPost.InReplyToUser IsNot Nothing AndAlso _curPost.InReplyToId > 0 Then
+
             OpenUriAsync("http://twitter.com/" + _curPost.InReplyToUser + "/statuses/" + _curPost.InReplyToId.ToString())
         End If
     End Sub
