@@ -25,6 +25,7 @@ Imports System.Text
 Imports System.Globalization
 Imports System.Security.Principal
 Imports System.Reflection
+Imports System.Web
 
 Public Module MyCommon
     Private ReadOnly LockObj As New Object
@@ -280,10 +281,11 @@ Public Module MyCommon
     ''' <param name = input>エンコード対象のURL</param>
     ''' <returns>マルチバイト文字の部分をUTF-8/%xx形式でエンコードした文字列を返します。</returns>
 
-    Public Function urlEncodeMultibyteChar(ByVal input As String) As String
+    Public Function urlEncodeMultibyteChar(ByVal _input As String) As String
         Dim uri As Uri = Nothing
         Dim sb As StringBuilder = New StringBuilder(256)
         Dim result As String = ""
+        Dim input As String = HttpUtility.UrlDecode(_input)
 retry:
         For Each c As Char In input
             If Convert.ToInt32(c) > 255 Then
