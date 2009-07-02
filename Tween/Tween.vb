@@ -5501,26 +5501,28 @@ RETRY:
             If _curPost.IsDm OrElse SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Or _
                Not StatusText.Enabled Then Exit Sub
 
-            Dim rtdata As String = _curPost.OriginalData
-            ' Twitterにより省略されているURLを含むaタグをキャプチャしてリンク先URLへ置き換える
-            Dim rx As Regex = New Regex("<a target=""_self"" href=""(?<url>[^""]+)"" rel=""nofollow"" target=""_blank"">(?<link>[^<]+)</a>")
-            rtdata = rx.Replace(rtdata, "${url}")
+            Dim rtdata As String = _curPost.Data
 
-            'その他のリンク(@IDなど)を置き換える
-            rx = New Regex("<a target=""_self"" href=""(?<url>[^""]+)"">(?<link>[^<]+)</a>")
-            rtdata = rx.Replace(rtdata, "${link}")
+            'Dim rtdata As String = _curPost.OriginalData
+            '' Twitterにより省略されているURLを含むaタグをキャプチャしてリンク先URLへ置き換える
+            'Dim rx As Regex = New Regex("<a target=""_self"" href=""(?<url>[^""]+)"" rel=""nofollow"" target=""_blank"">(?<link>[^<]+)</a>")
+            'rtdata = rx.Replace(rtdata, "${url}")
 
-            '<br>タグ除去
-            If StatusText.Multiline Then
-                rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)<br>", vbCrLf, RegexOptions.IgnoreCase Or RegexOptions.Multiline)
-            Else
-                rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)<br>", "", RegexOptions.IgnoreCase Or RegexOptions.Multiline)
-            End If
+            ''その他のリンク(@IDなど)を置き換える
+            'rx = New Regex("<a target=""_self"" href=""(?<url>[^""]+)"">(?<link>[^<]+)</a>")
+            'rtdata = rx.Replace(rtdata, "${link}")
+
+            ''<br>タグ除去
+            'If StatusText.Multiline Then
+            '    rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)<br>", vbCrLf, RegexOptions.IgnoreCase Or RegexOptions.Multiline)
+            'Else
+            '    rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)<br>", "", RegexOptions.IgnoreCase Or RegexOptions.Multiline)
+            'End If
 
             StatusText.Text = "RT @" + _curPost.Name + ": " + rtdata
             _reply_to_id = 0
             _reply_to_name = Nothing
-            StatusText.SelectionStart = StatusText.Text.Length
+            StatusText.SelectionStart = 0
             StatusText.Focus()
         End If
     End Sub
