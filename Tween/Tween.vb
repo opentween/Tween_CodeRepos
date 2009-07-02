@@ -845,11 +845,16 @@ Public Class TweenMain
 
         For Each item As KeyValuePair(Of String, TabClass) In _cfg.Tabs
             Dim tabSetting As New SettingTab
+            item.Value.TabName = ReplaceInvalidFilename(item.Value.TabName)
             tabSetting.Tab = item.Value
             tabSetting.Save()
-            _cfgCommon.TabList.Add(item.Key)
+            _cfgCommon.TabList.Add(ReplaceInvalidFilename(item.Key))
+            If Not _statuses.Tabs.ContainsKey(tabSetting.Tab.TabName) Then
+                _statuses.Tabs.Add(tabSetting.Tab.TabName, tabSetting.Tab)
+            ElseIf tabSetting.Tab.TabName = DEFAULTTAB.REPLY Then
+                _statuses.Tabs(DEFAULTTAB.REPLY) = tabSetting.Tab
+            End If
         Next
-        _statuses.Tabs = _cfg.Tabs
         _cfgCommon.TimelinePeriod = _cfg.TimelinePeriod
         _cfgCommon.TinyUrlResolve = _cfg.TinyURLResolve
         _cfgCommon.UnreadManage = _cfg.UnreadManage
@@ -2335,6 +2340,7 @@ Public Class TweenMain
 
         '新規タブ名チェック
         If tabName = My.Resources.AddNewTabText1 Then Return False
+        If tabName <> ReplaceInvalidFilename(tabName) Then Return False
 
         'Dim myTab As New TabStructure()
 
@@ -3973,7 +3979,8 @@ RETRY:
         If newTabText <> "" Then
             '新タブ名存在チェック
             For i As Integer = 0 To ListTab.TabCount - 1
-                If ListTab.TabPages(i).Text = newTabText Then
+                If ListTab.TabPages(i).Text = newTabText OrElse _
+                   newTabText <> ReplaceInvalidFilename(newTabText) Then
                     Dim tmp As String = String.Format(My.Resources.Tabs_DoubleClickText1, newTabText)
                     MessageBox.Show(tmp, My.Resources.Tabs_DoubleClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                     Exit Sub

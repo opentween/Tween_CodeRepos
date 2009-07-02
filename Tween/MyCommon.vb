@@ -485,4 +485,16 @@ retry:
         'NT6 kernelかどうか検査
         Return Environment.OSVersion.Platform = PlatformID.Win32NT AndAlso Environment.OSVersion.Version.Major = 6
     End Function
+
+    Public Function ReplaceInvalidFilename(ByVal name As String) As String
+        name = name.Replace("\", "[en]")
+        name = name.Replace(":", "[c]")
+        name = name.Replace("/", "[bs]")
+        name = name.Replace("?", "[q]")
+        name = name.Replace("*", "[a]")
+        name = name.Replace("<", "[lt]")
+        name = name.Replace(">", "[gt]")
+        name = name.Replace("|", "[p]")
+        Return name
+    End Function
 End Module
