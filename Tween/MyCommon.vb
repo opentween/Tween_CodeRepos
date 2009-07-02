@@ -495,6 +495,9 @@ retry:
         name = name.Replace("<", "[lt]")
         name = name.Replace(">", "[gt]")
         name = name.Replace("|", "[p]")
+        name = name.Replace(ChrW(&H201D), "[wdq]")
+        name = name.Replace("""", "[dq]")
+
         Return name
     End Function
 End Module

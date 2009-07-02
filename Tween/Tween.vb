@@ -737,6 +737,7 @@ Public Class TweenMain
     End Sub
 
     Private Function LoadConfig() As Boolean
+
         _cfgCommon = SettingCommon.Load()
         _cfgLocal = SettingLocal.Load()
         If _cfgCommon.TabList.Count > 0 Then
@@ -4279,6 +4280,7 @@ RETRY:
         End If
         SetMainWindowTitle()
         SetStatusLabel()
+        SaveConfigsTab()
     End Sub
 
     Private Sub NotifyDispMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles NotifyDispMenuItem.Click
@@ -4286,6 +4288,7 @@ RETRY:
 
         Dim tb As TabClass = _statuses.Tabs(_rclickTabName)
         tb.Notify = NotifyDispMenuItem.Checked
+        SaveConfigsTab()
     End Sub
 
     Private Sub SoundFileComboBox_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SoundFileComboBox.SelectedIndexChanged
@@ -4293,6 +4296,7 @@ RETRY:
 
         Dim tb As TabClass = _statuses.Tabs(_rclickTabName)
         tb.SoundFile = DirectCast(SoundFileComboBox.SelectedItem, String)
+        SaveConfigsTab()
     End Sub
 
     Private Sub DeleteTabMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles DeleteTabMenuItem.Click
@@ -4783,6 +4787,7 @@ RETRY:
         Else
             SettingDialog.PlaySound = False
         End If
+        SaveConfigsCommon()
     End Sub
 
     Private Sub SplitContainer1_SplitterMoved(ByVal sender As Object, ByVal e As System.Windows.Forms.SplitterEventArgs) Handles SplitContainer1.SplitterMoved
@@ -5016,10 +5021,12 @@ RETRY:
 
     Private Sub NewPostPopMenuItem_CheckStateChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles NewPostPopMenuItem.CheckStateChanged
         _cfgCommon.NewAllPop = NewPostPopMenuItem.Checked
+        _cfgCommon.Save()
     End Sub
 
     Private Sub ListLockMenuItem_CheckStateChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ListLockMenuItem.CheckStateChanged
         _cfgCommon.ListLock = ListLockMenuItem.Checked
+        _cfgCommon.Save()
     End Sub
 
     Private Sub MenuStrip1_MenuActivate(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuStrip1.MenuActivate
@@ -5538,6 +5545,7 @@ RETRY:
 
     Private Sub ToolStripMenuItemUrlAutoShorten_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripMenuItemUrlAutoShorten.CheckedChanged
         SettingDialog.UrlConvertAuto = ToolStripMenuItemUrlAutoShorten.Checked
+        SaveConfigsCommon()
     End Sub
 
     Private Sub ContextMenuStripPostMode_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuStripPostMode.Opening
