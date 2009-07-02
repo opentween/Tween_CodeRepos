@@ -25,7 +25,7 @@ Public Class SettingTab
 
     Public Shared Sub DeleteConfigFile()
         For Each FileName As String In System.IO.Directory.GetFiles( _
-                       My.Application.Info.DirectoryPath, "SettingTab*.config")
+                       My.Application.Info.DirectoryPath, "SettingTab*.xml")
 
             'オプションはお好みで
             My.Computer.FileSystem.DeleteFile(FileName, FileIO.UIOption.OnlyErrorDialogs, _
