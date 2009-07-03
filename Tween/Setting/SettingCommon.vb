@@ -19,6 +19,7 @@ Public Class SettingCommon
     Public Property EncryptPassword() As String
         Get
             Dim pwd As String = Password
+            If String.IsNullOrEmpty(pwd) Then pwd = ""
             If pwd.Length > 0 Then
                 Try
                     Return EncryptString(pwd)
@@ -31,6 +32,7 @@ Public Class SettingCommon
         End Get
         Set(ByVal value As String)
             Dim pwd As String = value
+            If String.IsNullOrEmpty(pwd) Then pwd = ""
             If pwd.Length > 0 Then
                 Try
                     pwd = DecryptString(pwd)
@@ -91,6 +93,7 @@ Public Class SettingCommon
     Public Property EncryptOutputzKey() As String
         Get
             Dim pwd As String = OutputzKey
+            If String.IsNullOrEmpty(pwd) Then pwd = ""
             If pwd.Length > 0 Then
                 Try
                     Return EncryptString(pwd)
@@ -103,6 +106,7 @@ Public Class SettingCommon
         End Get
         Set(ByVal value As String)
             Dim pwd As String = value
+            If String.IsNullOrEmpty(pwd) Then pwd = ""
             If pwd.Length > 0 Then
                 Try
                     pwd = DecryptString(pwd)
