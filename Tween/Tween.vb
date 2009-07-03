@@ -46,6 +46,7 @@ Public Class TweenMain
 
     '雑多なフラグ類
     Private _initial As Boolean         'True:起動時処理中
+    Private _ignoreConfigSave As Boolean         'True:起動時処理中
     'Private listViewItemSorter As ListViewItemComparer      'リストソート用カスタムクラス
     Private _tabDrag As Boolean           'タブドラッグ中フラグ（DoDragDropを実行するかの判定用）
     Private _rclickTabName As String      '右クリックしたタブの名前（Tabコントロール機能不足対応）
@@ -321,6 +322,7 @@ Public Class TweenMain
     End Sub
 
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        _ignoreConfigSave = True
         Me.Visible = False
         SecurityManager = New InternetSecurityManager(PostBrowser)
 
@@ -734,6 +736,7 @@ Public Class TweenMain
 
         TimerColorize.Interval = 200
         TimerColorize.Start()
+        _ignoreConfigSave = False
     End Sub
 
     Private Function LoadConfig() As Boolean
@@ -1132,6 +1135,8 @@ Public Class TweenMain
                 NotifyIcon1.BalloonTipIcon = ToolTipIcon.Info
                 NotifyIcon1.BalloonTipTitle += "Tween " + My.Resources.RefreshTimelineText1 + " " + addCount.ToString() + My.Resources.RefreshTimelineText2
             End If
+            Dim bText As String = sb.ToString
+            If String.IsNullOrEmpty(bText) Then Exit Sub
             NotifyIcon1.BalloonTipText = sb.ToString()
             NotifyIcon1.ShowBalloonTip(500)
         End If
@@ -3803,6 +3808,8 @@ RETRY:
     End Sub
 
     Private Sub SaveConfigsCommon()
+        If _ignoreConfigSave Then Exit Sub
+
         If _username <> "" AndAlso _password <> "" Then
             SyncLock _syncObject
                 _cfgCommon.UserName = _username
@@ -3874,6 +3881,7 @@ RETRY:
     End Sub
 
     Private Sub SaveConfigsLocal()
+        If _ignoreConfigSave Then Exit Sub
         SyncLock _syncObject
             _cfgLocal.FormSize = _mySize
             _cfgLocal.FormLocation = _myLoc
@@ -3912,6 +3920,7 @@ RETRY:
     End Sub
 
     Private Sub SaveConfigsTab()
+        If _ignoreConfigSave Then Exit Sub
         SyncLock _syncObject
             Dim cnt As Integer = 0
             If ListTab IsNot Nothing AndAlso _
