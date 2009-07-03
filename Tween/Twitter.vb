@@ -2591,7 +2591,7 @@ RETRY:
         Dim rgh As New Regex("(^|[] !""$%&'()*+,-.:;<=>?@[\^`{|}~])#([^] !""$%&'()*+,-.:;<=>?@[\^`{|}~]+)")
         Dim mh As Match = rgh.Match(retStr)
         If mh.Success Then
-            retStr = rgh.Replace(retStr, "$1<a href=""http://twitter.com/search?q=%23$2"">#$2</a>")
+            retStr = rgh.Replace(retStr, "$1<a href=""https://twitter.com/search?q=%23$2"">#$2</a>")
         End If
 
 
