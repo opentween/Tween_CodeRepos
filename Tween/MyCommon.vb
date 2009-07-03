@@ -378,6 +378,8 @@ retry:
     End Function
 
     Public Function EncryptString(ByVal str As String) As String
+        If String.IsNullOrEmpty(str) Then Return ""
+
         '文字列をバイト型配列にする
         Dim bytesIn As Byte() = System.Text.Encoding.UTF8.GetBytes(str)
 
@@ -419,6 +421,8 @@ retry:
     End Function
 
     Public Function DecryptString(ByVal str As String) As String
+        If String.IsNullOrEmpty(str) Then Return ""
+
         'DESCryptoServiceProviderオブジェクトの作成
         Dim des As New System.Security.Cryptography.DESCryptoServiceProvider
 

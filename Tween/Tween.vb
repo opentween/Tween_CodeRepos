@@ -737,12 +737,22 @@ Public Class TweenMain
     End Sub
 
     Private Function LoadConfig() As Boolean
-
+        Dim needToSave As Boolean = False
         _cfgCommon = SettingCommon.Load()
         _cfgLocal = SettingLocal.Load()
         If _cfgCommon.TabList.Count > 0 Then
             For Each tabName As String In _cfgCommon.TabList
                 _statuses.Tabs.Add(tabName, SettingTab.Load(tabName).Tab)
+                If tabName <> ReplaceInvalidFilename(tabName) Then
+                    Dim tb As TabClass = _statuses.Tabs(tabName)
+                    _statuses.RemoveTab(tabName)
+                    tb.TabName = ReplaceInvalidFilename(tabName)
+                    _statuses.Tabs.Add(ReplaceInvalidFilename(tabName), tb)
+                    Dim tabSetting As New SettingTab
+                    tabSetting.Tab = tb
+                    tabSetting.Save()
+                    needToSave = True
+                End If
             Next
         Else
             _statuses.Tabs.Add(DEFAULTTAB.RECENT, New TabClass(DEFAULTTAB.RECENT))
@@ -750,6 +760,14 @@ Public Class TweenMain
             _statuses.Tabs.Add(DEFAULTTAB.DM, New TabClass(DEFAULTTAB.DM))
             _statuses.Tabs.Add(DEFAULTTAB.FAV, New TabClass(DEFAULTTAB.FAV))
         End If
+        If needToSave Then
+            _cfgCommon.TabList.Clear()
+            For Each tabName As String In _statuses.Tabs.Keys
+                _cfgCommon.TabList.Add(tabName)
+            Next
+            _cfgCommon.Save()
+        End If
+
         If System.IO.File.Exists(SettingCommon.GetSettingFilePath("")) Then
             Return True
         Else
@@ -5021,12 +5039,12 @@ RETRY:
 
     Private Sub NewPostPopMenuItem_CheckStateChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles NewPostPopMenuItem.CheckStateChanged
         _cfgCommon.NewAllPop = NewPostPopMenuItem.Checked
-        _cfgCommon.Save()
+        SaveConfigsCommon()
     End Sub
 
     Private Sub ListLockMenuItem_CheckStateChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ListLockMenuItem.CheckStateChanged
         _cfgCommon.ListLock = ListLockMenuItem.Checked
-        _cfgCommon.Save()
+        SaveConfigsCommon()
     End Sub
 
     Private Sub MenuStrip1_MenuActivate(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuStrip1.MenuActivate
@@ -5512,9 +5530,9 @@ RETRY:
 
             '<br>タグ除去
             If StatusText.Multiline Then
-                rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)<br>", vbCrLf, RegexOptions.IgnoreCase Or RegexOptions.Multiline)
+                rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)*<br>", vbCrLf, RegexOptions.IgnoreCase Or RegexOptions.Multiline)
             Else
-                rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)<br>", "", RegexOptions.IgnoreCase Or RegexOptions.Multiline)
+                rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)*<br>", "", RegexOptions.IgnoreCase Or RegexOptions.Multiline)
             End If
 
             StatusText.Text = "RT @" + _curPost.Name + ": " + HttpUtility.HtmlDecode(rtdata)

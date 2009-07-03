@@ -1133,7 +1133,7 @@ RETRY:
         Next
         For Each orgUrl As String In urlList
             Try
-
+                'urlとして生成できない場合があるらしい
                 Dim urlstr As String = New Uri(urlEncodeMultibyteChar(orgUrl)).GetLeftPart(UriPartial.Path)
                 Dim Response As String = ""
                 Dim retUrlStr As String = ""

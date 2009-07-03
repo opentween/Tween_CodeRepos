@@ -225,6 +225,7 @@ Public Class SettingLocal
     Public Property EncryptProxyPassword() As String
         Get
             Dim pwd As String = ProxyPassword
+            If String.IsNullOrEmpty(pwd) Then pwd = ""
             If pwd.Length > 0 Then
                 Try
                     Return EncryptString(pwd)
@@ -237,6 +238,7 @@ Public Class SettingLocal
         End Get
         Set(ByVal value As String)
             Dim pwd As String = value
+            If String.IsNullOrEmpty(pwd) Then pwd = ""
             If pwd.Length > 0 Then
                 Try
                     pwd = DecryptString(pwd)
