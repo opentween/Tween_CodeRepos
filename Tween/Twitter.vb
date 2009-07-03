@@ -113,6 +113,7 @@ Public Module Twitter
             "http://ustre.am/", _
             "http://pic.gd/", _
             "http://airme.us/", _
+            "http://qurl.com/", _
             "http://bctiny.com/" _
         }
 
@@ -2562,6 +2563,8 @@ RETRY:
     End Function
 
     Private Function CreateHtmlAnchor(ByVal Text As String, ByVal AtList As List(Of String)) As String
+        Dim retStr As String = HttpUtility.HtmlEncode(Text)     '要検証（デコードされて取得されるので再エンコード）
+
         'uriの正規表現
         Dim rgUrl As Regex = New Regex("(?<![0-9A-Za-z])(?:https?|shttp|ftps?)://(?:(?:[-_.!~*'()a-zA-Z0-9;:&=+$,]|%[0-9A-Fa-f" + _
                          "][0-9A-Fa-f])*@)?(?:(?:[a-zA-Z0-9](?:[-a-zA-Z0-9]*[a-zA-Z0-9])?\.)" + _
@@ -2572,7 +2575,6 @@ RETRY:
                          "])*(?:;(?:[-_.!~*'()a-zA-Z0-9:@&=+$,]|%[0-9A-Fa-f][0-9A-Fa-f])*)*)" + _
                          "*)?(?:\?(?:[-_.!~*'()a-zA-Z0-9;/?:@&=+$,]|%[0-9A-Fa-f][0-9A-Fa-f])" + _
                          "*)?(?:#(?:[-_.!~*'()a-zA-Z0-9;/?:@&=+$,]|%[0-9A-Fa-f][0-9A-Fa-f])*)?")
-        Dim retStr As String = HttpUtility.HtmlEncode(Text)     '要検証（デコードされて取得されるので再エンコード）
         '絶対パス表現のUriをリンクに置換
         retStr = rgUrl.Replace(Text, "<a href=""$&"">$&</a>")
         '@返信を抽出し、@先リスト作成
@@ -2584,6 +2586,15 @@ RETRY:
         End While
         '@先をリンクに置換
         retStr = rg.Replace(retStr, "$1@<a href=""/$2"">$2</a>")
+
+        'ハッシュタグを抽出し、リンクに置換
+        Dim rgh As New Regex("(^|[] !""$%&'()*+,-.:;<=>?@[\^`{|}~])#([^] !""$%&'()*+,-.:;<=>?@[\^`{|}~]+)")
+        Dim mh As Match = rgh.Match(retStr)
+        If mh.Success Then
+            retStr = rgh.Replace(retStr, "$1<a href=""http://twitter.com/search?q=%23$2"">#$2</a>")
+        End If
+
+
         retStr = AdjustHtml(ShortUrlResolve(PreProcessUrl(retStr))) 'IDN置換、短縮Uri解決、@リンクを相対→絶対にしてtarget属性付与
         Return retStr
     End Function
