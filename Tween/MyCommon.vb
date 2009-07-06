@@ -105,6 +105,7 @@ Public Module MyCommon
         BlackFavAdd             'BlackFav追加 (Added by shuyoko <http://twitter.com/shuyoko>)
         Follower                'Followerリスト取得
         OpenUri                 'Uri開く
+        Favorites               'Fav取得
     End Enum
 
     Public Structure DEFAULTTAB
