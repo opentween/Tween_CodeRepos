@@ -148,6 +148,7 @@ Public Class TweenMain
     Private _waitTimeline As Boolean = False
     Private _waitReply As Boolean = False
     Private _waitDm As Boolean = False
+    Private _waitFav As Boolean = False
     Private _bw(9) As BackgroundWorker
     Private cMode As Integer
     Private StatusLabel As New ToolStripLabelHistory
@@ -992,8 +993,8 @@ Public Class TweenMain
                 If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
             Next
         Catch ex As Exception
-            ex.Data("Msg") = "Ref1, UseAPI=" + SettingDialog.UseAPI.ToString
-            Throw
+            'ex.Data("Msg") = "Ref1, UseAPI=" + SettingDialog.UseAPI.ToString
+            'Throw
         End Try
 
         'スクロール制御後処理
@@ -1549,6 +1550,14 @@ Public Class TweenMain
                 Catch ex As Exception
                     '                MessageBox.Show("ブラウザの起動に失敗、またはタイムアウトしました。" + ex.ToString())
                 End Try
+            Case WORKERTYPE.Favorites
+                bw.ReportProgress(50, MakeStatusMessage(args, False))
+                If SettingDialog.UseAPI Then
+                    ret = Twitter.GetFavoritesApi(read, args.type)
+                Else
+                    ret = Twitter.GetFavorites(args.page, read, args.endPage, args.type, rslt.newDM)
+                End If
+                rslt.addCount = _statuses.DistributePosts()
         End Select
 
         'キャンセル要求
@@ -1600,7 +1609,8 @@ Public Class TweenMain
         If args.type = WORKERTYPE.DirectMessegeRcv OrElse _
            args.type = WORKERTYPE.DirectMessegeSnt OrElse _
            args.type = WORKERTYPE.Reply OrElse _
-           args.type = WORKERTYPE.Timeline Then
+           args.type = WORKERTYPE.Timeline OrElse _
+           args.type = WORKERTYPE.Favorites Then
             rslt.page = args.page - 1   '値が正しいか後でチェック。10ページ毎の継続確認
         End If
 
@@ -1630,6 +1640,9 @@ Public Class TweenMain
                 Case WORKERTYPE.BlackFavAdd
                     smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText15_black + AsyncArg.page.ToString() + "/" + AsyncArg.ids.Count.ToString() + _
                                         My.Resources.GetTimelineWorker_RunWorkerCompletedText16 + (AsyncArg.page - AsyncArg.sIds.Count - 1).ToString()
+                Case WORKERTYPE.Favorites
+                    'ToDo: リソース化
+                    smsg = "Fav取得"
             End Select
         Else
             '完了メッセージ
@@ -1648,6 +1661,9 @@ Public Class TweenMain
                     '進捗メッセージ残す
                 Case WORKERTYPE.BlackFavAdd
                     '進捗メッセージ残す
+                Case WORKERTYPE.Favorites
+                    'ToDo: リソース化
+                    smsg = "Fav取得完了"
             End Select
         End If
         Return smsg
@@ -1705,6 +1721,7 @@ Public Class TweenMain
             _waitReply = False
             _waitFollower = False
             _waitDm = False
+            _waitFav = False
             '_initial = False
             Exit Sub
         End If
@@ -1789,6 +1806,8 @@ Public Class TweenMain
                 If rslt.newDM AndAlso Not _initial Then
                     GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
                 End If
+            Case WORKERTYPE.Reply
+                _waitFav = False
             Case WORKERTYPE.DirectMessegeRcv
                 _waitDm = False
             Case WORKERTYPE.FavAdd, WORKERTYPE.BlackFavAdd, WORKERTYPE.FavRemove
@@ -4665,7 +4684,9 @@ RETRY:
                 End If
                 Me.TopMost = SettingDialog.AlwaysTop
             End If
-
+            If openUrlStr.StartsWith("https://twitter.com/search?q=#") Then
+                openUrlStr = openUrlStr.Replace("https://twitter.com/search?q=#", "https://twitter.com/search?q=%23")
+            End If
             If openUrlStr <> "" Then OpenUriAsync(openUrlStr)
         End If
     End Sub
@@ -5446,6 +5467,8 @@ RETRY:
                 _waitDm = True
                 GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, SettingDialog.ReadPagesDM)
             End If
+            _waitFav = True
+            GetTimeline(WORKERTYPE.Favorites, 1, 1)
             Dim i As Integer = 0
             Do While (_waitTimeline OrElse _waitReply OrElse _waitDm) AndAlso Not _endingFlag
                 System.Threading.Thread.Sleep(100)
