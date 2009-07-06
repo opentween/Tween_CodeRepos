@@ -131,6 +131,7 @@
     <Compile Include="Setting.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="SettingToConfig.vb" />
     <Compile Include="Setting\SettingBase.vb" />
     <Compile Include="Setting\SettingCommon.vb" />
     <Compile Include="Setting\SettingLocal.vb" />
@@ -322,7 +323,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>"c:\Program Files\Microsoft.NET\SDK\v2.0\Bin\sgen.exe" /f /a:"$(TargetPath)"
-"c:\Program Files\Microsoft\ILMerge\ILMerge.exe" /out:"$(TargetPath).exe" "$(TargetPath)" "$(TargetDir)Tween.XmlSerializers.dll"</PostBuildEvent>
+    <PostBuildEvent>"c:\Program Files\Microsoft\ILMerge\ILMerge.exe" /out:"$(TargetPath).exe" "$(TargetPath)" "$(TargetDir)Tween.XmlSerializers.dll"</PostBuildEvent>
   </PropertyGroup>
 </Project>
