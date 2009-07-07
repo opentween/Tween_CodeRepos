@@ -637,9 +637,15 @@ Public NotInheritable Class TabInformations
                     If _tabs(DEFAULTTAB.REPLY).Notify Then add = True
                 End If
                 If post.IsFav Then    'Fav済み発言だったらFavoritesタブに追加
-                    _tabs(DEFAULTTAB.FAV).Add(post.Id, post.IsRead, True)
-                    If Not _tabs(DEFAULTTAB.FAV).SoundFile = "" Then _soundFile = _tabs(DEFAULTTAB.FAV).SoundFile
-                    If _tabs(DEFAULTTAB.FAV).Notify Then add = True
+                    If _tabs(DEFAULTTAB.FAV).Contains(post.Id) Then
+                        '取得済みなら非通知
+                        _soundFile = ""
+                        add = False
+                    Else
+                        _tabs(DEFAULTTAB.FAV).Add(post.Id, post.IsRead, True)
+                        If Not _tabs(DEFAULTTAB.FAV).SoundFile = "" Then _soundFile = _tabs(DEFAULTTAB.FAV).SoundFile
+                        If _tabs(DEFAULTTAB.FAV).Notify Then add = True
+                    End If
                 End If
                 If add Then _notifyPosts.Add(post)
             Else

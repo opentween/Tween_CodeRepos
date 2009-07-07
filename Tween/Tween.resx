@@ -348,6 +348,9 @@
   <data name="&gt;&gt;ContextMenuStrip3.Type" xml:space="preserve">
     <value>System.Windows.Forms.ContextMenuStrip, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="UserPicture.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>Off</value>
+  </data>
   <data name="UserPicture.Location" type="System.Drawing.Point, System.Drawing">
     <value>3, 3</value>
   </data>
@@ -380,6 +383,9 @@
   </data>
   <data name="NameLabel.Font" type="System.Drawing.Font, System.Drawing">
     <value>MS UI Gothic, 9pt, style=Bold</value>
+  </data>
+  <data name="NameLabel.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>Off</value>
   </data>
   <data name="NameLabel.Location" type="System.Drawing.Point, System.Drawing">
     <value>58, 3</value>
@@ -510,6 +516,9 @@
   <data name="DateTimeLabel.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Bottom, Right</value>
   </data>
+  <data name="DateTimeLabel.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>Off</value>
+  </data>
   <data name="DateTimeLabel.Location" type="System.Drawing.Point, System.Drawing">
     <value>330, 3</value>
   </data>
@@ -612,6 +621,9 @@
   <data name="lblLen.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Right</value>
   </data>
+  <data name="lblLen.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>Off</value>
+  </data>
   <data name="lblLen.Location" type="System.Drawing.Point, System.Drawing">
     <value>354, 0</value>
   </data>
@@ -642,6 +654,9 @@
   <data name="PostButton.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Right</value>
   </data>
+  <data name="PostButton.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>Off</value>
+  </data>
   <data name="PostButton.Location" type="System.Drawing.Point, System.Drawing">
     <value>398, 0</value>
   </data>
@@ -671,6 +686,9 @@
   </data>
   <data name="ButtonPostMode.Font" type="System.Drawing.Font, System.Drawing">
     <value>Marlett, 6.75pt, style=Bold</value>
+  </data>
+  <data name="ButtonPostMode.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>Off</value>
   </data>
   <data name="ButtonPostMode.Location" type="System.Drawing.Point, System.Drawing">
     <value>442, 0</value>
@@ -1229,6 +1247,9 @@
   </data>
   <data name="TinyUrlConvertToolStripMenuItem.Text" xml:space="preserve">
     <value>入力欄のURLを短縮変換</value>
+  </data>
+  <data name="GetFollowersDiffToolStripMenuItem.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
   </data>
   <data name="GetFollowersDiffToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>191, 22</value>
