@@ -1622,7 +1622,7 @@ RETRY:
         Dim retStr As String = orgData
         retStr = retStr.Replace("<a href=""/", "<a href=""https://twitter.com/")
         retStr = retStr.Replace("<a href=", "<a target=""_self"" href=")
-        retStr = retStr.Replace(vbLf, "<br>")
+        'retStr = retStr.Replace(vbLf, "<br>")
 
         Return SanitizeHtml(retStr)
     End Function
@@ -2037,29 +2037,29 @@ RETRY:
             followersCount = Integer.Parse(xd.SelectSingleNode("/user/followers_count/text()").Value)
             'Catch ex As XmlException
         Catch ex As Exception
-            If CacheInvalidate OrElse ValidateCache(-1) < 0 Then
-                ' FollowersカウントがAPIで取得できず、なおかつキャッシュから読めなかった
-                SyncLock LockObj
-                    follower.Clear()
-                    follower.Add(_uid.ToLower())
-                End SyncLock
-                Return "Can't get followers_count and invalid cache."
-            Else
-                'キャッシュを読み出せたのでキャッシュを使う
-                SyncLock LockObj
-                    follower = tmpFollower
-                End SyncLock
-                Return ""
-            End If
+            'If CacheInvalidate OrElse ValidateCache(-1) < 0 Then
+            '    ' FollowersカウントがAPIで取得できず、なおかつキャッシュから読めなかった
+            SyncLock LockObj
+                follower.Clear()
+                follower.Add(_uid.ToLower())
+            End SyncLock
+            Return "Can't get followers_count and invalid cache."
+            'Else
+            ''キャッシュを読み出せたのでキャッシュを使う
+            'SyncLock LockObj
+            '    follower = tmpFollower
+            'End SyncLock
+            'Return ""
+            'End If
         End Try
 
         Dim tmp As Integer
 
-        If CacheInvalidate Then
-            tmp = followersCount
-        Else
-            tmp = ValidateCache(followersCount)
-        End If
+        'If CacheInvalidate Then
+        tmp = followersCount
+        'Else
+        'tmp = ValidateCache(followersCount)
+        'End If
 
 
         If tmp <> 0 Then
@@ -2107,7 +2107,7 @@ RETRY:
         End If
 
         follower = tmpFollower
-        If Not _endingFlag Then UpdateCache()
+        'If Not _endingFlag Then UpdateCache()
 
 #If DEBUG Then
         sw.Stop()
@@ -2971,12 +2971,29 @@ RETRY:
 
     Public Function GetFollowersApi() As String
         If _endingFlag Then Return ""
+        Dim page As Integer = 1
+        Dim curPage As Integer = 1
 
+        followerId.Clear()
+
+        Do
+            curPage = page
+            Dim ret As String = FollowerApi(page)
+            If ret <> "" Then Return ret
+        Loop While curPage < page
+        Return ""
+    End Function
+
+    Private Function FollowerApi(ByRef page As Integer) As String
         Dim retMsg As String = ""
         Dim resStatus As String = ""
-        Const FOLLOWER_PATH As String = "/followers/ids.xml"
+        Dim curCount As Integer = followerId.Count
 
-        retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + FOLLOWER_PATH, resStatus, _ApiMethod), String)
+        Const FOLLOWER_PATH As String = "/followers/ids.xml"
+        Dim pageQuery As String = ""
+        If page > 1 Then pageQuery = "?page=" + page.ToString
+
+        retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + FOLLOWER_PATH + pageQuery, resStatus, _ApiMethod), String)
 
         If retMsg = "" Then Return resStatus
 
@@ -2989,7 +3006,6 @@ RETRY:
             Return "Invalid XML!"
         End Try
 
-        followerId.Clear()
         For Each xentryNode As XmlNode In xdoc.DocumentElement.SelectNodes("./id")
             Try
                 followerId.Add(Long.Parse(xentryNode.InnerText))
@@ -3000,7 +3016,10 @@ RETRY:
             End Try
         Next
 
+        If followerId.Count - curCount > 4900 Then page += 1
+
         Return ""
+
     End Function
 
     Private Function CreateHtmlAnchor(ByVal Text As String, ByVal AtList As List(Of String)) As String
@@ -3029,7 +3048,7 @@ RETRY:
         retStr = rg.Replace(retStr, "$1@<a href=""/$2"">$2</a>")
 
         'ハッシュタグを抽出し、リンクに置換
-        Dim rgh As New Regex("(^|[] !""$%&'()*+,-.:;<=>?@[\^`{|}~])#([^] !""$%&'()*+,-.:;<=>?@[\^`{|}~]+)")
+        Dim rgh As New Regex("(^|[] !""$%&'()*+,-.:;<=>?@[\^`{|}~])#([^] !""$%&'()*+,-.:;<=>?@[\^`{|}~\r\n]+)")
         Dim mh As Match = rgh.Match(retStr)
         If mh.Success AndAlso Not IsNumeric(mh.Result("$2")) Then
             retStr = rgh.Replace(retStr, "$1<a href=""https://twitter.com/search?q=%23$2"">#$2</a>")
