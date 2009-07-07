@@ -55,10 +55,10 @@ Public Class TweenMain
     Private _tabDrag As Boolean           'タブドラッグ中フラグ（DoDragDropを実行するかの判定用）
     Private _rclickTabName As String      '右クリックしたタブの名前（Tabコントロール機能不足対応）
     Private ReadOnly _syncObject As New Object()    'ロック用
-    Private Const detailHtmlFormat1 As String = "<html><head><style type=""text/css""><!-- p {font-family: """
+    Private Const detailHtmlFormat1 As String = "<html><head><style type=""text/css""><!-- pre {font-family: """
     Private Const detailHtmlFormat2 As String = """, sans-serif; font-size: "
-    Private Const detailHtmlFormat3 As String = "pt;} --></style></head><body style=""margin:0px""><p>"
-    Private Const detailHtmlFormat4 As String = "</p></body></html>"
+    Private Const detailHtmlFormat3 As String = "pt; word-wrap: break-word;} --></style></head><body style=""margin:0px""><pre>"
+    Private Const detailHtmlFormat4 As String = "</pre></body></html>"
     Private detailHtmlFormat As String
 
     '設定ファイル関連
@@ -148,7 +148,7 @@ Public Class TweenMain
     Private _curItemIndex As Integer
     Private _curList As DetailsListView
     Private _curPost As PostClass
-    Private _waitFollower As Boolean = False
+    'Private _waitFollower As Boolean = False
     Private _waitTimeline As Boolean = False
     Private _waitReply As Boolean = False
     Private _waitDm As Boolean = False
@@ -596,7 +596,7 @@ Public Class TweenMain
         Twitter.RestrictFavCheck = SettingDialog.RestrictFavCheck
         If IsNetworkAvailable() Then
             If SettingDialog.StartupFollowers Then
-                _waitFollower = True
+                '_waitFollower = True
                 GetTimeline(WORKERTYPE.Follower, 0, 0)
             End If
         End If
@@ -1451,7 +1451,6 @@ Public Class TweenMain
 
 
         If args.type <> WORKERTYPE.OpenUri Then bw.ReportProgress(0, "") 'Notifyアイコンアニメーション開始
-
         Select Case args.type
             Case WORKERTYPE.Timeline, WORKERTYPE.Reply
                 bw.ReportProgress(50, MakeStatusMessage(args, False))
@@ -1563,7 +1562,6 @@ Public Class TweenMain
                 End If
                 rslt.addCount = _statuses.DistributePosts()
         End Select
-
         'キャンセル要求
         If bw.CancellationPending Then
             e.Cancel = True
@@ -1668,6 +1666,9 @@ Public Class TweenMain
                 Case WORKERTYPE.Favorites
                     'ToDo: リソース化
                     smsg = "Fav取得完了"
+                Case WORKERTYPE.Follower
+                    'ToDo: リソースか
+                    smsg = "Followers取得完了"
             End Select
         End If
         Return smsg
@@ -1723,7 +1724,7 @@ Public Class TweenMain
             Throw New Exception("BackgroundWorker Exception", e.Error)
             _waitTimeline = False
             _waitReply = False
-            _waitFollower = False
+            '_waitFollower = False
             _waitDm = False
             _waitFav = False
             '_initial = False
@@ -1853,7 +1854,7 @@ Public Class TweenMain
                 End If
                 If rslt.retMsg.Length = 0 AndAlso SettingDialog.PostAndGet Then GetTimeline(WORKERTYPE.Timeline, 1, 0)
             Case WORKERTYPE.Follower
-                _waitFollower = False
+                '_waitFollower = False
                 _itemCache = Nothing
                 _postCache = Nothing
                 _curList.Refresh()
@@ -5528,24 +5529,25 @@ RETRY:
     End Sub
 
     Private Sub doGetFollowersMenu(ByVal CacheInvalidate As Boolean)
-        Try
-            StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText1
-            My.Application.DoEvents()
-            Me.Cursor = Cursors.WaitCursor
-            Dim ret As String
-            If SettingDialog.UseAPI Then
-                ret = Twitter.GetFollowersApi()
-            Else
-                ret = Twitter.GetFollowers(CacheInvalidate)
-            End If
-            If ret <> "" Then
-                StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText2 & ret
-                Exit Sub
-            End If
-            StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText3
-        Finally
-            Me.Cursor = Cursors.Default
-        End Try
+        GetTimeline(WORKERTYPE.Follower, 1, 0)
+        'Try
+        '    StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText1
+        '    My.Application.DoEvents()
+        '    Me.Cursor = Cursors.WaitCursor
+        '    Dim ret As String
+        '    If SettingDialog.UseAPI Then
+        '        ret = Twitter.GetFollowersApi()
+        '    Else
+        '        ret = Twitter.GetFollowers(CacheInvalidate)
+        '    End If
+        '    If ret <> "" Then
+        '        StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText2 & ret
+        '        Exit Sub
+        '    End If
+        '    StatusLabel.Text = My.Resources.UpdateFollowersMenuItem1_ClickText3
+        'Finally
+        '    Me.Cursor = Cursors.Default
+        'End Try
     End Sub
 
     Private Sub GetFollowersDiffToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles GetFollowersDiffToolStripMenuItem.Click
@@ -5572,11 +5574,11 @@ RETRY:
             rtdata = rx.Replace(rtdata, "${link}")
 
             '<br>タグ除去
-            If StatusText.Multiline Then
-                rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)*<br>", vbCrLf, RegexOptions.IgnoreCase Or RegexOptions.Multiline)
-            Else
-                rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)*<br>", "", RegexOptions.IgnoreCase Or RegexOptions.Multiline)
-            End If
+            'If StatusText.Multiline Then
+            '    rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)*<br>", vbCrLf, RegexOptions.IgnoreCase Or RegexOptions.Multiline)
+            'Else
+            '    rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)*<br>", "", RegexOptions.IgnoreCase Or RegexOptions.Multiline)
+            'End If
 
             StatusText.Text = "RT @" + _curPost.Name + ": " + HttpUtility.HtmlDecode(rtdata)
             _reply_to_id = 0
