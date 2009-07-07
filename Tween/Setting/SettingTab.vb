@@ -5,6 +5,7 @@ Public Class SettingTab
 #Region "Settingクラス基本"
     Public Shared Function Load(ByVal TabName As String) As SettingTab
         Dim setting As SettingTab = LoadSettings(TabName)
+        setting.Tab.TabName = TabName
         Return setting
     End Function
 

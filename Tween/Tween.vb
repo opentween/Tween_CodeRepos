@@ -1810,7 +1810,7 @@ Public Class TweenMain
                 If rslt.newDM AndAlso Not _initial Then
                     GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
                 End If
-            Case WORKERTYPE.Reply
+            Case WORKERTYPE.Favorites
                 _waitFav = False
             Case WORKERTYPE.DirectMessegeRcv
                 _waitDm = False
@@ -2227,6 +2227,8 @@ Public Class TweenMain
                 GetTimeline(WORKERTYPE.Reply, 1, 0)
             Case DEFAULTTAB.DM
                 GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
+            Case DEFAULTTAB.FAV
+                GetTimeline(WORKERTYPE.Favorites, 1, 0)
             Case Else
                 GetTimeline(WORKERTYPE.Timeline, 1, 0)
         End Select
@@ -2654,7 +2656,7 @@ Public Class TweenMain
         _statuses.RemoveTab(TabName)
 
         SaveConfigsCommon()
-        SaveConfigsTab()
+        SaveConfigsTab(False)
 
         For Each tp As TabPage In ListTab.TabPages
             Dim lst As DetailsListView = DirectCast(tp.Controls(0), DetailsListView)
@@ -3828,7 +3830,7 @@ RETRY:
     Private Sub SaveConfigsAll()
         SaveConfigsCommon()
         SaveConfigsLocal()
-        SaveConfigsTab()
+        SaveConfigsTab(True)
     End Sub
 
     Private Sub SaveConfigsCommon()
@@ -3943,7 +3945,7 @@ RETRY:
         End SyncLock
     End Sub
 
-    Private Sub SaveConfigsTab()
+    Private Sub SaveConfigsTab(ByVal DeleteBefore As Boolean)
         If _ignoreConfigSave Then Exit Sub
         SyncLock _syncObject
             Dim cnt As Integer = 0
@@ -3951,7 +3953,7 @@ RETRY:
                ListTab.TabPages IsNot Nothing AndAlso _
                ListTab.TabPages.Count > 0 Then
                 _cfgCommon.TabList.Clear()
-                SettingTab.DeleteConfigFile()   '旧設定ファイル削除
+                If DeleteBefore Then SettingTab.DeleteConfigFile() '旧設定ファイル削除
                 For cnt = 0 To ListTab.TabPages.Count - 1
                     _cfgCommon.TabList.Add(ListTab.TabPages(cnt).Text)
                     Dim tabSetting As New SettingTab
@@ -4052,7 +4054,7 @@ RETRY:
                 End If
             Next
             SaveConfigsCommon()
-            SaveConfigsTab()
+            SaveConfigsTab(False)
             _rclickTabName = newTabText
         End If
     End Sub
@@ -4335,7 +4337,7 @@ RETRY:
         End If
         SetMainWindowTitle()
         SetStatusLabel()
-        SaveConfigsTab()
+        SaveConfigsTab(False)
     End Sub
 
     Private Sub NotifyDispMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles NotifyDispMenuItem.Click
@@ -4343,7 +4345,7 @@ RETRY:
 
         Dim tb As TabClass = _statuses.Tabs(_rclickTabName)
         tb.Notify = NotifyDispMenuItem.Checked
-        SaveConfigsTab()
+        SaveConfigsTab(False)
     End Sub
 
     Private Sub SoundFileComboBox_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SoundFileComboBox.SelectedIndexChanged
@@ -4351,7 +4353,7 @@ RETRY:
 
         Dim tb As TabClass = _statuses.Tabs(_rclickTabName)
         tb.SoundFile = DirectCast(SoundFileComboBox.SelectedItem, String)
-        'SaveConfigsTab()
+        SaveConfigsTab(False)
     End Sub
 
     Private Sub DeleteTabMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles DeleteTabMenuItem.Click
@@ -4367,7 +4369,7 @@ RETRY:
 
         fDialog.SetCurrent(_rclickTabName)
         fDialog.ShowDialog()
-        SaveConfigsTab()
+        SaveConfigsTab(False)
         Me.TopMost = SettingDialog.AlwaysTop
 
         Try
@@ -4406,7 +4408,7 @@ RETRY:
                 '成功
                 _statuses.AddTab(tabName)
                 SaveConfigsCommon()
-                SaveConfigsTab()
+                SaveConfigsTab(False)
             End If
         End If
     End Sub
@@ -4471,7 +4473,7 @@ RETRY:
             Me.Cursor = Cursors.Default
         End Try
         SaveConfigsCommon()
-        SaveConfigsTab()
+        SaveConfigsTab(False)
     End Sub
 
     Protected Overrides Function ProcessDialogKey( _
@@ -4611,7 +4613,7 @@ RETRY:
             Me.Cursor = Cursors.Default
         End Try
         SaveConfigsCommon()
-        SaveConfigsTab()
+        SaveConfigsTab(False)
     End Sub
 
     Private Sub CopySTOTMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CopySTOTMenuItem.Click
@@ -5474,7 +5476,7 @@ RETRY:
             _waitFav = True
             GetTimeline(WORKERTYPE.Favorites, 1, 1)
             Dim i As Integer = 0
-            Do While (_waitTimeline OrElse _waitReply OrElse _waitDm) AndAlso Not _endingFlag
+            Do While (_waitTimeline OrElse _waitReply OrElse _waitDm OrElse _waitFav) AndAlso Not _endingFlag
                 System.Threading.Thread.Sleep(100)
                 My.Application.DoEvents()
                 i += 1

@@ -1138,10 +1138,10 @@ RETRY:
                     End Try
                 End If
 
-                '二重取得回避
-                SyncLock LockObj
-                    If TabInformations.GetInstance.ContainsKey(post.Id) Then Continue For
-                End SyncLock
+                ''二重取得回避
+                'SyncLock LockObj
+                '    If TabInformations.GetInstance.ContainsKey(post.Id) Then Continue For
+                'End SyncLock
 
                 Dim orgData As String = ""
                 'バレンタイン
@@ -2899,10 +2899,10 @@ RETRY:
             Try
                 post.PDate = DateTime.ParseExact(xentry.Item("created_at").InnerText, "ddd MMM dd HH:mm:ss zzzz yyyy", System.Globalization.DateTimeFormatInfo.InvariantInfo, System.Globalization.DateTimeStyles.None)
                 post.Id = Long.Parse(xentry.Item("id").InnerText)
-                '二重取得回避
-                SyncLock LockObj
-                    If TabInformations.GetInstance.ContainsKey(post.Id) Then Continue For
-                End SyncLock
+                ''二重取得回避
+                'SyncLock LockObj
+                '    If TabInformations.GetInstance.ContainsKey(post.Id) Then Continue For
+                'End SyncLock
                 '本文
                 post.Data = xentry.Item("text").InnerText
                 'HTMLに整形
