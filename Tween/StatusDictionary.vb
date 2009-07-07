@@ -652,9 +652,16 @@ Public NotInheritable Class TabInformations
 
     Public Sub AddPost(ByVal Item As PostClass)
         SyncLock LockObj
-            If _statuses.ContainsKey(Item.Id) Then Exit Sub '追加済みなら何もしない
+            If _statuses.ContainsKey(Item.Id) Then
+                If Item.IsFav Then
+                    _statuses.Item(Item.Id).IsFav = True
+                Else
+                    Exit Sub        '追加済みなら何もしない
+                End If
+            Else
+                _statuses.Add(Item.Id, Item)    'DMと区別しない？
+            End If
             If _addedIds Is Nothing Then _addedIds = New List(Of Long) 'タブ追加用IDコレクション準備
-            _statuses.Add(Item.Id, Item)    'DMと区別しない？
             _addedIds.Add(Item.Id)
         End SyncLock
     End Sub
