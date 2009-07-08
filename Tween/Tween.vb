@@ -274,16 +274,17 @@ Public Class TweenMain
         'タスクトレイ通常時アイコン
         Dim dir As String = Application.StartupPath
 
+        NIconAt = My.Resources.At
+        NIconAtRed = My.Resources.AtRed
+        NIconAtSmoke = My.Resources.AtSmoke
+        NIconRefresh(0) = My.Resources.Refresh
+        NIconRefresh(1) = My.Resources.Refresh2
+        NIconRefresh(2) = My.Resources.Refresh3
+        NIconRefresh(3) = My.Resources.Refresh4
+        TabIcon = My.Resources.TabIcon
+        MainIcon = My.Resources.MIcon
+
         If Not Directory.Exists(Path.Combine(dir, "Icons")) Then
-            NIconAt = My.Resources.At
-            NIconAtRed = My.Resources.AtRed
-            NIconAtSmoke = My.Resources.AtSmoke
-            NIconRefresh(0) = My.Resources.Refresh
-            NIconRefresh(1) = My.Resources.Refresh2
-            NIconRefresh(2) = My.Resources.Refresh3
-            NIconRefresh(3) = My.Resources.Refresh4
-            TabIcon = My.Resources.TabIcon
-            MainIcon = My.Resources.MIcon
             Exit Sub
         End If
 
@@ -3978,6 +3979,9 @@ RETRY:
                         _cfgCommon.SortColumn = 7
                 End Select
 
+                _cfgCommon.TabList.Clear()
+                _cfgCommon.TabList.AddRange(_statuses.Tabs.Keys)
+
                 _cfgCommon.Save()
             End SyncLock
         End If
@@ -4029,10 +4033,8 @@ RETRY:
             If ListTab IsNot Nothing AndAlso _
                ListTab.TabPages IsNot Nothing AndAlso _
                ListTab.TabPages.Count > 0 Then
-                _cfgCommon.TabList.Clear()
                 If DeleteBefore Then SettingTab.DeleteConfigFile() '旧設定ファイル削除
                 For cnt = 0 To ListTab.TabPages.Count - 1
-                    _cfgCommon.TabList.Add(ListTab.TabPages(cnt).Text)
                     Dim tabSetting As New SettingTab
                     tabSetting.Tab = _statuses.Tabs(ListTab.TabPages(cnt).Text)
                     tabSetting.Save()
