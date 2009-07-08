@@ -175,6 +175,9 @@
   <data name="Label9.Text" xml:space="preserve">
     <value>First-time Reading Posts</value>
   </data>
+  <data name="StartupReaded.Location" type="System.Drawing.Point, System.Drawing">
+    <value>248, 270</value>
+  </data>
   <data name="StartupReaded.Size" type="System.Drawing.Size, System.Drawing">
     <value>81, 16</value>
   </data>
@@ -247,7 +250,7 @@
   <data name="Label20.Text" xml:space="preserve">
     <value>Unread Tweet</value>
   </data>
-  <data name="Button4.Text" xml:space="preserve">
+  <data name="btnAtTo.Text" xml:space="preserve">
     <value>Back...</value>
   </data>
   <data name="Label49.Size" type="System.Drawing.Size, System.Drawing">
@@ -526,6 +529,24 @@
   <data name="Label47.Text" xml:space="preserve">
     <value>Apply after restarting</value>
   </data>
+  <data name="Label70.Location" type="System.Drawing.Point, System.Drawing">
+    <value>14, 364</value>
+  </data>
+  <data name="Label70.Size" type="System.Drawing.Size, System.Drawing">
+    <value>224, 12</value>
+  </data>
+  <data name="Label70.Text" xml:space="preserve">
+    <value>Show message at startup if API is enabled</value>
+  </data>
+  <data name="CheckStartupAPImodeNoWarning.Location" type="System.Drawing.Point, System.Drawing">
+    <value>248, 363</value>
+  </data>
+  <data name="CheckStartupAPImodeNoWarning.Size" type="System.Drawing.Size, System.Drawing">
+    <value>80, 16</value>
+  </data>
+  <data name="CheckStartupAPImodeNoWarning.Text" xml:space="preserve">
+    <value>Don't show</value>
+  </data>
   <data name="Label69.Size" type="System.Drawing.Size, System.Drawing">
     <value>156, 12</value>
   </data>
@@ -550,6 +571,9 @@
   <data name="Label66.Text" xml:space="preserve">
     <value>POST method</value>
   </data>
+  <data name="CheckPostMethod.Location" type="System.Drawing.Point, System.Drawing">
+    <value>248, 407</value>
+  </data>
   <data name="CheckPostMethod.Size" type="System.Drawing.Size, System.Drawing">
     <value>58, 16</value>
   </data>
@@ -561,6 +585,9 @@
   </data>
   <data name="Label43.Text" xml:space="preserve">
     <value>TwitterAPI</value>
+  </data>
+  <data name="CheckUseApi.Location" type="System.Drawing.Point, System.Drawing">
+    <value>248, 385</value>
   </data>
   <data name="CheckUseApi.Size" type="System.Drawing.Size, System.Drawing">
     <value>58, 16</value>
@@ -612,6 +639,24 @@
   </data>
   <data name="TabPage1.Text" xml:space="preserve">
     <value>Basic</value>
+  </data>
+  <data name="TabPage2.Text" xml:space="preserve">
+    <value>Behavior</value>
+  </data>
+  <data name="TabPage3.Text" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="TabPage4.Text" xml:space="preserve">
+    <value>Fonts &amp; Colors</value>
+  </data>
+  <data name="TabPage5.Text" xml:space="preserve">
+    <value>Connection</value>
+  </data>
+  <data name="Label71.Size" type="System.Drawing.Size, System.Drawing">
+    <value>149, 12</value>
+  </data>
+  <data name="Label71.Text" xml:space="preserve">
+    <value>Primary URLshorten service</value>
   </data>
   <data name="CheckProtectNotInclude.Size" type="System.Drawing.Size, System.Drawing">
     <value>160, 16</value>
@@ -683,14 +728,29 @@
   <data name="Button3.Text" xml:space="preserve">
     <value>Open...</value>
   </data>
-  <data name="TabPage2.Text" xml:space="preserve">
-    <value>Behavior</value>
+  <data name="Label48.Size" type="System.Drawing.Size, System.Drawing">
+    <value>90, 12</value>
+  </data>
+  <data name="Label48.Text" xml:space="preserve">
+    <value>Show icon in tab</value>
+  </data>
+  <data name="chkTabIconDisp.Size" type="System.Drawing.Size, System.Drawing">
+    <value>51, 16</value>
+  </data>
+  <data name="chkTabIconDisp.Text" xml:space="preserve">
+    <value>Show</value>
   </data>
   <data name="Label68.Size" type="System.Drawing.Size, System.Drawing">
     <value>148, 12</value>
   </data>
   <data name="Label68.Text" xml:space="preserve">
     <value>Limit the condition of popup</value>
+  </data>
+  <data name="CheckBalloonLimit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>193, 16</value>
+  </data>
+  <data name="CheckBalloonLimit.Text" xml:space="preserve">
+    <value>only at the minimization and icon</value>
   </data>
   <data name="Label17.Size" type="System.Drawing.Size, System.Drawing">
     <value>162, 12</value>
@@ -704,12 +764,6 @@
   <data name="chkUnreadStyle.Text" xml:space="preserve">
     <value>Enable</value>
   </data>
-  <data name="TabPage3.Text" xml:space="preserve">
-    <value>View</value>
-  </data>
-  <data name="TabPage4.Text" xml:space="preserve">
-    <value>Fonts &amp; Colors</value>
-  </data>
   <data name="Label64.Size" type="System.Drawing.Size, System.Drawing">
     <value>371, 12</value>
   </data>
@@ -721,6 +775,9 @@
   </data>
   <data name="Label63.Text" xml:space="preserve">
     <value>Connection timeout(sec)</value>
+  </data>
+  <data name="GroupBox2.Text" xml:space="preserve">
+    <value>Proxy Server</value>
   </data>
   <data name="Label55.Size" type="System.Drawing.Size, System.Drawing">
     <value>320, 12</value>
@@ -770,12 +827,6 @@
   <data name="RadioProxyNone.Text" xml:space="preserve">
     <value>Don't Use</value>
   </data>
-  <data name="GroupBox2.Text" xml:space="preserve">
-    <value>Proxy Server</value>
-  </data>
-  <data name="TabPage5.Text" xml:space="preserve">
-    <value>Connection</value>
-  </data>
   <data name="Label60.Size" type="System.Drawing.Size, System.Drawing">
     <value>107, 12</value>
   </data>
@@ -796,17 +847,5 @@
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Settings</value>
-  </data>
-  <data name="CheckBalloonLimit.Text" xml:space="preserve">
-    <value>only at the minimization and icon</value>
-  </data>
-  <data name="CheckStartupAPImodeNoWarning.Text" xml:space="preserve">
-    <value>it doesn't warning</value>
-  </data>
-  <data name="Label70.Text" xml:space="preserve">
-    <value>API mode use warning in starting</value>
-  </data>
-  <data name="Label71.Text" xml:space="preserve">
-    <value>Primary URLshorten service</value>
   </data>
 </root>

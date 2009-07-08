@@ -125,4 +125,5 @@ Public Class SettingCommon
     Public DefaultTimeOut As Integer = 20
     Public ProtectNotInclude As Boolean = True
     Public LimitBalloon As Boolean = False
+    Public TabIconDisp As Boolean = True
 End Class

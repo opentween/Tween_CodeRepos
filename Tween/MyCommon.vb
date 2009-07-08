@@ -140,6 +140,12 @@ Public Module MyCommon
         Dim ResetTimeInSeconds As Integer
     End Structure
 
+    Public Enum ACCOUNT_STATE
+        Valid
+        Invalid
+        Validating
+    End Enum
+
     Public Sub TraceOut(ByVal Message As String)
         TraceOut(TraceFlag, Message)
     End Sub

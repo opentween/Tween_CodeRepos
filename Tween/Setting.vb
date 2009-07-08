@@ -95,6 +95,7 @@ Public Class Setting
     Private _MyPostAndGet As Boolean
     Private _MyReplyPeriod As Integer
     Private _MyAutoShortUrlFirst As UrlConverter
+    Private _MyTabIconDisp As Boolean
 
     Private Sub Save_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Save.Click
         Try
@@ -222,6 +223,7 @@ Public Class Setting
             _MyProtectNotInclude = CheckProtectNotInclude.Checked
             _MyLimitBalloon = CheckBalloonLimit.Checked
             _MyAutoShortUrlFirst = CType(ComboBoxAutoShortUrlFirst.SelectedIndex, UrlConverter)
+            _MyTabIconDisp = chkTabIconDisp.Checked
         Catch ex As Exception
             MessageBox.Show(My.Resources.Save_ClickText3)
             Me.DialogResult = Windows.Forms.DialogResult.Cancel
@@ -392,6 +394,7 @@ Public Class Setting
         CheckProtectNotInclude.Checked = _MyProtectNotInclude
         CheckBalloonLimit.Checked = _MyLimitBalloon
         ComboBoxAutoShortUrlFirst.SelectedIndex = _MyAutoShortUrlFirst
+        chkTabIconDisp.Checked = _MyTabIconDisp
 
         TabControl1.SelectedIndex = 0
         ActiveControl = Username
@@ -1325,6 +1328,15 @@ Public Class Setting
         End Get
         Set(ByVal value As Boolean)
             _MyProtectNotInclude = value
+        End Set
+    End Property
+
+    Public Property TabIconDisp() As Boolean
+        Get
+            Return _MyTabIconDisp
+        End Get
+        Set(ByVal value As Boolean)
+            _MyTabIconDisp = value
         End Set
     End Property
 
