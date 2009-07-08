@@ -33,7 +33,7 @@ Imports System.IO
 Imports System.Web
 Imports System.Reflection
 Imports System.ComponentModel
-Imports System.Xml.XPath
+'Imports System.Xml.XPath
 Imports System.Diagnostics
 
 Public Class TweenMain
@@ -136,6 +136,7 @@ Public Class TweenMain
     Private _brsBackColorNone As SolidBrush
     Private _brsDeactiveSelection As New SolidBrush(Color.FromKnownColor(KnownColor.ButtonFace))
     Private sf As New StringFormat()
+    Private sfTab As New StringFormat()
     'Private _columnIdx As Integer   'ListviewのDisplayIndex退避用（DrawItemで使用）
     'Private _columnChangeFlag As Boolean
 
@@ -265,6 +266,7 @@ Public Class TweenMain
         shield.Dispose()
         StatusLabel.Dispose()
         sf.Dispose()
+        sfTab.Dispose()
     End Sub
 
     Private Sub LoadIcons()
@@ -272,56 +274,60 @@ Public Class TweenMain
         'タスクトレイ通常時アイコン
         Dim dir As String = Application.StartupPath
 
+        If Not Directory.Exists(Path.Combine(dir, "Icons")) Then
+            NIconAt = My.Resources.At
+            NIconAtRed = My.Resources.AtRed
+            NIconAtSmoke = My.Resources.AtSmoke
+            NIconRefresh(0) = My.Resources.Refresh
+            NIconRefresh(1) = My.Resources.Refresh2
+            NIconRefresh(2) = My.Resources.Refresh3
+            NIconRefresh(3) = My.Resources.Refresh4
+            TabIcon = My.Resources.TabIcon
+            MainIcon = My.Resources.MIcon
+            Exit Sub
+        End If
+
         Try
             NIconAt = New Icon(Path.Combine(dir, "Icons\At.ico"))
         Catch ex As Exception
-            NIconAt = My.Resources.At
         End Try
         'タスクトレイエラー時アイコン
         Try
             NIconAtRed = New Icon(Path.Combine(dir, "Icons\AtRed.ico"))
         Catch ex As Exception
-            NIconAtRed = My.Resources.AtRed
         End Try
         'タスクトレイオフライン時アイコン
         Try
             NIconAtSmoke = New Icon(Path.Combine(dir, "Icons\AtSmoke.ico"))
         Catch ex As Exception
-            NIconAtSmoke = My.Resources.AtSmoke
         End Try
         'タスクトレイ更新中アイコン
         'アニメーション対応により4種類読み込み
         Try
             NIconRefresh(0) = New Icon(Path.Combine(dir, "Icons\Refresh.ico"))
         Catch ex As Exception
-            NIconRefresh(0) = My.Resources.Refresh
         End Try
         Try
             NIconRefresh(1) = New Icon(Path.Combine(dir, "Icons\Refresh2.ico"))
         Catch ex As Exception
-            NIconRefresh(1) = My.Resources.Refresh2
         End Try
         Try
             NIconRefresh(2) = New Icon(Path.Combine(dir, "Icons\Refresh3.ico"))
         Catch ex As Exception
-            NIconRefresh(2) = My.Resources.Refresh3
         End Try
         Try
             NIconRefresh(3) = New Icon(Path.Combine(dir, "Icons\Refresh4.ico"))
         Catch ex As Exception
-            NIconRefresh(3) = My.Resources.Refresh4
         End Try
         'タブ見出し未読表示アイコン
         Try
             TabIcon = New Icon(Path.Combine(dir, "Icons\Tab.ico"))
         Catch ex As Exception
-            TabIcon = My.Resources.TabIcon
         End Try
         '画面のアイコン
         Try
             MainIcon = New Icon(Path.Combine(dir, "Icons\MIcon.ico"))
         Catch ex As Exception
-            MainIcon = My.Resources.MIcon
         End Try
 
     End Sub
@@ -359,8 +365,6 @@ Public Class TweenMain
         _hisIdx = 0
         _reply_to_id = 0
         _reply_to_name = Nothing
-
-        '_columnChangeFlag = True
 
         '<<<<<<<<<設定関連>>>>>>>>>
         '設定コンバージョン
@@ -407,6 +411,8 @@ Public Class TweenMain
         ' StringFormatオブジェクトへの事前設定
         sf.Alignment = StringAlignment.Near
         sf.LineAlignment = StringAlignment.Near
+        sfTab.Alignment = StringAlignment.Center
+        sfTab.LineAlignment = StringAlignment.Center
 
         '設定画面への反映
         SettingDialog.UserID = _username                                'ユーザ名
@@ -498,6 +504,7 @@ Public Class TweenMain
         SettingDialog.DateTimeFormat = _cfgCommon.DateTimeFormat
         SettingDialog.LimitBalloon = _cfgCommon.LimitBalloon
         SettingDialog.AutoShortUrlFirst = _cfgCommon.AutoShortUrlFirst
+        SettingDialog.TabIconDisp = _cfgCommon.TabIconDisp
 
         '書式指定文字列エラーチェック
         Try
@@ -739,10 +746,35 @@ Public Class TweenMain
         SetMainWindowTitle()
         SetNotifyIconText()
 
+        If SettingDialog.TabIconDisp Then
+            ListTab.DrawMode = TabDrawMode.Normal
+        Else
+            ListTab.DrawMode = TabDrawMode.OwnerDrawFixed
+            AddHandler ListTab.DrawItem, AddressOf ListTab_DrawItem
+            ListTab.ImageList = Nothing
+        End If
+
         TimerColorize.Interval = 200
         TimerColorize.Start()
         _ignoreConfigSave = False
         SaveConfigsAll()
+    End Sub
+
+    Private Sub ListTab_DrawItem( _
+            ByVal sender As Object, ByVal e As DrawItemEventArgs)
+        Dim txt As String = ListTab.TabPages(e.Index).Text
+
+        e.Graphics.FillRectangle(System.Drawing.SystemBrushes.Control, e.Bounds)
+        If e.State = DrawItemState.Selected Then
+            e.DrawFocusRectangle()
+        End If
+        Dim fore As Brush
+        If _statuses.Tabs(txt).UnreadCount > 0 Then
+            fore = Brushes.Red
+        Else
+            fore = System.Drawing.SystemBrushes.ControlText
+        End If
+        e.Graphics.DrawString(txt, e.Font, fore, e.Bounds, sfTab)
     End Sub
 
     Private Function LoadConfig() As Boolean
@@ -994,8 +1026,13 @@ Public Class TweenMain
                                       _statuses.IndexOf(tab.Text, focusedId(tab.Text)))
                 End If
                 lst.EndUpdate()
-                If tabInfo.UnreadCount > 0 AndAlso tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
+                If tabInfo.UnreadCount > 0 Then
+                    If SettingDialog.TabIconDisp Then
+                        If tab.ImageIndex = -1 Then tab.ImageIndex = 0 'タブアイコン
+                    End If
+                End If
             Next
+            If Not SettingDialog.TabIconDisp Then ListTab.Refresh()
         Catch ex As Exception
             'ex.Data("Msg") = "Ref1, UseAPI=" + SettingDialog.UseAPI.ToString
             'Throw
@@ -1643,8 +1680,7 @@ Public Class TweenMain
                     smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText15_black + AsyncArg.page.ToString() + "/" + AsyncArg.ids.Count.ToString() + _
                                         My.Resources.GetTimelineWorker_RunWorkerCompletedText16 + (AsyncArg.page - AsyncArg.sIds.Count - 1).ToString()
                 Case WORKERTYPE.Favorites
-                    'ToDo: リソース化
-                    smsg = "Fav取得"
+                    smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText19
             End Select
         Else
             '完了メッセージ
@@ -1664,11 +1700,9 @@ Public Class TweenMain
                 Case WORKERTYPE.BlackFavAdd
                     '進捗メッセージ残す
                 Case WORKERTYPE.Favorites
-                    'ToDo: リソース化
-                    smsg = "Fav取得完了"
+                    smsg = My.Resources.GetTimelineWorker_RunWorkerCompletedText20
                 Case WORKERTYPE.Follower
-                    'ToDo: リソースか
-                    smsg = "Followers取得完了"
+                    smsg = My.Resources.UpdateFollowersMenuItem1_ClickText3
             End Select
         End If
         Return smsg
@@ -1750,6 +1784,11 @@ Public Class TweenMain
         If rslt.retMsg.Length > 0 Then
             If nw Then NotifyIcon1.Icon = NIconAtRed
             StatusLabel.Text = rslt.retMsg
+            If Twitter.AccountState = ACCOUNT_STATE.Invalid Then
+                Twitter.AccountState = ACCOUNT_STATE.Validating
+                SettingStripMenuItem_Click(Nothing, Nothing)
+                Twitter.AccountState = ACCOUNT_STATE.Valid
+            End If
         End If
 
         If rslt.type = WORKERTYPE.FavRemove Then
@@ -2177,8 +2216,13 @@ Public Class TweenMain
                         End If
                     End If
                 End If
-                If _statuses.Tabs(tb.Text).UnreadCount = 0 AndAlso tb.ImageIndex = 0 Then tb.ImageIndex = -1
+                If _statuses.Tabs(tb.Text).UnreadCount = 0 Then
+                    If SettingDialog.TabIconDisp Then
+                        If tb.ImageIndex = 0 Then tb.ImageIndex = -1 'タブアイコン
+                    End If
+                End If
             Next
+            If Not SettingDialog.TabIconDisp Then ListTab.Refresh()
         Finally
             Me.Cursor = Cursors.Default
         End Try
@@ -2197,8 +2241,13 @@ Public Class TweenMain
         ColorizeList()
         _curList.EndUpdate()
         For Each tb As TabPage In ListTab.TabPages
-            If _statuses.Tabs(tb.Text).UnreadCount = 0 AndAlso tb.ImageIndex = 0 Then tb.ImageIndex = -1
+            If _statuses.Tabs(tb.Text).UnreadCount = 0 Then
+                If SettingDialog.TabIconDisp Then
+                    If tb.ImageIndex = 0 Then tb.ImageIndex = -1 'タブアイコン
+                End If
+            End If
         Next
+        If Not SettingDialog.TabIconDisp Then ListTab.Refresh()
     End Sub
 
     Private Sub UnreadStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UnreadStripMenuItem.Click
@@ -2214,8 +2263,13 @@ Public Class TweenMain
         ColorizeList()
         _curList.EndUpdate()
         For Each tb As TabPage In ListTab.TabPages
-            If _statuses.Tabs(tb.Text).UnreadCount > 0 AndAlso tb.ImageIndex = -1 Then tb.ImageIndex = 0
+            If _statuses.Tabs(tb.Text).UnreadCount > 0 Then
+                If SettingDialog.TabIconDisp Then
+                    If tb.ImageIndex = -1 Then tb.ImageIndex = 0 'タブアイコン
+                End If
+            End If
         Next
+        If Not SettingDialog.TabIconDisp Then ListTab.Refresh()
     End Sub
 
     Private Sub RefreshStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RefreshStripMenuItem.Click
@@ -2289,12 +2343,25 @@ Public Class TweenMain
                 Twitter.ProxyUser = SettingDialog.ProxyUser
                 Twitter.ProxyPassword = SettingDialog.ProxyPassword
 
+                If SettingDialog.TabIconDisp Then
+                    RemoveHandler ListTab.DrawItem, AddressOf ListTab_DrawItem
+                    ListTab.DrawMode = TabDrawMode.Normal
+                    ListTab.ImageList = Me.TabImage
+                Else
+                    RemoveHandler ListTab.DrawItem, AddressOf ListTab_DrawItem
+                    AddHandler ListTab.DrawItem, AddressOf ListTab_DrawItem
+                    ListTab.DrawMode = TabDrawMode.OwnerDrawFixed
+                    ListTab.ImageList = Nothing
+                End If
+
                 If Not SettingDialog.UnreadManage Then
                     ReadedStripMenuItem.Enabled = False
                     UnreadStripMenuItem.Enabled = False
-                    For Each myTab As TabPage In ListTab.TabPages
-                        myTab.ImageIndex = -1
-                    Next
+                    If SettingDialog.TabIconDisp Then
+                        For Each myTab As TabPage In ListTab.TabPages
+                            myTab.ImageIndex = -1
+                        Next
+                    End If
                 Else
                     ReadedStripMenuItem.Enabled = True
                     UnreadStripMenuItem.Enabled = True
@@ -2342,10 +2409,12 @@ Public Class TweenMain
                 detailHtmlFormat = detailHtmlFormat1 + _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3
                 _statuses.SetUnreadManage(SettingDialog.UnreadManage)
                 For Each tb As TabPage In ListTab.TabPages
-                    If _statuses.Tabs(tb.Text).UnreadCount = 0 Then
-                        tb.ImageIndex = -1
-                    Else
-                        tb.ImageIndex = 0
+                    If SettingDialog.TabIconDisp Then
+                        If _statuses.Tabs(tb.Text).UnreadCount = 0 Then
+                            tb.ImageIndex = -1
+                        Else
+                            tb.ImageIndex = 0
+                        End If
                     End If
                     If tb.Controls IsNot Nothing AndAlso tb.Controls.Count > 0 Then
                         DirectCast(tb.Controls(0), DetailsListView).Font = _fntReaded
@@ -2358,13 +2427,14 @@ Public Class TweenMain
                 _itemCache = Nothing
                 _postCache = Nothing
                 _curList.Refresh()
+                ListTab.Refresh()
             End SyncLock
         End If
 
         Me.TopMost = SettingDialog.AlwaysTop
         SaveConfigsAll()
 
-        If chgUseApi Then doGetFollowersMenu(False) 'API使用を切り替えたら取り直し
+        If chgUseApi AndAlso SettingDialog.OneWayLove Then doGetFollowersMenu(False) 'API使用を切り替えたら取り直し
     End Sub
 
     Private Sub PostBrowser_Navigated(ByVal sender As Object, ByVal e As System.Windows.Forms.WebBrowserNavigatedEventArgs) Handles PostBrowser.Navigated
@@ -3280,8 +3350,13 @@ RETRY:
         End If
         If Not StatusLabelUrl.Text.StartsWith("http") Then SetStatusLabel()
         For Each tb As TabPage In ListTab.TabPages
-            If _statuses.Tabs(tb.Text).UnreadCount = 0 AndAlso tb.ImageIndex = 0 Then tb.ImageIndex = -1
+            If _statuses.Tabs(tb.Text).UnreadCount = 0 Then
+                If SettingDialog.TabIconDisp Then
+                    If tb.ImageIndex = 0 Then tb.ImageIndex = -1
+                End If
+            End If
         Next
+        If Not SettingDialog.TabIconDisp Then ListTab.Refresh()
     End Sub
 
     Private Sub DispSelectedPost()
@@ -3887,6 +3962,7 @@ RETRY:
                 _cfgCommon.ProtectNotInclude = SettingDialog.ProtectNotInclude
                 _cfgCommon.LimitBalloon = SettingDialog.LimitBalloon
                 _cfgCommon.AutoShortUrlFirst = SettingDialog.AutoShortUrlFirst
+                _cfgCommon.TabIconDisp = SettingDialog.TabIconDisp
 
                 _cfgCommon.SortOrder = _statuses.SortOrder
                 Select Case _statuses.SortMode
@@ -4327,9 +4403,13 @@ RETRY:
 
         _statuses.SetTabUnreadManage(_rclickTabName, UreadManageMenuItem.Checked)
         If _statuses.Tabs(_rclickTabName).UnreadCount > 0 Then
-            ListTab.TabPages(idx).ImageIndex = 0
+            If SettingDialog.TabIconDisp Then
+                ListTab.TabPages(idx).ImageIndex = 0
+            End If
         Else
-            ListTab.TabPages(idx).ImageIndex = -1
+            If SettingDialog.TabIconDisp Then
+                ListTab.TabPages(idx).ImageIndex = -1
+            End If
         End If
         If _curTab.Text = _rclickTabName Then
             _itemCache = Nothing
@@ -4339,6 +4419,7 @@ RETRY:
         SetMainWindowTitle()
         SetStatusLabel()
         SaveConfigsTab(False)
+        If Not SettingDialog.TabIconDisp Then ListTab.Refresh()
     End Sub
 
     Private Sub NotifyDispMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles NotifyDispMenuItem.Click
@@ -4383,11 +4464,16 @@ RETRY:
             For Each tb As TabPage In ListTab.TabPages
                 DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
                 If _statuses.Tabs(tb.Text).UnreadCount > 0 Then
-                    tb.ImageIndex = 0
+                    If SettingDialog.TabIconDisp Then
+                        tb.ImageIndex = 0
+                    End If
                 Else
-                    tb.ImageIndex = -1
+                    If SettingDialog.TabIconDisp Then
+                        tb.ImageIndex = -1
+                    End If
                 End If
             Next
+            If Not SettingDialog.TabIconDisp Then ListTab.Refresh()
         Finally
             Me.Cursor = Cursors.Default
         End Try
@@ -4465,11 +4551,16 @@ RETRY:
             For Each tb As TabPage In ListTab.TabPages
                 DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
                 If _statuses.Tabs(tb.Text).UnreadCount > 0 Then
-                    tb.ImageIndex = 0
+                    If SettingDialog.TabIconDisp Then
+                        tb.ImageIndex = 0
+                    End If
                 Else
-                    tb.ImageIndex = -1
+                    If SettingDialog.TabIconDisp Then
+                        tb.ImageIndex = -1
+                    End If
                 End If
             Next
+            If Not SettingDialog.TabIconDisp Then ListTab.Refresh()
         Finally
             Me.Cursor = Cursors.Default
         End Try
@@ -4605,11 +4696,16 @@ RETRY:
             For Each tb As TabPage In ListTab.TabPages
                 DirectCast(tb.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(tb.Text).AllCount
                 If _statuses.Tabs(tb.Text).UnreadCount > 0 Then
-                    tb.ImageIndex = 0
+                    If SettingDialog.TabIconDisp Then
+                        tb.ImageIndex = 0
+                    End If
                 Else
-                    tb.ImageIndex = -1
+                    If SettingDialog.TabIconDisp Then
+                        tb.ImageIndex = -1
+                    End If
                 End If
             Next
+            If Not SettingDialog.TabIconDisp Then ListTab.Refresh()
         Finally
             Me.Cursor = Cursors.Default
         End Try
@@ -4722,6 +4818,7 @@ RETRY:
                 Exit For
             End If
         Next
+        If Not SettingDialog.TabIconDisp Then ListTab.Refresh()
 
         SetMainWindowTitle()
         SetStatusLabel()

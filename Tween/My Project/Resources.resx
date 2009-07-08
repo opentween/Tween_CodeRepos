@@ -706,4 +706,10 @@
   <data name="ButtonOK_ClickText4" xml:space="preserve">
     <value>既に存在するルールは追加できません</value>
   </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText19" xml:space="preserve">
+    <value>Fav取得中...</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText20" xml:space="preserve">
+    <value>Fav取得完了</value>
+  </data>
 </root>

@@ -307,20 +307,24 @@ Namespace My.Resources
         '''<summary>
         '''  更新履歴
         '''
-        '''***Ver 0.5.3.0(Unreleased)
-        '''-タブ名禁則文字に ” &quot; を追加
-        '''***Ver 0.5.2.0(2009/7/2)
-        '''-バージョンアップ時にタブ名に禁止文字（ \ : / ? * &lt; &gt; | ）が含まれていた場合は置き換えを行う
-        '''-タブ追加・名前変更時に、禁止文字（ \ : / ? * &lt; &gt; | ）が含まれていた場合、再入力を促す
-        '''***Ver 0.5.1.0(2009/7/2)
-        '''-Webモードのサインインができなくなっていた仕様変更対応
-        '''-一部URLの取り扱いの変更
-        '''-ReTweetの際に&lt;br&gt;タグが紛れ込んでしまうバグを再修正
-        '''-一つの書き込みに圧縮されたURLが複数含まれている場合に最初のURLだけしか展開できないバグを修正
-        '''-圧縮されたURLにクエリ(?以降)またはフラグメント(#以降)が付加されていた場合に、展開結果においてそれらが切り捨てられるバグ修正
-        '''-書き込む文字列の全角スペースを半角スペースに置き換える処理で半角スペース2個に置き換えるように変更
-        '''-タブ名変更時にタブ選択ダイアログのリストに古いタブ名が残るバグ修正
-        '''-短縮U [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        '''***Ver 0.5.6.0(Unreleased)
+        '''-新規導入後の初回起動時に設定が保存されないバグ修正
+        '''-タブ見出しを立て続けに右クリックすると例外が発生するバグ修正
+        '''-起動時にFav取得。Favタブを開いている状態で更新すると手動更新。
+        '''-数字のみのハッシュタグを認識しないように修正
+        '''-C-eでハッシュタグのリンクが開けない問題を修正
+        '''-発言詳細で連続する半角スペースが1つになってしまう問題に対応
+        '''-過剰なログイン処理を試みないよう修正
+        '''-タブ見出しにアイコンを表示しないオプション追加（アイコン非表示時は文字色赤）
+        '''***Ver 0.5.5.0(2009/7/3)
+        '''-起動と同時に設定ファイルを保存して、設定が飛ぶ問題に対応
+        '''***Ver 0.5.4.0(2009/7/3)
+        '''-タブ名に禁止文字が使われている以前のバージョンからアップデートする際に変換する処理を追加
+        '''-パスワード暗号化で例外が発生するバグ対応
+        '''-ReTweetの際に改行が&lt;BR&gt;で混入するバグの再修正
+        '''***Ver 0.5.3.0(2009/7/3)
+        '''-タブ名禁止文字に ” &quot; を追加
+        '''-古 [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property ChangeLog() As String
             Get
@@ -743,11 +747,29 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Fav取得中... に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property GetTimelineWorker_RunWorkerCompletedText19() As String
+            Get
+                Return ResourceManager.GetString("GetTimelineWorker_RunWorkerCompletedText19", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''   ポストまで読み込み完了。さらに読み込みますか？ に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property GetTimelineWorker_RunWorkerCompletedText2() As String
             Get
                 Return ResourceManager.GetString("GetTimelineWorker_RunWorkerCompletedText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Fav取得完了 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property GetTimelineWorker_RunWorkerCompletedText20() As String
+            Get
+                Return ResourceManager.GetString("GetTimelineWorker_RunWorkerCompletedText20", resourceCulture)
             End Get
         End Property
         

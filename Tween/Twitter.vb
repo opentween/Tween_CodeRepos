@@ -153,6 +153,9 @@ Public Module Twitter
 
         SyncLock LockObj
             If _signed Then Return ""
+            If Twitter.AccountState <> ACCOUNT_STATE.Valid Then
+                Return "SignIn -> Check your Username/Password."
+            End If
 
             '未認証
             _signed = False
@@ -187,9 +190,11 @@ Public Module Twitter
                     '未知の応答(May be required Chapta)
                     msg = "Wrong Username or password. Try from web."
                 End If
+                Twitter.AccountState = ACCOUNT_STATE.Invalid
                 Return "SignIn Failed -> " + msg
             ElseIf resMsg.Contains("https://twitter.com/account/locked") Then   '302 FOUND
                 Dim msg As String = "You account is Locked Out."
+                Twitter.AccountState = ACCOUNT_STATE.Invalid
                 Return "SignIn Failed -> " + msg
             ElseIf resMsg.Contains("https://twitter.com:443/") Then '302 FOUND
                 'OK
@@ -201,7 +206,8 @@ Public Module Twitter
                 Return "SignIn Failed -> " + resMsg
             Else
                 '応答がOK でありサインインできていない場合の未知の応答
-                TraceOut(True, "SignIn Failed." + vbCrLf + "resStatus:" + resStatus + vbCrLf + "resMsg:" + vbCrLf + resMsg)
+                'TraceOut(True, "SignIn Failed." + vbCrLf + "resStatus:" + resStatus + vbCrLf + "resMsg:" + vbCrLf + resMsg)
+                Twitter.AccountState = ACCOUNT_STATE.Invalid
                 Return "SignIn Failed -> " + "Unknown problems."
             End If
 
@@ -697,6 +703,7 @@ RETRY:
                                     ByVal read As Boolean, _
                                     ByVal endPage As Integer, _
                                     ByVal gType As WORKERTYPE) As String
+
         If endPage = 0 Then
             '通常モード(DMはモード関係なし)
             endPage = 1
@@ -1016,6 +1023,7 @@ RETRY:
                                 ByRef endPage As Integer, _
                                 ByVal gType As WORKERTYPE, _
                                 ByRef getDM As Boolean) As String
+
         GetTmSemaphore.WaitOne()
         Try
             If _endingFlag Then Return ""
@@ -1760,6 +1768,8 @@ RETRY:
 
         If _endingFlag Then Return ""
 
+        If Twitter.AccountState <> ACCOUNT_STATE.Valid Then Return ""
+
         postStr = postStr.Trim()
 
         'データ部分の生成
@@ -1786,19 +1796,31 @@ RETRY:
                 Return ""
             End If
         Else
-            Return resStatus
+            If resStatus.StartsWith("Err: Unauthorized") Then
+                Twitter.AccountState = ACCOUNT_STATE.Invalid
+                Return "Check your Username/Password."
+            Else
+                Return resStatus
+            End If
         End If
     End Function
 
     Public Function RemoveStatus(ByVal id As Long) As String
         If _endingFlag Then Return ""
 
+        If Twitter.AccountState <> ACCOUNT_STATE.Valid Then Return ""
+
         'データ部分の生成
         Dim resStatus As String = ""
         Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _StDestroyPath + id.ToString + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
 
         If resMsg.StartsWith("<?xml") = False OrElse resStatus.StartsWith("OK") = False Then
-            Return resStatus
+            If resStatus.StartsWith("Err: Unauthorized") Then
+                Twitter.AccountState = ACCOUNT_STATE.Invalid
+                Return "Check your Username/Password."
+            Else
+                Return resStatus
+            End If
         End If
 
         Return ""
@@ -1807,13 +1829,20 @@ RETRY:
     Public Function RemoveDirectMessage(ByVal id As Long) As String
         If _endingFlag Then Return ""
 
+        If Twitter.AccountState <> ACCOUNT_STATE.Valid Then Return ""
+
         'データ部分の生成
         Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim resStatus As String = ""
         Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMDestroyPath + id.ToString + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
 
         If resMsg.StartsWith("<?xml") = False OrElse resStatus.StartsWith("OK") = False Then
-            Return resStatus
+            If resStatus.StartsWith("Err: Unauthorized") Then
+                Twitter.AccountState = ACCOUNT_STATE.Invalid
+                Return "Check your Username/Password."
+            Else
+                Return resStatus
+            End If
         End If
 
         Return ""
@@ -1839,13 +1868,21 @@ RETRY:
     Public Function PostFavAdd(ByVal id As Long) As String
         If _endingFlag Then Return ""
 
+
+        If Twitter.AccountState <> ACCOUNT_STATE.Valid Then Return ""
+
         'データ部分の生成
         'Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim resStatus As String = ""
         Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _postFavAddPath + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
 
         If resStatus.StartsWith("OK") = False Then
-            Return resStatus
+            If resStatus.StartsWith("Err: Unauthorized") Then
+                Twitter.AccountState = ACCOUNT_STATE.Invalid
+                Return "Check your Username/Password."
+            Else
+                Return resStatus
+            End If
         End If
 
         If _restrictFavCheck = False Then Return ""
@@ -1880,13 +1917,21 @@ RETRY:
     Public Function PostFavRemove(ByVal id As Long) As String
         If _endingFlag Then Return ""
 
+
+        If Twitter.AccountState <> ACCOUNT_STATE.Valid Then Return ""
+
         'データ部分の生成
         'Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim resStatus As String = ""
         Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _postFavRemovePath + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
 
         If resStatus.StartsWith("OK") = False Then
-            Return resStatus
+            If resStatus.StartsWith("Err: Unauthorized") Then
+                Twitter.AccountState = ACCOUNT_STATE.Invalid
+                Return "Check your Username/Password."
+            Else
+                Return resStatus
+            End If
         End If
 
         Return ""
@@ -2022,6 +2067,9 @@ RETRY:
         Dim sw As New System.Diagnostics.Stopwatch
         sw.Start()
 #End If
+
+        If Twitter.AccountState <> ACCOUNT_STATE.Valid Then Return ""
+
         Dim resStatus As String = ""
         Dim resMsg As String = ""
         Dim i As Integer = 0
@@ -2037,11 +2085,21 @@ RETRY:
         tmpFollower.Add(_uid.ToLower())
 
         resMsg = DirectCast(CreateSocket.GetWebResponse("https://twitter.com/users/show/" + _uid + ".xml", resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        If resMsg = "" Then
+            If resStatus.StartsWith("Err: BadRequest") Then
+                Return "Maybe, the requests reached API limit."
+            ElseIf resStatus.StartsWith("Err: Unauthorized") Then
+                Twitter.AccountState = ACCOUNT_STATE.Invalid
+                Return "Check your Username/Password."
+            Else
+                Return resStatus
+            End If
+        End If
+
         Dim xd As XmlDocument = New XmlDocument()
         Try
             xd.LoadXml(resMsg)
             followersCount = Integer.Parse(xd.SelectSingleNode("/user/followers_count/text()").Value)
-            'Catch ex As XmlException
         Catch ex As Exception
             'If CacheInvalidate OrElse ValidateCache(-1) < 0 Then
             If ValidateCache(-1) < 0 Then
@@ -2160,6 +2218,16 @@ RETRY:
         Set(ByVal value As String)
             _pwd = value
             _signed = False
+        End Set
+    End Property
+
+    Private _accountState As ACCOUNT_STATE = ACCOUNT_STATE.Valid
+    Public Property AccountState() As ACCOUNT_STATE
+        Get
+            Return _accountState
+        End Get
+        Set(ByVal value As ACCOUNT_STATE)
+            _accountState = value
         End Set
     End Property
 
@@ -2654,6 +2722,9 @@ RETRY:
 
     Public Function GetTimelineApi(ByVal read As Boolean, _
                             ByVal gType As WORKERTYPE) As String
+
+        If Twitter.AccountState <> ACCOUNT_STATE.Valid Then Return ""
+
         If _endingFlag Then Return ""
 
         Dim retMsg As String = ""
@@ -2673,6 +2744,9 @@ RETRY:
         If retMsg = "" Then
             If resStatus.StartsWith("Err: BadRequest") Then
                 Return "Maybe, the requests reached API limit."
+            ElseIf resStatus.StartsWith("Err: Unauthorized") Then
+                Twitter.AccountState = ACCOUNT_STATE.Invalid
+                Return "Check your Username/Password."
             Else
                 Return resStatus
             End If
@@ -2774,6 +2848,8 @@ RETRY:
                             ByVal gType As WORKERTYPE) As String
         If _endingFlag Then Return ""
 
+        If Twitter.AccountState <> ACCOUNT_STATE.Valid Then Return ""
+
         Dim retMsg As String = ""
         Dim resStatus As String = ""
         Dim sck As MySocket = CreateSocket()
@@ -2791,6 +2867,9 @@ RETRY:
         If retMsg = "" Then
             If resStatus.StartsWith("Err: BadRequest") Then
                 Return "Maybe, the requests reached API limit."
+            ElseIf resStatus.StartsWith("Err: Unauthorized") Then
+                Twitter.AccountState = ACCOUNT_STATE.Invalid
+                Return "Check your Username/Password."
             Else
                 Return resStatus
             End If
@@ -2882,6 +2961,9 @@ RETRY:
 
     Public Function GetFavoritesApi(ByVal read As Boolean, _
                         ByVal gType As WORKERTYPE) As String
+
+        If Twitter.AccountState <> ACCOUNT_STATE.Valid Then Return ""
+
         If _endingFlag Then Return ""
 
         Dim retMsg As String = ""
@@ -2896,6 +2978,9 @@ RETRY:
         If retMsg = "" Then
             If resStatus.StartsWith("Err: BadRequest") Then
                 Return "Maybe, the requests reached API limit."
+            ElseIf resStatus.StartsWith("Err: Unauthorized") Then
+                Twitter.AccountState = ACCOUNT_STATE.Invalid
+                Return "Check your Username/Password."
             Else
                 Return resStatus
             End If
@@ -3005,6 +3090,8 @@ RETRY:
     End Function
 
     Private Function FollowerApi(ByRef page As Integer) As String
+        If Twitter.AccountState <> ACCOUNT_STATE.Valid Then Return ""
+
         Dim retMsg As String = ""
         Dim resStatus As String = ""
         Dim curCount As Integer = followerId.Count
@@ -3015,7 +3102,14 @@ RETRY:
 
         retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + FOLLOWER_PATH + pageQuery, resStatus, _ApiMethod), String)
 
-        If retMsg = "" Then Return resStatus
+        If retMsg = "" Then
+            If resStatus.StartsWith("Err: Unauthorized") Then
+                Twitter.AccountState = ACCOUNT_STATE.Invalid
+                Return "Check your Username/Password."
+            Else
+                Return resStatus
+            End If
+        End If
 
         Dim xdoc As New XmlDocument
         Try

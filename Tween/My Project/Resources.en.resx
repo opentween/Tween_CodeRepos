@@ -654,4 +654,10 @@
   <data name="UnhandledExceptionText12" xml:space="preserve">
     <value>Users  authority：</value>
   </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText19" xml:space="preserve">
+    <value>Fav refreshing...</value>
+  </data>
+  <data name="GetTimelineWorker_RunWorkerCompletedText20" xml:space="preserve">
+    <value>Fav refreshed</value>
+  </data>
 </root>

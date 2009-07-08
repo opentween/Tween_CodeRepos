@@ -171,6 +171,8 @@ Partial Class Setting
         Me.Label50 = New System.Windows.Forms.Label
         Me.Button3 = New System.Windows.Forms.Button
         Me.TabPage3 = New System.Windows.Forms.TabPage
+        Me.Label48 = New System.Windows.Forms.Label
+        Me.chkTabIconDisp = New System.Windows.Forms.CheckBox
         Me.Label68 = New System.Windows.Forms.Label
         Me.CheckBalloonLimit = New System.Windows.Forms.CheckBox
         Me.LabelDateTimeFormatApplied = New System.Windows.Forms.Label
@@ -1147,6 +1149,8 @@ Partial Class Setting
         '
         'TabPage3
         '
+        Me.TabPage3.Controls.Add(Me.Label48)
+        Me.TabPage3.Controls.Add(Me.chkTabIconDisp)
         Me.TabPage3.Controls.Add(Me.Label68)
         Me.TabPage3.Controls.Add(Me.CheckBalloonLimit)
         Me.TabPage3.Controls.Add(Me.LabelDateTimeFormatApplied)
@@ -1172,6 +1176,17 @@ Partial Class Setting
         resources.ApplyResources(Me.TabPage3, "TabPage3")
         Me.TabPage3.Name = "TabPage3"
         Me.TabPage3.UseVisualStyleBackColor = True
+        '
+        'Label48
+        '
+        resources.ApplyResources(Me.Label48, "Label48")
+        Me.Label48.Name = "Label48"
+        '
+        'chkTabIconDisp
+        '
+        resources.ApplyResources(Me.chkTabIconDisp, "chkTabIconDisp")
+        Me.chkTabIconDisp.Name = "chkTabIconDisp"
+        Me.chkTabIconDisp.UseVisualStyleBackColor = True
         '
         'Label68
         '
@@ -1574,4 +1589,6 @@ Partial Class Setting
     Friend WithEvents CheckStartupAPImodeNoWarning As System.Windows.Forms.CheckBox
     Friend WithEvents ComboBoxAutoShortUrlFirst As System.Windows.Forms.ComboBox
     Friend WithEvents Label71 As System.Windows.Forms.Label
+    Friend WithEvents Label48 As System.Windows.Forms.Label
+    Friend WithEvents chkTabIconDisp As System.Windows.Forms.CheckBox
 End Class
