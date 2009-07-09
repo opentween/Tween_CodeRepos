@@ -323,6 +323,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>"c:\Program Files\Microsoft\ILMerge\ILMerge.exe" /out:"$(TargetPath).exe" "$(TargetPath)" "$(TargetDir)Tween.XmlSerializers.dll"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
