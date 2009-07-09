@@ -146,6 +146,12 @@ Public Module MyCommon
         Validating
     End Enum
 
+    Public Enum REPLY_ICONSTATE
+        None
+        StaticIcon
+        BlinkIcon
+    End Enum
+
     Public Sub TraceOut(ByVal Message As String)
         TraceOut(TraceFlag, Message)
     End Sub

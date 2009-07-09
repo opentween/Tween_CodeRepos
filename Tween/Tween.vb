@@ -508,6 +508,7 @@ Public Class TweenMain
         SettingDialog.LimitBalloon = _cfgCommon.LimitBalloon
         SettingDialog.AutoShortUrlFirst = _cfgCommon.AutoShortUrlFirst
         SettingDialog.TabIconDisp = _cfgCommon.TabIconDisp
+        SettingDialog.ReplyIconState = _cfgCommon.ReplyIconState
 
         '書式指定文字列エラーチェック
         Try
@@ -773,11 +774,15 @@ Public Class TweenMain
             e.DrawFocusRectangle()
         End If
         Dim fore As Brush
-        If _statuses.Tabs(txt).UnreadCount > 0 Then
-            fore = Brushes.Red
-        Else
+        Try
+            If _statuses.Tabs(txt).UnreadCount > 0 Then
+                fore = Brushes.Red
+            Else
+                fore = System.Drawing.SystemBrushes.ControlText
+            End If
+        Catch ex As Exception
             fore = System.Drawing.SystemBrushes.ControlText
-        End If
+        End Try
         e.Graphics.DrawString(txt, e.Font, fore, e.Bounds, sfTab)
     End Sub
 
@@ -1432,10 +1437,11 @@ Public Class TweenMain
 
                 _endingFlag = True
 
-                'sgenのdllがあれば不要か？
-                If e.CloseReason <> CloseReason.WindowsShutDown AndAlso e.CloseReason <> CloseReason.TaskManagerClosing Then
-                    SaveConfigsLocal()
-                End If
+                ''sgenのdllがあれば不要か？
+                'If e.CloseReason <> CloseReason.WindowsShutDown AndAlso e.CloseReason <> CloseReason.TaskManagerClosing Then
+                '    SaveConfigsLocal()
+                'End If
+                SaveConfigsAll()
 
                 For i As Integer = 0 To _bw.Length - 1
                     If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then _bw(i).CancelAsync()
@@ -2708,8 +2714,8 @@ Public Class TweenMain
         _listCustom.Dispose()
         _statuses.RemoveTab(TabName)
 
-        SaveConfigsCommon()
-        SaveConfigsTab(False)
+        'SaveConfigsCommon()
+        'SaveConfigsTab(False)
 
         For Each tp As TabPage In ListTab.TabPages
             Dim lst As DetailsListView = DirectCast(tp.Controls(0), DetailsListView)
@@ -3945,6 +3951,7 @@ RETRY:
                 _cfgCommon.LimitBalloon = SettingDialog.LimitBalloon
                 _cfgCommon.AutoShortUrlFirst = SettingDialog.AutoShortUrlFirst
                 _cfgCommon.TabIconDisp = SettingDialog.TabIconDisp
+                _cfgCommon.ReplyIconState = SettingDialog.ReplyIconState
 
                 _cfgCommon.SortOrder = _statuses.SortOrder
                 Select Case _statuses.SortMode
@@ -3961,7 +3968,9 @@ RETRY:
                 End Select
 
                 _cfgCommon.TabList.Clear()
-                _cfgCommon.TabList.AddRange(_statuses.Tabs.Keys)
+                For i As Integer = 0 To ListTab.TabPages.Count - 1
+                    _cfgCommon.TabList.Add(ListTab.TabPages(i).Text)
+                Next
 
                 _cfgCommon.Save()
             End SyncLock
@@ -4113,8 +4122,8 @@ RETRY:
                     TabDialog.AddTab(ListTab.TabPages(i).Text)
                 End If
             Next
-            SaveConfigsCommon()
-            SaveConfigsTab(False)
+            'SaveConfigsCommon()
+            'SaveConfigsTab(False)
             _rclickTabName = newTabText
         End If
     End Sub
@@ -4196,7 +4205,7 @@ RETRY:
             ListTab.TabPages.Insert(i + 1, mTp)
         End If
         ListTab.ResumeLayout()
-        SaveConfigsCommon()
+        'SaveConfigsCommon()
     End Sub
 
     Private Sub MakeReplyOrDirectStatus(Optional ByVal isAuto As Boolean = True, Optional ByVal isReply As Boolean = True, Optional ByVal isAll As Boolean = False)
@@ -4365,10 +4374,10 @@ RETRY:
             Exit Sub
         End If
 
-        If _statuses.Tabs(DEFAULTTAB.REPLY).UnreadCount > 0 Then
+        If SettingDialog.ReplyIconState <> REPLY_ICONSTATE.None AndAlso _statuses.Tabs(DEFAULTTAB.REPLY).UnreadCount > 0 Then
             If blinkCnt > 0 Then Exit Sub
             blink = Not blink
-            If blink Then
+            If blink OrElse SettingDialog.ReplyIconState = REPLY_ICONSTATE.StaticIcon Then
                 NotifyIcon1.Icon = My.Resources.Reply
             Else
                 NotifyIcon1.Icon = My.Resources.ReplyBlink
@@ -4392,6 +4401,10 @@ RETRY:
         End If
     End Sub
 
+    Private Sub ContextMenuTabProperty_Closed(ByVal sender As Object, ByVal e As System.Windows.Forms.ToolStripDropDownClosedEventArgs) Handles ContextMenuTabProperty.Closed
+        'SaveConfigsTab(False)
+    End Sub
+
     Private Sub ContextMenuTabProperty_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuTabProperty.Opening
         '右クリックの場合はタブ名が設定済。アプリケーションキーの場合は現在のタブを対象とする
         If _rclickTabName = "" OrElse ContextMenuTabProperty.OwnerItem IsNot Nothing Then _rclickTabName = ListTab.SelectedTab.Text
@@ -4400,7 +4413,6 @@ RETRY:
 
         NotifyDispMenuItem.Checked = tb.Notify
 
-        SoundFileComboBox.BeginUpdate()
         SoundFileComboBox.Items.Clear()
         SoundFileComboBox.Items.Add("")
         Dim oDir As IO.DirectoryInfo = New IO.DirectoryInfo(My.Application.Info.DirectoryPath)
@@ -4410,7 +4422,6 @@ RETRY:
         Dim idx As Integer = SoundFileComboBox.Items.IndexOf(tb.SoundFile)
         If idx = -1 Then idx = 0
         SoundFileComboBox.SelectedIndex = idx
-        SoundFileComboBox.EndUpdate()
 
         UreadManageMenuItem.Checked = tb.UnreadManage
         If _rclickTabName = DEFAULTTAB.RECENT OrElse _rclickTabName = DEFAULTTAB.DM OrElse _rclickTabName = DEFAULTTAB.FAV Then
@@ -4450,7 +4461,6 @@ RETRY:
         End If
         SetMainWindowTitle()
         SetStatusLabel()
-        SaveConfigsTab(False)
         If Not SettingDialog.TabIconDisp Then ListTab.Refresh()
     End Sub
 
@@ -4459,7 +4469,6 @@ RETRY:
 
         Dim tb As TabClass = _statuses.Tabs(_rclickTabName)
         tb.Notify = NotifyDispMenuItem.Checked
-        SaveConfigsTab(False)
     End Sub
 
     Private Sub SoundFileComboBox_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SoundFileComboBox.SelectedIndexChanged
@@ -4467,7 +4476,6 @@ RETRY:
 
         Dim tb As TabClass = _statuses.Tabs(_rclickTabName)
         tb.SoundFile = DirectCast(SoundFileComboBox.SelectedItem, String)
-        SaveConfigsTab(False)
     End Sub
 
     Private Sub DeleteTabMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles DeleteTabMenuItem.Click
@@ -4483,7 +4491,6 @@ RETRY:
 
         fDialog.SetCurrent(_rclickTabName)
         fDialog.ShowDialog()
-        SaveConfigsTab(False)
         Me.TopMost = SettingDialog.AlwaysTop
 
         Try
@@ -4509,6 +4516,7 @@ RETRY:
         Finally
             Me.Cursor = Cursors.Default
         End Try
+        'SaveConfigsTab(False)
     End Sub
 
     Private Sub AddTabMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AddTabMenuItem.Click
@@ -4526,8 +4534,8 @@ RETRY:
             Else
                 '成功
                 _statuses.AddTab(tabName)
-                SaveConfigsCommon()
-                SaveConfigsTab(False)
+                'SaveConfigsCommon()
+                'SaveConfigsTab(False)
             End If
         End If
     End Sub
@@ -4596,8 +4604,8 @@ RETRY:
         Finally
             Me.Cursor = Cursors.Default
         End Try
-        SaveConfigsCommon()
-        SaveConfigsTab(False)
+        'SaveConfigsCommon()
+        'SaveConfigsTab(False)
     End Sub
 
     Protected Overrides Function ProcessDialogKey( _
@@ -4741,8 +4749,8 @@ RETRY:
         Finally
             Me.Cursor = Cursors.Default
         End Try
-        SaveConfigsCommon()
-        SaveConfigsTab(False)
+        'SaveConfigsCommon()
+        'SaveConfigsTab(False)
     End Sub
 
     Private Sub CopySTOTMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CopySTOTMenuItem.Click
@@ -4976,7 +4984,7 @@ RETRY:
         Else
             SettingDialog.PlaySound = False
         End If
-        SaveConfigsCommon()
+        'SaveConfigsCommon()
     End Sub
 
     Private Sub SplitContainer1_SplitterMoved(ByVal sender As Object, ByVal e As System.Windows.Forms.SplitterEventArgs) Handles SplitContainer1.SplitterMoved
@@ -4988,8 +4996,12 @@ RETRY:
 
     Private Sub RepliedStatusOpenMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RepliedStatusOpenMenuItem.Click
         If _curPost IsNot Nothing AndAlso _curPost.InReplyToUser IsNot Nothing AndAlso _curPost.InReplyToId > 0 Then
-
-            OpenUriAsync("http://twitter.com/" + _curPost.InReplyToUser + "/statuses/" + _curPost.InReplyToId.ToString())
+            If _statuses.ContainsKey(_curPost.InReplyToId) Then
+                Dim repPost As PostClass = _statuses.Item(_curPost.InReplyToId)
+                MessageBox.Show(repPost.Name + " / " + repPost.Nickname + "   (" + repPost.PDate.ToString() + ")" + Environment.NewLine + repPost.Data)
+            Else
+                OpenUriAsync("http://twitter.com/" + _curPost.InReplyToUser + "/statuses/" + _curPost.InReplyToId.ToString())
+            End If
         End If
     End Sub
 
@@ -5210,12 +5222,12 @@ RETRY:
 
     Private Sub NewPostPopMenuItem_CheckStateChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles NewPostPopMenuItem.CheckStateChanged
         _cfgCommon.NewAllPop = NewPostPopMenuItem.Checked
-        SaveConfigsCommon()
+        'SaveConfigsCommon()
     End Sub
 
     Private Sub ListLockMenuItem_CheckStateChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ListLockMenuItem.CheckStateChanged
         _cfgCommon.ListLock = ListLockMenuItem.Checked
-        SaveConfigsCommon()
+        'SaveConfigsCommon()
     End Sub
 
     Private Sub MenuStrip1_MenuActivate(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuStrip1.MenuActivate
@@ -5636,7 +5648,7 @@ RETRY:
             If Not SettingDialog.StartupAPImodeNoWarning AndAlso SettingDialog.UseAPI Then
                 If MessageBox.Show("現在APIモードです。APIモードではタイムライン取得に回数制限があり、制限回数を超えるとタイムライン取得が行えなくなります。この制限について理解していますか？Web取得モードではタイムライン取得にAPIを使用せず、API回数制限の影響を受けません。Web取得モードに切り替える場合は「OK」を押してください。", "警告", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) = Windows.Forms.DialogResult.OK Then
                     SettingDialog.UseAPI = False
-                    SaveConfigsCommon()
+                    'SaveConfigsCommon()
                     MessageBox.Show("APIモードをオフにし、Web取得モードへ切り替えました。")
                 Else
                     MessageBox.Show("APIモードを維持することを選択しました。Web取得に戻す場合は設定の動作タブにある「API使用」のチェックを外すと戻すことができます。" + Environment.NewLine + Environment.NewLine + "※APIモードの制限を理解された方のみ、次回より警告を表示しないよう設定画面で変更してください※")
@@ -5736,7 +5748,7 @@ RETRY:
 
     Private Sub ToolStripMenuItemUrlAutoShorten_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripMenuItemUrlAutoShorten.CheckedChanged
         SettingDialog.UrlConvertAuto = ToolStripMenuItemUrlAutoShorten.Checked
-        SaveConfigsCommon()
+        'SaveConfigsCommon()
     End Sub
 
     Private Sub ContextMenuStripPostMode_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuStripPostMode.Opening

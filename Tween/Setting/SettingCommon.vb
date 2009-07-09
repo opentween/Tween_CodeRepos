@@ -126,4 +126,5 @@ Public Class SettingCommon
     Public ProtectNotInclude As Boolean = True
     Public LimitBalloon As Boolean = False
     Public TabIconDisp As Boolean = True
+    Public ReplyIconState As REPLY_ICONSTATE = REPLY_ICONSTATE.StaticIcon
 End Class
