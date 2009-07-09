@@ -307,7 +307,11 @@ Namespace My.Resources
         '''<summary>
         '''  更新履歴
         '''
-        '''***Ver 0.5.6.0(Unreleased)
+        '''***Ver 0.5.8.0(2009/7/8)
+        '''-タブ設定が保存されないバグ修正
+        '''***Ver 0.5.7.0(2009/7/8)
+        '''-Iconsフォルダがある場合に起動できないバグ修正
+        '''***Ver 0.5.6.0(2009/7/8)
         '''-新規導入後の初回起動時に設定が保存されないバグ修正
         '''-タブ見出しを立て続けに右クリックすると例外が発生するバグ修正
         '''-起動時にFav取得。Favタブを開いている状態で更新すると手動更新。
@@ -320,11 +324,7 @@ Namespace My.Resources
         '''-起動と同時に設定ファイルを保存して、設定が飛ぶ問題に対応
         '''***Ver 0.5.4.0(2009/7/3)
         '''-タブ名に禁止文字が使われている以前のバージョンからアップデートする際に変換する処理を追加
-        '''-パスワード暗号化で例外が発生するバグ対応
-        '''-ReTweetの際に改行が&lt;BR&gt;で混入するバグの再修正
-        '''***Ver 0.5.3.0(2009/7/3)
-        '''-タブ名禁止文字に ” &quot; を追加
-        '''-古 [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        '''-パスワー [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property ChangeLog() As String
             Get
@@ -1159,16 +1159,16 @@ Namespace My.Resources
             End Get
         End Property
         
-        Friend ReadOnly Property ReplyBlink() As System.Drawing.Icon
+        Friend ReadOnly Property Reply() As System.Drawing.Icon
             Get
-                Dim obj As Object = ResourceManager.GetObject("ReplyBlink", resourceCulture)
+                Dim obj As Object = ResourceManager.GetObject("Reply", resourceCulture)
                 Return CType(obj,System.Drawing.Icon)
             End Get
         End Property
         
-        Friend ReadOnly Property Repry() As System.Drawing.Icon
+        Friend ReadOnly Property ReplyBlink() As System.Drawing.Icon
             Get
-                Dim obj As Object = ResourceManager.GetObject("Repry", resourceCulture)
+                Dim obj As Object = ResourceManager.GetObject("ReplyBlink", resourceCulture)
                 Return CType(obj,System.Drawing.Icon)
             End Get
         End Property

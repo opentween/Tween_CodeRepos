@@ -60,6 +60,8 @@ Public Class TweenMain
     Private Const detailHtmlFormat3 As String = "pt; word-wrap: break-word;} --></style></head><body style=""margin:0px""><pre>"
     Private Const detailHtmlFormat4 As String = "</pre></body></html>"
     Private detailHtmlFormat As String
+    Private _myStatusError As Boolean = False
+    Private _myStatusOnline As Boolean = False
 
     '設定ファイル関連
     Private _cfg As SettingToConfig '旧
@@ -651,6 +653,7 @@ Public Class TweenMain
         End If
         '更新中アイコンアニメーション間隔
         TimerRefreshIcon.Interval = 85
+        TimerRefreshIcon.Enabled = True
 
         '状態表示部の初期化（画面右下）
         StatusLabel.Text = ""
@@ -948,8 +951,7 @@ Public Class TweenMain
             MoveToFavToolStripMenuItem.Enabled = True
             DeleteStripMenuItem.Enabled = True
             RefreshStripMenuItem.Enabled = True
-            TimerRefreshIcon.Enabled = False
-            NotifyIcon1.Icon = NIconAt
+            _myStatusOnline = True
             If Not _initial Then
                 If SettingDialog.DMPeriodInt > 0 Then TimerDM.Enabled = True
                 If SettingDialog.TimelinePeriodInt > 0 Then TimerTimeline.Enabled = True
@@ -958,8 +960,7 @@ Public Class TweenMain
                 GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
             End If
         Else
-            TimerRefreshIcon.Enabled = False
-            NotifyIcon1.Icon = NIconAtSmoke
+            _myStatusOnline = False
             PostButton.Enabled = False
             FavAddToolStripMenuItem.Enabled = False
             FavRemoveToolStripMenuItem.Enabled = False
@@ -1726,24 +1727,10 @@ Public Class TweenMain
                 PostButton.Enabled = True
                 ReplyStripMenuItem.Enabled = True
                 DMStripMenuItem.Enabled = True
-                NotifyIcon1.Icon = NIconAt
             End If
         Else
             Dim smsg As String = DirectCast(e.UserState, String)
             If smsg.Length > 0 Then StatusLabel.Text = smsg
-            If e.ProgressPercentage = 0 Then    '開始
-                TimerRefreshIcon.Enabled = True
-            End If
-            If e.ProgressPercentage = 100 Then  '終了
-                Dim cnt As Integer = 0
-                For Each bw As BackgroundWorker In _bw
-                    If bw IsNot Nothing AndAlso bw.IsBusy Then cnt += 1
-                Next
-                If cnt < 2 Then
-                    TimerRefreshIcon.Enabled = False
-                    NotifyIcon1.Icon = NIconAt
-                End If
-            End If
         End If
     End Sub
 
@@ -1751,18 +1738,15 @@ Public Class TweenMain
 
         If _endingFlag OrElse e.Cancelled Then Exit Sub 'キャンセル
 
-        Dim nw As Boolean = IsNetworkAvailable()
+        IsNetworkAvailable()
 
         If e.Error IsNot Nothing Then
-            If nw Then NotifyIcon1.Icon = NIconAtRed
-            Dim buf As String = Nothing
+            _myStatusError = True
             Throw New Exception("BackgroundWorker Exception", e.Error)
             _waitTimeline = False
             _waitReply = False
-            '_waitFollower = False
             _waitDm = False
             _waitFav = False
-            '_initial = False
             Exit Sub
         End If
 
@@ -1771,19 +1755,16 @@ Public Class TweenMain
 
         If rslt.type = WORKERTYPE.OpenUri Then Exit Sub
 
-        If nw Then
-            NotifyIcon1.Icon = NIconAt
+        If _myStatusOnline Then
             'タイマー再始動
             If SettingDialog.TimelinePeriodInt > 0 AndAlso Not TimerTimeline.Enabled Then TimerTimeline.Enabled = True
             If SettingDialog.DMPeriodInt > 0 AndAlso Not TimerDM.Enabled Then TimerDM.Enabled = True
             If SettingDialog.ReplyPeriodInt > 0 AndAlso Not TimerReply.Enabled Then TimerReply.Enabled = True
-        Else
-            NotifyIcon1.Icon = NIconAtSmoke
         End If
 
         'エラー
         If rslt.retMsg.Length > 0 Then
-            If nw Then NotifyIcon1.Icon = NIconAtRed
+            _myStatusError = True
             StatusLabel.Text = rslt.retMsg
             If Twitter.AccountState = ACCOUNT_STATE.Invalid Then
                 Twitter.AccountState = ACCOUNT_STATE.Validating
@@ -4355,11 +4336,60 @@ RETRY:
     Private Sub TimerRefreshIcon_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TimerRefreshIcon.Tick
         If Not TimerRefreshIcon.Enabled Then Exit Sub
         Static iconCnt As Integer = 0
+        Static blinkCnt As Integer = 0
+        Static blink As Boolean = False
+        Static idle As Boolean = False
 
         iconCnt += 1
-        If iconCnt > 3 Then iconCnt = 0
+        blinkCnt += 1
 
-        NotifyIcon1.Icon = NIconRefresh(iconCnt)
+        Dim busy As Boolean = False
+        For Each bw As BackgroundWorker In Me._bw
+            If bw IsNot Nothing AndAlso bw.IsBusy Then
+                busy = True
+                Exit For
+            End If
+        Next
+
+        If iconCnt > 3 Then
+            iconCnt = 0
+        End If
+        If blinkCnt > 10 Then
+            blinkCnt = 0
+        End If
+
+        If busy Then
+            NotifyIcon1.Icon = NIconRefresh(iconCnt)
+            idle = False
+            _myStatusError = False
+            Exit Sub
+        End If
+
+        If _statuses.Tabs(DEFAULTTAB.REPLY).UnreadCount > 0 Then
+            If blinkCnt > 0 Then Exit Sub
+            blink = Not blink
+            If blink Then
+                NotifyIcon1.Icon = My.Resources.Reply
+            Else
+                NotifyIcon1.Icon = My.Resources.ReplyBlink
+            End If
+            idle = False
+            Exit Sub
+        End If
+
+        If idle Then Exit Sub
+        idle = True
+        '優先度：エラー→オフライン→アイドル
+        'エラーは更新アイコンでクリアされる
+        If _myStatusError Then
+            NotifyIcon1.Icon = NIconAtRed
+            Exit Sub
+        End If
+        If _myStatusOnline Then
+            NotifyIcon1.Icon = NIconAt
+        Else
+            NotifyIcon1.Icon = NIconAtSmoke
+        End If
     End Sub
 
     Private Sub ContextMenuTabProperty_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuTabProperty.Opening
@@ -5461,6 +5491,7 @@ RETRY:
         Catch ex As Exception
             nw = True
         End Try
+        _myStatusOnline = nw
         Return nw
     End Function
 
@@ -5614,8 +5645,6 @@ RETRY:
             End If
 
         Else
-            TimerRefreshIcon.Enabled = False
-            NotifyIcon1.Icon = NIconAtSmoke
             PostButton.Enabled = False
             FavAddToolStripMenuItem.Enabled = False
             FavRemoveToolStripMenuItem.Enabled = False
