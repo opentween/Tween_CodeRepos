@@ -203,6 +203,8 @@ Partial Class Setting
         Me.Label59 = New System.Windows.Forms.Label
         Me.TextBoxOutputzKey = New System.Windows.Forms.TextBox
         Me.CheckOutputz = New System.Windows.Forms.CheckBox
+        Me.Label72 = New System.Windows.Forms.Label
+        Me.ReplyIconStateCombo = New System.Windows.Forms.ComboBox
         Me.GroupBox1.SuspendLayout()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
@@ -1149,6 +1151,8 @@ Partial Class Setting
         '
         'TabPage3
         '
+        Me.TabPage3.Controls.Add(Me.ReplyIconStateCombo)
+        Me.TabPage3.Controls.Add(Me.Label72)
         Me.TabPage3.Controls.Add(Me.Label48)
         Me.TabPage3.Controls.Add(Me.chkTabIconDisp)
         Me.TabPage3.Controls.Add(Me.Label68)
@@ -1379,6 +1383,19 @@ Partial Class Setting
         Me.CheckOutputz.Name = "CheckOutputz"
         Me.CheckOutputz.UseVisualStyleBackColor = True
         '
+        'Label72
+        '
+        resources.ApplyResources(Me.Label72, "Label72")
+        Me.Label72.Name = "Label72"
+        '
+        'ReplyIconStateCombo
+        '
+        Me.ReplyIconStateCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ReplyIconStateCombo.FormattingEnabled = True
+        Me.ReplyIconStateCombo.Items.AddRange(New Object() {resources.GetString("ReplyIconStateCombo.Items"), resources.GetString("ReplyIconStateCombo.Items1"), resources.GetString("ReplyIconStateCombo.Items2")})
+        resources.ApplyResources(Me.ReplyIconStateCombo, "ReplyIconStateCombo")
+        Me.ReplyIconStateCombo.Name = "ReplyIconStateCombo"
+        '
         'Setting
         '
         Me.AcceptButton = Me.Save
@@ -1591,4 +1608,6 @@ Partial Class Setting
     Friend WithEvents Label71 As System.Windows.Forms.Label
     Friend WithEvents Label48 As System.Windows.Forms.Label
     Friend WithEvents chkTabIconDisp As System.Windows.Forms.CheckBox
+    Friend WithEvents ReplyIconStateCombo As System.Windows.Forms.ComboBox
+    Friend WithEvents Label72 As System.Windows.Forms.Label
 End Class

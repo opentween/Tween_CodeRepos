@@ -96,6 +96,7 @@ Public Class Setting
     Private _MyReplyPeriod As Integer
     Private _MyAutoShortUrlFirst As UrlConverter
     Private _MyTabIconDisp As Boolean
+    Private _MyReplyIconState As REPLY_ICONSTATE
 
     Private Sub Save_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Save.Click
         Try
@@ -224,6 +225,14 @@ Public Class Setting
             _MyLimitBalloon = CheckBalloonLimit.Checked
             _MyAutoShortUrlFirst = CType(ComboBoxAutoShortUrlFirst.SelectedIndex, UrlConverter)
             _MyTabIconDisp = chkTabIconDisp.Checked
+            Select Case ReplyIconStateCombo.SelectedIndex
+                Case 0
+                    _MyReplyIconState = REPLY_ICONSTATE.None
+                Case 1
+                    _MyReplyIconState = REPLY_ICONSTATE.StaticIcon
+                Case 2
+                    _MyReplyIconState = REPLY_ICONSTATE.BlinkIcon
+            End Select
         Catch ex As Exception
             MessageBox.Show(My.Resources.Save_ClickText3)
             Me.DialogResult = Windows.Forms.DialogResult.Cancel
@@ -395,6 +404,15 @@ Public Class Setting
         CheckBalloonLimit.Checked = _MyLimitBalloon
         ComboBoxAutoShortUrlFirst.SelectedIndex = _MyAutoShortUrlFirst
         chkTabIconDisp.Checked = _MyTabIconDisp
+
+        Select Case _MyReplyIconState
+            Case REPLY_ICONSTATE.None
+                ReplyIconStateCombo.SelectedIndex = 0
+            Case REPLY_ICONSTATE.StaticIcon
+                ReplyIconStateCombo.SelectedIndex = 1
+            Case REPLY_ICONSTATE.BlinkIcon
+                ReplyIconStateCombo.SelectedIndex = 2
+        End Select
 
         TabControl1.SelectedIndex = 0
         ActiveControl = Username
@@ -1337,6 +1355,15 @@ Public Class Setting
         End Get
         Set(ByVal value As Boolean)
             _MyTabIconDisp = value
+        End Set
+    End Property
+
+    Public Property ReplyIconState() As REPLY_ICONSTATE
+        Get
+            Return _MyReplyIconState
+        End Get
+        Set(ByVal value As REPLY_ICONSTATE)
+            _MyReplyIconState = value
         End Set
     End Property
 

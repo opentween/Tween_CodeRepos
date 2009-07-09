@@ -1485,6 +1485,7 @@ RETRY:
                 Dim tmpurlStr As String = urlstr
                 retUrlStr = urlEncodeMultibyteChar(DirectCast(CreateSocket.GetWebResponse(tmpurlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo, timeOut:=2000), String))
                 If retUrlStr.StartsWith("http") Then
+                    retUrlStr = retUrlStr.Replace("""", "%22")  'ダブルコーテーションがあるとURL終端と判断されるため、これだけ再エンコード
                     orgData = orgData.Replace("<a href=""" + orgUrl + """", "<a href=""" + retUrlStr + """")
                 End If
             Catch ex As Exception
