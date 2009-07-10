@@ -472,7 +472,7 @@ RETRY:
                     Try
                         pos1 = strPost.IndexOf(_parseImg, pos2, StringComparison.Ordinal)
                         pos2 = strPost.IndexOf(_parseImgTo, pos1 + _parseImg.Length, StringComparison.Ordinal)
-                        post.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length))
+                        post.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length)).Replace("https://", "http://")
                     Catch ex As Exception
                         _signed = False
                         TraceOut("TM-Img:" + strPost)
@@ -898,7 +898,7 @@ RETRY:
                     Try
                         pos1 = strPost.IndexOf(_parseImg, pos2, StringComparison.Ordinal)
                         pos2 = strPost.IndexOf(_parseImgTo, pos1 + _parseImg.Length, StringComparison.Ordinal)
-                        post.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length))
+                        post.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length)).Replace("https://", "http://")
                     Catch ex As Exception
                         _signed = False
                         TraceOut("DM-Img:" + strPost)
@@ -1172,7 +1172,7 @@ RETRY:
                     Try
                         pos1 = strPost.IndexOf(_parseImg, pos2, StringComparison.Ordinal)
                         pos2 = strPost.IndexOf(_parseImgTo, pos1 + _parseImg.Length, StringComparison.Ordinal)
-                        post.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length))
+                        post.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length)).Replace("https://", "http://")
                     Catch ex As Exception
                         _signed = False
                         TraceOut("TM-Img:" + strPost)
