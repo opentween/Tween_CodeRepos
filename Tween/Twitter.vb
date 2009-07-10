@@ -178,7 +178,7 @@ Public Module Twitter
                 Return "SignIn -> Can't get token."
             End If
 
-            account = _authKeyHeader + authToken + "&" + _uidHeader + _uid + "&" + _pwdHeader + _pwd + "&" + "remember_me=1"
+            account = _authKeyHeader + authToken + "&" + _uidHeader + _uid + "&" + _pwdHeader + HttpUtility.UrlEncode(_pwd) + "&" + "remember_me=1"
 
             resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _loginPath, resStatus, MySocket.REQ_TYPE.ReqPOST, account), String)
             If resStatus.StartsWith("OK") Then
