@@ -127,4 +127,5 @@ Public Class SettingCommon
     Public LimitBalloon As Boolean = False
     Public TabIconDisp As Boolean = True
     Public ReplyIconState As REPLY_ICONSTATE = REPLY_ICONSTATE.StaticIcon
+    Public WideSpaceConvert As Boolean = True
 End Class

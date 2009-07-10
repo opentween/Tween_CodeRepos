@@ -157,6 +157,7 @@ Public Class TweenMain
     Private _waitDm As Boolean = False
     Private _waitFav As Boolean = False
     Private _bw(9) As BackgroundWorker
+    Private _bwFollower As BackgroundWorker
     Private cMode As Integer
     Private StatusLabel As New ToolStripLabelHistory
     Private shield As New ShieldIcon
@@ -509,6 +510,7 @@ Public Class TweenMain
         SettingDialog.AutoShortUrlFirst = _cfgCommon.AutoShortUrlFirst
         SettingDialog.TabIconDisp = _cfgCommon.TabIconDisp
         SettingDialog.ReplyIconState = _cfgCommon.ReplyIconState
+        Me.IdeographicSpaceToSpaceToolStripMenuItem.Checked = _cfgCommon.WideSpaceConvert
 
         '書式指定文字列エラーチェック
         Try
@@ -767,7 +769,12 @@ Public Class TweenMain
 
     Private Sub ListTab_DrawItem( _
             ByVal sender As Object, ByVal e As DrawItemEventArgs)
-        Dim txt As String = ListTab.TabPages(e.Index).Text
+        Dim txt As String
+        Try
+            txt = ListTab.TabPages(e.Index).Text
+        Catch ex As Exception
+            Exit Sub
+        End Try
 
         e.Graphics.FillRectangle(System.Drawing.SystemBrushes.Control, e.Bounds)
         If e.State = DrawItemState.Selected Then
@@ -1446,6 +1453,7 @@ Public Class TweenMain
                 For i As Integer = 0 To _bw.Length - 1
                     If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then _bw(i).CancelAsync()
                 Next
+                If _bwFollower IsNot Nothing AndAlso _bwFollower.IsBusy Then _bwFollower.CancelAsync()
 
                 Dim flg As Boolean = False
                 Do
@@ -1456,6 +1464,9 @@ Public Class TweenMain
                             Exit For
                         End If
                     Next
+                    If _bwFollower IsNot Nothing AndAlso _bwFollower.IsBusy Then
+                        flg = False
+                    End If
                     Threading.Thread.Sleep(500)
                     Application.DoEvents()
                 Loop Until flg = True
@@ -3952,6 +3963,10 @@ RETRY:
                 _cfgCommon.AutoShortUrlFirst = SettingDialog.AutoShortUrlFirst
                 _cfgCommon.TabIconDisp = SettingDialog.TabIconDisp
                 _cfgCommon.ReplyIconState = SettingDialog.ReplyIconState
+                If IdeographicSpaceToSpaceToolStripMenuItem IsNot Nothing AndAlso _
+                   IdeographicSpaceToSpaceToolStripMenuItem.IsDisposed = False Then
+                    _cfgCommon.WideSpaceConvert = Me.IdeographicSpaceToSpaceToolStripMenuItem.Checked
+                End If
 
                 _cfgCommon.SortOrder = _statuses.SortOrder
                 Select Case _statuses.SortMode
@@ -5577,25 +5592,41 @@ RETRY:
 
     Private Sub RunAsync(ByVal args As GetWorkerArg)
         Dim bw As BackgroundWorker = Nothing
-        For i As Integer = 0 To _bw.Length - 1
-            If _bw(i) IsNot Nothing AndAlso Not _bw(i).IsBusy Then
-                bw = _bw(i)
-                Exit For
-            End If
-        Next
-        If bw Is Nothing Then
+        If args.type <> WORKERTYPE.Follower Then
             For i As Integer = 0 To _bw.Length - 1
-                If _bw(i) Is Nothing Then
-                    _bw(i) = New BackgroundWorker
+                If _bw(i) IsNot Nothing AndAlso Not _bw(i).IsBusy Then
                     bw = _bw(i)
-                    bw.WorkerReportsProgress = True
-                    bw.WorkerSupportsCancellation = True
-                    AddHandler bw.DoWork, AddressOf GetTimelineWorker_DoWork
-                    AddHandler bw.ProgressChanged, AddressOf GetTimelineWorker_ProgressChanged
-                    AddHandler bw.RunWorkerCompleted, AddressOf GetTimelineWorker_RunWorkerCompleted
                     Exit For
                 End If
             Next
+            If bw Is Nothing Then
+                For i As Integer = 0 To _bw.Length - 1
+                    If _bw(i) Is Nothing Then
+                        _bw(i) = New BackgroundWorker
+                        bw = _bw(i)
+                        bw.WorkerReportsProgress = True
+                        bw.WorkerSupportsCancellation = True
+                        AddHandler bw.DoWork, AddressOf GetTimelineWorker_DoWork
+                        AddHandler bw.ProgressChanged, AddressOf GetTimelineWorker_ProgressChanged
+                        AddHandler bw.RunWorkerCompleted, AddressOf GetTimelineWorker_RunWorkerCompleted
+                        Exit For
+                    End If
+                Next
+            End If
+        Else
+            If _bwFollower Is Nothing Then
+                _bwFollower = New BackgroundWorker
+                bw = _bwFollower
+                bw.WorkerReportsProgress = True
+                bw.WorkerSupportsCancellation = True
+                AddHandler bw.DoWork, AddressOf GetTimelineWorker_DoWork
+                AddHandler bw.ProgressChanged, AddressOf GetTimelineWorker_ProgressChanged
+                AddHandler bw.RunWorkerCompleted, AddressOf GetTimelineWorker_RunWorkerCompleted
+            Else
+                If _bwFollower.IsBusy = False Then
+                    bw = _bwFollower
+                End If
+            End If
         End If
         If bw Is Nothing Then Exit Sub
 

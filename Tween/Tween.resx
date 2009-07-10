@@ -1453,7 +1453,7 @@
     <value>全角スペースを半角スペースにする</value>
   </data>
   <data name="ContextMenuStripPostMode.Size" type="System.Drawing.Size, System.Drawing">
-    <value>232, 92</value>
+    <value>232, 114</value>
   </data>
   <data name="&gt;&gt;ContextMenuStripPostMode.Name" xml:space="preserve">
     <value>ContextMenuStripPostMode</value>
