@@ -55,10 +55,10 @@ Public Class TweenMain
     Private _tabDrag As Boolean           'タブドラッグ中フラグ（DoDragDropを実行するかの判定用）
     Private _rclickTabName As String      '右クリックしたタブの名前（Tabコントロール機能不足対応）
     Private ReadOnly _syncObject As New Object()    'ロック用
-    Private Const detailHtmlFormat1 As String = "<html><head><style type=""text/css""><!-- pre {font-family: """
+    Private Const detailHtmlFormat1 As String = "<html><head><style type=""text/css""><!-- p {font-family: """
     Private Const detailHtmlFormat2 As String = """, sans-serif; font-size: "
-    Private Const detailHtmlFormat3 As String = "pt; word-wrap: break-word;} --></style></head><body style=""margin:0px""><pre>"
-    Private Const detailHtmlFormat4 As String = "</pre></body></html>"
+    Private Const detailHtmlFormat3 As String = "pt;} --></style></head><body style=""margin:0px""><p>"
+    Private Const detailHtmlFormat4 As String = "</p></body></html>"
     Private detailHtmlFormat As String
     Private _myStatusError As Boolean = False
     Private _myStatusOnline As Boolean = False
@@ -2964,7 +2964,10 @@ Public Class TweenMain
         If e.ItemState = 0 Then Exit Sub
         If e.ColumnIndex > 0 Then
             Dim rct As RectangleF = e.Bounds
+            Dim rctB As RectangleF = e.Bounds
             rct.Width = e.Header.Width
+            rctB.Width = e.Header.Width
+            rct.Height = 12
             'アイコン以外の列
             If Not e.Item.Selected Then     'e.ItemStateでうまく判定できない？？？
                 '選択されていない行
@@ -2984,7 +2987,8 @@ Public Class TweenMain
                 End Select
                 If rct.Width > 0 Then
                     If _iconCol Then
-                        e.Graphics.DrawString(e.Item.SubItems(4).Text + "/" + e.Item.SubItems(1).Text + " (" + e.Item.SubItems(3).Text + ") <" + e.Item.SubItems(5).Text + e.Item.SubItems(6).Text + "> from " + e.Item.SubItems(7).Text + System.Environment.NewLine + e.Item.SubItems(2).Text, e.Item.Font, brs, rct, sf)
+                        e.Graphics.DrawString(System.Environment.NewLine + e.Item.SubItems(2).Text, e.Item.Font, brs, rctB, sf)
+                        e.Graphics.DrawString(e.Item.SubItems(4).Text + " / " + e.Item.SubItems(1).Text + " (" + e.Item.SubItems(3).Text + ") <" + e.Item.SubItems(5).Text + e.Item.SubItems(6).Text + "> from " + e.Item.SubItems(7).Text, New Font(e.Item.Font, FontStyle.Bold), brs, rct, sf)
                     Else
                         e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, brs, rct, sf)
                     End If
@@ -2994,13 +2998,15 @@ Public Class TweenMain
                     '選択中の行
                     If DirectCast(sender, Windows.Forms.Control).Focused Then
                         If _iconCol Then
-                            e.Graphics.DrawString(e.Item.SubItems(4).Text + "/" + e.Item.SubItems(1).Text + " (" + e.Item.SubItems(3).Text + ") <" + e.Item.SubItems(5).Text + e.Item.SubItems(6).Text + "> from " + e.Item.SubItems(7).Text + System.Environment.NewLine + e.Item.SubItems(2).Text, e.Item.Font, _brsHighLightText, rct, sf)
+                            e.Graphics.DrawString(System.Environment.NewLine + e.Item.SubItems(2).Text, e.Item.Font, _brsHighLightText, rctB, sf)
+                            e.Graphics.DrawString(e.Item.SubItems(4).Text + " / " + e.Item.SubItems(1).Text + " (" + e.Item.SubItems(3).Text + ") <" + e.Item.SubItems(5).Text + e.Item.SubItems(6).Text + "> from " + e.Item.SubItems(7).Text, New Font(e.Item.Font, FontStyle.Bold), _brsHighLightText, rct, sf)
                         Else
                             e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, _brsHighLightText, rct, sf)
                         End If
                     Else
                         If _iconCol Then
-                            e.Graphics.DrawString(e.Item.SubItems(4).Text + "/" + e.Item.SubItems(1).Text + " (" + e.Item.SubItems(3).Text + ") <" + e.Item.SubItems(5).Text + e.Item.SubItems(6).Text + "> from " + e.Item.SubItems(7).Text + System.Environment.NewLine + e.Item.SubItems(2).Text, e.Item.Font, _brsForeColorUnread, rct, sf)
+                            e.Graphics.DrawString(System.Environment.NewLine + e.Item.SubItems(2).Text, e.Item.Font, _brsForeColorUnread, rctB, sf)
+                            e.Graphics.DrawString(e.Item.SubItems(4).Text + " / " + e.Item.SubItems(1).Text + " (" + e.Item.SubItems(3).Text + ") <" + e.Item.SubItems(5).Text + e.Item.SubItems(6).Text + "> from " + e.Item.SubItems(7).Text, New Font(e.Item.Font, FontStyle.Bold), _brsForeColorUnread, rct, sf)
                         Else
                             e.Graphics.DrawString(e.SubItem.Text, e.Item.Font, _brsForeColorUnread, rct, sf)
                         End If
@@ -5745,11 +5751,11 @@ RETRY:
             rtdata = rx.Replace(rtdata, "${link}")
 
             '<br>タグ除去
-            'If StatusText.Multiline Then
-            '    rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)*<br>", vbCrLf, RegexOptions.IgnoreCase Or RegexOptions.Multiline)
-            'Else
-            '    rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)*<br>", "", RegexOptions.IgnoreCase Or RegexOptions.Multiline)
-            'End If
+            If StatusText.Multiline Then
+                rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)?<br>", vbCrLf, RegexOptions.IgnoreCase Or RegexOptions.Multiline)
+            Else
+                rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)?<br>", "", RegexOptions.IgnoreCase Or RegexOptions.Multiline)
+            End If
 
             StatusText.Text = "RT @" + _curPost.Name + ": " + HttpUtility.HtmlDecode(rtdata)
             _reply_to_id = 0
@@ -5826,4 +5832,37 @@ RETRY:
         MessageBox.Show(tmp, "API使用回数情報", MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 
+    Private Sub FollowCommandMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FollowCommandMenuItem.Click
+        Using inputName As New InputTabName()
+            inputName.FormTitle = "Follow"
+            inputName.FormDescription = "followするidを入力して下さい。"
+            inputName.TabName = ""
+            If inputName.ShowDialog() = Windows.Forms.DialogResult.OK AndAlso _
+               Not String.IsNullOrEmpty(inputName.TabName.Trim()) Then
+                Dim ret As String = Twitter.PostFollowCommand(inputName.TabName.Trim())
+                If Not String.IsNullOrEmpty(ret) Then
+                    MessageBox.Show("Follow失敗: " + ret)
+                Else
+                    MessageBox.Show("Followしました！")
+                End If
+            End If
+        End Using
+    End Sub
+
+    Private Sub RemoveCommandMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RemoveCommandMenuItem.Click
+        Using inputName As New InputTabName()
+            inputName.FormTitle = "Remove"
+            inputName.FormDescription = "removeするidを入力して下さい。"
+            inputName.TabName = ""
+            If inputName.ShowDialog() = Windows.Forms.DialogResult.OK AndAlso _
+               Not String.IsNullOrEmpty(inputName.TabName.Trim()) Then
+                Dim ret As String = Twitter.PostRemoveCommand(inputName.TabName.Trim())
+                If Not String.IsNullOrEmpty(ret) Then
+                    MessageBox.Show("Remove失敗: " + ret)
+                Else
+                    MessageBox.Show("Removeしました")
+                End If
+            End If
+        End Using
+    End Sub
 End Class
