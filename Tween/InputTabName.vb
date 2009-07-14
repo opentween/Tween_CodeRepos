@@ -45,6 +45,18 @@ Public Class InputTabName
         End Set
     End Property
 
+    Public WriteOnly Property FormTitle() As String
+        Set(ByVal value As String)
+            Me.Text = value
+        End Set
+    End Property
+
+    Public WriteOnly Property FormDescription() As String
+        Set(ByVal value As String)
+            Me.LabelDescription.Text = value
+        End Set
+    End Property
+
     Private Sub InputTabName_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
         ActiveControl = TextTabName
     End Sub

@@ -298,9 +298,15 @@ Public Module MyCommon
         Dim uri As Uri = Nothing
         Dim sb As StringBuilder = New StringBuilder(256)
         Dim result As String = ""
+        Dim c As Char = "d"c
+        For Each c In _input
+            If Convert.ToInt32(c) > 127 Then Exit For
+        Next
+        If Convert.ToInt32(c) <= 127 Then Return _input
+
         Dim input As String = HttpUtility.UrlDecode(_input)
 retry:
-        For Each c As Char In input
+        For Each c In input
             If Convert.ToInt32(c) > 255 Then
                 ' Unicodeの場合(1charが複数のバイトで構成されている）
                 ' UriクラスをNewして再構成し、入力をPathAndQueryのみとしてやり直す

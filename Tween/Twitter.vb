@@ -1636,7 +1636,7 @@ RETRY:
         Dim retStr As String = orgData
         retStr = retStr.Replace("<a href=""/", "<a href=""https://twitter.com/")
         retStr = retStr.Replace("<a href=", "<a target=""_self"" href=")
-        'retStr = retStr.Replace(vbLf, "<br>")
+        retStr = retStr.Replace(vbLf, "<br>")
 
         Return SanitizeHtml(retStr)
     End Function
@@ -1838,6 +1838,52 @@ RETRY:
         Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMDestroyPath + id.ToString + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
 
         If resMsg.StartsWith("<?xml") = False OrElse resStatus.StartsWith("OK") = False Then
+            If resStatus.StartsWith("Err: Unauthorized") Then
+                Twitter.AccountState = ACCOUNT_STATE.Invalid
+                Return "Check your Username/Password."
+            Else
+                Return resStatus
+            End If
+        End If
+
+        Return ""
+    End Function
+
+    Public Function PostFollowCommand(ByVal id As String) As String
+
+        If _endingFlag Then Return ""
+
+        If Twitter.AccountState <> ACCOUNT_STATE.Valid Then Return ""
+
+        Const PATH_FOLLOW As String = "/friendships/create.xml?screen_name="
+
+        Dim resStatus As String = ""
+        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + PATH_FOLLOW + id, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
+
+        If Not resStatus.StartsWith("OK") Then
+            If resStatus.StartsWith("Err: Unauthorized") Then
+                Twitter.AccountState = ACCOUNT_STATE.Invalid
+                Return "Check your Username/Password."
+            Else
+                Return resStatus
+            End If
+        End If
+
+        Return ""
+    End Function
+
+    Public Function PostRemoveCommand(ByVal id As String) As String
+
+        If _endingFlag Then Return ""
+
+        If Twitter.AccountState <> ACCOUNT_STATE.Valid Then Return ""
+
+        Const PATH_REMOVE As String = "/friendships/destroy.xml?screen_name="
+
+        Dim resStatus As String = ""
+        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + PATH_REMOVE + id, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
+
+        If Not resStatus.StartsWith("OK") Then
             If resStatus.StartsWith("Err: Unauthorized") Then
                 Twitter.AccountState = ACCOUNT_STATE.Invalid
                 Return "Check your Username/Password."
