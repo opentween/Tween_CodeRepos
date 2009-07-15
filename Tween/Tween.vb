@@ -1861,9 +1861,11 @@ Public Class TweenMain
                     For i As Integer = 0 To rslt.sIds.Count - 1
                         If _curTab.Text.Equals(rslt.tName) Then
                             Dim idx As Integer = _statuses.Tabs(rslt.tName).IndexOf(rslt.sIds(i))
-                            Dim post As PostClass = _statuses.Item(rslt.sIds(i))
-                            ChangeCacheStyleRead(post.IsRead, idx, _curTab)
-                            If idx = _curItemIndex Then DispSelectedPost() '選択アイテム再表示
+                            If idx > -1 Then
+                                Dim post As PostClass = _statuses.Item(rslt.sIds(i))
+                                ChangeCacheStyleRead(post.IsRead, idx, _curTab)
+                                If idx = _curItemIndex Then DispSelectedPost() '選択アイテム再表示
+                            End If
                         End If
                     Next
                 End If
