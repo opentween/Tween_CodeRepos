@@ -1895,6 +1895,50 @@ RETRY:
         Return ""
     End Function
 
+    Public Function GetFriendshipInfo(ByVal id As String) As String
+
+        If _endingFlag Then Return ""
+
+        If Twitter.AccountState <> ACCOUNT_STATE.Valid Then Return ""
+
+        Const PATH_FRIENDSHIP As String = "/friendships/show.xml?source_screen_name="
+        Const QUERY_TARGET As String = "&target_screen_name="
+
+        Dim resStatus As String = ""
+        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + PATH_FRIENDSHIP + _uid + QUERY_TARGET + id, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+
+        If Not resStatus.StartsWith("OK") Then
+            If resStatus.StartsWith("Err: Unauthorized") Then
+                Twitter.AccountState = ACCOUNT_STATE.Invalid
+                Return "Check your Username/Password."
+            Else
+                Return resStatus
+            End If
+        Else
+            Dim xdoc As New XmlDocument
+            Dim result As String = ""
+            Try
+                xdoc.LoadXml(resMsg)
+                Dim isFollowing As Boolean = Boolean.Parse(xdoc.SelectSingleNode("/relationship/source/following").InnerText)
+                Dim isFollowed As Boolean = Boolean.Parse(xdoc.SelectSingleNode("/relationship/source/followed_by").InnerText)
+                If isFollowing Then
+                    result = "You are following " + id + "." + System.Environment.NewLine
+                Else
+                    result = "You aren't follwing them."
+                End If
+                If isFollowed Then
+                    result += "You are followed by " + id + "."
+                Else
+                    result += "You aren't followed by " + id + "."
+                End If
+                result = "Ok. The results are below..." + System.Environment.NewLine + result
+            Catch ex As Exception
+                result = "Err: Invalid XML."
+            End Try
+            Return result
+        End If
+    End Function
+
     ' Contributed by shuyoko <http://twitter.com/shuyoko> BEGIN:
     Public Function GetBlackFavId(ByVal id As Long, ByRef blackid As Long) As String
         Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)

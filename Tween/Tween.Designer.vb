@@ -133,6 +133,9 @@ Partial Class TweenMain
         Me.GetFollowersAllToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripMenuItem10 = New System.Windows.Forms.ToolStripMenuItem
         Me.BlackFavAddToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.FollowCommandMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.RemoveCommandMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.FriendshipMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.MenuItemHelp = New System.Windows.Forms.ToolStripMenuItem
         Me.MatomeMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator12 = New System.Windows.Forms.ToolStripSeparator
@@ -162,8 +165,6 @@ Partial Class TweenMain
         Me.TimerRefreshIcon = New System.Windows.Forms.Timer(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog
         Me.TimerReply = New System.Windows.Forms.Timer(Me.components)
-        Me.FollowCommandMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.RemoveCommandMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripContainer1.BottomToolStripPanel.SuspendLayout()
         Me.ToolStripContainer1.ContentPanel.SuspendLayout()
         Me.ToolStripContainer1.TopToolStripPanel.SuspendLayout()
@@ -761,7 +762,7 @@ Partial Class TweenMain
         '
         'MenuItemCommand
         '
-        Me.MenuItemCommand.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TinyUrlConvertToolStripMenuItem, Me.UpdateFollowersMenuItem1, Me.ToolStripMenuItem10, Me.FollowCommandMenuItem, Me.RemoveCommandMenuItem})
+        Me.MenuItemCommand.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TinyUrlConvertToolStripMenuItem, Me.UpdateFollowersMenuItem1, Me.ToolStripMenuItem10, Me.FollowCommandMenuItem, Me.RemoveCommandMenuItem, Me.FriendshipMenuItem})
         Me.MenuItemCommand.Name = "MenuItemCommand"
         resources.ApplyResources(Me.MenuItemCommand, "MenuItemCommand")
         '
@@ -832,6 +833,21 @@ Partial Class TweenMain
         '
         Me.BlackFavAddToolStripMenuItem.Name = "BlackFavAddToolStripMenuItem"
         resources.ApplyResources(Me.BlackFavAddToolStripMenuItem, "BlackFavAddToolStripMenuItem")
+        '
+        'FollowCommandMenuItem
+        '
+        Me.FollowCommandMenuItem.Name = "FollowCommandMenuItem"
+        resources.ApplyResources(Me.FollowCommandMenuItem, "FollowCommandMenuItem")
+        '
+        'RemoveCommandMenuItem
+        '
+        Me.RemoveCommandMenuItem.Name = "RemoveCommandMenuItem"
+        resources.ApplyResources(Me.RemoveCommandMenuItem, "RemoveCommandMenuItem")
+        '
+        'FriendshipMenuItem
+        '
+        Me.FriendshipMenuItem.Name = "FriendshipMenuItem"
+        resources.ApplyResources(Me.FriendshipMenuItem, "FriendshipMenuItem")
         '
         'MenuItemHelp
         '
@@ -978,16 +994,6 @@ Partial Class TweenMain
         'TimerReply
         '
         Me.TimerReply.Interval = 600000
-        '
-        'FollowCommandMenuItem
-        '
-        Me.FollowCommandMenuItem.Name = "FollowCommandMenuItem"
-        resources.ApplyResources(Me.FollowCommandMenuItem, "FollowCommandMenuItem")
-        '
-        'RemoveCommandMenuItem
-        '
-        Me.RemoveCommandMenuItem.Name = "RemoveCommandMenuItem"
-        resources.ApplyResources(Me.RemoveCommandMenuItem, "RemoveCommandMenuItem")
         '
         'TweenMain
         '
@@ -1166,5 +1172,6 @@ Partial Class TweenMain
     Friend WithEvents IdeographicSpaceToSpaceToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents FollowCommandMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents RemoveCommandMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents FriendshipMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class
