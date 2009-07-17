@@ -1757,13 +1757,20 @@ Public Class TweenMain
 
         IsNetworkAvailable()
 
+        If _myStatusOnline Then
+            'タイマー再始動
+            If SettingDialog.TimelinePeriodInt > 0 AndAlso Not TimerTimeline.Enabled Then TimerTimeline.Enabled = True
+            If SettingDialog.DMPeriodInt > 0 AndAlso Not TimerDM.Enabled Then TimerDM.Enabled = True
+            If SettingDialog.ReplyPeriodInt > 0 AndAlso Not TimerReply.Enabled Then TimerReply.Enabled = True
+        End If
+
         If e.Error IsNot Nothing Then
             _myStatusError = True
-            Throw New Exception("BackgroundWorker Exception", e.Error)
             _waitTimeline = False
             _waitReply = False
             _waitDm = False
             _waitFav = False
+            Throw New Exception("BackgroundWorker Exception", e.Error)
             Exit Sub
         End If
 
@@ -1772,21 +1779,18 @@ Public Class TweenMain
 
         If rslt.type = WORKERTYPE.OpenUri Then Exit Sub
 
-        If _myStatusOnline Then
-            'タイマー再始動
-            If SettingDialog.TimelinePeriodInt > 0 AndAlso Not TimerTimeline.Enabled Then TimerTimeline.Enabled = True
-            If SettingDialog.DMPeriodInt > 0 AndAlso Not TimerDM.Enabled Then TimerDM.Enabled = True
-            If SettingDialog.ReplyPeriodInt > 0 AndAlso Not TimerReply.Enabled Then TimerReply.Enabled = True
-        End If
-
         'エラー
         If rslt.retMsg.Length > 0 Then
             _myStatusError = True
             StatusLabel.Text = rslt.retMsg
             If Twitter.AccountState = ACCOUNT_STATE.Invalid Then
-                Twitter.AccountState = ACCOUNT_STATE.Validating
-                SettingStripMenuItem_Click(Nothing, Nothing)
-                Twitter.AccountState = ACCOUNT_STATE.Valid
+                Try
+                    Twitter.AccountState = ACCOUNT_STATE.Validating
+                    SettingStripMenuItem_Click(Nothing, Nothing)
+                    Twitter.AccountState = ACCOUNT_STATE.Valid
+                Catch ex As Exception
+                    Twitter.AccountState = ACCOUNT_STATE.Invalid
+                End Try
             End If
         End If
 
@@ -3243,7 +3247,7 @@ RETRY:
     End Sub
 
     Private Sub StatusOpenMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusOpenMenuItem.Click
-        If _curList.SelectedIndices.Count > 0 Then
+        If _curList.SelectedIndices.Count > 0 AndAlso _curTab.Text <> DEFAULTTAB.DM Then
             Dim post As PostClass = _statuses.Item(_curTab.Text, _curList.SelectedIndices(0))
             OpenUriAsync("http://twitter.com/" + post.Name + "/statuses/" + post.Id.ToString)
         End If
@@ -5864,6 +5868,25 @@ RETRY:
                 Else
                     MessageBox.Show("Removeしました")
                 End If
+            End If
+        End Using
+    End Sub
+
+    Private Sub FriendshipMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FriendshipMenuItem.Click
+        Dim id As String
+        If _curPost Is Nothing Then
+            id = ""
+        Else
+            id = _curPost.Name
+        End If
+        Using inputName As New InputTabName()
+            inputName.FormTitle = "Show Friendships"
+            inputName.FormDescription = "調べる相手のidを入力して下さい。"
+            inputName.TabName = id
+            If inputName.ShowDialog() = Windows.Forms.DialogResult.OK AndAlso _
+               Not String.IsNullOrEmpty(inputName.TabName.Trim()) Then
+                Dim ret As String = Twitter.GetFriendshipInfo(inputName.TabName.Trim())
+                MessageBox.Show(ret)
             End If
         End Using
     End Sub

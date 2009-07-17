@@ -806,7 +806,7 @@ Public NotInheritable Class TabInformations
                             Case HITRESULT.CopyAndMark
                                 post.IsMark = True 'マークあり
                             Case HITRESULT.Move
-                                tbr.Remove(post.Id)
+                                tbr.Remove(post.Id, post.IsRead)
                             Case HITRESULT.None
                                 If key = DEFAULTTAB.REPLY And post.IsReply Then _tabs(DEFAULTTAB.REPLY).Add(post.Id, post.IsRead, True)
                                 If post.IsFav Then _tabs(DEFAULTTAB.FAV).Add(post.Id, post.IsRead, True)
@@ -1026,6 +1026,17 @@ Public NotInheritable Class TabClass
 
     Public Sub Remove(ByVal Id As Long)
         If Not Me._ids.Contains(Id) Then Exit Sub
+
+        Me._ids.Remove(Id)
+    End Sub
+
+    Public Sub Remove(ByVal Id As Long, ByVal Read As Boolean)
+        If Not Me._ids.Contains(Id) Then Exit Sub
+
+        If Not Read AndAlso Me._unreadManage Then
+            Me._unreadCount -= 1
+            Me._oldestUnreadItem = -1
+        End If
 
         Me._ids.Remove(Id)
     End Sub
