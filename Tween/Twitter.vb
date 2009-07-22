@@ -1642,46 +1642,55 @@ RETRY:
     End Function
 
     Private Sub GetIconImage(ByVal post As PostClass)
-        If Not _getIcon Then
-            post.ImageIndex = -1
-            TabInformations.GetInstance.AddPost(post)
-            Exit Sub
-        End If
+        Dim img As Image
+        Dim bmp2 As Bitmap
 
-        SyncLock LockObj
-            post.ImageIndex = _lIcon.Images.IndexOfKey(post.ImageUrl)
-        End SyncLock
-
-        If post.ImageIndex > -1 Then
-            TabInformations.GetInstance.AddPost(post)
-            Exit Sub
-        End If
-
-        Dim resStatus As String = ""
-        Dim img As Image = DirectCast(CreateSocket.GetWebResponse(post.ImageUrl, resStatus, MySocket.REQ_TYPE.ReqGETBinary), System.Drawing.Image)
-        If img Is Nothing Then
-            post.ImageIndex = -1
-            TabInformations.GetInstance.AddPost(post)
-            Exit Sub
-        End If
-
-        If _endingFlag Then Exit Sub
-
-        Dim bmp2 As New Bitmap(_iconSz, _iconSz)
-        Using g As Graphics = Graphics.FromImage(bmp2)
-            g.InterpolationMode = Drawing2D.InterpolationMode.High
-            g.DrawImage(img, 0, 0, _iconSz, _iconSz)
-        End Using
-
-        SyncLock LockObj
-            post.ImageIndex = _lIcon.Images.IndexOfKey(post.ImageUrl)
-            If post.ImageIndex = -1 Then
-                _dIcon.Add(post.ImageUrl, img)  '詳細表示用ディクショナリに追加
-                _lIcon.Images.Add(post.ImageUrl, bmp2)
-                post.ImageIndex = _lIcon.Images.IndexOfKey(post.ImageUrl)
+        Try
+            If Not _getIcon Then
+                post.ImageIndex = -1
+                TabInformations.GetInstance.AddPost(post)
+                Exit Sub
             End If
-        End SyncLock
-        TabInformations.GetInstance.AddPost(post)
+
+            SyncLock LockObj
+                post.ImageIndex = _lIcon.Images.IndexOfKey(post.ImageUrl)
+            End SyncLock
+
+            If post.ImageIndex > -1 Then
+                TabInformations.GetInstance.AddPost(post)
+                Exit Sub
+            End If
+
+            Dim resStatus As String = ""
+            img = DirectCast(CreateSocket.GetWebResponse(post.ImageUrl, resStatus, MySocket.REQ_TYPE.ReqGETBinary), System.Drawing.Image)
+            If img Is Nothing Then
+                post.ImageIndex = -1
+                TabInformations.GetInstance.AddPost(post)
+                Exit Sub
+            End If
+
+            If _endingFlag Then Exit Sub
+
+            bmp2 = New Bitmap(_iconSz, _iconSz)
+            Using g As Graphics = Graphics.FromImage(bmp2)
+                g.InterpolationMode = Drawing2D.InterpolationMode.High
+                g.DrawImage(img, 0, 0, _iconSz, _iconSz)
+            End Using
+
+            SyncLock LockObj
+                post.ImageIndex = _lIcon.Images.IndexOfKey(post.ImageUrl)
+                If post.ImageIndex = -1 Then
+                    _dIcon.Add(post.ImageUrl, img)  '詳細表示用ディクショナリに追加
+                    _lIcon.Images.Add(post.ImageUrl, bmp2)
+                    post.ImageIndex = _lIcon.Images.IndexOfKey(post.ImageUrl)
+                End If
+            End SyncLock
+            TabInformations.GetInstance.AddPost(post)
+        Finally
+            img = Nothing
+            bmp2 = Nothing
+            post = Nothing
+        End Try
     End Sub
 
     Private Function GetAuthKey(ByVal resMsg As String) As Integer

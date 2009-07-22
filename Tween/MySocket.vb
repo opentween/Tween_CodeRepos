@@ -231,60 +231,61 @@ Public NotInheritable Class MySocket
                             End If
                             Return rtStr
                         Case REQ_TYPE.ReqGETBinary
-                                Dim readData(1023) As Byte
-                                Dim readSize As Integer = 0
-                                Dim img As Image
-                                Dim mem As New MemoryStream
-                                While True
-                                    readSize = strm.Read(readData, 0, readData.Length)
-                                    If readSize = 0 Then
-                                        Exit While
-                                    End If
-                                    mem.Write(readData, 0, readSize)
-                                End While
-                                img = Image.FromStream(mem, True)
-                                Select Case img.RawFormat.Guid
-                                    Case Imaging.ImageFormat.Icon.Guid
-                                        img.Dispose()   '一旦破棄
-                                        mem.Seek(0, SeekOrigin.Begin)   '頭だし
-                                        Using icn As Icon = New Icon(mem)
-                                            If icn Is Nothing Then Return Nothing
-                                            img = icn.ToBitmap()
-                                        End Using
-                                        mem.Close()
-                                    Case Imaging.ImageFormat.Gif.Guid
-                                        Dim fd As New Imaging.FrameDimension(img.FrameDimensionsList(0))
-                                        Dim page As Integer = img.GetFrameCount(fd)
-                                        If page > 1 Then
-                                            Dim eflg As Boolean = False
-                                            '全フレームが読み込み可能か確認
-                                            For i As Integer = 0 To page - 1
-                                                Try
-                                                    img.SelectActiveFrame(fd, i)
-                                                Catch ex As Exception
-                                                    eflg = True
-                                                    Exit For
-                                                End Try
-                                            Next
-                                            If eflg Then
-                                                'エラーが起きたらbitmapに変換
-                                                Dim bmp As New Bitmap(48, 48)
-                                                Using g As Graphics = Graphics.FromImage(bmp)
-                                                    g.InterpolationMode = Drawing2D.InterpolationMode.High
-                                                    g.DrawImage(img, 0, 0, 48, 48)
-                                                End Using
-                                                mem.Close()
-                                                img.Dispose()
-                                                img = bmp
-                                            End If
-                                            'エラーが起きなければ、memorystreamは閉じない（animated gif）
-                                        Else
-                                            mem.Close()
-                                        End If
-                                    Case Else
-                                        mem.Close()
-                                End Select
-                                Return img
+                            Return New System.Drawing.Bitmap(strm)
+                            'Dim readData(1023) As Byte
+                            'Dim readSize As Integer = 0
+                            'Dim img As Image
+                            'Dim mem As New MemoryStream
+                            'While True
+                            '    readSize = strm.Read(readData, 0, readData.Length)
+                            '    If readSize = 0 Then
+                            '        Exit While
+                            '    End If
+                            '    mem.Write(readData, 0, readSize)
+                            'End While
+                            'img = Image.FromStream(mem, True)
+                            'Select Case img.RawFormat.Guid
+                            '    Case Imaging.ImageFormat.Icon.Guid
+                            '        img.Dispose()   '一旦破棄
+                            '        mem.Seek(0, SeekOrigin.Begin)   '頭だし
+                            '        Using icn As Icon = New Icon(mem)
+                            '            If icn Is Nothing Then Return Nothing
+                            '            img = icn.ToBitmap()
+                            '        End Using
+                            '        mem.Close()
+                            '    Case Imaging.ImageFormat.Gif.Guid
+                            '        Dim fd As New Imaging.FrameDimension(img.FrameDimensionsList(0))
+                            '        Dim page As Integer = img.GetFrameCount(fd)
+                            '        If page > 1 Then
+                            '            Dim eflg As Boolean = False
+                            '            '全フレームが読み込み可能か確認
+                            '            For i As Integer = 0 To page - 1
+                            '                Try
+                            '                    img.SelectActiveFrame(fd, i)
+                            '                Catch ex As Exception
+                            '                    eflg = True
+                            '                    Exit For
+                            '                End Try
+                            '            Next
+                            '            If eflg Then
+                            '                'エラーが起きたらbitmapに変換
+                            '                Dim bmp As New Bitmap(48, 48)
+                            '                Using g As Graphics = Graphics.FromImage(bmp)
+                            '                    g.InterpolationMode = Drawing2D.InterpolationMode.High
+                            '                    g.DrawImage(img, 0, 0, 48, 48)
+                            '                End Using
+                            '                mem.Close()
+                            '                img.Dispose()
+                            '                img = bmp
+                            '            End If
+                            '            'エラーが起きなければ、memorystreamは閉じない（animated gif）
+                            '        Else
+                            '            mem.Close()
+                            '        End If
+                            '    Case Else
+                            '        mem.Close()
+                            'End Select
+                            'Return img
                         Case REQ_TYPE.ReqGETFile
                             StreamToFile(strm, Path.Combine(Application.StartupPath(), "TweenNew.exe"), webRes.ContentEncoding)
                         Case REQ_TYPE.ReqGETFileUp
