@@ -130,9 +130,6 @@
     <Compile Include="Setting.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SettingToConfig.vb">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Setting\SettingBase.vb" />
     <Compile Include="Setting\SettingCommon.vb" />
     <Compile Include="Setting\SettingLocal.vb" />
@@ -323,7 +320,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>"c:\Program Files\Microsoft.NET\SDK\v2.0\Bin\sgen.exe" /f /a:"$(TargetPath)"</PostBuildEvent>
   </PropertyGroup>
 </Project>
