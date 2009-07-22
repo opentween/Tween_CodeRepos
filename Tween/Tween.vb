@@ -518,6 +518,9 @@ Public Class TweenMain
         SettingDialog.AutoShortUrlFirst = _cfgCommon.AutoShortUrlFirst
         SettingDialog.TabIconDisp = _cfgCommon.TabIconDisp
         SettingDialog.ReplyIconState = _cfgCommon.ReplyIconState
+        SettingDialog.ReadOwnPost = _cfgCommon.ReadOwnPost
+        SettingDialog.GetFav = _cfgCommon.GetFav
+
         Me.IdeographicSpaceToSpaceToolStripMenuItem.Checked = _cfgCommon.WideSpaceConvert
 
         '書式指定文字列エラーチェック
@@ -615,6 +618,7 @@ Public Class TweenMain
         Twitter.UsePostMethod = False
         Twitter.HubServer = SettingDialog.HubServer
         Twitter.RestrictFavCheck = SettingDialog.RestrictFavCheck
+        Twitter.ReadOwnPost = SettingDialog.ReadOwnPost
         If IsNetworkAvailable() Then
             If SettingDialog.StartupFollowers Then
                 '_waitFollower = True
@@ -2350,6 +2354,7 @@ Public Class TweenMain
                 Twitter.HubServer = SettingDialog.HubServer
                 Twitter.TinyUrlResolve = SettingDialog.TinyUrlResolve
                 Twitter.RestrictFavCheck = SettingDialog.RestrictFavCheck
+                Twitter.ReadOwnPost = SettingDialog.ReadOwnPost
 
                 Twitter.ProxyType = SettingDialog.ProxyType
                 Twitter.ProxyAddress = SettingDialog.ProxyAddress
@@ -3984,6 +3989,8 @@ RETRY:
                 _cfgCommon.AutoShortUrlFirst = SettingDialog.AutoShortUrlFirst
                 _cfgCommon.TabIconDisp = SettingDialog.TabIconDisp
                 _cfgCommon.ReplyIconState = SettingDialog.ReplyIconState
+                _cfgCommon.ReadOwnPost = SettingDialog.ReadOwnPost
+                _cfgCommon.GetFav = SettingDialog.GetFav
                 If IdeographicSpaceToSpaceToolStripMenuItem IsNot Nothing AndAlso _
                    IdeographicSpaceToSpaceToolStripMenuItem.IsDisposed = False Then
                     _cfgCommon.WideSpaceConvert = Me.IdeographicSpaceToSpaceToolStripMenuItem.Checked
@@ -4519,6 +4526,8 @@ RETRY:
 
         RemoveSpecifiedTab(_rclickTabName)
         _rclickTabName = ""
+        SaveConfigsCommon()
+        SaveConfigsTab(False)
     End Sub
 
     Private Sub FilterEditMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FilterEditMenuItem.Click
@@ -4552,7 +4561,7 @@ RETRY:
         Finally
             Me.Cursor = Cursors.Default
         End Try
-        'SaveConfigsTab(False)
+        SaveConfigsTab(False)
     End Sub
 
     Private Sub AddTabMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AddTabMenuItem.Click
@@ -4570,8 +4579,8 @@ RETRY:
             Else
                 '成功
                 _statuses.AddTab(tabName)
-                'SaveConfigsCommon()
-                'SaveConfigsTab(False)
+                SaveConfigsCommon()
+                SaveConfigsTab(False)
             End If
         End If
     End Sub
@@ -4584,7 +4593,7 @@ RETRY:
                 '振り分け先タブ選択
                 If TabDialog.ShowDialog = Windows.Forms.DialogResult.Cancel Then
                     Me.TopMost = SettingDialog.AlwaysTop
-                    Exit Sub
+                    Exit For
                 End If
                 Me.TopMost = SettingDialog.AlwaysTop
                 tabName = TabDialog.SelectedTabName
@@ -4640,8 +4649,8 @@ RETRY:
         Finally
             Me.Cursor = Cursors.Default
         End Try
-        'SaveConfigsCommon()
-        'SaveConfigsTab(False)
+        SaveConfigsCommon()
+        SaveConfigsTab(False)
     End Sub
 
     Protected Overrides Function ProcessDialogKey( _
@@ -4785,8 +4794,8 @@ RETRY:
         Finally
             Me.Cursor = Cursors.Default
         End Try
-        'SaveConfigsCommon()
-        'SaveConfigsTab(False)
+        SaveConfigsCommon()
+        SaveConfigsTab(False)
     End Sub
 
     Private Sub CopySTOTMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CopySTOTMenuItem.Click
@@ -5668,8 +5677,10 @@ RETRY:
                 _waitDm = True
                 GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, SettingDialog.ReadPagesDM)
             End If
-            _waitFav = True
-            GetTimeline(WORKERTYPE.Favorites, 1, 1)
+            If SettingDialog.GetFav Then
+                _waitFav = True
+                GetTimeline(WORKERTYPE.Favorites, 1, 1)
+            End If
             Dim i As Integer = 0
             Do While (_waitTimeline OrElse _waitReply OrElse _waitDm OrElse _waitFav) AndAlso Not _endingFlag
                 System.Threading.Thread.Sleep(100)
@@ -5898,5 +5909,21 @@ RETRY:
                 MessageBox.Show(ret)
             End If
         End Using
+    End Sub
+
+    Private Sub OwnStatusMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OwnStatusMenuItem.Click
+        Dim loc As String = ""
+        Dim bio As String = ""
+        If Not String.IsNullOrEmpty(Twitter.Location) Then
+            loc = Twitter.Location
+        End If
+        If Not String.IsNullOrEmpty(Twitter.Bio) Then
+            bio = Twitter.Bio
+        End If
+        MessageBox.Show("Following : " + Twitter.FriendsCount.ToString() + Environment.NewLine + _
+                        "Followers : " + Twitter.FollowersCount.ToString() + Environment.NewLine + _
+                        "Statuses count : " + Twitter.StatusesCount.ToString() + Environment.NewLine + _
+                        "Location : " + loc + Environment.NewLine + _
+                        "Bio : " + bio, "Your status")
     End Sub
 End Class

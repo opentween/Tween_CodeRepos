@@ -175,9 +175,6 @@
   <data name="Label9.Text" xml:space="preserve">
     <value>First-time Reading Posts</value>
   </data>
-  <data name="StartupReaded.Location" type="System.Drawing.Point, System.Drawing">
-    <value>248, 270</value>
-  </data>
   <data name="StartupReaded.Size" type="System.Drawing.Size, System.Drawing">
     <value>81, 16</value>
   </data>
@@ -222,6 +219,9 @@
   </data>
   <data name="Label16.Text" xml:space="preserve">
     <value>Colorize One-way following</value>
+  </data>
+  <data name="GroupBox1.Text" xml:space="preserve">
+    <value>Font &amp;&amp; Color</value>
   </data>
   <data name="btnInputFont.Text" xml:space="preserve">
     <value>Font...</value>
@@ -357,9 +357,6 @@
   </data>
   <data name="Label61.Text" xml:space="preserve">
     <value>Font of tweet list</value>
-  </data>
-  <data name="GroupBox1.Text" xml:space="preserve">
-    <value>Font &amp;&amp; Color</value>
   </data>
   <data name="cmbNameBalloon.Items" xml:space="preserve">
     <value>None</value>
@@ -529,128 +526,26 @@
   <data name="Label47.Text" xml:space="preserve">
     <value>Apply after restarting</value>
   </data>
-  <data name="Label70.Location" type="System.Drawing.Point, System.Drawing">
-    <value>14, 364</value>
-  </data>
-  <data name="Label70.Size" type="System.Drawing.Size, System.Drawing">
-    <value>224, 12</value>
-  </data>
-  <data name="Label70.Text" xml:space="preserve">
-    <value>Show message at startup if API is enabled</value>
-  </data>
-  <data name="CheckStartupAPImodeNoWarning.Location" type="System.Drawing.Point, System.Drawing">
-    <value>248, 363</value>
-  </data>
-  <data name="CheckStartupAPImodeNoWarning.Size" type="System.Drawing.Size, System.Drawing">
-    <value>80, 16</value>
-  </data>
-  <data name="CheckStartupAPImodeNoWarning.Text" xml:space="preserve">
-    <value>Don't show</value>
-  </data>
-  <data name="Label69.Size" type="System.Drawing.Size, System.Drawing">
-    <value>156, 12</value>
-  </data>
-  <data name="Label69.Text" xml:space="preserve">
-    <value>Reply Fetching Interval (sec.)</value>
-  </data>
-  <data name="CheckPostAndGet.Size" type="System.Drawing.Size, System.Drawing">
-    <value>88, 16</value>
-  </data>
-  <data name="CheckPostAndGet.Text" xml:space="preserve">
-    <value>Post &amp;&amp; fetch</value>
-  </data>
-  <data name="Label67.Size" type="System.Drawing.Size, System.Drawing">
-    <value>201, 12</value>
-  </data>
-  <data name="Label67.Text" xml:space="preserve">
-    <value>Getting number of tweets in API mode</value>
-  </data>
-  <data name="Label66.Size" type="System.Drawing.Size, System.Drawing">
-    <value>75, 12</value>
-  </data>
-  <data name="Label66.Text" xml:space="preserve">
-    <value>POST method</value>
-  </data>
-  <data name="CheckPostMethod.Location" type="System.Drawing.Point, System.Drawing">
-    <value>248, 407</value>
-  </data>
-  <data name="CheckPostMethod.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 16</value>
-  </data>
-  <data name="CheckPostMethod.Text" xml:space="preserve">
-    <value>Enable</value>
-  </data>
-  <data name="Label43.Size" type="System.Drawing.Size, System.Drawing">
-    <value>59, 12</value>
-  </data>
-  <data name="Label43.Text" xml:space="preserve">
-    <value>TwitterAPI</value>
-  </data>
-  <data name="CheckUseApi.Location" type="System.Drawing.Point, System.Drawing">
-    <value>248, 385</value>
-  </data>
-  <data name="CheckUseApi.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 16</value>
-  </data>
-  <data name="CheckUseApi.Text" xml:space="preserve">
-    <value>Enable</value>
-  </data>
-  <data name="Label54.Size" type="System.Drawing.Size, System.Drawing">
-    <value>131, 12</value>
-  </data>
-  <data name="Label54.Text" xml:space="preserve">
-    <value>Get User List in Starting</value>
-  </data>
-  <data name="CheckStartupFollowers.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 16</value>
-  </data>
-  <data name="CheckStartupFollowers.Text" xml:space="preserve">
-    <value>Enable</value>
-  </data>
-  <data name="Label53.Size" type="System.Drawing.Size, System.Drawing">
-    <value>169, 12</value>
-  </data>
-  <data name="Label53.Text" xml:space="preserve">
-    <value>Update Parsing Keys in Starting</value>
-  </data>
-  <data name="CheckStartupKey.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 16</value>
-  </data>
-  <data name="CheckStartupKey.Text" xml:space="preserve">
-    <value>Enable</value>
-  </data>
-  <data name="Label51.Size" type="System.Drawing.Size, System.Drawing">
-    <value>158, 12</value>
-  </data>
-  <data name="Label51.Text" xml:space="preserve">
-    <value>Check for Updates in Starting</value>
-  </data>
-  <data name="CheckStartupVersion.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 16</value>
-  </data>
-  <data name="CheckStartupVersion.Text" xml:space="preserve">
-    <value>Enable</value>
-  </data>
-  <data name="CheckPeriodAdjust.Size" type="System.Drawing.Size, System.Drawing">
-    <value>150, 16</value>
-  </data>
-  <data name="CheckPeriodAdjust.Text" xml:space="preserve">
-    <value>Enable Auto-Adjustment</value>
-  </data>
   <data name="TabPage1.Text" xml:space="preserve">
     <value>Basic</value>
   </data>
-  <data name="TabPage2.Text" xml:space="preserve">
-    <value>Behavior</value>
+  <data name="Label74.Location" type="System.Drawing.Point, System.Drawing">
+    <value>11, 423</value>
   </data>
-  <data name="TabPage3.Text" xml:space="preserve">
-    <value>View</value>
+  <data name="Label74.Size" type="System.Drawing.Size, System.Drawing">
+    <value>106, 12</value>
   </data>
-  <data name="TabPage4.Text" xml:space="preserve">
-    <value>Fonts &amp; Colors</value>
+  <data name="Label74.Text" xml:space="preserve">
+    <value>Get favs in Starting</value>
   </data>
-  <data name="TabPage5.Text" xml:space="preserve">
-    <value>Connection</value>
+  <data name="chkGetFav.Location" type="System.Drawing.Point, System.Drawing">
+    <value>173, 422</value>
+  </data>
+  <data name="chkGetFav.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 16</value>
+  </data>
+  <data name="chkGetFav.Text" xml:space="preserve">
+    <value>Enable</value>
   </data>
   <data name="Label71.Size" type="System.Drawing.Size, System.Drawing">
     <value>149, 12</value>
@@ -728,6 +623,27 @@
   <data name="Button3.Text" xml:space="preserve">
     <value>Open...</value>
   </data>
+  <data name="TabPage2.Text" xml:space="preserve">
+    <value>Behavior</value>
+  </data>
+  <data name="Label73.Size" type="System.Drawing.Size, System.Drawing">
+    <value>81, 12</value>
+  </data>
+  <data name="Label73.Text" xml:space="preserve">
+    <value>Read own post</value>
+  </data>
+  <data name="chkReadOwnPost.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 16</value>
+  </data>
+  <data name="chkReadOwnPost.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="Label72.Size" type="System.Drawing.Size, System.Drawing">
+    <value>167, 12</value>
+  </data>
+  <data name="Label72.Text" xml:space="preserve">
+    <value>Tasktray icon with unread reply</value>
+  </data>
   <data name="Label48.Size" type="System.Drawing.Size, System.Drawing">
     <value>90, 12</value>
   </data>
@@ -763,6 +679,111 @@
   </data>
   <data name="chkUnreadStyle.Text" xml:space="preserve">
     <value>Enable</value>
+  </data>
+  <data name="TabPage3.Text" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="TabPage4.Text" xml:space="preserve">
+    <value>Fonts &amp; Colors</value>
+  </data>
+  <data name="TabPage5.Text" xml:space="preserve">
+    <value>Connection</value>
+  </data>
+  <data name="Label70.Size" type="System.Drawing.Size, System.Drawing">
+    <value>224, 12</value>
+  </data>
+  <data name="Label70.Text" xml:space="preserve">
+    <value>Show message at startup if API is enabled</value>
+  </data>
+  <data name="CheckStartupAPImodeNoWarning.Size" type="System.Drawing.Size, System.Drawing">
+    <value>80, 16</value>
+  </data>
+  <data name="CheckStartupAPImodeNoWarning.Text" xml:space="preserve">
+    <value>Don't show</value>
+  </data>
+  <data name="Label69.Size" type="System.Drawing.Size, System.Drawing">
+    <value>156, 12</value>
+  </data>
+  <data name="Label69.Text" xml:space="preserve">
+    <value>Reply Fetching Interval (sec.)</value>
+  </data>
+  <data name="CheckPostAndGet.Size" type="System.Drawing.Size, System.Drawing">
+    <value>88, 16</value>
+  </data>
+  <data name="CheckPostAndGet.Text" xml:space="preserve">
+    <value>Post &amp;&amp; fetch</value>
+  </data>
+  <data name="Label67.Size" type="System.Drawing.Size, System.Drawing">
+    <value>201, 12</value>
+  </data>
+  <data name="Label67.Text" xml:space="preserve">
+    <value>Getting number of tweets in API mode</value>
+  </data>
+  <data name="Label66.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 12</value>
+  </data>
+  <data name="Label66.Text" xml:space="preserve">
+    <value>POST method</value>
+  </data>
+  <data name="CheckPostMethod.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 16</value>
+  </data>
+  <data name="CheckPostMethod.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="Label43.Size" type="System.Drawing.Size, System.Drawing">
+    <value>59, 12</value>
+  </data>
+  <data name="Label43.Text" xml:space="preserve">
+    <value>TwitterAPI</value>
+  </data>
+  <data name="CheckUseApi.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 16</value>
+  </data>
+  <data name="CheckUseApi.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="Label54.Size" type="System.Drawing.Size, System.Drawing">
+    <value>131, 12</value>
+  </data>
+  <data name="Label54.Text" xml:space="preserve">
+    <value>Get User List in Starting</value>
+  </data>
+  <data name="CheckStartupFollowers.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 16</value>
+  </data>
+  <data name="CheckStartupFollowers.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="Label53.Size" type="System.Drawing.Size, System.Drawing">
+    <value>169, 12</value>
+  </data>
+  <data name="Label53.Text" xml:space="preserve">
+    <value>Update Parsing Keys in Starting</value>
+  </data>
+  <data name="CheckStartupKey.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 16</value>
+  </data>
+  <data name="CheckStartupKey.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="Label51.Size" type="System.Drawing.Size, System.Drawing">
+    <value>158, 12</value>
+  </data>
+  <data name="Label51.Text" xml:space="preserve">
+    <value>Check for Updates in Starting</value>
+  </data>
+  <data name="CheckStartupVersion.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 16</value>
+  </data>
+  <data name="CheckStartupVersion.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="CheckPeriodAdjust.Size" type="System.Drawing.Size, System.Drawing">
+    <value>150, 16</value>
+  </data>
+  <data name="CheckPeriodAdjust.Text" xml:space="preserve">
+    <value>Enable Auto-Adjustment</value>
   </data>
   <data name="Label64.Size" type="System.Drawing.Size, System.Drawing">
     <value>371, 12</value>
