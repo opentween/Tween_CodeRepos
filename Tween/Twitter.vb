@@ -48,6 +48,12 @@ Public Module Twitter
     Private followerId As New List(Of Long)
     Private tmpFollower As New Collections.Specialized.StringCollection
 
+    Private _followersCount As Integer = 0
+    Private _friendsCount As Integer = 0
+    Private _statusesCount As Integer = 0
+    Private _location As String = ""
+    Private _bio As String = ""
+
     'プロパティからアクセスされる共通情報
     Private _uid As String
     Private _pwd As String
@@ -74,6 +80,7 @@ Public Module Twitter
     Private _countApi As Integer
     Private _usePostMethod As Boolean
     Private _ApiMethod As MySocket.REQ_TYPE
+    Private _readOwnPost As Boolean
 
     '共通で使用する状態
     Private _authKey As String              'StatusUpdate、発言削除で使用
@@ -650,6 +657,7 @@ RETRY:
                         End If
                     End SyncLock
                     post.IsRead = read
+                    If post.IsMe AndAlso Not read AndAlso _readOwnPost Then post.IsRead = True
 
                     arIdx += 1
                     dlgt(arIdx) = New GetIconImageDelegate(AddressOf GetIconImage)
@@ -1794,6 +1802,17 @@ RETRY:
         Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _statusUpdatePathAPI, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI, dataStr), String)
 
         If resStatus.StartsWith("OK") Then
+            Dim xd As XmlDocument = New XmlDocument()
+            Try
+                xd.LoadXml(resMsg)
+                _followersCount = Integer.Parse(xd.SelectSingleNode("/status/user/followers_count/text()").Value)
+                _friendsCount = Integer.Parse(xd.SelectSingleNode("/status/user/friends_count/text()").Value)
+                _statusesCount = Integer.Parse(xd.SelectSingleNode("/status/user/statuses_count/text()").Value)
+                _location = xd.SelectSingleNode("/status/user/location/text()").Value
+                _bio = xd.SelectSingleNode("/status/user/description/text()").Value
+            Catch ex As Exception
+            End Try
+
             If Not postStr.StartsWith("D ", StringComparison.OrdinalIgnoreCase) AndAlso _
                     Not postStr.StartsWith("DM ", StringComparison.OrdinalIgnoreCase) AndAlso _
                     IsPostRestricted(resMsg) Then
@@ -2820,6 +2839,45 @@ RETRY:
         End Set
     End Property
 
+    Public Property ReadOwnPost() As Boolean
+        Get
+            Return _readOwnPost
+        End Get
+        Set(ByVal value As Boolean)
+            _readOwnPost = value
+        End Set
+    End Property
+
+    Public ReadOnly Property FollowersCount() As Integer
+        Get
+            Return _followersCount
+        End Get
+    End Property
+
+    Public ReadOnly Property FriendsCount() As Integer
+        Get
+            Return _friendsCount
+        End Get
+    End Property
+
+    Public ReadOnly Property StatusesCount() As Integer
+        Get
+            Return _statusesCount
+        End Get
+    End Property
+
+    Public ReadOnly Property Location() As String
+        Get
+            Return _location
+        End Get
+    End Property
+
+    Public ReadOnly Property Bio() As String
+        Get
+            Return _bio
+        End Get
+    End Property
+
     Public Function GetTimelineApi(ByVal read As Boolean, _
                             ByVal gType As WORKERTYPE) As String
 
@@ -2914,6 +2972,7 @@ RETRY:
                 Else
                     If followerId.Count > 0 Then post.IsOwl = Not followerId.Contains(post.Uid)
                 End If
+                If post.IsMe AndAlso Not read AndAlso _readOwnPost Then post.IsRead = True
 
                 post.IsDm = False
             Catch ex As Exception

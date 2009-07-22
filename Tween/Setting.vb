@@ -97,6 +97,8 @@ Public Class Setting
     Private _MyAutoShortUrlFirst As UrlConverter
     Private _MyTabIconDisp As Boolean
     Private _MyReplyIconState As REPLY_ICONSTATE
+    Private _MyReadOwnPost As Boolean
+    Private _MyGetFav As Boolean
 
     Private Sub Save_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Save.Click
         Try
@@ -225,6 +227,8 @@ Public Class Setting
             _MyLimitBalloon = CheckBalloonLimit.Checked
             _MyAutoShortUrlFirst = CType(ComboBoxAutoShortUrlFirst.SelectedIndex, UrlConverter)
             _MyTabIconDisp = chkTabIconDisp.Checked
+            _MyReadOwnPost = chkReadOwnPost.Checked
+            _MyGetFav = chkGetFav.Checked
             Select Case ReplyIconStateCombo.SelectedIndex
                 Case 0
                     _MyReplyIconState = REPLY_ICONSTATE.None
@@ -404,6 +408,8 @@ Public Class Setting
         CheckBalloonLimit.Checked = _MyLimitBalloon
         ComboBoxAutoShortUrlFirst.SelectedIndex = _MyAutoShortUrlFirst
         chkTabIconDisp.Checked = _MyTabIconDisp
+        chkReadOwnPost.Checked = _MyReadOwnPost
+        chkGetFav.Checked = _MyGetFav
 
         Select Case _MyReplyIconState
             Case REPLY_ICONSTATE.None
@@ -1364,6 +1370,24 @@ Public Class Setting
         End Get
         Set(ByVal value As REPLY_ICONSTATE)
             _MyReplyIconState = value
+        End Set
+    End Property
+
+    Public Property ReadOwnPost() As Boolean
+        Get
+            Return _MyReadOwnPost
+        End Get
+        Set(ByVal value As Boolean)
+            _MyReadOwnPost = value
+        End Set
+    End Property
+
+    Public Property GetFav() As Boolean
+        Get
+            Return _MyGetFav
+        End Get
+        Set(ByVal value As Boolean)
+            _MyGetFav = value
         End Set
     End Property
 

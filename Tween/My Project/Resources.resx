@@ -448,12 +448,6 @@
   <data name="RemoveSpecifiedTabText2" xml:space="preserve">
     <value>タブの削除確認</value>
   </data>
-  <data name="ReplyBlink" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\6o.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Reply" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\5o.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="SaveLogMenuItem_ClickText1" xml:space="preserve">
     <value>選択中タブの全発言を保存しますか？{0}　「はい」　　　：全発言を保存する{0}　「いいえ」　　：選択している発言のみ保存する{0}　「キャンセル」：保存処理をキャンセル{0}（タブ区切りのテキストファイル形式で保存します）</value>
   </data>
@@ -711,5 +705,11 @@
   </data>
   <data name="GetTimelineWorker_RunWorkerCompletedText20" xml:space="preserve">
     <value>Fav取得完了</value>
+  </data>
+  <data name="Reply" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\5g.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ReplyBlink" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\6g.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

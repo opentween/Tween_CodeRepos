@@ -267,8 +267,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\1o.ico" />
+    <None Include="Resources\5g.ico" />
     <Content Include="Resources\5o.ico" />
     <Content Include="Resources\6b.ico" />
+    <None Include="Resources\6g.ico" />
     <Content Include="Resources\6o.ico" />
     <None Include="Resources\ChangeLog.txt" />
     <Content Include="Resources\re2.ico" />
@@ -320,6 +322,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>"c:\Program Files\Microsoft.NET\SDK\v2.0\Bin\sgen.exe" /f /a:"$(TargetPath)"</PostBuildEvent>
+    <PostBuildEvent>"C:\Program Files\Microsoft Visual Studio 8\SDK\v2.0\Bin\sgen.exe" /f /a:"$(TargetPath)"</PostBuildEvent>
   </PropertyGroup>
 </Project>
