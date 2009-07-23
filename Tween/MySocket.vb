@@ -49,6 +49,7 @@ Public NotInheritable Class MySocket
         ReqGETFile
         ReqGETFileUp
         ReqGETFileRes
+        ReqGETFileDll
         ReqGetNoCache
         ReqPOSTAPI
         ReqGetAPI
@@ -295,15 +296,17 @@ Public NotInheritable Class MySocket
                                 Directory.CreateDirectory(Path.Combine(Application.StartupPath(), "en"))
                             End If
                             StreamToFile(strm, Path.Combine(Application.StartupPath(), "en\Tween.resourcesNew.dll"), webRes.ContentEncoding)
+                        Case REQ_TYPE.ReqGETFileDll
+                            StreamToFile(strm, Path.Combine(Application.StartupPath(), "TweenNew.XmlSerializers.dll"), webRes.ContentEncoding)
                         Case REQ_TYPE.ReqGETForwardTo
-                                Dim rtStr As String = ""
-                                If webRes.StatusCode = HttpStatusCode.MovedPermanently OrElse _
-                                   webRes.StatusCode = HttpStatusCode.Found OrElse _
-                                   webRes.StatusCode = HttpStatusCode.SeeOther OrElse _
-                                   webRes.StatusCode = HttpStatusCode.TemporaryRedirect Then
-                                    rtStr = webRes.Headers.GetValues("Location")(0)
-                                    Return rtStr
-                                End If
+                            Dim rtStr As String = ""
+                            If webRes.StatusCode = HttpStatusCode.MovedPermanently OrElse _
+                               webRes.StatusCode = HttpStatusCode.Found OrElse _
+                               webRes.StatusCode = HttpStatusCode.SeeOther OrElse _
+                               webRes.StatusCode = HttpStatusCode.TemporaryRedirect Then
+                                rtStr = webRes.Headers.GetValues("Location")(0)
+                                Return rtStr
+                            End If
                     End Select
                 End Using
             End Using
