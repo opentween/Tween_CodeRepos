@@ -1563,66 +1563,66 @@ Public NotInheritable Class IdComparerClass
     ' 本文比較　昇順
     Public Function Compare_ModeData_Ascending(ByVal x As Long, ByVal y As Long) As Integer
         Dim result As Integer = String.Compare(_statuses.Item(x).Data, _statuses.Item(y).Data)
-        If result = 0 Then result = CType(x - y, Integer)
+        If result = 0 Then result = x.CompareTo(y)
         Return result
     End Function
 
     ' 本文比較　降順
     Public Function Compare_ModeData_Descending(ByVal x As Long, ByVal y As Long) As Integer
         Dim result As Integer = String.Compare(_statuses.Item(y).Data, _statuses.Item(x).Data)
-        If result = 0 Then result = CType(y - x, Integer)
+        If result = 0 Then result = y.CompareTo(x)
         Return result
     End Function
 
     ' ステータスID比較　昇順
     Public Function Compare_ModeId_Ascending(ByVal x As Long, ByVal y As Long) As Integer
-        Return CType(x - y, Integer)
+        Return x.CompareTo(y)
     End Function
 
     ' ステータスID比較　降順
     Public Function Compare_ModeId_Descending(ByVal x As Long, ByVal y As Long) As Integer
-        Return CType(y - x, Integer)
+        Return y.CompareTo(x)
     End Function
 
     ' 表示名比較　昇順
     Public Function Compare_ModeName_Ascending(ByVal x As Long, ByVal y As Long) As Integer
         Dim result As Integer = String.Compare(_statuses.Item(x).Name, _statuses.Item(y).Name)
-        If result = 0 Then result = CType(x - y, Integer)
+        If result = 0 Then result = x.CompareTo(y)
         Return result
     End Function
 
     ' 表示名比較　降順
     Public Function Compare_ModeName_Descending(ByVal x As Long, ByVal y As Long) As Integer
         Dim result As Integer = String.Compare(_statuses.Item(y).Name, _statuses.Item(x).Name)
-        If result = 0 Then result = CType(y - x, Integer)
+        If result = 0 Then result = y.CompareTo(x)
         Return result
     End Function
 
     ' ユーザー名比較　昇順
     Public Function Compare_ModeNickName_Ascending(ByVal x As Long, ByVal y As Long) As Integer
         Dim result As Integer = String.Compare(_statuses.Item(x).Nickname, _statuses.Item(y).Nickname)
-        If result = 0 Then result = CType(x - y, Integer)
+        If result = 0 Then result = x.CompareTo(y)
         Return result
     End Function
 
     ' ユーザー名比較　降順
     Public Function Compare_ModeNickName_Descending(ByVal x As Long, ByVal y As Long) As Integer
         Dim result As Integer = String.Compare(_statuses.Item(y).Nickname, _statuses.Item(x).Nickname)
-        If result = 0 Then result = CType(y - x, Integer)
+        If result = 0 Then result = y.CompareTo(x)
         Return result
     End Function
 
     ' Source比較　昇順
     Public Function Compare_ModeSource_Ascending(ByVal x As Long, ByVal y As Long) As Integer
         Dim result As Integer = String.Compare(_statuses.Item(x).Source, _statuses.Item(y).Source)
-        If result = 0 Then result = CType(x - y, Integer)
+        If result = 0 Then result = x.CompareTo(y)
         Return result
     End Function
 
     ' Source比較　降順
     Public Function Compare_ModeSource_Descending(ByVal x As Long, ByVal y As Long) As Integer
         Dim result As Integer = String.Compare(_statuses.Item(y).Source, _statuses.Item(x).Source)
-        If result = 0 Then result = CType(y - x, Integer)
+        If result = 0 Then result = y.CompareTo(x)
         Return result
     End Function
 End Class
