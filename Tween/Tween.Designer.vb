@@ -133,9 +133,12 @@ Partial Class TweenMain
         Me.GetFollowersAllToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripMenuItem10 = New System.Windows.Forms.ToolStripMenuItem
         Me.BlackFavAddToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator
         Me.FollowCommandMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.RemoveCommandMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.FriendshipMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator
+        Me.OwnStatusMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.MenuItemHelp = New System.Windows.Forms.ToolStripMenuItem
         Me.MatomeMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator12 = New System.Windows.Forms.ToolStripSeparator
@@ -165,9 +168,6 @@ Partial Class TweenMain
         Me.TimerRefreshIcon = New System.Windows.Forms.Timer(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog
         Me.TimerReply = New System.Windows.Forms.Timer(Me.components)
-        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator
-        Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator
-        Me.OwnStatusMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripContainer1.BottomToolStripPanel.SuspendLayout()
         Me.ToolStripContainer1.ContentPanel.SuspendLayout()
         Me.ToolStripContainer1.TopToolStripPanel.SuspendLayout()
@@ -837,6 +837,11 @@ Partial Class TweenMain
         Me.BlackFavAddToolStripMenuItem.Name = "BlackFavAddToolStripMenuItem"
         resources.ApplyResources(Me.BlackFavAddToolStripMenuItem, "BlackFavAddToolStripMenuItem")
         '
+        'ToolStripSeparator1
+        '
+        Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
+        resources.ApplyResources(Me.ToolStripSeparator1, "ToolStripSeparator1")
+        '
         'FollowCommandMenuItem
         '
         Me.FollowCommandMenuItem.Name = "FollowCommandMenuItem"
@@ -851,6 +856,16 @@ Partial Class TweenMain
         '
         Me.FriendshipMenuItem.Name = "FriendshipMenuItem"
         resources.ApplyResources(Me.FriendshipMenuItem, "FriendshipMenuItem")
+        '
+        'ToolStripSeparator3
+        '
+        Me.ToolStripSeparator3.Name = "ToolStripSeparator3"
+        resources.ApplyResources(Me.ToolStripSeparator3, "ToolStripSeparator3")
+        '
+        'OwnStatusMenuItem
+        '
+        Me.OwnStatusMenuItem.Name = "OwnStatusMenuItem"
+        resources.ApplyResources(Me.OwnStatusMenuItem, "OwnStatusMenuItem")
         '
         'MenuItemHelp
         '
@@ -997,21 +1012,6 @@ Partial Class TweenMain
         'TimerReply
         '
         Me.TimerReply.Interval = 600000
-        '
-        'ToolStripSeparator1
-        '
-        Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
-        resources.ApplyResources(Me.ToolStripSeparator1, "ToolStripSeparator1")
-        '
-        'ToolStripSeparator3
-        '
-        Me.ToolStripSeparator3.Name = "ToolStripSeparator3"
-        resources.ApplyResources(Me.ToolStripSeparator3, "ToolStripSeparator3")
-        '
-        'OwnStatusMenuItem
-        '
-        Me.OwnStatusMenuItem.Name = "OwnStatusMenuItem"
-        resources.ApplyResources(Me.OwnStatusMenuItem, "OwnStatusMenuItem")
         '
         'TweenMain
         '
