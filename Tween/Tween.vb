@@ -103,6 +103,8 @@ Public Class TweenMain
     Private NIconRefresh(3) As Icon       'Refresh.ico        タスクトレイアイコン：更新中（アニメーション用に4種類を保持するリスト）
     Private TabIcon As Icon               'Tab.ico            未読のあるタブ用アイコン
     Private MainIcon As Icon              'Main.ico           画面左上のアイコン
+    Private ReplyIcon As Icon               '5g
+    Private ReplyIconBlink As Icon          '6g
 
     Private _anchorPost As PostClass
     Private _anchorFlag As Boolean        'True:関連発言移動中（関連移動以外のオペレーションをするとFalseへ。Trueだとリスト背景色をアンカー発言選択中として描画）
@@ -252,6 +254,8 @@ Public Class TweenMain
         If NIconRefresh(3) IsNot Nothing Then NIconRefresh(3).Dispose()
         If TabIcon IsNot Nothing Then TabIcon.Dispose()
         If MainIcon IsNot Nothing Then MainIcon.Dispose()
+        If ReplyIcon IsNot Nothing Then ReplyIcon.Dispose()
+        If ReplyIconBlink IsNot Nothing Then ReplyIconBlink.Dispose()
         _brsHighLight.Dispose()
         _brsHighLightText.Dispose()
         If _brsForeColorUnread IsNot Nothing Then _brsForeColorUnread.Dispose()
@@ -294,6 +298,8 @@ Public Class TweenMain
         NIconRefresh(3) = My.Resources.Refresh4
         TabIcon = My.Resources.TabIcon
         MainIcon = My.Resources.MIcon
+        ReplyIcon = My.Resources.Reply
+        ReplyIconBlink = My.Resources.ReplyBlink
 
         If Not Directory.Exists(Path.Combine(dir, "Icons")) Then
             Exit Sub
@@ -339,6 +345,16 @@ Public Class TweenMain
         '画面のアイコン
         Try
             MainIcon = New Icon(Path.Combine(dir, "Icons\MIcon.ico"))
+        Catch ex As Exception
+        End Try
+        'Replyのアイコン
+        Try
+            ReplyIcon = New Icon(Path.Combine(dir, "Icons\Reply.ico"))
+        Catch ex As Exception
+        End Try
+        'Reply点滅のアイコン
+        Try
+            ReplyIconBlink = New Icon(Path.Combine(dir, "Icons\ReplyBlink.ico"))
         Catch ex As Exception
         End Try
 
@@ -3780,8 +3796,11 @@ RETRY:
         End If
 
         If Not _anchorFlag Then
+            If _curPost Is Nothing Then Exit Sub
             _anchorPost = _curPost
             _anchorFlag = True
+        Else
+            If _anchorPost Is Nothing Then Exit Sub
         End If
 
         For idx As Integer = fIdx To toIdx Step stp
@@ -4421,9 +4440,9 @@ RETRY:
             If blinkCnt > 0 Then Exit Sub
             blink = Not blink
             If blink OrElse SettingDialog.ReplyIconState = REPLY_ICONSTATE.StaticIcon Then
-                NotifyIcon1.Icon = My.Resources.Reply
+                NotifyIcon1.Icon = ReplyIcon
             Else
-                NotifyIcon1.Icon = My.Resources.ReplyBlink
+                NotifyIcon1.Icon = ReplyIconBlink
             End If
             idle = False
             Exit Sub
