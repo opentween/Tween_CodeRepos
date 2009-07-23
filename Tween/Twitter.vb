@@ -2764,7 +2764,12 @@ RETRY:
         ret = DirectCast(CreateSocket.GetWebResponse("http://tween.sourceforge.jp/Tween" + strVer + ".gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFile), String)
         If ret = "" OrElse resStatus.StartsWith("OK") Then
             '取得OKなら、続いてresources.dllダウンロード
-            Return GetTweenResourcesDll(strVer)
+            ret = GetTweenResourcesDll(strVer)
+            If ret = "" Then
+                Return GetTweenDll(strVer)
+            Else
+                Return ret
+            End If
         Else
             Return resStatus
         End If
@@ -2789,6 +2794,18 @@ RETRY:
             Return resStatus
         End If
     End Function
+
+    Public Function GetTweenDll(ByVal strVer As String) As String
+        Dim resStatus As String = ""
+        Dim ret As String = ""
+        ret = DirectCast(CreateSocket.GetWebResponse("http://tween.sourceforge.jp/TweenDll" + strVer + ".gz?" + Now.ToString("yyMMddHHmmss") + Environment.TickCount.ToString(), resStatus, MySocket.REQ_TYPE.ReqGETFileDll), String)
+        If ret = "" OrElse resStatus.StartsWith("OK") Then
+            Return ""
+        Else
+            Return resStatus
+        End If
+    End Function
+
 #End Region
 
     Private Function CreateSocket() As MySocket
