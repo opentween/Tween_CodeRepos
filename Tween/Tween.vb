@@ -3003,7 +3003,7 @@ Public Class TweenMain
             Dim rctB As RectangleF = e.Bounds
             rct.Width = e.Header.Width
             rctB.Width = e.Header.Width
-            rct.Height = 12
+            If _iconCol Then rct.Height = 12
             'アイコン以外の列
             If Not e.Item.Selected Then     'e.ItemStateでうまく判定できない？？？
                 '選択されていない行
