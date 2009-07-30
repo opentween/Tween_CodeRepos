@@ -18,11 +18,26 @@
     End Function
 
     Protected Shared Sub SaveSettings(ByVal Instance As T, ByVal FileId As String)
-        Using fs As New IO.FileStream(GetSettingFilePath(FileId), IO.FileMode.Create, IO.FileAccess.Write)
-            Dim xs As New Xml.Serialization.XmlSerializer(GetType(T))
-            xs.Serialize(fs, Instance)
-        End Using
+        Dim cnt As Integer = 0
+        Do
+            cnt += 1
+            Using fs As New IO.FileStream(GetSettingFilePath(FileId), IO.FileMode.Create, IO.FileAccess.Write)
+                Dim xs As New Xml.Serialization.XmlSerializer(GetType(T))
+                xs.Serialize(fs, Instance)
+            End Using
+            If cnt > 3 Then Throw New System.InvalidOperationException("Can't write setting XML.")
+        Loop Until ValidateXml(GetSettingFilePath(FileId))
     End Sub
+
+    Private Shared Function ValidateXml(ByVal fileName As String) As Boolean
+        Try
+            Dim xdoc As New Xml.XmlDocument()
+            xdoc.Load(fileName)
+            Return True
+        Catch ex As Exception
+            Return False
+        End Try
+    End Function
 
     Protected Shared Sub SaveSettings(ByVal Instance As T)
         SaveSettings(Instance, "")

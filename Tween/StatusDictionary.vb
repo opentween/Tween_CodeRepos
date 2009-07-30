@@ -897,7 +897,7 @@ Public NotInheritable Class TabInformations
         tb.UnreadManage = Manage
     End Sub
 
-    Public Sub RefreshOwl(ByVal follower As System.Collections.Specialized.StringCollection)
+    Public Sub RefreshOwl(ByVal follower As List(Of String))
         SyncLock LockObj
             For Each id As Long In _statuses.Keys
                 If Not _statuses(id).IsDm Then _statuses(id).IsOwl = Not follower.Contains(_statuses(id).Name.ToLower())
