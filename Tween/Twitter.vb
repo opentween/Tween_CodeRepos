@@ -44,9 +44,9 @@ Public Module Twitter
     Private ReadOnly LockObj As New Object
     Private GetTmSemaphore As New Threading.Semaphore(8, 8)
 
-    Private follower As New Collections.Specialized.StringCollection
+    Private follower As New List(Of String)
     Private followerId As New List(Of Long)
-    Private tmpFollower As New Collections.Specialized.StringCollection
+    Private tmpFollower As New List(Of String)
 
     Private _followersCount As Integer = 0
     Private _friendsCount As Integer = 0
@@ -1805,11 +1805,17 @@ RETRY:
             Dim xd As XmlDocument = New XmlDocument()
             Try
                 xd.LoadXml(resMsg)
-                _followersCount = Integer.Parse(xd.SelectSingleNode("/status/user/followers_count/text()").Value)
-                _friendsCount = Integer.Parse(xd.SelectSingleNode("/status/user/friends_count/text()").Value)
-                _statusesCount = Integer.Parse(xd.SelectSingleNode("/status/user/statuses_count/text()").Value)
-                _location = xd.SelectSingleNode("/status/user/location/text()").Value
-                _bio = xd.SelectSingleNode("/status/user/description/text()").Value
+                Dim xNode As XmlNode = Nothing
+                xNode = xd.SelectSingleNode("/status/user/followers_count/text()")
+                If xNode IsNot Nothing Then _followersCount = Integer.Parse(xNode.Value)
+                xNode = xd.SelectSingleNode("/status/user/friends_count/text()")
+                If xNode IsNot Nothing Then _friendsCount = Integer.Parse(xNode.Value)
+                xNode = xd.SelectSingleNode("/status/user/statuses_count/text()")
+                If xNode IsNot Nothing Then _statusesCount = Integer.Parse(xNode.Value)
+                xNode = xd.SelectSingleNode("/status/user/location/text()")
+                If xNode IsNot Nothing Then _location = xNode.Value
+                xNode = xd.SelectSingleNode("/status/user/description/text()")
+                If xNode IsNot Nothing Then _bio = xNode.Value
             Catch ex As Exception
             End Try
 
@@ -2131,7 +2137,7 @@ RETRY:
         Try
             Dim serializer As Xml.Serialization.XmlSerializer = New Xml.Serialization.XmlSerializer(tmpFollower.GetType())
             Using fs As New IO.FileStream(CacheFileName, FileMode.Open)
-                tmpFollower = CType(serializer.Deserialize(fs), Specialized.StringCollection)
+                tmpFollower = DirectCast(serializer.Deserialize(fs), List(Of String))
                 If Not tmpFollower(0).Equals(_uid.ToLower()) Then
                     ' 別IDの場合はキャッシュ破棄して読み直し
                     tmpFollower.Clear()
@@ -2173,9 +2179,8 @@ RETRY:
 
         Dim CacheFileName As String = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "FollowersCache")
 
-        Dim serializer As Xml.Serialization.XmlSerializer = New Xml.Serialization.XmlSerializer(follower.GetType())
-
         Using fs As New IO.FileStream(CacheFileName, FileMode.Create)
+            Dim serializer As Xml.Serialization.XmlSerializer = New Xml.Serialization.XmlSerializer(GetType(List(Of String)))
             serializer.Serialize(fs, follower)
         End Using
 

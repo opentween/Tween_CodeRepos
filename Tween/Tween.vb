@@ -305,59 +305,80 @@ Public Class TweenMain
             Exit Sub
         End If
 
-        Try
-            NIconAt = New Icon(Path.Combine(dir, "Icons\At.ico"))
-        Catch ex As Exception
-        End Try
+        If File.Exists(Path.Combine(dir, "Icons\At.ico")) Then
+            Try
+                NIconAt = New Icon(Path.Combine(dir, "Icons\At.ico"))
+            Catch ex As Exception
+            End Try
+        End If
         'タスクトレイエラー時アイコン
-        Try
-            NIconAtRed = New Icon(Path.Combine(dir, "Icons\AtRed.ico"))
-        Catch ex As Exception
-        End Try
+        If File.Exists(Path.Combine(dir, "Icons\AtRed.ico")) Then
+            Try
+                NIconAtRed = New Icon(Path.Combine(dir, "Icons\AtRed.ico"))
+            Catch ex As Exception
+            End Try
+        End If
         'タスクトレイオフライン時アイコン
-        Try
-            NIconAtSmoke = New Icon(Path.Combine(dir, "Icons\AtSmoke.ico"))
-        Catch ex As Exception
-        End Try
+        If File.Exists(Path.Combine(dir, "Icons\AtSmoke.ico")) Then
+            Try
+                NIconAtSmoke = New Icon(Path.Combine(dir, "Icons\AtSmoke.ico"))
+            Catch ex As Exception
+            End Try
+        End If
         'タスクトレイ更新中アイコン
         'アニメーション対応により4種類読み込み
-        Try
-            NIconRefresh(0) = New Icon(Path.Combine(dir, "Icons\Refresh.ico"))
-        Catch ex As Exception
-        End Try
-        Try
-            NIconRefresh(1) = New Icon(Path.Combine(dir, "Icons\Refresh2.ico"))
-        Catch ex As Exception
-        End Try
-        Try
-            NIconRefresh(2) = New Icon(Path.Combine(dir, "Icons\Refresh3.ico"))
-        Catch ex As Exception
-        End Try
-        Try
-            NIconRefresh(3) = New Icon(Path.Combine(dir, "Icons\Refresh4.ico"))
-        Catch ex As Exception
-        End Try
+        If File.Exists(Path.Combine(dir, "Icons\Refresh.ico")) Then
+            Try
+                NIconRefresh(0) = New Icon(Path.Combine(dir, "Icons\Refresh.ico"))
+            Catch ex As Exception
+            End Try
+        End If
+        If File.Exists(Path.Combine(dir, "Icons\Refresh2.ico")) Then
+            Try
+                NIconRefresh(1) = New Icon(Path.Combine(dir, "Icons\Refresh2.ico"))
+            Catch ex As Exception
+            End Try
+        End If
+        If File.Exists(Path.Combine(dir, "Icons\Refresh3.ico")) Then
+            Try
+                NIconRefresh(2) = New Icon(Path.Combine(dir, "Icons\Refresh3.ico"))
+            Catch ex As Exception
+            End Try
+        End If
+        If File.Exists(Path.Combine(dir, "Icons\Refresh4.ico")) Then
+            Try
+                NIconRefresh(3) = New Icon(Path.Combine(dir, "Icons\Refresh4.ico"))
+            Catch ex As Exception
+            End Try
+        End If
         'タブ見出し未読表示アイコン
-        Try
-            TabIcon = New Icon(Path.Combine(dir, "Icons\Tab.ico"))
-        Catch ex As Exception
-        End Try
+        If File.Exists(Path.Combine(dir, "Icons\Tab.ico")) Then
+            Try
+                TabIcon = New Icon(Path.Combine(dir, "Icons\Tab.ico"))
+            Catch ex As Exception
+            End Try
+        End If
         '画面のアイコン
-        Try
-            MainIcon = New Icon(Path.Combine(dir, "Icons\MIcon.ico"))
-        Catch ex As Exception
-        End Try
+        If File.Exists(Path.Combine(dir, "Icons\MIcon.ico")) Then
+            Try
+                MainIcon = New Icon(Path.Combine(dir, "Icons\MIcon.ico"))
+            Catch ex As Exception
+            End Try
+        End If
         'Replyのアイコン
-        Try
-            ReplyIcon = New Icon(Path.Combine(dir, "Icons\Reply.ico"))
-        Catch ex As Exception
-        End Try
+        If File.Exists(Path.Combine(dir, "Icons\Reply.ico")) Then
+            Try
+                ReplyIcon = New Icon(Path.Combine(dir, "Icons\Reply.ico"))
+            Catch ex As Exception
+            End Try
+        End If
         'Reply点滅のアイコン
-        Try
-            ReplyIconBlink = New Icon(Path.Combine(dir, "Icons\ReplyBlink.ico"))
-        Catch ex As Exception
-        End Try
-
+        If File.Exists(Path.Combine(dir, "Icons\ReplyBlink.ico")) Then
+            Try
+                ReplyIconBlink = New Icon(Path.Combine(dir, "Icons\ReplyBlink.ico"))
+            Catch ex As Exception
+            End Try
+        End If
     End Sub
 
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
@@ -1416,6 +1437,7 @@ Public Class TweenMain
         args.page = 0
         args.endPage = 0
         args.type = WORKERTYPE.PostMessage
+        CheckReplyTo(StatusText.Text)
         If (StatusText.Text.StartsWith("D ")) OrElse (My.Computer.Keyboard.ShiftKeyDown) Then
             args.status = StatusText.Text.Trim
         ElseIf SettingDialog.UseRecommendStatus() Then
@@ -1609,7 +1631,6 @@ Public Class TweenMain
                 ' Contributed by shuyoko <http://twitter.com/shuyoko> END.
             Case WORKERTYPE.PostMessage
                 bw.ReportProgress(200)
-                CheckReplyTo(args.status)
                 For i As Integer = 0 To 1
                     ret = Twitter.PostStatus(args.status, _reply_to_id)
                     If ret = "" OrElse ret.StartsWith("Outputz:") Then Exit For
@@ -4968,6 +4989,7 @@ RETRY:
     Private Sub SetStatusLabel()
         'ステータス欄にカウント表示
         'タブ未読数/タブ発言数 全未読数/総発言数 (未読＠＋未読DM数)
+        If _statuses Is Nothing Then Exit Sub
         Dim urat As Integer = _statuses.Tabs(DEFAULTTAB.REPLY).UnreadCount + _statuses.Tabs(DEFAULTTAB.DM).UnreadCount
         Dim ur As Integer = 0
         Dim al As Integer = 0
