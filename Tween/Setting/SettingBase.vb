@@ -35,6 +35,7 @@
             xdoc.Load(fileName)
             Return True
         Catch ex As Exception
+            Threading.Thread.Sleep(0)
             Return False
         End Try
     End Function
