@@ -4983,7 +4983,11 @@ RETRY:
                 ttl.AppendFormat(My.Resources.SetMainWindowTitleText4, ur, al)
         End Select
 
-        Me.Text = ttl.ToString()
+        Try
+            Me.Text = ttl.ToString()
+        Catch ex As AccessViolationException
+            '原因不明。ポスト内容に依存か？たまーに発生するが再現せず。
+        End Try
     End Sub
 
     Private Sub SetStatusLabel()
