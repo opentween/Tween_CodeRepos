@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="AnalyzeKey.vb" />
     <Compile Include="ApplicationEvents.vb" />
+    <Compile Include="Connection\HttpConnection.vb" />
     <Compile Include="DetailsListView.vb">
     </Compile>
     <Compile Include="DialogAsShieldIcon.Designer.vb">
