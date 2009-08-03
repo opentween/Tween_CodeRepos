@@ -2346,8 +2346,13 @@ Public Class TweenMain
 
     Private Sub SettingStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SettingStripMenuItem.Click
         Dim chgUseApi As Boolean = False
-
-        If SettingDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
+        Dim result As DialogResult
+        Try
+            result = SettingDialog.ShowDialog()
+        Catch ex As Exception
+            Exit Sub
+        End Try
+        If result = Windows.Forms.DialogResult.OK Then
             SyncLock _syncObject
                 _username = SettingDialog.UserID
                 _password = SettingDialog.PasswordStr
