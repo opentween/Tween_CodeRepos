@@ -61,7 +61,7 @@ Public Module MyCommon
         Day
     End Enum
 
-    Public Enum ProxyTypeEnum
+    Public Enum ProxyType
         None
         IE
         Specified

@@ -57,7 +57,7 @@ Public Module Twitter
     'プロパティからアクセスされる共通情報
     Private _uid As String
     Private _pwd As String
-    Private _proxyType As ProxyTypeEnum
+    Private _proxyType As ProxyType
     Private _proxyAddress As String
     Private _proxyPort As Integer
     Private _proxyUser As String
@@ -2601,8 +2601,8 @@ RETRY:
         End Set
     End Property
 
-    Public WriteOnly Property ProxyType() As ProxyTypeEnum
-        Set(ByVal value As ProxyTypeEnum)
+    Public WriteOnly Property SelectedProxyType() As ProxyType
+        Set(ByVal value As ProxyType)
             _proxyType = value
         End Set
     End Property
