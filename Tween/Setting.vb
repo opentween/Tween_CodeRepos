@@ -70,7 +70,7 @@ Public Class Setting
     Private _MyMinimizeToTray As Boolean
     Private _MyCloseToExit As Boolean
     Private _MyTinyUrlResolve As Boolean
-    Private _MyProxyType As ProxyTypeEnum
+    Private _MyProxyType As ProxyType
     Private _MyProxyAddress As String
     Private _MyProxyPort As Integer
     Private _MyProxyUser As String
@@ -188,11 +188,11 @@ Public Class Setting
             _MySortOrderLock = CheckSortOrderLock.Checked
             _MyTinyUrlResolve = CheckTinyURL.Checked
             If RadioProxyNone.Checked Then
-                _MyProxyType = ProxyTypeEnum.None
+                _MyProxyType = ProxyType.None
             ElseIf RadioProxyIE.Checked Then
-                _MyProxyType = ProxyTypeEnum.IE
+                _MyProxyType = ProxyType.IE
             Else
-                _MyProxyType = ProxyTypeEnum.Specified
+                _MyProxyType = ProxyType.Specified
             End If
             _MyProxyAddress = TextProxyAddress.Text.Trim()
             _MyProxyPort = Integer.Parse(TextProxyPort.Text.Trim())
@@ -359,9 +359,9 @@ Public Class Setting
         CheckSortOrderLock.Checked = _MySortOrderLock
         CheckTinyURL.Checked = _MyTinyUrlResolve
         Select Case _MyProxyType
-            Case ProxyTypeEnum.None
+            Case ProxyType.None
                 RadioProxyNone.Checked = True
-            Case ProxyTypeEnum.IE
+            Case ProxyType.IE
                 RadioProxyIE.Checked = True
             Case Else
                 RadioProxySpecified.Checked = True
@@ -1169,11 +1169,11 @@ Public Class Setting
         End Set
     End Property
 
-    Public Property ProxyType() As ProxyTypeEnum
+    Public Property SelectedProxyType() As ProxyType
         Get
             Return _MyProxyType
         End Get
-        Set(ByVal value As ProxyTypeEnum)
+        Set(ByVal value As ProxyType)
             _MyProxyType = value
         End Set
     End Property

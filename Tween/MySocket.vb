@@ -31,7 +31,7 @@ Public NotInheritable Class MySocket
     Private Shared _version As String = My.Application.Info.Version.ToString
     Private _cre As String
     Private _proxy As System.Net.WebProxy
-    Private _proxyType As ProxyTypeEnum
+    Private _proxyType As ProxyType
     Private Shared cCon As New System.Net.CookieContainer()
     Private Shared ReadOnly cConLock As New Object
     Private _defaultTimeOut As Integer = HttpTimeOut.DefaultValue * 1000
@@ -59,7 +59,7 @@ Public NotInheritable Class MySocket
     Public Sub New(ByVal EncodeType As String, _
             ByVal Username As String, _
             ByVal Password As String, _
-            ByVal ProxyType As ProxyTypeEnum, _
+            ByVal ProxyType As ProxyType, _
             ByVal ProxyAddress As String, _
             ByVal ProxyPort As Integer, _
             ByVal ProxyUser As String, _
@@ -71,9 +71,9 @@ Public NotInheritable Class MySocket
             _cre = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes(Username + ":" + Password))
         End If
         Select Case ProxyType
-            Case ProxyTypeEnum.None
+            Case ProxyType.None
                 _proxy = Nothing
-            Case ProxyTypeEnum.Specified
+            Case ProxyType.Specified
                 _proxy = New WebProxy("http://" + ProxyAddress + ":" + ProxyPort.ToString)
                 If Not String.IsNullOrEmpty(ProxyUser) OrElse Not String.IsNullOrEmpty(ProxyPassword) Then
                     _proxy.Credentials = New NetworkCredential(ProxyUser, ProxyPassword)
@@ -115,7 +115,7 @@ Public NotInheritable Class MySocket
             'If reqType = REQ_TYPE.ReqGetNoCache Then
             '    webReq.CachePolicy = cpolicy
             'End If
-            If _proxyType <> ProxyTypeEnum.IE Then
+            If _proxyType <> ProxyType.IE Then
                 webReq.Proxy = _proxy
             End If
 

@@ -527,7 +527,7 @@ Public Class TweenMain
         SettingDialog.SortOrderLock = _cfgCommon.SortOrderLock
         SettingDialog.TinyUrlResolve = _cfgCommon.TinyUrlResolve
 
-        SettingDialog.ProxyType = _cfgLocal.ProxyType
+        SettingDialog.SelectedProxyType = _cfgLocal.ProxyType
         SettingDialog.ProxyAddress = _cfgLocal.ProxyAddress
         SettingDialog.ProxyPort = _cfgLocal.ProxyPort
         SettingDialog.ProxyUser = _cfgLocal.ProxyUser
@@ -642,7 +642,7 @@ Public Class TweenMain
         'Twitter用通信クラス初期化
         Twitter.Username = _username
         Twitter.Password = _password
-        Twitter.ProxyType = SettingDialog.ProxyType
+        Twitter.SelectedProxyType = SettingDialog.SelectedProxyType
         Twitter.ProxyAddress = SettingDialog.ProxyAddress
         Twitter.ProxyPort = SettingDialog.ProxyPort
         Twitter.ProxyUser = SettingDialog.ProxyUser
@@ -1652,6 +1652,15 @@ Public Class TweenMain
                 Try
                     If SettingDialog.BrowserPath <> "" Then
                         'Shell(SettingDialog.BrowserPath & " " & myPath)
+                        If SettingDialog.BrowserPath.StartsWith("""") AndAlso SettingDialog.BrowserPath.Length > 2 AndAlso SettingDialog.BrowserPath.IndexOf("""", 2) > -1 Then
+                            Dim sep As Integer = SettingDialog.BrowserPath.IndexOf("""", 2)
+                            Dim browserPath As String = SettingDialog.BrowserPath.Substring(1, sep - 1)
+                            Dim arg As String = ""
+                            If sep < SettingDialog.BrowserPath.Length - 1 Then
+                                arg = SettingDialog.BrowserPath.Substring(sep + 1)
+                            End If
+                            myPath = arg + " " + myPath
+                        End If
                         System.Diagnostics.Process.Start(SettingDialog.BrowserPath, myPath)
                     Else
                         System.Diagnostics.Process.Start(myPath)
@@ -2398,7 +2407,7 @@ Public Class TweenMain
                 Twitter.RestrictFavCheck = SettingDialog.RestrictFavCheck
                 Twitter.ReadOwnPost = SettingDialog.ReadOwnPost
 
-                Twitter.ProxyType = SettingDialog.ProxyType
+                Twitter.SelectedProxyType = SettingDialog.SelectedProxyType
                 Twitter.ProxyAddress = SettingDialog.ProxyAddress
                 Twitter.ProxyPort = SettingDialog.ProxyPort
                 Twitter.ProxyUser = SettingDialog.ProxyUser
@@ -4094,7 +4103,7 @@ RETRY:
 
             _cfgLocal.BrowserPath = SettingDialog.BrowserPath
             _cfgLocal.UseRecommendStatus = SettingDialog.UseRecommendStatus
-            _cfgLocal.ProxyType = SettingDialog.ProxyType
+            _cfgLocal.ProxyType = SettingDialog.SelectedProxyType
             _cfgLocal.ProxyAddress = SettingDialog.ProxyAddress
             _cfgLocal.ProxyPort = SettingDialog.ProxyPort
             _cfgLocal.ProxyUser = SettingDialog.ProxyUser
