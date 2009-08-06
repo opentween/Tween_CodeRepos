@@ -1,16 +1,57 @@
 ﻿Imports System.Net
 
+'''<summary>
+'''HttpWebRequest,HttpWebResponseを使用した基本的な通信機能を提供する
+'''</summary>
+'''<remarks>
+'''プロキシ情報などを設定するため、使用前に静的メソッドInitializeConnectionを呼び出すこと。
+'''通信方式によって必要になるHTTPヘッダの付加などは、派生クラスでGetContentメソッドをオーバーライドして行う。
+'''</remarks>
 Public Class HttpConnection
+    '''<summary>
+    '''プロキシ
+    '''</summary>
     Private Shared _proxy As System.Net.WebProxy = Nothing
+
+    '''<summary>
+    '''ユーザーが選択したプロキシの方式
+    '''</summary>
     Private Shared _proxyType As ProxyType = ProxyType.IE
+
+    '''<summary>
+    '''CreateRequestメソッドで指定が省略された際に使用する通信タイムアウト時間（ms）
+    '''</summary>
     Private Shared _defaultTimeOut As Integer = 20000
+
+    '''<summary>
+    '''クッキー保存用コンテナ
+    '''</summary>
     Private Shared _cookieContainer As New CookieContainer
 
+    '''<summary>
+    '''HTTP通信のメソッド
+    '''</summary>
+    '''<remarks>
+    '''他のメソッド（HEAD,PUT,CONNECTなど）が必要な場合は追加すること
+    '''</remarks>
     Protected Enum RequestMethod
         ReqGet
         ReqPOST
     End Enum
 
+    '''<summary>
+    '''HTTP通信してコンテンツを取得する（文字列コンテンツ）
+    '''</summary>
+    '''<remarks>
+    '''通信タイムアウトなどWebExceptionをハンドルしていないため、呼び出し元で処理が必要。
+    '''タイムアウト指定やレスポンスヘッダ取得は省略している。
+    '''レスポンスのボディストリームを文字列に変換してcontent引数に格納して戻す。文字エンコードは未指定
+    '''</remarks>
+    '''<param name="method">HTTPのメソッド</param>
+    '''<param name="url">URL</param>
+    '''<param name="param">key=valueに展開されて、クエリ（GET時）・ボディ（POST時）に付加される送信情報</param>
+    '''<param name="content">HTTPレスポンスのボディ部データ返却用。呼び出し元で初期化が必要</param>
+    '''<returns>通信結果のHttpStatusCode</returns>
     Protected Overridable Function GetContent(ByVal method As RequestMethod, _
             ByVal url As System.Uri, _
             ByVal param As System.Collections.Generic.SortedList(Of String, String), _
@@ -29,6 +70,19 @@ Public Class HttpConnection
         End Using
     End Function
 
+    '''<summary>
+    '''HTTP通信してコンテンツを取得する（画像コンテンツ）
+    '''</summary>
+    '''<remarks>
+    '''通信タイムアウトなどWebExceptionをハンドルしていないため、呼び出し元で処理が必要。
+    '''タイムアウト指定やレスポンスヘッダ取得は省略している。
+    '''レスポンスのボディストリームをBitmapに変換してcontent引数に格納して戻す。
+    '''</remarks>
+    '''<param name="method">HTTPのメソッド</param>
+    '''<param name="url">URL</param>
+    '''<param name="param">key=valueに展開されて、クエリ（GET時）・ボディ（POST時）に付加される送信情報</param>
+    '''<param name="content">HTTPレスポンスのボディ部データ返却用。呼び出し元で初期化が必要</param>
+    '''<returns>通信結果のHttpStatusCode</returns>
     Protected Overridable Function GetContent(ByVal method As RequestMethod, _
             ByVal url As System.Uri, _
             ByVal param As System.Collections.Generic.SortedList(Of String, String), _
@@ -47,6 +101,13 @@ Public Class HttpConnection
     Protected Shared Function CreateRequest(ByVal method As RequestMethod, _
                                             ByVal url As System.Uri, _
                                             ByVal param As System.Collections.Generic.SortedList(Of String, String)) As HttpWebRequest
+        Return CreateRequest(method, url, _defaultTimeOut, param)
+    End Function
+
+    Protected Shared Function CreateRequest(ByVal method As RequestMethod, _
+                                            ByVal url As System.Uri, _
+                                            ByVal timeout As Integer, _
+                                            ByVal param As System.Collections.Generic.SortedList(Of String, String)) As HttpWebRequest
 
         Dim ub As New System.UriBuilder(url.AbsoluteUri)
         If method = RequestMethod.ReqGet Then
@@ -54,7 +115,7 @@ Public Class HttpConnection
         End If
         Dim webReq As HttpWebRequest = DirectCast(WebRequest.Create(ub.Uri), HttpWebRequest)
 
-        webReq.Timeout = _defaultTimeOut
+        webReq.Timeout = timeout
         If _proxyType <> ProxyType.IE Then webReq.Proxy = _proxy
 
         If method = RequestMethod.ReqGet Then
