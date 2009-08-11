@@ -28,6 +28,8 @@
                 Using fs As New IO.FileStream(fileName, IO.FileMode.Create, IO.FileAccess.Write)
                     Dim xs As New Xml.Serialization.XmlSerializer(GetType(T))
                     xs.Serialize(fs, Instance)
+                    fs.Flush()
+                    fs.Close()
                 End Using
                 '検証
                 Dim xdoc As New Xml.XmlDocument()
