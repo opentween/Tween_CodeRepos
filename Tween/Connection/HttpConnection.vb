@@ -1,4 +1,8 @@
 ﻿Imports System.Net
+Imports System.IO
+Imports System.Collections.Generic
+Imports System.Collections.Specialized
+Imports System.Text
 
 '''<summary>
 '''HttpWebRequest,HttpWebResponseを使用した基本的な通信機能を提供する
@@ -11,27 +15,22 @@ Public Class HttpConnection
     '''<summary>
     '''プロキシ
     '''</summary>
-    Private Shared _proxy As System.Net.WebProxy = Nothing
+    Private Shared proxy As WebProxy = Nothing
 
     '''<summary>
     '''ユーザーが選択したプロキシの方式
     '''</summary>
-    Private Shared _proxyType As ProxyType = ProxyType.IE
-
-    '''<summary>
-    '''CreateRequestメソッドで指定が省略された際に使用する通信タイムアウト時間（ms）
-    '''</summary>
-    Private Shared _defaultTimeOut As Integer = 20000
+    Private Shared proxyType As ProxyType = ProxyType.IE
 
     '''<summary>
     '''クッキー保存用コンテナ
     '''</summary>
-    Private Shared _cookieContainer As New CookieContainer
+    Private Shared cookieContainer As New CookieContainer
 
     '''<summary>
     '''初期化済みフラグ
     '''</summary>
-    Private Shared _isInitialize As Boolean = False
+    Private Shared isInitialize As Boolean = False
 
     '''<summary>
     '''HTTP通信のメソッド
@@ -51,19 +50,19 @@ Public Class HttpConnection
     '''必要なヘッダ類は呼び出し元で付加すること
     '''（Timeout,AutomaticDecompression,AllowAutoRedirect,UserAgent,ContentType,Accept,HttpRequestHeader.Authorization,カスタムヘッダ）
     '''<param name="method">HTTP通信メソッド（GET/POSTなど）</param>
-    '''<param name="url">通信先URL</param>
+    '''<param name="requestUri">通信先URI</param>
     '''<param name="param">GET時のクエリ、またはPOST時のボディデータ</param>
     '''<param name="withCookie">通信にcookieを使用するか</param>
     '''<returns>引数で指定された内容を反映したHttpWebRequestオブジェクト</returns>
     Protected Shared Function CreateRequest(ByVal method As RequestMethod, _
-                                            ByVal url As System.Uri, _
-                                            ByVal param As System.Collections.Generic.SortedList(Of String, String), _
+                                            ByVal requestUri As Uri, _
+                                            ByVal param As SortedList(Of String, String), _
                                             ByVal withCookie As Boolean _
                                         ) As HttpWebRequest
-        If Not _isInitialize Then Throw New Exception("Sequence error.(not initialized)")
+        If Not isInitialize Then Throw New Exception("Sequence error.(not initialized)")
 
         'GETメソッドの場合はクエリとurlを結合
-        Dim ub As New System.UriBuilder(url.AbsoluteUri)
+        Dim ub As New UriBuilder(requestUri.AbsoluteUri)
         If method = RequestMethod.ReqGet Then
             ub.Query = CreateQueryString(param)
         End If
@@ -71,7 +70,7 @@ Public Class HttpConnection
         Dim webReq As HttpWebRequest = DirectCast(WebRequest.Create(ub.Uri), HttpWebRequest)
 
         'プロキシ設定
-        If _proxyType <> ProxyType.IE Then webReq.Proxy = _proxy
+        If proxyType <> proxyType.IE Then webReq.Proxy = proxy
 
         If method = RequestMethod.ReqGet Then
             webReq.Method = "GET"
@@ -79,12 +78,14 @@ Public Class HttpConnection
             webReq.Method = "POST"
             webReq.ContentType = "application/x-www-form-urlencoded"
             'POSTメソッドの場合は、ボディデータとしてクエリ構成して書き込み
-            Using writer As New System.IO.StreamWriter(webReq.GetRequestStream)
+            Using writer As New StreamWriter(webReq.GetRequestStream)
                 writer.Write(CreateQueryString(param))
             End Using
         End If
         'cookie設定
-        If withCookie Then webReq.CookieContainer = _cookieContainer
+        If withCookie Then webReq.CookieContainer = cookieContainer
+        'タイムアウト設定
+        webReq.Timeout = DefaultTimeout
 
         Return webReq
     End Function
@@ -102,8 +103,8 @@ Public Class HttpConnection
     '''<param name="withCookie">通信にcookieを使用する</param>
     '''<returns>HTTP応答のステータスコード</returns>
     Protected Shared Function GetResponse(ByVal webRequest As HttpWebRequest, _
-                                        ByVal contentStream As System.IO.Stream, _
-                                        ByVal headerInfo As System.Collections.Generic.Dictionary(Of String, String), _
+                                        ByVal contentStream As Stream, _
+                                        ByVal headerInfo As Dictionary(Of String, String), _
                                         ByVal withCookie As Boolean _
                                     ) As HttpStatusCode
         Using webRes As HttpWebResponse = CType(webRequest.GetResponse(), HttpWebResponse)
@@ -113,7 +114,7 @@ Public Class HttpConnection
                 For Each ck As Cookie In webRes.Cookies
                     If ck.Domain.StartsWith(".") Then
                         ck.Domain = ck.Domain.Substring(1, ck.Domain.Length - 1)
-                        _cookieContainer.Add(ck)
+                        cookieContainer.Add(ck)
                     End If
                 Next
             End If
@@ -134,7 +135,7 @@ Public Class HttpConnection
             End If
             '応答のストリームをコピーして戻す
             If webRes.ContentLength > 0 Then
-                Using stream As System.IO.Stream = webRes.GetResponseStream()
+                Using stream As Stream = webRes.GetResponseStream()
                     If stream IsNot Nothing Then CopyStream(stream, contentStream)
                 End Using
             End If
@@ -147,8 +148,7 @@ Public Class HttpConnection
     '''</summary>
     '''<param name="inStream">コピー元ストリームインスタンス。読み取り可であること</param>
     '''<param name="outStream">コピー先ストリームインスタンス。書き込み可であること</param>
-    Private Shared Sub CopyStream(ByVal inStream As System.IO.Stream, _
-                                            ByVal outStream As System.IO.Stream)
+    Private Shared Sub CopyStream(ByVal inStream As Stream, ByVal outStream As Stream)
         If inStream Is Nothing Then Throw New ArgumentNullException("inStream")
         If outStream Is Nothing Then Throw New ArgumentNullException("outStream")
         If Not inStream.CanRead Then Throw New ArgumentException("Input stream can not read.")
@@ -170,7 +170,7 @@ Public Class HttpConnection
     '''<param name="webResponse">HTTP応答</param>
     '''<param name="headerInfo">[IN/OUT]キーにヘッダ名を指定したデータ空のコレクション。取得した値をデータにセットして戻す</param>
     Private Shared Sub GetHeaderInfo(ByVal webResponse As HttpWebResponse, _
-                            ByVal headerInfo As System.Collections.Generic.Dictionary(Of String, String))
+                                    ByVal headerInfo As Dictionary(Of String, String))
 
         If headerInfo Is Nothing OrElse headerInfo.Count = 0 Then Exit Sub
 
@@ -189,10 +189,10 @@ Public Class HttpConnection
     '''クエリコレクションをkey=value形式の文字列に構成して戻す
     '''</summary>
     '''<param name="param">クエリ、またはポストデータとなるkey-valueコレクション</param>
-    Private Shared Function CreateQueryString(ByVal param As System.Collections.Generic.SortedList(Of String, String)) As String
+    Private Shared Function CreateQueryString(ByVal param As SortedList(Of String, String)) As String
         If param Is Nothing OrElse param.Count = 0 Then Return String.Empty
 
-        Dim query As New System.Text.StringBuilder
+        Dim query As New StringBuilder
         For Each key As String In param.Keys
             query.AppendFormat("{0}={1}&", UrlEncode(key), UrlEncode(param(key)))
         Next
@@ -204,8 +204,8 @@ Public Class HttpConnection
     '''</summary>
     '''<param name="queryString">クエリ文字列</param>
     '''<returns>key-valueのコレクション</returns>
-    Private Shared Function ParseQueryString(ByVal queryString As String) As System.Collections.Specialized.NameValueCollection
-        Dim query As New System.Collections.Specialized.NameValueCollection
+    Private Shared Function ParseQueryString(ByVal queryString As String) As NameValueCollection
+        Dim query As New NameValueCollection
         Dim parts() As String = queryString.Split("&"c)
         For Each part As String In parts
             Dim index As Integer = part.IndexOf("="c)
@@ -223,13 +223,13 @@ Public Class HttpConnection
     '''</summary>
     '''<param name="str">エンコードする文字列</param>
     '''<returns>エンコード結果文字列</returns>
-    Protected Shared Function UrlEncode(ByVal str As String) As String
-        Const _unreservedChars As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~"
-        Dim sb As New System.Text.StringBuilder
-        Dim bytes As Byte() = System.Text.Encoding.UTF8.GetBytes(str)
+    Protected Shared Function UrlEncode(ByVal stringToEncode As String) As String
+        Const UnreservedChars As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~"
+        Dim sb As New StringBuilder
+        Dim bytes As Byte() = Encoding.UTF8.GetBytes(stringToEncode)
 
         For Each b As Byte In bytes
-            If _unreservedChars.IndexOf(Chr(b)) <> -1 Then
+            If UnreservedChars.IndexOf(Chr(b)) <> -1 Then
                 sb.Append(Chr(b))
             Else
                 sb.AppendFormat("%{0:X2}", b)
@@ -238,12 +238,18 @@ Public Class HttpConnection
         Return sb.ToString()
     End Function
 
+#Region "DefaultTimeout"
+    '''<summary>
+    '''通信タイムアウト時間（ms）
+    '''</summary>
+    Private Shared timeout As Integer = 20000
+
     '''<summary>
     '''通信タイムアウト時間（ms）。10〜120秒の範囲で指定。範囲外は20秒とする
     '''</summary>
     Protected Shared Property DefaultTimeout() As Integer
         Get
-            Return _defaultTimeOut
+            Return timeout
         End Get
         Set(ByVal value As Integer)
             Const TimeoutMinValue As Integer = 10000
@@ -251,12 +257,13 @@ Public Class HttpConnection
             Const TimeoutDefaultValue As Integer = 20000
             If value < TimeoutMinValue OrElse value > TimeoutMaxValue Then
                 ' 範囲外ならデフォルト値設定
-                _defaultTimeOut = TimeoutDefaultValue
+                timeout = TimeoutDefaultValue
             Else
-                _defaultTimeOut = value
+                timeout = value
             End If
         End Set
     End Property
+#End Region
 
     '''<summary>
     '''通信クラスの初期化処理。タイムアウト値とプロキシを設定する
@@ -277,20 +284,20 @@ Public Class HttpConnection
             ByVal proxyPort As Integer, _
             ByVal proxyUser As String, _
             ByVal proxyPassword As String)
-        _isInitialize = True
+        isInitialize = True
         ServicePointManager.Expect100Continue = False
         DefaultTimeout = timeout * 1000     's -> ms
         Select Case proxyType
             Case proxyType.None
-                _proxy = Nothing
+                proxy = Nothing
             Case proxyType.Specified
-                _proxy = New WebProxy("http://" + proxyAddress + ":" + proxyPort.ToString)
+                proxy = New WebProxy("http://" + proxyAddress + ":" + proxyPort.ToString)
                 If Not String.IsNullOrEmpty(proxyUser) OrElse Not String.IsNullOrEmpty(proxyPassword) Then
-                    _proxy.Credentials = New NetworkCredential(proxyUser, proxyPassword)
+                    proxy.Credentials = New NetworkCredential(proxyUser, proxyPassword)
                 End If
             Case proxyType.IE
                 'IE設定（システム設定）はデフォルト値なので処理しない
         End Select
-        _proxyType = proxyType
+        proxyType = proxyType
     End Sub
 End Class
