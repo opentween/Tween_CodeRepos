@@ -33,7 +33,6 @@ Imports System.IO
 Imports System.Web
 Imports System.Reflection
 Imports System.ComponentModel
-'Imports System.Xml.XPath
 Imports System.Diagnostics
 
 Public Class TweenMain
@@ -55,10 +54,10 @@ Public Class TweenMain
     Private _tabDrag As Boolean           'タブドラッグ中フラグ（DoDragDropを実行するかの判定用）
     Private _rclickTabName As String      '右クリックしたタブの名前（Tabコントロール機能不足対応）
     Private ReadOnly _syncObject As New Object()    'ロック用
-    Private Const detailHtmlFormat1 As String = "<html><head><style type=""text/css""><!-- p {font-family: """
+    Private Const detailHtmlFormat1 As String = "<html><head><style type=""text/css""><!-- pre {font-family: """
     Private Const detailHtmlFormat2 As String = """, sans-serif; font-size: "
-    Private Const detailHtmlFormat3 As String = "pt;} --></style></head><body style=""margin:0px""><p>"
-    Private Const detailHtmlFormat4 As String = "</p></body></html>"
+    Private Const detailHtmlFormat3 As String = "pt;} --></style></head><body style=""margin:0px""><pre>"
+    Private Const detailHtmlFormat4 As String = "</pre></body></html>"
     Private detailHtmlFormat As String
     Private _myStatusError As Boolean = False
     Private _myStatusOnline As Boolean = False
