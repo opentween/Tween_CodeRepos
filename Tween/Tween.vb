@@ -56,7 +56,7 @@ Public Class TweenMain
     Private ReadOnly _syncObject As New Object()    'ロック用
     Private Const detailHtmlFormat1 As String = "<html><head><style type=""text/css""><!-- pre {font-family: """
     Private Const detailHtmlFormat2 As String = """, sans-serif; font-size: "
-    Private Const detailHtmlFormat3 As String = "pt;} --></style></head><body style=""margin:0px""><pre>"
+    Private Const detailHtmlFormat3 As String = "pt; word-wrap: break-word;} --></style></head><body style=""margin:0px""><pre>"
     Private Const detailHtmlFormat4 As String = "</pre></body></html>"
     Private detailHtmlFormat As String
     Private _myStatusError As Boolean = False
