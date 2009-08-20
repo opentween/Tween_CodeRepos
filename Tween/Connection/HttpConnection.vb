@@ -40,7 +40,7 @@ Public Class HttpConnection
     '''</remarks>
     Protected Enum RequestMethod
         ReqGet
-        ReqPOST
+        ReqPost
     End Enum
 
     '''<summary>
@@ -189,7 +189,7 @@ Public Class HttpConnection
     '''クエリコレクションをkey=value形式の文字列に構成して戻す
     '''</summary>
     '''<param name="param">クエリ、またはポストデータとなるkey-valueコレクション</param>
-    Private Shared Function CreateQueryString(ByVal param As SortedList(Of String, String)) As String
+    Protected Shared Function CreateQueryString(ByVal param As SortedList(Of String, String)) As String
         If param Is Nothing OrElse param.Count = 0 Then Return String.Empty
 
         Dim query As New StringBuilder
@@ -204,7 +204,7 @@ Public Class HttpConnection
     '''</summary>
     '''<param name="queryString">クエリ文字列</param>
     '''<returns>key-valueのコレクション</returns>
-    Private Shared Function ParseQueryString(ByVal queryString As String) As NameValueCollection
+    Protected Shared Function ParseQueryString(ByVal queryString As String) As NameValueCollection
         Dim query As New NameValueCollection
         Dim parts() As String = queryString.Split("&"c)
         For Each part As String In parts

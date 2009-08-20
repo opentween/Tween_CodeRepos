@@ -1,6 +1,9 @@
 ﻿Imports System.Net
 Imports System.Collections.Generic
+Imports System.Collections.Specialized
 Imports System.IO
+Imports System.Text
+Imports System.Security
 
 Public Class HttpConnectionOAuth
     Inherits HttpConnection
@@ -92,4 +95,111 @@ Public Class HttpConnectionOAuth
             Return statusCode
         End Using
     End Function
+
+    Public Function GetAuthorizePageUri() As Uri
+        Const tokenKey As String = "oauth_token"
+        requestToken = ""
+        Dim reqTokenData As NameValueCollection = GetOAuthToken(New Uri(RequestTokenUrl), "")
+        If reqTokenData IsNot Nothing Then
+            requestToken = reqTokenData.Item(tokenKey)
+            Dim ub As New UriBuilder(AuthorizeUrl)
+            ub.Query = String.Format("{0}={1}", tokenKey, requestToken)
+            Return ub.Uri
+        Else
+            Return Nothing
+        End If
+    End Function
+
+    Public Shared Function GetAccessToken(ByVal pinCode As String) As Boolean
+        If String.IsNullOrEmpty(requestToken) Then Throw New Exception("Sequence error.(requestToken is blank)")
+
+        Dim accessTokenData As NameValueCollection = GetOAuthToken(New Uri(AccessTokenUrl), pinCode)
+
+        If accessTokenData IsNot Nothing Then
+            Token = accessTokenData.Item("oauth_token")
+            TokenSecret = accessTokenData.Item("oauth_token_secret")
+            If Token = "" Then Return False
+            Return True
+        Else
+            Return False
+        End If
+    End Function
+
+    Private Shared Function GetOAuthToken(ByVal requestUri As Uri, ByVal pinCode As String) As NameValueCollection
+        Dim webReq As HttpWebRequest = Nothing
+        If String.IsNullOrEmpty(pinCode) Then
+            webReq = HttpConnection.CreateRequest(RequestMethod.ReqGet, requestUri, Nothing, False)
+        Else
+            webReq = HttpConnection.CreateRequest(RequestMethod.ReqPost, requestUri, Nothing, False)
+        End If
+        Dim query As New SortedList(Of String, String)
+        If Not String.IsNullOrEmpty(pinCode) Then query.Add("oauth_verifier", pinCode)
+        AppendOAuthInfo(webReq, query, requestToken, "")
+        Try
+            Using content As New MemoryStream
+                Dim status As HttpStatusCode
+                status = HttpConnection.GetResponse(webReq, content, Nothing, False)
+                If status = HttpStatusCode.OK Then
+                    Using reader As New StreamReader(content)
+                        Return ParseQueryString(reader.ReadToEnd())
+                    End Using
+                Else
+                    Return Nothing
+                End If
+            End Using
+        Catch ex As Exception
+            Return Nothing
+        End Try
+    End Function
+
+#Region "OAuth認証用ヘッダ作成・付加処理"
+    Private Shared Sub AppendOAuthInfo(ByVal webRequest As HttpWebRequest, _
+                                        ByVal query As SortedList(Of String, String), _
+                                        ByVal token As String, _
+                                        ByVal tokenSecret As String)
+        Dim parameter As New SortedList(Of String, String)
+        parameter.Add("oauth_consumer_key", ConsumerKey)
+        parameter.Add("oauth_signature_method", "HMAC-SHA1")
+        parameter.Add("oauth_timestamp", GetTimestamp())
+        parameter.Add("oauth_nonce", GetNonce())
+        parameter.Add("oauth_version", "1.0")
+        If Not String.IsNullOrEmpty(token) Then parameter.Add("oauth_token", token)
+        If query IsNot Nothing Then
+            For Each item As KeyValuePair(Of String, String) In query
+                parameter.Add(item.Key, item.Value)
+            Next
+        End If
+        parameter.Add("oauth_signature", CreateSignature(tokenSecret, webRequest.Method, webRequest.RequestUri, parameter))
+        Dim sb As New StringBuilder("OAuth ")
+        For Each item As KeyValuePair(Of String, String) In parameter
+            If item.Key.StartsWith("oauth_") Then
+                sb.AppendFormat("{0}=""{1}"",", item.Key, UrlEncode(item.Value))
+            End If
+        Next
+        webRequest.Headers.Add(HttpRequestHeader.Authorization, sb.ToString)
+    End Sub
+
+    Private Shared Function CreateSignature(ByVal tokenSecret As String, _
+                                            ByVal method As String, _
+                                            ByVal uri As Uri, _
+                                            ByVal parameter As SortedList(Of String, String) _
+                                        ) As String
+        Dim paramString As String = CreateQueryString(parameter)
+        Dim url As String = String.Format("{0}://{1}{2}", uri.Scheme, uri.Host, uri.AbsolutePath)
+        Dim signatureBase As String = String.Format("{0}&{1}&{2}", method, UrlEncode(url), UrlEncode(paramString))
+        Dim key As String = UrlEncode(ConsumerSecret) + "&"
+        If Not String.IsNullOrEmpty(tokenSecret) Then key += UrlEncode(tokenSecret)
+        Dim hmac As New Cryptography.HMACSHA1(Encoding.ASCII.GetBytes(key))
+        Dim hash As Byte() = hmac.ComputeHash(Encoding.ASCII.GetBytes(signatureBase))
+        Return Convert.ToBase64String(hash)
+    End Function
+
+    Private Shared Function GetTimestamp() As String
+        Return Convert.ToInt64((DateTime.UtcNow - UnixEpoch).TotalSeconds).ToString()
+    End Function
+
+    Private Shared Function GetNonce() As String
+        Return NonceRandom.Next(123400, 9999999).ToString()
+    End Function
+#End Region
 End Class
