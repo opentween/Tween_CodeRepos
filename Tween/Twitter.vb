@@ -131,12 +131,11 @@ Public Module Twitter
     Private Const _DMPathRcv As String = "/inbox"
     Private Const _DMPathSnt As String = "/sent"
     Private Const _DMDestroyPath As String = "/direct_messages/destroy/"
-    Private Const _StDestroyPath As String = "/status/destroy/"
+    Private Const _StDestroyPath As String = "/statuses/destroy/"
     Private Const _uidHeader As String = "session[username_or_email]="
     Private Const _pwdHeader As String = "session[password]="
     Private Const _pageQry As String = "?page="
     Private Const _statusHeader As String = "status="
-    Private Const _statusUpdatePath As String = "/status/update?page=1&tab=home"
     Private Const _statusUpdatePathAPI As String = "/statuses/update.xml"
     Private Const _linkToOld As String = "class=""section_links"" rel=""prev"""
     Private Const _postFavAddPath As String = "/favorites/create/"
@@ -157,12 +156,15 @@ Public Module Twitter
 
         'ユーザー情報からデータ部分の生成
         Dim account As String = ""
+        Static skipCount As Integer = 0
 
         SyncLock LockObj
             If _signed Then Return ""
-            If Twitter.AccountState <> ACCOUNT_STATE.Valid Then
-                Return "SignIn -> Check your Username/Password."
+            If Twitter.AccountState <> ACCOUNT_STATE.Valid AndAlso skipCount < 10 Then
+                skipCount += 1
+                Return "SignIn -> Check Username/Password in setting."
             End If
+            skipCount = 0
 
             '未認証
             _signed = False
@@ -217,7 +219,7 @@ Public Module Twitter
                 Twitter.AccountState = ACCOUNT_STATE.Invalid
                 Return "SignIn Failed -> " + "Unknown problems."
             End If
-
+            Twitter.AccountState = ACCOUNT_STATE.Valid
             _signed = True
             Return ""
         End SyncLock
