@@ -1841,15 +1841,15 @@ Public Class TweenMain
         If rslt.retMsg.Length > 0 Then
             _myStatusError = True
             StatusLabel.Text = rslt.retMsg
-            If Twitter.AccountState = ACCOUNT_STATE.Invalid Then
-                Try
-                    Twitter.AccountState = ACCOUNT_STATE.Validating
-                    SettingStripMenuItem_Click(Nothing, Nothing)
-                    Twitter.AccountState = ACCOUNT_STATE.Valid
-                Catch ex As Exception
-                    Twitter.AccountState = ACCOUNT_STATE.Invalid
-                End Try
-            End If
+            'If Twitter.AccountState = ACCOUNT_STATE.Invalid Then
+            '    Try
+            '        Twitter.AccountState = ACCOUNT_STATE.Validating
+            '        SettingStripMenuItem_Click(Nothing, Nothing)
+            '        Twitter.AccountState = ACCOUNT_STATE.Valid
+            '    Catch ex As Exception
+            '        Twitter.AccountState = ACCOUNT_STATE.Invalid
+            '    End Try
+            'End If
         End If
 
         If rslt.type = WORKERTYPE.FavRemove Then
@@ -2355,6 +2355,7 @@ Public Class TweenMain
     Private Sub SettingStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SettingStripMenuItem.Click
         Dim chgUseApi As Boolean = False
         Dim result As DialogResult
+
         Try
             result = SettingDialog.ShowDialog()
         Catch ex As Exception
@@ -2499,6 +2500,8 @@ Public Class TweenMain
                 ListTab.Refresh()
             End SyncLock
         End If
+
+        Twitter.AccountState = ACCOUNT_STATE.Valid
 
         Me.TopMost = SettingDialog.AlwaysTop
         SaveConfigsAll()
