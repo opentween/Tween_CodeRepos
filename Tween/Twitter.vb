@@ -174,8 +174,9 @@ Public Module Twitter
             Dim resStatus As String = ""
             Dim resMsg As String = ""
 
-            resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + "/", resStatus, MySocket.REQ_TYPE.ReqGET), String)
+            resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + "/login", resStatus, MySocket.REQ_TYPE.ReqGET), String)
             If resMsg.Length = 0 Then
+                'Twitter.AccountState = ACCOUNT_STATE.Invalid
                 Return "SignIn -> " + resStatus
             End If
             Dim authToken As String = ""
@@ -303,34 +304,49 @@ Public Module Twitter
                 pageQuery = _pageQry + page.ToString
             End If
 
-RETRY:
             If gType = WORKERTYPE.Timeline Then
-                If redirectToTimeline = "" Then
-                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _homePath + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-                    If resStatus.StartsWith("Found") Then
-                        redirectToTimeline = resStatus.Substring(6)
-                        If redirectToTimeline.Contains("?") Then
-                            redirectToTimeline = redirectToTimeline.Remove(redirectToTimeline.IndexOf("?"))
-                        End If
-                        GoTo RETRY
-                    End If
-                Else
-                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToTimeline + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-                End If
+                retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _homePath + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
             Else
-                If redirectToReply = "" Then
-                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _replyPath + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-                    If resStatus.StartsWith("Found") Then
-                        redirectToReply = resStatus.Substring(6)
-                        If redirectToReply.Contains("?") Then
-                            redirectToReply = redirectToReply.Remove(redirectToReply.IndexOf("?"))
-                        End If
-                        GoTo RETRY
-                    End If
-                Else
-                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToReply + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-                End If
+                retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _replyPath + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
             End If
+            'RETRY:
+            '            If gType = WORKERTYPE.Timeline Then
+            '                If redirectToTimeline = "" Then
+            '                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _homePath + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
+            '                    If resStatus.StartsWith("Found") Then
+            '                        redirectToTimeline = resStatus.Substring(6)
+            '                        If redirectToTimeline.Contains("?") Then
+            '                            redirectToTimeline = redirectToTimeline.Remove(redirectToTimeline.IndexOf("?"))
+            '                        End If
+            '                        If redirectToTimeline.Contains("login") Then
+            '                            redirectToTimeline = ""
+            '                            _signed = False
+            '                            Return "GetTimeline -> redirect to login."
+            '                        End If
+            '                        GoTo RETRY
+            '                    End If
+            '                Else
+            '                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToTimeline + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
+            '                End If
+            '            Else
+            '                If redirectToReply = "" Then
+            '                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _replyPath + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
+            '                    If resStatus.StartsWith("Found") Then
+            '                        redirectToReply = resStatus.Substring(6)
+            '                        If redirectToReply.Contains("?") Then
+            '                            redirectToReply = redirectToReply.Remove(redirectToReply.IndexOf("?"))
+            '                        End If
+            '                        If redirectToReply.Contains("login") Then
+            '                            redirectToReply = ""
+            '                            _signed = False
+            '                            Return "GetTimeline -> redirect to login."
+            '                        End If
+            '                        GoTo RETRY
+            '                    End If
+            '                Else
+            '                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToReply + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
+            '                End If
+            '            End If
 
             If retMsg.Length = 0 Then
                 _signed = False
@@ -789,34 +805,39 @@ RETRY:
 
             'リクエストメッセージを作成する
             Dim pageQuery As String = _pageQry + page.ToString
-RETRY:
             If gType = WORKERTYPE.DirectMessegeRcv Then
-                If redirectToDmRcv = "" Then
-                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathRcv + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-                    If resStatus.StartsWith("Found") Then
-                        redirectToDmRcv = resStatus.Substring(6)
-                        If redirectToDmRcv.Contains("?") Then
-                            redirectToDmRcv = redirectToDmRcv.Remove(redirectToDmRcv.IndexOf("?"))
-                        End If
-                        GoTo RETRY
-                    End If
-                Else
-                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToDmRcv + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-                End If
+                retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathRcv + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
             Else
-                If redirectToDmSnd = "" Then
-                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathSnt + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-                    If resStatus.StartsWith("Found") Then
-                        redirectToDmSnd = resStatus.Substring(6)
-                        If redirectToDmSnd.Contains("?") Then
-                            redirectToDmSnd = redirectToDmSnd.Remove(redirectToDmSnd.IndexOf("?"))
-                        End If
-                        GoTo RETRY
-                    End If
-                Else
-                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToDmSnd + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-                End If
+                retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathSnt + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
             End If
+            'RETRY:
+            '            If gType = WORKERTYPE.DirectMessegeRcv Then
+            '                If redirectToDmRcv = "" Then
+            '                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathRcv + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
+            '                    If resStatus.StartsWith("Found") Then
+            '                        redirectToDmRcv = resStatus.Substring(6)
+            '                        If redirectToDmRcv.Contains("?") Then
+            '                            redirectToDmRcv = redirectToDmRcv.Remove(redirectToDmRcv.IndexOf("?"))
+            '                        End If
+            '                        GoTo RETRY
+            '                    End If
+            '                Else
+            '                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToDmRcv + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
+            '                End If
+            '            Else
+            '                If redirectToDmSnd = "" Then
+            '                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathSnt + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
+            '                    If resStatus.StartsWith("Found") Then
+            '                        redirectToDmSnd = resStatus.Substring(6)
+            '                        If redirectToDmSnd.Contains("?") Then
+            '                            redirectToDmSnd = redirectToDmSnd.Remove(redirectToDmSnd.IndexOf("?"))
+            '                        End If
+            '                        GoTo RETRY
+            '                    End If
+            '                Else
+            '                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToDmSnd + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
+            '                End If
+            '            End If
 
             If retMsg.Length = 0 Then
                 _signed = False
@@ -1062,16 +1083,17 @@ RETRY:
                 pageQuery = _pageQry + page.ToString
             End If
 
-RETRY:
-            If redirectToFav = "" Then
-                retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + FAV_PATH + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-                If resStatus.StartsWith("Found") Then
-                    redirectToFav = resStatus
-                    GoTo RETRY
-                End If
-            Else
-                retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToFav + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-            End If
+            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + FAV_PATH + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
+            'RETRY:
+            '            If redirectToFav = "" Then
+            '                retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + FAV_PATH + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
+            '                If resStatus.StartsWith("Found") Then
+            '                    redirectToFav = resStatus
+            '                    GoTo RETRY
+            '                End If
+            '            Else
+            '                retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToFav + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
+            '            End If
 
             If retMsg.Length = 0 Then
                 _signed = False
