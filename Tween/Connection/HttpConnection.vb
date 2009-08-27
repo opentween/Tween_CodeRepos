@@ -110,29 +110,9 @@ Public Class HttpConnection
         Using webRes As HttpWebResponse = CType(webRequest.GetResponse(), HttpWebResponse)
             Dim statusCode As HttpStatusCode = webRes.StatusCode
             'cookie保持
-            If withCookie Then
-                For Each ck As Cookie In webRes.Cookies
-                    If ck.Domain.StartsWith(".") Then
-                        ck.Domain = ck.Domain.Substring(1, ck.Domain.Length - 1)
-                        cookieContainer.Add(ck)
-                    End If
-                Next
-            End If
+            If withCookie Then SaveCookie(webRes.Cookies)
             'リダイレクト応答の場合は、リダイレクト先を設定して終了
-            If headerInfo IsNot Nothing Then
-                GetHeaderInfo(webRes, headerInfo)
-                If statusCode = HttpStatusCode.MovedPermanently OrElse _
-                   statusCode = HttpStatusCode.Found OrElse _
-                   statusCode = HttpStatusCode.SeeOther OrElse _
-                   statusCode = HttpStatusCode.TemporaryRedirect Then
-                    If headerInfo.ContainsKey("Location") Then
-                        headerInfo.Item("Location") = webRes.Headers.Item("Location")
-                    Else
-                        headerInfo.Add("Location", webRes.Headers.Item("Location"))
-                    End If
-                    Return statusCode
-                End If
-            End If
+            GetHeaderInfo(webRes, headerInfo)
             '応答のストリームをコピーして戻す
             If webRes.ContentLength > 0 Then
                 Using stream As Stream = webRes.GetResponseStream()
@@ -142,6 +122,54 @@ Public Class HttpConnection
             Return statusCode
         End Using
     End Function
+
+    Protected Shared Function GetResponse(ByVal webRequest As HttpWebRequest, _
+                                        ByRef contentText As String, _
+                                        ByVal headerInfo As Dictionary(Of String, String), _
+                                        ByVal withCookie As Boolean _
+                                    ) As HttpStatusCode
+        Using webRes As HttpWebResponse = CType(webRequest.GetResponse(), HttpWebResponse)
+            Dim statusCode As HttpStatusCode = webRes.StatusCode
+            'cookie保持
+            If withCookie Then SaveCookie(webRes.Cookies)
+            'リダイレクト応答の場合は、リダイレクト先を設定して終了
+            GetHeaderInfo(webRes, headerInfo)
+            '応答のストリームをコピーして戻す
+            If contentText Is Nothing Then Throw New ArgumentNullException("contentText")
+            If webRes.ContentLength > 0 Then
+                Using sr As StreamReader = New StreamReader(webRes.GetResponseStream)
+                    contentText = sr.ReadToEnd()
+                End Using
+            End If
+            Return statusCode
+        End Using
+    End Function
+
+    Protected Shared Function GetResponse(ByVal webRequest As HttpWebRequest, _
+                                        ByVal contentBitmap As Bitmap, _
+                                        ByVal headerInfo As Dictionary(Of String, String), _
+                                        ByVal withCookie As Boolean _
+                                    ) As HttpStatusCode
+        Using webRes As HttpWebResponse = CType(webRequest.GetResponse(), HttpWebResponse)
+            Dim statusCode As HttpStatusCode = webRes.StatusCode
+            'cookie保持
+            If withCookie Then SaveCookie(webRes.Cookies)
+            'リダイレクト応答の場合は、リダイレクト先を設定して終了
+            GetHeaderInfo(webRes, headerInfo)
+            '応答のストリームをコピーして戻す
+            If webRes.ContentLength > 0 Then contentBitmap = New Bitmap(webRes.GetResponseStream)
+            Return statusCode
+        End Using
+    End Function
+
+    Private Shared Sub SaveCookie(ByVal cookieCollection As CookieCollection)
+        For Each ck As Cookie In cookieCollection
+            If ck.Domain.StartsWith(".") Then
+                ck.Domain = ck.Domain.Substring(1, ck.Domain.Length - 1)
+                cookieContainer.Add(ck)
+            End If
+        Next
+    End Sub
 
     '''<summary>
     '''in/outのストリームインスタンスを受け取り、コピーして返却
@@ -165,24 +193,38 @@ Public Class HttpConnection
     End Sub
 
     '''<summary>
-    '''headerInfoのキー情報で指定されたHTTPヘッダ情報を取得・格納する
+    '''headerInfoのキー情報で指定されたHTTPヘッダ情報を取得・格納する。redirect応答時はLocationヘッダの内容を追記する
     '''</summary>
     '''<param name="webResponse">HTTP応答</param>
     '''<param name="headerInfo">[IN/OUT]キーにヘッダ名を指定したデータ空のコレクション。取得した値をデータにセットして戻す</param>
     Private Shared Sub GetHeaderInfo(ByVal webResponse As HttpWebResponse, _
                                     ByVal headerInfo As Dictionary(Of String, String))
 
-        If headerInfo Is Nothing OrElse headerInfo.Count = 0 Then Exit Sub
+        If headerInfo Is Nothing Then Exit Sub
 
-        Dim keys(headerInfo.Count - 1) As String
-        headerInfo.Keys.CopyTo(keys, 0)
-        For Each key As String In keys
-            If Array.IndexOf(webResponse.Headers.AllKeys, key) > -1 Then
-                headerInfo.Item(key) = webResponse.Headers.Item(key)
+        If headerInfo.Count > 0 Then
+            Dim keys(headerInfo.Count - 1) As String
+            headerInfo.Keys.CopyTo(keys, 0)
+            For Each key As String In keys
+                If Array.IndexOf(webResponse.Headers.AllKeys, key) > -1 Then
+                    headerInfo.Item(key) = webResponse.Headers.Item(key)
+                Else
+                    headerInfo.Item(key) = ""
+                End If
+            Next
+        End If
+
+        Dim statusCode As HttpStatusCode = webResponse.StatusCode
+        If statusCode = HttpStatusCode.MovedPermanently OrElse _
+           statusCode = HttpStatusCode.Found OrElse _
+           statusCode = HttpStatusCode.SeeOther OrElse _
+           statusCode = HttpStatusCode.TemporaryRedirect Then
+            If headerInfo.ContainsKey("Location") Then
+                headerInfo.Item("Location") = webResponse.Headers.Item("Location")
             Else
-                headerInfo.Item(key) = ""
+                headerInfo.Add("Location", webResponse.Headers.Item("Location"))
             End If
-        Next
+        End If
     End Sub
 
     '''<summary>

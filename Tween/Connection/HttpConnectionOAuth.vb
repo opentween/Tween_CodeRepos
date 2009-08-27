@@ -136,17 +136,14 @@ Public Class HttpConnectionOAuth
         If Not String.IsNullOrEmpty(pinCode) Then query.Add("oauth_verifier", pinCode)
         AppendOAuthInfo(webReq, query, requestToken, "")
         Try
-            Using content As New MemoryStream
-                Dim status As HttpStatusCode
-                status = HttpConnection.GetResponse(webReq, content, Nothing, False)
-                If status = HttpStatusCode.OK Then
-                    Using reader As New StreamReader(content)
-                        Return ParseQueryString(reader.ReadToEnd())
-                    End Using
-                Else
-                    Return Nothing
-                End If
-            End Using
+            Dim status As HttpStatusCode
+            Dim contentText As String = ""
+            status = HttpConnection.GetResponse(webReq, contentText, Nothing, False)
+            If status = HttpStatusCode.OK Then
+                Return ParseQueryString(contentText)
+            Else
+                Return Nothing
+            End If
         Catch ex As Exception
             Return Nothing
         End Try

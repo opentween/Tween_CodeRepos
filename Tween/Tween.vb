@@ -1483,6 +1483,7 @@ Public Class TweenMain
             Me.Visible = False
         Else
             Try
+                SaveConfigsAll()
                 My.Application.DoEvents()
                 Me.Cursor = Cursors.WaitCursor
                 TimerTimeline.Enabled = False
@@ -1497,7 +1498,6 @@ Public Class TweenMain
                 'If e.CloseReason <> CloseReason.WindowsShutDown AndAlso e.CloseReason <> CloseReason.TaskManagerClosing Then
                 '    SaveConfigsLocal()
                 'End If
-                SaveConfigsAll()
 
                 For i As Integer = 0 To _bw.Length - 1
                     If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then _bw(i).CancelAsync()
@@ -5449,9 +5449,9 @@ RETRY:
             End If
         End If
         ' 非表示の時にColumnChangedが呼ばれた場合はForm初期化処理中なので保存しない
-        If changed Then
-            SaveConfigsLocal()
-        End If
+        'If changed Then
+        '    SaveConfigsLocal()
+        'End If
     End Sub
 
     Private Sub ToolStripMenuItem3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripMenuItem3.Click
