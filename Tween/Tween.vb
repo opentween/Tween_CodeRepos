@@ -1477,6 +1477,8 @@ Public Class TweenMain
     End Sub
 
     Private Sub Tween_FormClosing(ByVal sender As System.Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles MyBase.FormClosing
+        Static waitEnd As Boolean = False
+        If waitEnd = True Then Exit Sub
         If Not SettingDialog.CloseToExit AndAlso e.CloseReason = CloseReason.UserClosing AndAlso _endingFlag = False Then
             '_endingFlag=False:フォームの×ボタン
             e.Cancel = True
@@ -1484,6 +1486,7 @@ Public Class TweenMain
         Else
             Try
                 SaveConfigsAll()
+                waitEnd = True
                 My.Application.DoEvents()
                 Me.Cursor = Cursors.WaitCursor
                 TimerTimeline.Enabled = False
@@ -2188,7 +2191,7 @@ Public Class TweenMain
                 'BlackFavRemoveToolStripMenuItem.Enabled = True
             End If
         End If
-        If _curPost Is Nothing OrElse (_curPost.IsDm OrElse SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect) Then
+        If _curPost Is Nothing OrElse _curPost.IsDm Then
             ReTweetStripMenuItem.Enabled = False
         Else
             ReTweetStripMenuItem.Enabled = True
@@ -5823,34 +5826,74 @@ RETRY:
     End Sub
 
     Private Sub ReTweetStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ReTweetStripMenuItem.Click
-        'RT:内容 (via @id)
+        'RT @id:内容
         If _curPost IsNot Nothing Then
-            If _curPost.IsDm OrElse SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Or _
+            If _curPost.IsDm OrElse _
                Not StatusText.Enabled Then Exit Sub
 
-            Dim rtdata As String = _curPost.OriginalData
-            ' Twitterにより省略されているURLを含むaタグをキャプチャしてリンク先URLへ置き換える
-            Dim rx As Regex = New Regex("<a target=""_self"" href=""(?<url>[^""]+)""[^>]*>(?<link>(https?|shttp|ftps?)://[^<]+)</a>")
-            rtdata = rx.Replace(rtdata, "${url}")
-
-            'その他のリンク(@IDなど)を置き換える
-            rx = New Regex("<a target=""_self"" href=""(?<url>[^""]+)""[^>]*>(?<link>[^<]+)</a>")
-            rtdata = rx.Replace(rtdata, "${link}")
-
-            '<br>タグ除去
-            If StatusText.Multiline Then
-                rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)?<br>", vbCrLf, RegexOptions.IgnoreCase Or RegexOptions.Multiline)
-            Else
-                rtdata = Regex.Replace(rtdata, "(\r\n|\n|\r)?<br>", "", RegexOptions.IgnoreCase Or RegexOptions.Multiline)
+            If SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Then
+                MessageBox.Show("Protected.")
+                Exit Sub
             End If
+            Dim rtdata As String = _curPost.OriginalData
+            rtdata = CreateRetweet(rtdata)
 
             StatusText.Text = "RT @" + _curPost.Name + ": " + HttpUtility.HtmlDecode(rtdata)
-            _reply_to_id = 0
-            _reply_to_name = Nothing
+
             StatusText.SelectionStart = 0
             StatusText.Focus()
         End If
     End Sub
+
+    Private Sub ReTweetOriginalStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ReTweetOriginalStripMenuItem.Click
+        'RT @id:内容
+        '元発言のみRT
+        If _curPost IsNot Nothing Then
+            If _curPost.IsDm OrElse _
+               Not StatusText.Enabled Then Exit Sub
+
+            If SettingDialog.ProtectNotInclude AndAlso _curPost.IsProtect Then
+                MessageBox.Show("Protected.")
+                Exit Sub
+            End If
+
+            Dim rtdata As String = _curPost.OriginalData
+            rtdata = CreateRetweet(rtdata)
+
+            Dim rx As New Regex("^(?<multi>(RT @[0-9a-zA-Z_]+\s?:\s?)*)(?<org>RT @[0-9a-zA-Z_]+\s?:)")
+            If rx.IsMatch(rtdata) Then
+                StatusText.Text = HttpUtility.HtmlDecode(rx.Replace(rtdata, "${org}"))
+            Else
+                StatusText.Text = "RT @" + _curPost.Name + ": " + HttpUtility.HtmlDecode(rtdata)
+            End If
+
+            StatusText.SelectionStart = 0
+            StatusText.Focus()
+        End If
+    End Sub
+
+    Private Function CreateRetweet(ByVal status As String) As String
+
+        ' Twitterにより省略されているURLを含むaタグをキャプチャしてリンク先URLへ置き換える
+        Dim rx As Regex = New Regex("<a target=""_self"" href=""(?<url>[^""]+)""[^>]*>(?<link>(https?|shttp|ftps?)://[^<]+)</a>")
+        status = rx.Replace(status, "${url}")
+
+        'その他のリンク(@IDなど)を置き換える
+        rx = New Regex("<a target=""_self"" href=""(?<url>[^""]+)""[^>]*>(?<link>[^<]+)</a>")
+        status = rx.Replace(status, "${link}")
+
+        '<br>タグ除去
+        If StatusText.Multiline Then
+            status = Regex.Replace(status, "(\r\n|\n|\r)?<br>", vbCrLf, RegexOptions.IgnoreCase Or RegexOptions.Multiline)
+        Else
+            status = Regex.Replace(status, "(\r\n|\n|\r)?<br>", "", RegexOptions.IgnoreCase Or RegexOptions.Multiline)
+        End If
+
+        _reply_to_id = 0
+        _reply_to_name = Nothing
+
+        Return status
+    End Function
 
     Private Sub DumpPostClassToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DumpPostClassToolStripMenuItem.Click
         If _curPost IsNot Nothing Then
@@ -5987,4 +6030,5 @@ RETRY:
                         "Location : " + loc + Environment.NewLine + _
                         "Bio : " + bio, "Your status")
     End Sub
+
 End Class
