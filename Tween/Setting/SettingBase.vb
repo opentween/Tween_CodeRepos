@@ -31,9 +31,6 @@
                     fs.Flush()
                     fs.Close()
                 End Using
-                '検証
-                Dim xdoc As New Xml.XmlDocument()
-                xdoc.Load(fileName)
             Catch ex As Exception
                 '検証エラー or 書き込みエラー
                 If cnt > 3 Then
