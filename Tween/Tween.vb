@@ -3509,7 +3509,7 @@ RETRY:
     End Sub
 
     Private Sub MatomeMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MatomeMenuItem.Click
-        OpenUriAsync("http://www5.atwiki.jp/tween/")
+        OpenUriAsync("http://sourceforge.jp/projects/tween/wiki/FrontPage")
     End Sub
 
     Private Sub OfficialMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OfficialMenuItem.Click
