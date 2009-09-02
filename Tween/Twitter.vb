@@ -1610,9 +1610,7 @@ Public Module Twitter
     End Function
 
     Private Function GetPlainText(ByVal orgData As String) As String
-        Dim retStr As String
-        retStr = Regex.Replace(orgData, "(?<tagStart><a [^>]+>)(?<text>[^<]+)(?<tagEnd></a>)", "${text}")
-        Return retStr
+        Return HttpUtility.HtmlDecode(Regex.Replace(orgData, "(?<tagStart><a [^>]+>)(?<text>[^<]+)(?<tagEnd></a>)", "${text}"))
         '不具合緊急対応で上記へ変更
         ''単純テキストの取り出し（リンクタグ除去）
         'If orgData.IndexOf(_parseLink1, StringComparison.Ordinal) = -1 Then
