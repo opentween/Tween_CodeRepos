@@ -81,6 +81,7 @@
     <Compile Include="AnalyzeKey.vb" />
     <Compile Include="ApplicationEvents.vb" />
     <Compile Include="Connection\HttpConnection.vb" />
+    <Compile Include="Connection\HttpConnectionApi.vb" />
     <Compile Include="Connection\HttpConnectionOAuth.vb" />
     <Compile Include="DetailsListView.vb">
     </Compile>

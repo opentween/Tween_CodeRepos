@@ -96,6 +96,7 @@ Partial Class TweenMain
         Me.ReplyStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ReplyAllStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.DMStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.ReTweetOriginalStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ReTweetStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator
         Me.FavAddToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
@@ -168,7 +169,6 @@ Partial Class TweenMain
         Me.TimerRefreshIcon = New System.Windows.Forms.Timer(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog
         Me.TimerReply = New System.Windows.Forms.Timer(Me.components)
-        Me.ReTweetOriginalStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripContainer1.BottomToolStripPanel.SuspendLayout()
         Me.ToolStripContainer1.ContentPanel.SuspendLayout()
         Me.ToolStripContainer1.TopToolStripPanel.SuspendLayout()
@@ -627,6 +627,7 @@ Partial Class TweenMain
         '
         Me.ContextMenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ReplyStripMenuItem, Me.ReplyAllStripMenuItem, Me.DMStripMenuItem, Me.ReTweetOriginalStripMenuItem, Me.ReTweetStripMenuItem, Me.ToolStripSeparator2, Me.FavAddToolStripMenuItem, Me.FavRemoveToolStripMenuItem, Me.ToolStripMenuItem6, Me.ToolStripMenuItem7, Me.ToolStripSeparator4, Me.ToolStripMenuItem11, Me.JumpUnreadMenuItem, Me.ToolStripSeparator10, Me.SelectAllMenuItem, Me.DeleteStripMenuItem, Me.RefreshStripMenuItem})
         Me.ContextMenuStrip2.Name = "ContextMenuStrip2"
+        Me.ContextMenuStrip2.OwnerItem = Me.MenuItemOperate
         Me.ContextMenuStrip2.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
         resources.ApplyResources(Me.ContextMenuStrip2, "ContextMenuStrip2")
         '
@@ -644,6 +645,11 @@ Partial Class TweenMain
         '
         Me.DMStripMenuItem.Name = "DMStripMenuItem"
         resources.ApplyResources(Me.DMStripMenuItem, "DMStripMenuItem")
+        '
+        'ReTweetOriginalStripMenuItem
+        '
+        Me.ReTweetOriginalStripMenuItem.Name = "ReTweetOriginalStripMenuItem"
+        resources.ApplyResources(Me.ReTweetOriginalStripMenuItem, "ReTweetOriginalStripMenuItem")
         '
         'ReTweetStripMenuItem
         '
@@ -1012,11 +1018,6 @@ Partial Class TweenMain
         'TimerReply
         '
         Me.TimerReply.Interval = 600000
-        '
-        'ReTweetOriginalStripMenuItem
-        '
-        Me.ReTweetOriginalStripMenuItem.Name = "ReTweetOriginalStripMenuItem"
-        resources.ApplyResources(Me.ReTweetOriginalStripMenuItem, "ReTweetOriginalStripMenuItem")
         '
         'TweenMain
         '

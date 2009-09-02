@@ -54,10 +54,14 @@ Public Class TweenMain
     Private _tabDrag As Boolean           'タブドラッグ中フラグ（DoDragDropを実行するかの判定用）
     Private _rclickTabName As String      '右クリックしたタブの名前（Tabコントロール機能不足対応）
     Private ReadOnly _syncObject As New Object()    'ロック用
-    Private Const detailHtmlFormat1 As String = "<html><head><style type=""text/css""><!-- pre {font-family: """
+    Private Const detailHtmlFormatMono1 As String = "<html><head><style type=""text/css""><!-- pre {font-family: """
+    Private Const detailHtmlFormatMono2 As String = """, sans-serif; font-size: "
+    Private Const detailHtmlFormatMono3 As String = "pt; word-wrap: break-word;} --></style></head><body style=""margin:0px""><pre>"
+    Private Const detailHtmlFormatMono4 As String = "</pre></body></html>"
+    Private Const detailHtmlFormat1 As String = "<html><head><style type=""text/css""><!-- p {font-family: """
     Private Const detailHtmlFormat2 As String = """, sans-serif; font-size: "
-    Private Const detailHtmlFormat3 As String = "pt; word-wrap: break-word;} --></style></head><body style=""margin:0px""><pre>"
-    Private Const detailHtmlFormat4 As String = "</pre></body></html>"
+    Private Const detailHtmlFormat3 As String = "pt;} --></style></head><body style=""margin:0px""><p>"
+    Private Const detailHtmlFormat4 As String = "</p></body></html>"
     Private detailHtmlFormat As String
     Private _myStatusError As Boolean = False
     Private _myStatusOnline As Boolean = False
@@ -454,7 +458,6 @@ Public Class TweenMain
         _brsBackColorAtFromTarget = New SolidBrush(_clAtFromTarget)
         _brsBackColorAtTo = New SolidBrush(_clAtTo)
         _brsBackColorNone = New SolidBrush(Color.FromKnownColor(KnownColor.Window))
-        detailHtmlFormat = detailHtmlFormat1 + _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3
 
         ' StringFormatオブジェクトへの事前設定
         sf.Alignment = StringAlignment.Near
@@ -556,6 +559,13 @@ Public Class TweenMain
         SettingDialog.ReplyIconState = _cfgCommon.ReplyIconState
         SettingDialog.ReadOwnPost = _cfgCommon.ReadOwnPost
         SettingDialog.GetFav = _cfgCommon.GetFav
+        SettingDialog.IsMonospace = _cfgCommon.IsMonospace
+
+        If SettingDialog.IsMonospace Then
+            detailHtmlFormat = detailHtmlFormatMono1 + _fntDetail.Name + detailHtmlFormatMono2 + _fntDetail.Size.ToString() + detailHtmlFormatMono3
+        Else
+            detailHtmlFormat = detailHtmlFormat1 + _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3
+        End If
 
         Me.IdeographicSpaceToSpaceToolStripMenuItem.Checked = _cfgCommon.WideSpaceConvert
 
@@ -634,7 +644,11 @@ Public Class TweenMain
             _brsBackColorAtYou = New SolidBrush(_clAtTarget)
             _brsBackColorAtFromTarget = New SolidBrush(_clAtFromTarget)
             _brsBackColorAtTo = New SolidBrush(_clAtTo)
-            detailHtmlFormat = detailHtmlFormat1 + _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3
+            If SettingDialog.IsMonospace Then
+                detailHtmlFormat = detailHtmlFormatMono1 + _fntDetail.Name + detailHtmlFormatMono2 + _fntDetail.Size.ToString() + detailHtmlFormatMono3
+            Else
+                detailHtmlFormat = detailHtmlFormat1 + _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3
+            End If
             '他の設定項目は、随時設定画面で保持している値を読み出して使用
         End If
 
@@ -2343,16 +2357,20 @@ Public Class TweenMain
     End Sub
 
     Private Sub DoRefresh()
-        Select Case _curTab.Text
-            Case DEFAULTTAB.REPLY
-                GetTimeline(WORKERTYPE.Reply, 1, 0)
-            Case DEFAULTTAB.DM
-                GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
-            Case DEFAULTTAB.FAV
-                GetTimeline(WORKERTYPE.Favorites, 1, 0)
-            Case Else
-                GetTimeline(WORKERTYPE.Timeline, 1, 0)
-        End Select
+        If _curTab IsNot Nothing Then
+            Select Case _curTab.Text
+                Case DEFAULTTAB.REPLY
+                    GetTimeline(WORKERTYPE.Reply, 1, 0)
+                Case DEFAULTTAB.DM
+                    GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
+                Case DEFAULTTAB.FAV
+                    GetTimeline(WORKERTYPE.Favorites, 1, 0)
+                Case Else
+                    GetTimeline(WORKERTYPE.Timeline, 1, 0)
+            End Select
+        Else
+            GetTimeline(WORKERTYPE.Timeline, 1, 0)
+        End If
     End Sub
 
     Private Sub SettingStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SettingStripMenuItem.Click
@@ -2370,33 +2388,39 @@ Public Class TweenMain
                 _password = SettingDialog.PasswordStr
                 Twitter.Username = _username
                 Twitter.Password = _password
-                If SettingDialog.TimelinePeriodInt > 0 Then
-                    If SettingDialog.PeriodAdjust AndAlso Not SettingDialog.UseAPI Then
-                        If SettingDialog.TimelinePeriodInt * 1000 < TimerTimeline.Interval Then
+                Try
+                    If SettingDialog.TimelinePeriodInt > 0 Then
+                        If SettingDialog.PeriodAdjust AndAlso Not SettingDialog.UseAPI Then
+                            If SettingDialog.TimelinePeriodInt * 1000 < TimerTimeline.Interval Then
+                                TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
+                            End If
+                        Else
                             TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
                         End If
+                        TimerTimeline.Enabled = True
                     Else
-                        TimerTimeline.Interval = SettingDialog.TimelinePeriodInt * 1000
+                        TimerTimeline.Interval = 600000
+                        TimerTimeline.Enabled = False
                     End If
-                    TimerTimeline.Enabled = True
-                Else
-                    TimerTimeline.Interval = 600000
-                    TimerTimeline.Enabled = False
-                End If
-                If SettingDialog.ReplyPeriodInt > 0 Then
-                    TimerReply.Interval = SettingDialog.ReplyPeriodInt * 1000
-                    TimerReply.Enabled = True
-                Else
-                    TimerReply.Interval = 6000000
-                    TimerReply.Enabled = False
-                End If
-                If SettingDialog.DMPeriodInt > 0 Then
-                    TimerDM.Interval = SettingDialog.DMPeriodInt * 1000
-                    TimerDM.Enabled = True
-                Else
-                    TimerDM.Interval = 6000000
-                    TimerDM.Enabled = False
-                End If
+                    If SettingDialog.ReplyPeriodInt > 0 Then
+                        TimerReply.Interval = SettingDialog.ReplyPeriodInt * 1000
+                        TimerReply.Enabled = True
+                    Else
+                        TimerReply.Interval = 6000000
+                        TimerReply.Enabled = False
+                    End If
+                    If SettingDialog.DMPeriodInt > 0 Then
+                        TimerDM.Interval = SettingDialog.DMPeriodInt * 1000
+                        TimerDM.Enabled = True
+                    Else
+                        TimerDM.Interval = 6000000
+                        TimerDM.Enabled = False
+                    End If
+                Catch ex As Exception
+                    ex.Data("Instance") = "Set Timers"
+                    ex.Data("IsTerminatePermission") = False
+                    Throw
+                End Try
                 Twitter.NextThreshold = SettingDialog.NextPageThreshold
                 Twitter.NextPages = SettingDialog.NextPagesInt
                 If Twitter.UseAPI <> SettingDialog.UseAPI AndAlso Not _initial Then
@@ -2415,30 +2439,42 @@ Public Class TweenMain
                 Twitter.ProxyPort = SettingDialog.ProxyPort
                 Twitter.ProxyUser = SettingDialog.ProxyUser
                 Twitter.ProxyPassword = SettingDialog.ProxyPassword
-
-                If SettingDialog.TabIconDisp Then
-                    RemoveHandler ListTab.DrawItem, AddressOf ListTab_DrawItem
-                    ListTab.DrawMode = TabDrawMode.Normal
-                    ListTab.ImageList = Me.TabImage
-                Else
-                    RemoveHandler ListTab.DrawItem, AddressOf ListTab_DrawItem
-                    AddHandler ListTab.DrawItem, AddressOf ListTab_DrawItem
-                    ListTab.DrawMode = TabDrawMode.OwnerDrawFixed
-                    ListTab.ImageList = Nothing
-                End If
-
-                If Not SettingDialog.UnreadManage Then
-                    ReadedStripMenuItem.Enabled = False
-                    UnreadStripMenuItem.Enabled = False
+                Try
                     If SettingDialog.TabIconDisp Then
-                        For Each myTab As TabPage In ListTab.TabPages
-                            myTab.ImageIndex = -1
-                        Next
+                        RemoveHandler ListTab.DrawItem, AddressOf ListTab_DrawItem
+                        ListTab.DrawMode = TabDrawMode.Normal
+                        ListTab.ImageList = Me.TabImage
+                    Else
+                        RemoveHandler ListTab.DrawItem, AddressOf ListTab_DrawItem
+                        AddHandler ListTab.DrawItem, AddressOf ListTab_DrawItem
+                        ListTab.DrawMode = TabDrawMode.OwnerDrawFixed
+                        ListTab.ImageList = Nothing
                     End If
-                Else
-                    ReadedStripMenuItem.Enabled = True
-                    UnreadStripMenuItem.Enabled = True
-                End If
+                Catch ex As Exception
+                    ex.Data("Instance") = "ListTab(TabIconDisp)"
+                    ex.Data("IsTerminatePermission") = False
+                    Throw
+                End Try
+
+                Try
+                    If Not SettingDialog.UnreadManage Then
+                        ReadedStripMenuItem.Enabled = False
+                        UnreadStripMenuItem.Enabled = False
+                        If SettingDialog.TabIconDisp Then
+                            For Each myTab As TabPage In ListTab.TabPages
+                                myTab.ImageIndex = -1
+                            Next
+                        End If
+                    Else
+                        ReadedStripMenuItem.Enabled = True
+                        UnreadStripMenuItem.Enabled = True
+                    End If
+                Catch ex As Exception
+                    ex.Data("Instance") = "ListTab(UnreadManage)"
+                    ex.Data("IsTerminatePermission") = False
+                    Throw
+                End Try
+
                 PlaySoundMenuItem.Checked = SettingDialog.PlaySound
                 _fntUnread = SettingDialog.FontUnread
                 _clUnread = SettingDialog.ColorUnread
@@ -2456,9 +2492,14 @@ Public Class TweenMain
                 _clInputBackcolor = SettingDialog.ColorInputBackcolor
                 _clInputFont = SettingDialog.ColorInputFont
                 _fntInputFont = SettingDialog.FontInputFont
-                If StatusText.Focused Then StatusText.BackColor = _clInputBackcolor
-                StatusText.Font = _fntInputFont
-                StatusText.ForeColor = _clInputFont
+                Try
+                    If StatusText.Focused Then StatusText.BackColor = _clInputBackcolor
+                    StatusText.Font = _fntInputFont
+                    StatusText.ForeColor = _clInputFont
+                Catch ex As Exception
+                    MessageBox.Show(ex.Message)
+                End Try
+
                 _brsForeColorUnread.Dispose()
                 _brsForeColorReaded.Dispose()
                 _brsForeColorFav.Dispose()
@@ -2479,27 +2520,49 @@ Public Class TweenMain
                 _brsBackColorAtYou = New SolidBrush(_clAtTarget)
                 _brsBackColorAtFromTarget = New SolidBrush(_clAtFromTarget)
                 _brsBackColorAtTo = New SolidBrush(_clAtTo)
-                detailHtmlFormat = detailHtmlFormat1 + _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3
-                _statuses.SetUnreadManage(SettingDialog.UnreadManage)
-                For Each tb As TabPage In ListTab.TabPages
-                    If SettingDialog.TabIconDisp Then
-                        If _statuses.Tabs(tb.Text).UnreadCount = 0 Then
-                            tb.ImageIndex = -1
-                        Else
-                            tb.ImageIndex = 0
-                        End If
+                Try
+                    If SettingDialog.IsMonospace Then
+                        detailHtmlFormat = detailHtmlFormatMono1 + _fntDetail.Name + detailHtmlFormatMono2 + _fntDetail.Size.ToString() + detailHtmlFormatMono3
+                    Else
+                        detailHtmlFormat = detailHtmlFormat1 + _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3
                     End If
-                    If tb.Controls IsNot Nothing AndAlso tb.Controls.Count > 0 Then
-                        DirectCast(tb.Controls(0), DetailsListView).Font = _fntReaded
-                    End If
-                Next
+                Catch ex As Exception
+                    ex.Data("Instance") = "Font"
+                    ex.Data("IsTerminatePermission") = False
+                    Throw
+                End Try
+                Try
+                    _statuses.SetUnreadManage(SettingDialog.UnreadManage)
+                Catch ex As Exception
+                    ex.Data("Instance") = "_statuses"
+                    ex.Data("IsTerminatePermission") = False
+                    Throw
+                End Try
 
+                Try
+                    For Each tb As TabPage In ListTab.TabPages
+                        If SettingDialog.TabIconDisp Then
+                            If _statuses.Tabs(tb.Text).UnreadCount = 0 Then
+                                tb.ImageIndex = -1
+                            Else
+                                tb.ImageIndex = 0
+                            End If
+                        End If
+                        If tb.Controls IsNot Nothing AndAlso tb.Controls.Count > 0 Then
+                            DirectCast(tb.Controls(0), DetailsListView).Font = _fntReaded
+                        End If
+                    Next
+                Catch ex As Exception
+                    ex.Data("Instance") = "ListTab(TabIconDisp no2)"
+                    ex.Data("IsTerminatePermission") = False
+                    Throw
+                End Try
                 SetMainWindowTitle()
                 SetNotifyIconText()
 
                 _itemCache = Nothing
                 _postCache = Nothing
-                _curList.Refresh()
+                If _curList IsNot Nothing Then _curList.Refresh()
                 ListTab.Refresh()
             End SyncLock
         End If
@@ -2879,11 +2942,13 @@ Public Class TweenMain
         '列幅、列並びを他のタブに設定
         For Each tb As TabPage In ListTab.TabPages
             If Not tb.Equals(_curTab) Then
-                Dim lst As DetailsListView = DirectCast(tb.Controls(0), DetailsListView)
-                For i As Integer = 0 To lst.Columns.Count - 1
-                    lst.Columns(dispOrder(i)).DisplayIndex = i
-                    lst.Columns(i).Width = _curList.Columns(i).Width
-                Next
+                If tb IsNot Nothing AndAlso tb.Controls.Count > 0 Then
+                    Dim lst As DetailsListView = DirectCast(tb.Controls(0), DetailsListView)
+                    For i As Integer = 0 To lst.Columns.Count - 1
+                        lst.Columns(dispOrder(i)).DisplayIndex = i
+                        lst.Columns(i).Width = _curList.Columns(i).Width
+                    Next
+                End If
             End If
         Next
     End Sub
@@ -4050,6 +4115,7 @@ RETRY:
                 _cfgCommon.ReplyIconState = SettingDialog.ReplyIconState
                 _cfgCommon.ReadOwnPost = SettingDialog.ReadOwnPost
                 _cfgCommon.GetFav = SettingDialog.GetFav
+                _cfgCommon.IsMonospace = SettingDialog.IsMonospace
                 If IdeographicSpaceToSpaceToolStripMenuItem IsNot Nothing AndAlso _
                    IdeographicSpaceToSpaceToolStripMenuItem.IsDisposed = False Then
                     _cfgCommon.WideSpaceConvert = Me.IdeographicSpaceToSpaceToolStripMenuItem.Checked
@@ -4510,8 +4576,11 @@ RETRY:
     Private Sub ContextMenuTabProperty_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuTabProperty.Opening
         '右クリックの場合はタブ名が設定済。アプリケーションキーの場合は現在のタブを対象とする
         If _rclickTabName = "" OrElse ContextMenuTabProperty.OwnerItem IsNot Nothing Then _rclickTabName = ListTab.SelectedTab.Text
+        If _statuses Is Nothing Then Exit Sub
+        If _statuses.Tabs Is Nothing Then Exit Sub
 
         Dim tb As TabClass = _statuses.Tabs(_rclickTabName)
+        If tb Is Nothing Then Exit Sub
 
         NotifyDispMenuItem.Checked = tb.Notify
 
@@ -4918,12 +4987,12 @@ RETRY:
 
             If PostBrowser.Document.Links.Count = 1 Then
                 Dim urlStr As String = IDNDecode(PostBrowser.Document.Links(0).GetAttribute("href"))
-                If urlStr Is Nothing Then Exit Sub
+                If String.IsNullOrEmpty(urlStr) Then Exit Sub
                 openUrlStr = urlEncodeMultibyteChar(urlStr)
             Else
-                For Each linkElm As System.Windows.Forms.HtmlElement In PostBrowser.Document.Links
+                For Each linkElm As HtmlElement In PostBrowser.Document.Links
                     Dim urlStr As String = IDNDecode(linkElm.GetAttribute("href"))
-                    If urlStr Is Nothing Then Continue For
+                    If String.IsNullOrEmpty(urlStr) Then Continue For
                     UrlDialog.AddUrl(urlEncodeMultibyteChar(urlStr))
                 Next
                 If UrlDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
@@ -4931,10 +5000,11 @@ RETRY:
                 End If
                 Me.TopMost = SettingDialog.AlwaysTop
             End If
+            If String.IsNullOrEmpty(openUrlStr) Then Exit Sub
             If openUrlStr.StartsWith("https://twitter.com/search?q=#") Then
                 openUrlStr = openUrlStr.Replace("https://twitter.com/search?q=#", "https://twitter.com/search?q=%23")
             End If
-            If openUrlStr <> "" Then OpenUriAsync(openUrlStr)
+            OpenUriAsync(openUrlStr)
         End If
     End Sub
 

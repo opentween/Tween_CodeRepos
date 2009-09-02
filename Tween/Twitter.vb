@@ -141,9 +141,9 @@ Public Module Twitter
     Private Const _postFavAddPath As String = "/favorites/create/"
     Private Const _postFavRemovePath As String = "/favorites/destroy/"
     Private Const _authKeyHeader As String = "authenticity_token="
-    Private Const _parseLink1 As String = "<a href="""
-    Private Const _parseLink2 As String = """>"
-    Private Const _parseLink3 As String = "</a>"
+    'Private Const _parseLink1 As String = "<a href="""
+    'Private Const _parseLink2 As String = """>"
+    'Private Const _parseLink3 As String = "</a>"
     Private Const _GetFollowers As String = "/statuses/followers.xml"
     Private Const _ShowStatus As String = "/statuses/show/"
     Private Const _rateLimitStatus As String = "/account/rate_limit_status.xml"
@@ -551,10 +551,10 @@ Public Module Twitter
                             TraceOut("TM-Body:" + strPost)
                             Return "GetTimeline -> Err: Can't get body."
                         End Try
-#If 0 Then
+                        '#If 0 Then
                         '原文リンク削除
                         orgData = Regex.Replace(orgData, "<a href=""https://twitter\.com/" + post.Name + "/status/[0-9]+"">\.\.\.</a>$", "")
-#End If
+                        '#End If
                         'ハート変換
                         orgData = orgData.Replace("&lt;3", "♡")
                     End If
@@ -1613,37 +1613,39 @@ Public Module Twitter
 
     Private Function GetPlainText(ByVal orgData As String) As String
         Dim retStr As String
-
-        '単純テキストの取り出し（リンクタグ除去）
-        If orgData.IndexOf(_parseLink1, StringComparison.Ordinal) = -1 Then
-            retStr = HttpUtility.HtmlDecode(orgData)
-        Else
-            Dim posl1 As Integer
-            Dim posl2 As Integer
-            Dim posl3 As Integer = 0
-
-            retStr = ""
-
-            posl3 = 0
-            Do While True
-                posl1 = orgData.IndexOf(_parseLink1, posl3, StringComparison.Ordinal)
-                If posl1 = -1 Then Exit Do
-
-                If (posl3 + _parseLink3.Length <> posl1) Or posl3 = 0 Then
-                    If posl3 <> 0 Then
-                        retStr += HttpUtility.HtmlDecode(orgData.Substring(posl3 + _parseLink3.Length, posl1 - posl3 - _parseLink3.Length))
-                    Else
-                        retStr += HttpUtility.HtmlDecode(orgData.Substring(0, posl1))
-                    End If
-                End If
-                posl2 = orgData.IndexOf(_parseLink2, posl1, StringComparison.Ordinal)
-                posl3 = orgData.IndexOf(_parseLink3, posl2, StringComparison.Ordinal)
-                retStr += HttpUtility.HtmlDecode(orgData.Substring(posl2 + _parseLink2.Length, posl3 - posl2 - _parseLink2.Length))
-            Loop
-            retStr += HttpUtility.HtmlDecode(orgData.Substring(posl3 + _parseLink3.Length))
-        End If
-
+        retStr = Regex.Replace(orgData, "(?<tagStart><a [^>]+>)(?<text>[^<]+)(?<tagEnd></a>)", "${text}")
         Return retStr
+        '不具合緊急対応で上記へ変更
+        ''単純テキストの取り出し（リンクタグ除去）
+        'If orgData.IndexOf(_parseLink1, StringComparison.Ordinal) = -1 Then
+        '    retStr = HttpUtility.HtmlDecode(orgData)
+        'Else
+        '    Dim posl1 As Integer
+        '    Dim posl2 As Integer
+        '    Dim posl3 As Integer = 0
+
+        '    retStr = ""
+
+        '    posl3 = 0
+        '    Do While True
+        '        posl1 = orgData.IndexOf(_parseLink1, posl3, StringComparison.Ordinal)
+        '        If posl1 = -1 Then Exit Do
+
+        '        If (posl3 + _parseLink3.Length <> posl1) Or posl3 = 0 Then
+        '            If posl3 <> 0 Then
+        '                retStr += HttpUtility.HtmlDecode(orgData.Substring(posl3 + _parseLink3.Length, posl1 - posl3 - _parseLink3.Length))
+        '            Else
+        '                retStr += HttpUtility.HtmlDecode(orgData.Substring(0, posl1))
+        '            End If
+        '        End If
+        '        posl2 = orgData.IndexOf(_parseLink2, posl1, StringComparison.Ordinal)
+        '        posl3 = orgData.IndexOf(_parseLink3, posl2, StringComparison.Ordinal)
+        '        retStr += HttpUtility.HtmlDecode(orgData.Substring(posl2 + _parseLink2.Length, posl3 - posl2 - _parseLink2.Length))
+        '    Loop
+        '    retStr += HttpUtility.HtmlDecode(orgData.Substring(posl3 + _parseLink3.Length))
+        'End If
+
+        'Return retStr
     End Function
 
     ' htmlの簡易サニタイズ(詳細表示に不要なタグの除去)
@@ -1666,7 +1668,7 @@ Public Module Twitter
 
     Private Function AdjustHtml(ByVal orgData As String) As String
         Dim retStr As String = orgData
-        retStr = retStr.Replace("<a href=""/", "<a href=""https://twitter.com/")
+        retStr = Regex.Replace(retStr, "<a [^>]*href=""/", "<a href=""https://twitter.com/")
         retStr = retStr.Replace("<a href=", "<a target=""_self"" href=")
         retStr = retStr.Replace(vbLf, "<br>")
 
