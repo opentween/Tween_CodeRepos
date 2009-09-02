@@ -552,8 +552,8 @@ Public Module Twitter
                             Return "GetTimeline -> Err: Can't get body."
                         End Try
                         '#If 0 Then
-                        '原文リンク削除
-                        orgData = Regex.Replace(orgData, "<a href=""https://twitter\.com/" + post.Name + "/status/[0-9]+"">\.\.\.</a>$", "")
+                        '                        '原文リンク削除
+                        '                        orgData = Regex.Replace(orgData, "<a href=""https://twitter\.com/" + post.Name + "/status/[0-9]+"">\.\.\.</a>$", "")
                         '#End If
                         'ハート変換
                         orgData = orgData.Replace("&lt;3", "♡")
@@ -634,7 +634,7 @@ Public Module Twitter
                     End If
 
                     '@先リスト作成
-                    rg = New Regex("@<a href=""\/(?<1>[a-zA-Z0-9_]+)[^a-zA-Z0-9_]")
+                    rg = New Regex("@<a [^>]*href=""\/(?<1>[a-zA-Z0-9_]+)[^a-zA-Z0-9_]")
                     m = rg.Match(orgData)
                     While m.Success
                         post.ReplyToList.Add(m.Groups(1).Value.ToLower())
@@ -959,9 +959,7 @@ Public Module Twitter
                             pos2 = strPost.IndexOf(_parseDM2, pos1, StringComparison.Ordinal)
                             orgData = strPost.Substring(pos1 + _parseDM11.Length, pos2 - pos1 - _parseDM11.Length).Trim()
                         End If
-#If 0 Then
-                        orgData = Regex.Replace(orgData, "<a href=""https://twitter\.com/" + post.Name + "/status/[0-9]+"">\.\.\.</a>$", "")
-#End If
+                        'orgData = Regex.Replace(orgData, "<a href=""https://twitter\.com/" + post.Name + "/status/[0-9]+"">\.\.\.</a>$", "")
                         orgData = orgData.Replace("&lt;3", "♡")
                     Catch ex As Exception
                         _signed = False
@@ -1258,10 +1256,10 @@ Public Module Twitter
                             TraceOut("TM-Body:" + strPost)
                             Return "GetTimeline -> Err: Can't get body."
                         End Try
-#If 0 Then
-                        '原文リンク削除
-                        orgData = Regex.Replace(orgData, "<a href=""https://twitter\.com/" + post.Name + "/status/[0-9]+"">\.\.\.</a>$", "")
-#End If
+                        '#If 0 Then
+                        '                        '原文リンク削除
+                        '                        orgData = Regex.Replace(orgData, "<a href=""https://twitter\.com/" + post.Name + "/status/[0-9]+"">\.\.\.</a>$", "")
+                        '#End If
                         'ハート変換
                         orgData = orgData.Replace("&lt;3", "♡")
                     End If
@@ -1341,7 +1339,7 @@ Public Module Twitter
                     End If
 
                     '@先リスト作成
-                    rg = New Regex("@<a href=""\/(?<1>[a-zA-Z0-9_]+)[^a-zA-Z0-9_]")
+                    rg = New Regex("@<a [^>]*href=""\/(?<1>[a-zA-Z0-9_]+)[^a-zA-Z0-9_]")
                     m = rg.Match(orgData)
                     While m.Success
                         post.ReplyToList.Add(m.Groups(1).Value.ToLower())
