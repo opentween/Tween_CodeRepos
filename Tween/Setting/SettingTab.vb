@@ -3,8 +3,8 @@ Public Class SettingTab
     Inherits SettingBase(Of SettingTab)
 
 #Region "Settingクラス基本"
-    Public Shared Function Load(ByVal TabName As String) As SettingTab
-        Dim setting As SettingTab = LoadSettings(TabName)
+    Public Shared Function Load(ByVal tabName As String) As SettingTab
+        Dim setting As SettingTab = LoadSettings(tabName)
         setting.Tab.TabName = TabName
         Return setting
     End Function
@@ -14,25 +14,29 @@ Public Class SettingTab
     End Sub
 
     Public Sub New()
-        Tab = New TabClass
+        TAB = New TabClass
     End Sub
 
     Public Sub New(ByVal TabName As String)
         Me.Tab = New TabClass
-        Tab.TabName = TabName
+        TAB.TabName = TabName
     End Sub
 
 #End Region
 
     Public Shared Sub DeleteConfigFile()
-        For Each FileName As String In System.IO.Directory.GetFiles( _
-                       My.Application.Info.DirectoryPath, "SettingTab*.xml")
+        Try
+            For Each FileName As String In System.IO.Directory.GetFiles( _
+                           My.Application.Info.DirectoryPath, "SettingTab*.xml")
 
-            'オプションはお好みで
-            My.Computer.FileSystem.DeleteFile(FileName, FileIO.UIOption.OnlyErrorDialogs, _
-                 FileIO.RecycleOption.DeletePermanently, FileIO.UICancelOption.DoNothing)
+                'オプションはお好みで
+                My.Computer.FileSystem.DeleteFile(FileName, FileIO.UIOption.OnlyErrorDialogs, _
+                     FileIO.RecycleOption.DeletePermanently, FileIO.UICancelOption.DoNothing)
 
-        Next
+            Next
+        Catch ex As Exception
+            '削除権限がない場合
+        End Try
     End Sub
 
     Public Tab As TabClass

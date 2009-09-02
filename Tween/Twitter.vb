@@ -2148,25 +2148,16 @@ Public Module Twitter
 
     ' キャッシュの検証と読み込み　-1を渡した場合は読み込みのみ行う（APIエラーでFollowersCountが取得できなかったとき）
     Private Function ValidateCache(ByVal _FollowersCount As Integer) As Integer
-        Dim CacheFileName As String = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "FollowersCache")
-
-        If Not File.Exists(CacheFileName) Then
-            ' 存在しない場合はそのまま帰る
-            Return _FollowersCount
-        End If
-
 
         Try
-            Dim serializer As Xml.Serialization.XmlSerializer = New Xml.Serialization.XmlSerializer(tmpFollower.GetType())
-            Using fs As New IO.FileStream(CacheFileName, FileMode.Open)
-                tmpFollower = DirectCast(serializer.Deserialize(fs), List(Of String))
-                If Not tmpFollower(0).Equals(_uid.ToLower()) Then
-                    ' 別IDの場合はキャッシュ破棄して読み直し
-                    tmpFollower.Clear()
-                    tmpFollower.Add(_uid.ToLower())
-                    Return _FollowersCount
-                End If
-            End Using
+            Dim setting As SettingFollower = SettingFollower.Load()
+            tmpFollower = setting.Follower
+            If tmpFollower.Count = 0 OrElse Not tmpFollower(0).Equals(_uid.ToLower()) Then
+                ' 別IDの場合はキャッシュ破棄して読み直し
+                tmpFollower.Clear()
+                tmpFollower.Add(_uid.ToLower())
+                Return _FollowersCount
+            End If
         Catch ex As XmlException
             ' 不正なxmlの場合は読み直し
             tmpFollower.Clear()
@@ -2198,14 +2189,8 @@ Public Module Twitter
     End Function
 
     Private Sub UpdateCache()
-
-        Dim CacheFileName As String = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "FollowersCache")
-
-        Using fs As New IO.FileStream(CacheFileName, FileMode.Create)
-            Dim serializer As Xml.Serialization.XmlSerializer = New Xml.Serialization.XmlSerializer(GetType(List(Of String)))
-            serializer.Serialize(fs, follower)
-        End Using
-
+        Dim setting As New SettingFollower(follower)
+        setting.Save()
     End Sub
 
     Public Function GetFollowers(ByVal CacheInvalidate As Boolean) As String

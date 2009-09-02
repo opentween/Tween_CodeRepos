@@ -1491,8 +1491,6 @@ Public Class TweenMain
     End Sub
 
     Private Sub Tween_FormClosing(ByVal sender As System.Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles MyBase.FormClosing
-        Static waitEnd As Boolean = False
-        If waitEnd = True Then Exit Sub
         If Not SettingDialog.CloseToExit AndAlso e.CloseReason = CloseReason.UserClosing AndAlso _endingFlag = False Then
             '_endingFlag=False:フォームの×ボタン
             e.Cancel = True
@@ -1500,7 +1498,7 @@ Public Class TweenMain
         Else
             Try
                 SaveConfigsAll()
-                waitEnd = True
+                _ignoreConfigSave = True
                 My.Application.DoEvents()
                 Me.Cursor = Cursors.WaitCursor
                 TimerTimeline.Enabled = False
@@ -1676,8 +1674,10 @@ Public Class TweenMain
                                 arg = SettingDialog.BrowserPath.Substring(sep + 1)
                             End If
                             myPath = arg + " " + myPath
+                            System.Diagnostics.Process.Start(browserPath, myPath)
+                        Else
+                            System.Diagnostics.Process.Start(SettingDialog.BrowserPath, myPath)
                         End If
-                        System.Diagnostics.Process.Start(SettingDialog.BrowserPath, myPath)
                     Else
                         System.Diagnostics.Process.Start(myPath)
                     End If
