@@ -1496,50 +1496,46 @@ Public Class TweenMain
             e.Cancel = True
             Me.Visible = False
         Else
-            Try
-                SaveConfigsAll()
-                _ignoreConfigSave = True
-                My.Application.DoEvents()
-                Me.Cursor = Cursors.WaitCursor
-                TimerTimeline.Enabled = False
-                TimerReply.Enabled = False
-                TimerDM.Enabled = False
-                TimerColorize.Enabled = False
-                TimerRefreshIcon.Enabled = False
+            SaveConfigsAll()
+            _ignoreConfigSave = True
+            _endingFlag = True
+            'My.Application.DoEvents()
+            'Me.Cursor = Cursors.WaitCursor
+            TimerTimeline.Enabled = False
+            TimerReply.Enabled = False
+            TimerDM.Enabled = False
+            TimerColorize.Enabled = False
+            TimerRefreshIcon.Enabled = False
 
-                _endingFlag = True
 
-                ''sgenのdllがあれば不要か？
-                'If e.CloseReason <> CloseReason.WindowsShutDown AndAlso e.CloseReason <> CloseReason.TaskManagerClosing Then
-                '    SaveConfigsLocal()
-                'End If
+            ''sgenのdllがあれば不要か？
+            'If e.CloseReason <> CloseReason.WindowsShutDown AndAlso e.CloseReason <> CloseReason.TaskManagerClosing Then
+            '    SaveConfigsLocal()
+            'End If
 
+            For i As Integer = 0 To _bw.Length - 1
+                If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then _bw(i).CancelAsync()
+            Next
+            If _bwFollower IsNot Nothing AndAlso _bwFollower.IsBusy Then _bwFollower.CancelAsync()
+
+            Dim flg As Boolean = False
+            Do
+                flg = True
                 For i As Integer = 0 To _bw.Length - 1
-                    If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then _bw(i).CancelAsync()
-                Next
-                If _bwFollower IsNot Nothing AndAlso _bwFollower.IsBusy Then _bwFollower.CancelAsync()
-
-                Dim flg As Boolean = False
-                Do
-                    flg = True
-                    For i As Integer = 0 To _bw.Length - 1
-                        If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then
-                            flg = False
-                            Exit For
-                        End If
-                    Next
-                    If _bwFollower IsNot Nothing AndAlso _bwFollower.IsBusy Then
+                    If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then
                         flg = False
+                        Exit For
                     End If
-                    Threading.Thread.Sleep(500)
-                    Application.DoEvents()
-                Loop Until flg = True
+                Next
+                If _bwFollower IsNot Nothing AndAlso _bwFollower.IsBusy Then
+                    flg = False
+                End If
+                Threading.Thread.Sleep(500)
+                Application.DoEvents()
+            Loop Until flg = True
 
-                Me.Visible = False
-                NotifyIcon1.Visible = False
-            Finally
-                Me.Cursor = Cursors.Default
-            End Try
+            'Me.Visible = False
+            'NotifyIcon1.Visible = False
         End If
     End Sub
 
