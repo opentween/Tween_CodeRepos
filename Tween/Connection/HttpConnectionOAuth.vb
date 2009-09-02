@@ -26,12 +26,12 @@ Public Class HttpConnectionOAuth
     '''<summary>
     '''OAuthのアクセストークン。永続化可能（ユーザー取り消しの可能性はある）。
     '''</summary>
-    Public Shared Token As String = ""
+    Private Shared token As String = ""
 
     '''<summary>
     '''OAuthの署名作成用秘密アクセストークン。永続化可能（ユーザー取り消しの可能性はある）。
     '''</summary>
-    Public Shared TokenSecret As String = ""
+    Private Shared tokenSecret As String = ""
 
     '''<summary>
     '''OAuthのコンシューマー鍵
@@ -72,31 +72,45 @@ Public Class HttpConnectionOAuth
     '''<param name="method">HTTPのメソッド</param>
     '''<param name="requestUri">URI</param>
     '''<param name="param">key=valueに展開されて、クエリ（GET時）・ボディ（POST時）に付加される送信情報</param>
-    '''<param name="content">HTTPレスポンスのボディ部データ返却用。呼び出し元で初期化が必要</param>
+    '''<param name="content">[IN/OUT]HTTPレスポンスのボディ部データ返却用。呼び出し元で初期化が必要</param>
+    '''<param name="headerInfo">[IN/OUT]HTTP応答のヘッダ情報</param>
     '''<returns>通信結果のHttpStatusCode</returns>
-    Protected Overloads Function GetContent(ByVal method As RequestMethod, _
+    Protected Function GetContent(ByVal method As RequestMethod, _
             ByVal requestUri As Uri, _
             ByVal param As SortedList(Of String, String), _
-            ByRef content As String) As HttpStatusCode
-        'ToDo:雛形。要修正
+            ByRef content As String, _
+            ByVal headerInfo As Dictionary(Of String, String)) As HttpStatusCode
+        'contentがインスタンスされているかチェック
         If content Is Nothing Then Throw New ArgumentNullException("content")
-        Using stream As New MemoryStream
-            Dim statusCode As HttpStatusCode = HttpConnection.GetResponse( _
-                                                HttpConnection.CreateRequest(method, _
-                                                                            requestUri, _
-                                                                            param, _
-                                                                            False), _
-                                                stream, _
-                                                Nothing, _
-                                                False)
-            Using reader As New StreamReader(content)
-                content = reader.ReadToEnd
-            End Using
-            Return statusCode
-        End Using
+        '認証済かチェック
+        If String.IsNullOrEmpty(token) Then Throw New Exception("Sequence error. (Token is blank.)")
+
+        Dim webReq As HttpWebRequest = CreateRequest(method, _
+                                                    requestUri, _
+                                                    param, _
+                                                    False)
+        'OAuth認証ヘッダを付加
+        AppendOAuthInfo(webReq, param, token, tokenSecret)
+
+        Return GetResponse(webReq, content, headerInfo, False)
     End Function
 
-    Public Function GetAuthorizePageUri() As Uri
+#Region "認証処理"
+    Protected Function AuthorizeAccount() As Boolean
+        Dim authUri As Uri = GetAuthorizePageUri()
+        If authUri Is Nothing Then Return False
+        System.Diagnostics.Process.Start(authUri.PathAndQuery)
+        Dim inputForm As New InputTabName
+        inputForm.FormTitle = "Input PIN code"
+        inputForm.FormDescription = "Input the PIN code shown in the browser after you accept OAuth request."
+        If inputForm.ShowDialog() = DialogResult.OK AndAlso Not String.IsNullOrEmpty(inputForm.TabName) Then
+            Return GetAccessToken(inputForm.TabName)
+        Else
+            Return False
+        End If
+    End Function
+
+    Private Shared Function GetAuthorizePageUri() As Uri
         Const tokenKey As String = "oauth_token"
         requestToken = ""
         Dim reqTokenData As NameValueCollection = GetOAuthToken(New Uri(RequestTokenUrl), "")
@@ -110,7 +124,7 @@ Public Class HttpConnectionOAuth
         End If
     End Function
 
-    Public Shared Function GetAccessToken(ByVal pinCode As String) As Boolean
+    Private Shared Function GetAccessToken(ByVal pinCode As String) As Boolean
         If String.IsNullOrEmpty(requestToken) Then Throw New Exception("Sequence error.(requestToken is blank)")
 
         Dim accessTokenData As NameValueCollection = GetOAuthToken(New Uri(AccessTokenUrl), pinCode)
@@ -148,6 +162,7 @@ Public Class HttpConnectionOAuth
             Return Nothing
         End Try
     End Function
+#End Region
 
 #Region "OAuth認証用ヘッダ作成・付加処理"
     Private Shared Sub AppendOAuthInfo(ByVal webRequest As HttpWebRequest, _
@@ -199,4 +214,9 @@ Public Class HttpConnectionOAuth
         Return NonceRandom.Next(123400, 9999999).ToString()
     End Function
 #End Region
+
+    Protected Shared Sub Initialize(ByVal token As String, ByVal tokenSecret As String)
+        HttpConnectionOAuth.Token = token
+        HttpConnectionOAuth.TokenSecret = tokenSecret
+    End Sub
 End Class

@@ -99,6 +99,7 @@ Public Class Setting
     Private _MyReplyIconState As REPLY_ICONSTATE
     Private _MyReadOwnPost As Boolean
     Private _MyGetFav As Boolean
+    Private _MyMonoSpace As Boolean
 
     Private Sub Save_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Save.Click
         Try
@@ -229,6 +230,7 @@ Public Class Setting
             _MyTabIconDisp = chkTabIconDisp.Checked
             _MyReadOwnPost = chkReadOwnPost.Checked
             _MyGetFav = chkGetFav.Checked
+            _MyMonoSpace = CheckMonospace.Checked
             Select Case ReplyIconStateCombo.SelectedIndex
                 Case 0
                     _MyReplyIconState = REPLY_ICONSTATE.None
@@ -410,6 +412,7 @@ Public Class Setting
         chkTabIconDisp.Checked = _MyTabIconDisp
         chkReadOwnPost.Checked = _MyReadOwnPost
         chkGetFav.Checked = _MyGetFav
+        CheckMonospace.Checked = _MyMonoSpace
 
         Select Case _MyReplyIconState
             Case REPLY_ICONSTATE.None
@@ -612,7 +615,12 @@ Public Class Setting
                 FontDialog1.Font = lblInputFont.Font
         End Select
 
-        rtn = FontDialog1.ShowDialog
+        Try
+            rtn = FontDialog1.ShowDialog
+        Catch ex As ArgumentException
+            MessageBox.Show(ex.Message)
+            Exit Sub
+        End Try
 
         If rtn = Windows.Forms.DialogResult.Cancel Then Exit Sub
 
@@ -1388,6 +1396,15 @@ Public Class Setting
         End Get
         Set(ByVal value As Boolean)
             _MyGetFav = value
+        End Set
+    End Property
+
+    Public Property IsMonospace() As Boolean
+        Get
+            Return _MyMonoSpace
+        End Get
+        Set(ByVal value As Boolean)
+            _MyMonoSpace = value
         End Set
     End Property
 
