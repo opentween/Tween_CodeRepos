@@ -35,7 +35,7 @@
     Public _isReplyTo As String = "<"
     Public _parseProtectMsg1 As String = "."" />"
     Public _parseProtectMsg2 As String = "<span class=""meta entry-meta"">"
-    Public _parseDMcountFrom As String = "<a href=""/direct_messages"" id=""direct_messages_tab""><span id=""message_count"" class=""stat_count"">"
+    Public _parseDMcountFrom As String = "<span id=""message_count"" class=""stat_count"">"
     Public _parseDMcountTo As String = "</span>"
     Public _parseSourceFrom As String = "<span>from <a href="
     Public _parseSource2 As String = """>"
