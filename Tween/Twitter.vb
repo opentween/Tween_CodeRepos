@@ -2919,7 +2919,7 @@ Public Module Twitter
         Dim sck As MySocket = CreateSocket()
         'スレッド取得は行わず、countで調整
         Const COUNT_QUERY As String = "count="
-        Const FRIEND_PATH As String = "/statuses/friends_timeline.xml"
+        Const FRIEND_PATH As String = "/statuses/home_timeline.xml"
         Const REPLY_PATH As String = "/statuses/mentions.xml"
 
         If gType = WORKERTYPE.Timeline Then
