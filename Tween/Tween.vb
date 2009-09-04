@@ -1496,22 +1496,16 @@ Public Class TweenMain
             e.Cancel = True
             Me.Visible = False
         Else
+            If _ignoreConfigSave Then Exit Sub
             SaveConfigsAll()
             _ignoreConfigSave = True
-            _endingFlag = True
-            'My.Application.DoEvents()
-            'Me.Cursor = Cursors.WaitCursor
             TimerTimeline.Enabled = False
             TimerReply.Enabled = False
             TimerDM.Enabled = False
             TimerColorize.Enabled = False
             TimerRefreshIcon.Enabled = False
 
-
-            ''sgenのdllがあれば不要か？
-            'If e.CloseReason <> CloseReason.WindowsShutDown AndAlso e.CloseReason <> CloseReason.TaskManagerClosing Then
-            '    SaveConfigsLocal()
-            'End If
+            _endingFlag = True
 
             For i As Integer = 0 To _bw.Length - 1
                 If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then _bw(i).CancelAsync()
@@ -1534,8 +1528,6 @@ Public Class TweenMain
                 Application.DoEvents()
             Loop Until flg = True
 
-            'Me.Visible = False
-            'NotifyIcon1.Visible = False
         End If
     End Sub
 
