@@ -23,7 +23,8 @@
 
 'コンパイル後コマンド
 '"c:\Program Files\Microsoft.NET\SDK\v2.0\Bin\sgen.exe" /f /a:"$(TargetPath)"
-'"c:\Program Files\Microsoft\ILMerge\ILMerge.exe" /out:"$(TargetPath).exe" "$(TargetPath)" "$(TargetDir)Tween.XmlSerializers.dll"
+'"C:\Program Files\Microsoft Visual Studio 8\SDK\v2.0\Bin\sgen.exe" /f /a:"$(TargetPath)"
+
 
 Imports System
 Imports System.Text
@@ -1495,40 +1496,43 @@ Public Class TweenMain
             '_endingFlag=False:フォームの×ボタン
             e.Cancel = True
             Me.Visible = False
-        Else
-            If _ignoreConfigSave Then Exit Sub
-            SaveConfigsAll()
-            _ignoreConfigSave = True
-            TimerTimeline.Enabled = False
-            TimerReply.Enabled = False
-            TimerDM.Enabled = False
-            TimerColorize.Enabled = False
-            TimerRefreshIcon.Enabled = False
-
-            _endingFlag = True
-
-            For i As Integer = 0 To _bw.Length - 1
-                If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then _bw(i).CancelAsync()
-            Next
-            If _bwFollower IsNot Nothing AndAlso _bwFollower.IsBusy Then _bwFollower.CancelAsync()
-
-            Dim flg As Boolean = False
-            Do
-                flg = True
-                For i As Integer = 0 To _bw.Length - 1
-                    If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then
-                        flg = False
-                        Exit For
-                    End If
-                Next
-                If _bwFollower IsNot Nothing AndAlso _bwFollower.IsBusy Then
-                    flg = False
-                End If
-                Threading.Thread.Sleep(500)
-                Application.DoEvents()
-            Loop Until flg = True
-
         End If
+    End Sub
+
+    Private Sub TweenMain_FormClosed(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
+        If e.CloseReason = CloseReason.TaskManagerClosing Then Exit Sub '即終了
+        If _ignoreConfigSave Then Exit Sub
+        SaveConfigsAll()
+        _ignoreConfigSave = True
+        TimerTimeline.Enabled = False
+        TimerReply.Enabled = False
+        TimerDM.Enabled = False
+        TimerColorize.Enabled = False
+        TimerRefreshIcon.Enabled = False
+
+        _endingFlag = True
+
+        'For i As Integer = 0 To _bw.Length - 1
+        '    If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then _bw(i).CancelAsync()
+        'Next
+        'If _bwFollower IsNot Nothing AndAlso _bwFollower.IsBusy Then _bwFollower.CancelAsync()
+
+        'Dim flg As Boolean = False
+        'Do
+        '    flg = True
+        '    For i As Integer = 0 To _bw.Length - 1
+        '        If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then
+        '            flg = False
+        '            Exit For
+        '        End If
+        '    Next
+        '    If _bwFollower IsNot Nothing AndAlso _bwFollower.IsBusy Then
+        '        flg = False
+        '    End If
+        '    Threading.Thread.Sleep(500)
+        '    Application.DoEvents()
+        'Loop Until flg = True
+
     End Sub
 
     Private Sub NotifyIcon1_BalloonTipClicked(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles NotifyIcon1.BalloonTipClicked
