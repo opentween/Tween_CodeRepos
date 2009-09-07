@@ -121,7 +121,8 @@ Public Module Twitter
             "http://pic.gd/", _
             "http://airme.us/", _
             "http://qurl.com/", _
-            "http://bctiny.com/" _
+            "http://bctiny.com/", _
+            "http://j.mp/" _
         }
 
     Private Const _baseUrlStr As String = "twitter.com"
@@ -2754,6 +2755,7 @@ Public Module Twitter
                 If Not ret.StartsWith("http://bit.ly") Then
                     Return "Can't convert"
                 End If
+                ret = ret.Replace("bit.ly", "j.mp")
         End Select
         '変換結果から改行を除去
         Dim ch As Char() = {ControlChars.Cr, ControlChars.Lf}
