@@ -9,6 +9,10 @@
         Catch ex As System.IO.FileNotFoundException
             Return New T()
         Catch ex As Exception
+            ex.Data.Add("FilePath", GetSettingFilePath(FileId))
+            Dim fi As New IO.FileInfo(GetSettingFilePath(FileId))
+            ex.Data.Add("FileSize", fi.Length.ToString())
+            ex.Data.Add("FileData", IO.File.ReadAllText(GetSettingFilePath(FileId)))
             Throw
         End Try
     End Function
