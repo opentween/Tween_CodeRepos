@@ -43,7 +43,6 @@ Partial Class TweenMain
         Me.ClearTabMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator11 = New System.Windows.Forms.ToolStripSeparator
         Me.DeleteTabMenuItem = New System.Windows.Forms.ToolStripMenuItem
-        Me.MenuItemTab = New System.Windows.Forms.ToolStripMenuItem
         Me.TabImage = New System.Windows.Forms.ImageList(Me.components)
         Me.SplitContainer2 = New System.Windows.Forms.SplitContainer
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel
@@ -65,6 +64,10 @@ Partial Class TweenMain
         Me.ToolStripMenuItem3 = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripMenuItem4 = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripMenuItem5 = New System.Windows.Forms.ToolStripMenuItem
+        Me.ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator
+        Me.FollowContextMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.RemoveContextMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.FriendshipContextMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.DateTimeLabel = New System.Windows.Forms.Label
         Me.StatusText = New System.Windows.Forms.TextBox
         Me.lblLen = New System.Windows.Forms.Label
@@ -120,6 +123,7 @@ Partial Class TweenMain
         Me.SelectAllMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.DeleteStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.RefreshStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.MenuItemTab = New System.Windows.Forms.ToolStripMenuItem
         Me.MenuItemCommand = New System.Windows.Forms.ToolStripMenuItem
         Me.TinyUrlConvertToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.UrlConvertAutoToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
@@ -324,12 +328,6 @@ Partial Class TweenMain
         Me.DeleteTabMenuItem.Name = "DeleteTabMenuItem"
         resources.ApplyResources(Me.DeleteTabMenuItem, "DeleteTabMenuItem")
         '
-        'MenuItemTab
-        '
-        Me.MenuItemTab.DropDown = Me.ContextMenuTabProperty
-        Me.MenuItemTab.Name = "MenuItemTab"
-        resources.ApplyResources(Me.MenuItemTab, "MenuItemTab")
-        '
         'TabImage
         '
         Me.TabImage.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit
@@ -414,7 +412,7 @@ Partial Class TweenMain
         '
         'ContextMenuStrip4
         '
-        Me.ContextMenuStrip4.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripMenuItem2, Me.ToolStripSeparator13, Me.ToolStripMenuItem3, Me.ToolStripMenuItem4, Me.ToolStripMenuItem5})
+        Me.ContextMenuStrip4.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripMenuItem2, Me.ToolStripSeparator13, Me.ToolStripMenuItem3, Me.ToolStripMenuItem4, Me.ToolStripMenuItem5, Me.ToolStripSeparator5, Me.FollowContextMenuItem, Me.RemoveContextMenuItem, Me.FriendshipContextMenuItem})
         Me.ContextMenuStrip4.Name = "ContextMenuStrip4"
         resources.ApplyResources(Me.ContextMenuStrip4, "ContextMenuStrip4")
         '
@@ -468,6 +466,26 @@ Partial Class TweenMain
         '
         Me.ToolStripMenuItem5.Name = "ToolStripMenuItem5"
         resources.ApplyResources(Me.ToolStripMenuItem5, "ToolStripMenuItem5")
+        '
+        'ToolStripSeparator5
+        '
+        Me.ToolStripSeparator5.Name = "ToolStripSeparator5"
+        resources.ApplyResources(Me.ToolStripSeparator5, "ToolStripSeparator5")
+        '
+        'FollowContextMenuItem
+        '
+        Me.FollowContextMenuItem.Name = "FollowContextMenuItem"
+        resources.ApplyResources(Me.FollowContextMenuItem, "FollowContextMenuItem")
+        '
+        'RemoveContextMenuItem
+        '
+        Me.RemoveContextMenuItem.Name = "RemoveContextMenuItem"
+        resources.ApplyResources(Me.RemoveContextMenuItem, "RemoveContextMenuItem")
+        '
+        'FriendshipContextMenuItem
+        '
+        Me.FriendshipContextMenuItem.Name = "FriendshipContextMenuItem"
+        resources.ApplyResources(Me.FriendshipContextMenuItem, "FriendshipContextMenuItem")
         '
         'DateTimeLabel
         '
@@ -768,6 +786,12 @@ Partial Class TweenMain
         '
         Me.RefreshStripMenuItem.Name = "RefreshStripMenuItem"
         resources.ApplyResources(Me.RefreshStripMenuItem, "RefreshStripMenuItem")
+        '
+        'MenuItemTab
+        '
+        Me.MenuItemTab.DropDown = Me.ContextMenuTabProperty
+        Me.MenuItemTab.Name = "MenuItemTab"
+        resources.ApplyResources(Me.MenuItemTab, "MenuItemTab")
         '
         'MenuItemCommand
         '
@@ -1201,5 +1225,9 @@ Partial Class TweenMain
     Friend WithEvents ToolStripSeparator3 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents OwnStatusMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ReTweetOriginalStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator5 As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents FollowContextMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents RemoveContextMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents FriendshipContextMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class
