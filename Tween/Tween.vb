@@ -1502,7 +1502,9 @@ Public Class TweenMain
     Private Sub TweenMain_FormClosed(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
         If e.CloseReason = CloseReason.TaskManagerClosing Then Exit Sub '即終了
         If _ignoreConfigSave Then Exit Sub
-        SaveConfigsAll()
+        SaveConfigsCommon()
+        SaveConfigsLocal()
+        SaveConfigsTab(False)
         _ignoreConfigSave = True
         TimerTimeline.Enabled = False
         TimerReply.Enabled = False
