@@ -2091,38 +2091,44 @@ Public Module Twitter
     Private threadNum As Integer = 0
     Private _threadErr As Boolean = False
 
-    Private Function GetFollowersMethod(ByVal Query As Integer) As String
+    Private Function GetFollowersMethod() As String
         Dim resStatus As String = ""
         Dim resMsg As String = ""
+        Dim lineCount As Integer = 0
+        Dim page As Integer = 0
 
-        Try
-            resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _GetFollowers + _pageQry + Query.ToString, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        Do
+            If _endingFlag Then Exit Do
+            page += 1
+            resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _GetFollowers + _pageQry + page.ToString, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
             If resStatus.StartsWith("OK") = False Then
                 _threadErr = True
                 Return resStatus
             End If
-            Using rd As Xml.XmlTextReader = New Xml.XmlTextReader(New System.IO.StringReader(resMsg))
-                Dim lc As Integer = 0
-                rd.Read()
-                While rd.EOF = False
-                    If rd.IsStartElement("screen_name") Then
-                        Dim tmp As String = rd.ReadElementString("screen_name").ToLower()
-                        SyncLock LockObj
-                            If Not tmpFollower.Contains(tmp) Then
-                                tmpFollower.Add(tmp)
-                            End If
-                        End SyncLock
-                        lc += 1
-                    Else
-                        rd.Read()
-                    End If
-                End While
-            End Using
-        Catch ex As Exception
-            _threadErr = True
-            TraceOut("NG(XmlException)")
-            Return "NG(XmlException)"
-        End Try
+            Try
+                Using rd As Xml.XmlTextReader = New Xml.XmlTextReader(New System.IO.StringReader(resMsg))
+                    lineCount = 0
+                    rd.Read()
+                    While rd.EOF = False
+                        If rd.IsStartElement("screen_name") Then
+                            Dim tmp As String = rd.ReadElementString("screen_name").ToLower()
+                            SyncLock LockObj
+                                If Not tmpFollower.Contains(tmp) Then
+                                    tmpFollower.Add(tmp)
+                                End If
+                            End SyncLock
+                            lineCount += 1
+                        Else
+                            rd.Read()
+                        End If
+                    End While
+                End Using
+            Catch ex As Exception
+                _threadErr = True
+                TraceOut("NG(XmlException)")
+                Return "NG(XmlException)"
+            End Try
+        Loop While lineCount > 0
 
         Return ""
     End Function
@@ -2202,100 +2208,101 @@ Public Module Twitter
 
         If Twitter.AccountState <> ACCOUNT_STATE.Valid Then Return ""
 
-        Dim resStatus As String = ""
-        Dim resMsg As String = ""
-        Dim i As Integer = 0
-        Dim DelegateInstance As GetFollowersDelegate = New GetFollowersDelegate(AddressOf GetFollowersMethod)
-        Dim threadMax As Integer = 4            ' 最大スレッド数
-        Dim followersCount As Integer = 0
+        'Dim resStatus As String = ""
+        'Dim resMsg As String = ""
+        'Dim i As Integer = 0
+        'Dim DelegateInstance As GetFollowersDelegate = New GetFollowersDelegate(AddressOf GetFollowersMethod)
+        'Dim threadMax As Integer = 4            ' 最大スレッド数
+        'Dim followersCount As Integer = 0
 
-        Interlocked.Exchange(threadNum, 0)      ' スレッド数カウンタ初期化
+        'Interlocked.Exchange(threadNum, 0)      ' スレッド数カウンタ初期化
         _threadErr = False
         follower.Clear()
         tmpFollower.Clear()
         follower.Add(_uid.ToLower())
         tmpFollower.Add(_uid.ToLower())
 
-        resMsg = DirectCast(CreateSocket.GetWebResponse("https://twitter.com/users/show/" + _uid + ".xml", resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
-        If resMsg = "" Then
-            If resStatus.StartsWith("Err: BadRequest") Then
-                Return "Maybe, the requests reached API limit."
-            ElseIf resStatus.StartsWith("Err: Unauthorized") Then
-                Twitter.AccountState = ACCOUNT_STATE.Invalid
-                Return "Check your Username/Password."
-            Else
-                Return resStatus
-            End If
-        End If
+        'resMsg = DirectCast(CreateSocket.GetWebResponse("https://twitter.com/users/show/" + _uid + ".xml", resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        'If resMsg = "" Then
+        '    If resStatus.StartsWith("Err: BadRequest") Then
+        '        Return "Maybe, the requests reached API limit."
+        '    ElseIf resStatus.StartsWith("Err: Unauthorized") Then
+        '        Twitter.AccountState = ACCOUNT_STATE.Invalid
+        '        Return "Check your Username/Password."
+        '    Else
+        '        Return resStatus
+        '    End If
+        'End If
 
-        Dim xd As XmlDocument = New XmlDocument()
-        Try
-            xd.LoadXml(resMsg)
-            followersCount = Integer.Parse(xd.SelectSingleNode("/user/followers_count/text()").Value)
-        Catch ex As Exception
-            'If CacheInvalidate OrElse ValidateCache(-1) < 0 Then
-            If ValidateCache(-1) < 0 Then
-                ' FollowersカウントがAPIで取得できず、なおかつキャッシュから読めなかった
-                SyncLock LockObj
-                    follower.Clear()
-                    follower.Add(_uid.ToLower())
-                End SyncLock
-                Return "Can't get followers_count and invalid cache."
-            Else
-                'キャッシュを読み出せたのでキャッシュを使う
-                SyncLock LockObj
-                    follower = tmpFollower
-                End SyncLock
-                Return ""
-            End If
-        End Try
+        'Dim xd As XmlDocument = New XmlDocument()
+        'Try
+        '    xd.LoadXml(resMsg)
+        '    followersCount = Integer.Parse(xd.SelectSingleNode("/user/followers_count/text()").Value)
+        'Catch ex As Exception
+        '    'If CacheInvalidate OrElse ValidateCache(-1) < 0 Then
+        '    If ValidateCache(-1) < 0 Then
+        '        ' FollowersカウントがAPIで取得できず、なおかつキャッシュから読めなかった
+        '        SyncLock LockObj
+        '            follower.Clear()
+        '            follower.Add(_uid.ToLower())
+        '        End SyncLock
+        '        Return "Can't get followers_count and invalid cache."
+        '    Else
+        '        'キャッシュを読み出せたのでキャッシュを使う
+        '        SyncLock LockObj
+        '            follower = tmpFollower
+        '        End SyncLock
+        '        Return ""
+        '    End If
+        'End Try
 
-        Dim tmp As Integer
+        'Dim tmp As Integer
 
-        'If CacheInvalidate Then
-        tmp = followersCount
+        ''If CacheInvalidate Then
+        'tmp = followersCount
+        ''Else
+        ''tmp = ValidateCache(followersCount)
+        ''End If
+
+
+        'If tmp <> 0 Then
+        '    i = (tmp + 100) \ 100  ' Followersカウント取得しページ単位に切り上げる。1ページ余分に読む
         'Else
-        'tmp = ValidateCache(followersCount)
+        '    '            ' キャッシュの件数に変化がなかった
+        '    '#If DEBUG Then
+        '    '            sw.Stop()
+        '    '            Console.WriteLine(sw.ElapsedMilliseconds)
+        '    '#End If
+        '    '            SyncLock LockObj
+        '    '                follower = tmpFollower
+        '    '            End SyncLock
+        '    'Return ""
+        '    Return ""   'ユーザー情報のフォロワー数が0
         'End If
 
 
-        If tmp <> 0 Then
-            i = (tmp + 100) \ 100 - 1 ' Followersカウント取得しページ単位に切り上げる
-        Else
-            '            ' キャッシュの件数に変化がなかった
-            '#If DEBUG Then
-            '            sw.Stop()
-            '            Console.WriteLine(sw.ElapsedMilliseconds)
-            '#End If
-            '            SyncLock LockObj
-            '                follower = tmpFollower
-            '            End SyncLock
-            'Return ""
-            Return ""   'ユーザー情報のフォロワー数が0
-        End If
+        ''semaphore = New System.Threading.Semaphore(threadMax, threadMax) 'スレッド最大数
 
+        'For cnt As Integer = 0 To i
+        '    If _endingFlag Then Exit For
+        '    'semaphore.WaitOne()                     'セマフォ取得 threadMax以上ならここでブロックされる
+        '    GetTmSemaphore.WaitOne()
+        '    'Interlocked.Increment(threadNum)        'スレッド数カウンタを+1
+        '    'DelegateInstance.BeginInvoke(cnt + 1, New System.AsyncCallback(AddressOf GetFollowersCallback), DelegateInstance)
+        '    Dim ret As String = GetFollowersMethod(cnt + 1)
+        '    'Interlocked.Decrement(threadNum)        'スレッド数カウンタを-1
+        '    GetTmSemaphore.Release()
+        '    If _threadErr Then Exit For
+        'Next
 
-        'semaphore = New System.Threading.Semaphore(threadMax, threadMax) 'スレッド最大数
+        '''全てのスレッドの終了を待つ(スレッド数カウンタが0になるまで待機)
+        ''Do
+        ''    Thread.Sleep(50)
+        ''Loop Until Interlocked.Add(threadNum, 0) = 0
 
-        For cnt As Integer = 0 To i
-            If _endingFlag Then Exit For
-            'semaphore.WaitOne()                     'セマフォ取得 threadMax以上ならここでブロックされる
-            GetTmSemaphore.WaitOne()
-            'Interlocked.Increment(threadNum)        'スレッド数カウンタを+1
-            'DelegateInstance.BeginInvoke(cnt + 1, New System.AsyncCallback(AddressOf GetFollowersCallback), DelegateInstance)
-            Dim ret As String = GetFollowersMethod(cnt + 1)
-            'Interlocked.Decrement(threadNum)        'スレッド数カウンタを-1
-            GetTmSemaphore.Release()
-            If _threadErr Then Exit For
-        Next
+        ''semaphore.Close()
 
-        ''全てのスレッドの終了を待つ(スレッド数カウンタが0になるまで待機)
-        'Do
-        '    Thread.Sleep(50)
-        'Loop Until Interlocked.Add(threadNum, 0) = 0
-
-        'semaphore.Close()
-
+        Dim ret As String = GetFollowersMethod()
         If _endingFlag Then Return ""
 
         If _threadErr Then
@@ -2317,11 +2324,11 @@ Public Module Twitter
         SyncLock LockObj
             follower = tmpFollower
         End SyncLock
-        If Not _endingFlag AndAlso follower.Count > 0 Then UpdateCache()
+        If Not _endingFlag AndAlso follower.Count > 1 Then UpdateCache()
 
 #If DEBUG Then
         sw.Stop()
-        Console.WriteLine(sw.ElapsedMilliseconds)
+        'Console.WriteLine(sw.ElapsedMilliseconds)
 #End If
 
         Return ""
