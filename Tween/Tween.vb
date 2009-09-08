@@ -2951,9 +2951,6 @@ Public Class TweenMain
         If PostBrowser.StatusText.StartsWith("http") OrElse PostBrowser.StatusText.StartsWith("ftp") _
                 OrElse PostBrowser.StatusText.StartsWith("data") Then
             StatusLabelUrl.Text = PostBrowser.StatusText.Replace("&", "&&")
-            ToolStripMenuItem4.Enabled = True
-        Else
-            ToolStripMenuItem4.Enabled = False
         End If
         If PostBrowser.StatusText = "" Then
             SetStatusLabel()
@@ -5578,8 +5575,20 @@ RETRY:
         ' URLコピーの項目の表示/非表示
         If PostBrowser.StatusText.StartsWith("http") Then
             ToolStripMenuItem4.Enabled = True
+            If Regex.IsMatch(PostBrowser.StatusText, "^https?://twitter.com/[a-zA-Z0-9_]+$") Then
+                FollowContextMenuItem.Enabled = True
+                RemoveContextMenuItem.Enabled = True
+                FriendshipContextMenuItem.Enabled = True
+            Else
+                FollowContextMenuItem.Enabled = False
+                RemoveContextMenuItem.Enabled = False
+                FriendshipContextMenuItem.Enabled = False
+            End If
         Else
             ToolStripMenuItem4.Enabled = False
+            FollowContextMenuItem.Enabled = False
+            RemoveContextMenuItem.Enabled = False
+            FriendshipContextMenuItem.Enabled = False
         End If
         ' 文字列選択されていないときは選択文字列関係の項目を非表示に
         Dim _selText As String = PostBrowser_GetSelectionText()
@@ -6027,10 +6036,16 @@ RETRY:
     End Sub
 
     Private Sub FollowCommandMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FollowCommandMenuItem.Click
+        Dim id As String = ""
+        If _curPost IsNot Nothing Then id = _curPost.Name
+        FollowCommand(id)
+    End Sub
+
+    Private Sub FollowCommand(ByVal id As String)
         Using inputName As New InputTabName()
             inputName.FormTitle = "Follow"
             inputName.FormDescription = "followするidを入力して下さい。"
-            inputName.TabName = ""
+            inputName.TabName = id
             If inputName.ShowDialog() = Windows.Forms.DialogResult.OK AndAlso _
                Not String.IsNullOrEmpty(inputName.TabName.Trim()) Then
                 Dim ret As String = Twitter.PostFollowCommand(inputName.TabName.Trim())
@@ -6044,10 +6059,16 @@ RETRY:
     End Sub
 
     Private Sub RemoveCommandMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RemoveCommandMenuItem.Click
+        Dim id As String = ""
+        If _curPost IsNot Nothing Then id = _curPost.Name
+        RemoveCommand(id)
+    End Sub
+
+    Private Sub RemoveCommand(ByVal id As String)
         Using inputName As New InputTabName()
             inputName.FormTitle = "Remove"
             inputName.FormDescription = "removeするidを入力して下さい。"
-            inputName.TabName = ""
+            inputName.TabName = id
             If inputName.ShowDialog() = Windows.Forms.DialogResult.OK AndAlso _
                Not String.IsNullOrEmpty(inputName.TabName.Trim()) Then
                 Dim ret As String = Twitter.PostRemoveCommand(inputName.TabName.Trim())
@@ -6061,12 +6082,14 @@ RETRY:
     End Sub
 
     Private Sub FriendshipMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FriendshipMenuItem.Click
-        Dim id As String
-        If _curPost Is Nothing Then
-            id = ""
-        Else
+        Dim id As String = ""
+        If _curPost IsNot Nothing Then
             id = _curPost.Name
         End If
+        ShowFriendship(id)
+    End Sub
+
+    Private Sub ShowFriendship(ByVal id As String)
         Using inputName As New InputTabName()
             inputName.FormTitle = "Show Friendships"
             inputName.FormDescription = "調べる相手のidを入力して下さい。"
@@ -6095,4 +6118,24 @@ RETRY:
                         "Bio : " + bio, "Your status")
     End Sub
 
+    Private Sub FollowContextMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FollowContextMenuItem.Click
+        Dim m As Match = Regex.Match(PostBrowser.StatusText, "^https?://twitter.com/(?<name>[a-zA-Z0-9_]+)$")
+        If m.Success Then
+            FollowCommand(m.Result("${name}"))
+        End If
+    End Sub
+
+    Private Sub RemoveContextMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RemoveContextMenuItem.Click
+        Dim m As Match = Regex.Match(PostBrowser.StatusText, "^https?://twitter.com/(?<name>[a-zA-Z0-9_]+)$")
+        If m.Success Then
+            RemoveCommand(m.Result("${name}"))
+        End If
+    End Sub
+
+    Private Sub FriendshipContextMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FriendshipContextMenuItem.Click
+        Dim m As Match = Regex.Match(PostBrowser.StatusText, "^https?://twitter.com/(?<name>[a-zA-Z0-9_]+)$")
+        If m.Success Then
+            ShowFriendship(m.Result("${name}"))
+        End If
+    End Sub
 End Class
