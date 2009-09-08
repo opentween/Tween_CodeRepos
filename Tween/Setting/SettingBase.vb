@@ -1,11 +1,18 @@
 ﻿Public MustInherit Class SettingBase(Of T As {Class, New})
 
+    Private Shared lockObj As New Object
+
     Protected Shared Function LoadSettings(ByVal FileId As String) As T
         Try
-            Using fs As New IO.FileStream(GetSettingFilePath(FileId), IO.FileMode.Open, IO.FileAccess.Read)
-                Dim xs As New Xml.Serialization.XmlSerializer(GetType(T))
-                Return DirectCast(xs.Deserialize(fs), T)
-            End Using
+            SyncLock lockObj
+                Using fs As New IO.FileStream(GetSettingFilePath(FileId), IO.FileMode.Open)
+                    fs.Position = 0
+                    Dim xs As New Xml.Serialization.XmlSerializer(GetType(T))
+                    Dim instance As T = DirectCast(xs.Deserialize(fs), T)
+                    fs.Close()
+                    Return instance
+                End Using
+            End SyncLock
         Catch ex As System.IO.FileNotFoundException
             Return New T()
         Catch ex As Exception
@@ -25,16 +32,20 @@
         Dim cnt As Integer = 0
         Dim err As Boolean = False
         Dim fileName As String = GetSettingFilePath(FileId)
+        If Instance Is Nothing Then Exit Sub
         Do
             err = False
             cnt += 1
             Try
-                Using fs As New IO.FileStream(fileName, IO.FileMode.Create, IO.FileAccess.Write)
-                    Dim xs As New Xml.Serialization.XmlSerializer(GetType(T))
-                    xs.Serialize(fs, Instance)
-                    fs.Flush()
-                    fs.Close()
-                End Using
+                SyncLock lockObj
+                    Using fs As New IO.FileStream(fileName, IO.FileMode.Create)
+                        fs.Position = 0
+                        Dim xs As New Xml.Serialization.XmlSerializer(GetType(T))
+                        xs.Serialize(fs, Instance)
+                        fs.Flush()
+                        fs.Close()
+                    End Using
+                End SyncLock
             Catch ex As Exception
                 '検証エラー or 書き込みエラー
                 If cnt > 3 Then

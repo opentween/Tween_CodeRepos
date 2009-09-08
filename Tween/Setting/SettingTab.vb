@@ -25,18 +25,14 @@ Public Class SettingTab
 #End Region
 
     Public Shared Sub DeleteConfigFile()
-        Try
-            For Each FileName As String In System.IO.Directory.GetFiles( _
+        For Each FileName As String In System.IO.Directory.GetFiles( _
                            My.Application.Info.DirectoryPath, "SettingTab*.xml")
-
-                'オプションはお好みで
-                My.Computer.FileSystem.DeleteFile(FileName, FileIO.UIOption.OnlyErrorDialogs, _
-                     FileIO.RecycleOption.DeletePermanently, FileIO.UICancelOption.DoNothing)
-
-            Next
-        Catch ex As Exception
-            '削除権限がない場合
-        End Try
+            Try
+                IO.File.Delete(FileName)
+            Catch ex As Exception
+                '削除権限がない場合
+            End Try
+        Next
     End Sub
 
     Public Tab As TabClass
