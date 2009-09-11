@@ -71,6 +71,8 @@ Public Class TweenMain
     'Private _cfg As SettingToConfig '旧
     Private _cfgLocal As SettingLocal
     Private _cfgCommon As SettingCommon
+    Private modifySettingLocal As Boolean = False
+    Private modifySettingCommon As Boolean = False
 
     'サブ画面インスタンス
     Private SettingDialog As New Setting()       '設定画面インスタンス
@@ -827,7 +829,7 @@ Public Class TweenMain
         TimerColorize.Interval = 200
         TimerColorize.Start()
         _ignoreConfigSave = False
-        SaveConfigsAll()
+        SaveConfigsAll(False)
     End Sub
 
     Private Sub ListTab_DrawItem( _
@@ -1502,9 +1504,6 @@ Public Class TweenMain
     Private Sub TweenMain_FormClosed(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
         If e.CloseReason = CloseReason.TaskManagerClosing Then Exit Sub '即終了
         If _ignoreConfigSave Then Exit Sub
-        SaveConfigsCommon()
-        SaveConfigsLocal()
-        SaveConfigsTab(False)
         _ignoreConfigSave = True
         TimerTimeline.Enabled = False
         TimerReply.Enabled = False
@@ -2128,6 +2127,7 @@ Public Class TweenMain
                     _mySize = Me.ClientSize
                     _mySpDis = Me.SplitContainer1.SplitterDistance
                     If StatusText.Multiline Then _mySpDis2 = Me.StatusText.Height
+                    modifySettingLocal = True
                 End If
             ElseIf _cfgLocal IsNot Nothing Then
                 '初回フォームレイアウト復元
@@ -2173,11 +2173,13 @@ Public Class TweenMain
         _itemCache = Nothing
         _postCache = Nothing
         _curList.Refresh()
+        modifySettingCommon = True
     End Sub
 
     Private Sub Tween_LocationChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.LocationChanged
         If Me.WindowState = FormWindowState.Normal Then
             _myLoc = Me.DesktopLocation
+            modifySettingLocal = True
         End If
     End Sub
 
@@ -2564,7 +2566,7 @@ Public Class TweenMain
         Twitter.AccountState = ACCOUNT_STATE.Valid
 
         Me.TopMost = SettingDialog.AlwaysTop
-        SaveConfigsAll()
+        SaveConfigsAll(False)
 
         If chgUseApi AndAlso SettingDialog.OneWayLove Then doGetFollowersMenu(False) 'API使用を切り替えたら取り直し
     End Sub
@@ -4043,16 +4045,22 @@ RETRY:
         End If
     End Sub
 
-    Private Sub SaveConfigsAll()
-        SaveConfigsCommon()
-        SaveConfigsLocal()
-        SaveConfigsTab(True)
+    Private Sub SaveConfigsAll(ByVal ifModified As Boolean)
+        If Not ifModified Then
+            SaveConfigsCommon()
+            SaveConfigsLocal()
+            SaveConfigsTab(True)    'True:事前に設定ファイル削除
+        Else
+            If modifySettingCommon Then SaveConfigsCommon()
+            If modifySettingLocal Then SaveConfigsLocal()
+        End If
     End Sub
 
     Private Sub SaveConfigsCommon()
         If _ignoreConfigSave Then Exit Sub
 
         If _username <> "" AndAlso _password <> "" Then
+            modifySettingCommon = False
             SyncLock _syncObject
                 _cfgCommon.UserName = _username
                 _cfgCommon.Password = _password
@@ -4139,6 +4147,7 @@ RETRY:
     Private Sub SaveConfigsLocal()
         If _ignoreConfigSave Then Exit Sub
         SyncLock _syncObject
+            modifySettingLocal = False
             _cfgLocal.FormSize = _mySize
             _cfgLocal.FormLocation = _myLoc
             _cfgLocal.SplitterDistance = _mySpDis
@@ -5154,6 +5163,7 @@ RETRY:
         Else
             SettingDialog.PlaySound = False
         End If
+        modifySettingCommon = True
         'SaveConfigsCommon()
     End Sub
 
@@ -5161,6 +5171,7 @@ RETRY:
         If Me.WindowState = FormWindowState.Normal Then
             _mySpDis = SplitContainer1.SplitterDistance
             If StatusText.Multiline Then _mySpDis2 = StatusText.Height
+            modifySettingLocal = True
         End If
     End Sub
 
@@ -5239,6 +5250,7 @@ RETRY:
     Private Sub SplitContainer2_Panel2_Resize(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SplitContainer2.Panel2.Resize
         Me.StatusText.Multiline = Me.SplitContainer2.Panel2.Height > Me.SplitContainer2.Panel2MinSize + 2
         MultiLineMenuItem.Checked = Me.StatusText.Multiline
+        modifySettingLocal = True
     End Sub
 
     Private Sub StatusText_MultilineChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusText.MultilineChanged
@@ -5247,6 +5259,7 @@ RETRY:
         Else
             Me.StatusText.ScrollBars = ScrollBars.None
         End If
+        modifySettingLocal = True
     End Sub
 
     Private Sub MultiLineMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MultiLineMenuItem.Click
@@ -5262,6 +5275,7 @@ RETRY:
         Else
             SplitContainer2.SplitterDistance = SplitContainer2.Height - SplitContainer2.Panel2MinSize - SplitContainer2.SplitterWidth
         End If
+        modifySettingLocal = True
     End Sub
 
     Private Function UrlConvert(ByVal Converter_Type As UrlConverter) As Boolean
@@ -5627,6 +5641,7 @@ RETRY:
 
     Private Sub SplitContainer2_SplitterMoved(ByVal sender As Object, ByVal e As System.Windows.Forms.SplitterEventArgs) Handles SplitContainer2.SplitterMoved
         If StatusText.Multiline Then _mySpDis2 = StatusText.Height
+        modifySettingLocal = True
     End Sub
 
     Private Sub TweenMain_DragDrop(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DragEventArgs) Handles MyBase.DragDrop
@@ -5797,6 +5812,7 @@ RETRY:
         End If
         If bw Is Nothing Then Exit Sub
 
+        SaveConfigsAll(True)
         bw.RunWorkerAsync(args)
     End Sub
 
@@ -6137,5 +6153,9 @@ RETRY:
         If m.Success Then
             ShowFriendship(m.Result("${name}"))
         End If
+    End Sub
+
+    Private Sub IdeographicSpaceToSpaceToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles IdeographicSpaceToSpaceToolStripMenuItem.Click
+        modifySettingCommon = True
     End Sub
 End Class
