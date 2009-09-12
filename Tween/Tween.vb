@@ -66,6 +66,7 @@ Public Class TweenMain
     Private detailHtmlFormat As String
     Private _myStatusError As Boolean = False
     Private _myStatusOnline As Boolean = False
+    Private soundfileListup As Boolean = False
 
     '設定ファイル関連
     'Private _cfg As SettingToConfig '旧
@@ -4186,18 +4187,23 @@ RETRY:
 
     Private Sub SaveConfigsTab(ByVal DeleteBefore As Boolean)
         If _ignoreConfigSave Then Exit Sub
+        Dim cnt As Integer = 0
+        If ListTab IsNot Nothing AndAlso _
+           ListTab.TabPages IsNot Nothing AndAlso _
+           ListTab.TabPages.Count > 0 Then
+            If DeleteBefore Then SettingTab.DeleteConfigFile() '旧設定ファイル削除
+            For cnt = 0 To ListTab.TabPages.Count - 1
+                SaveConfigsTab(ListTab.TabPages(cnt).Text)
+            Next
+        End If
+    End Sub
+
+    Private Sub SaveConfigsTab(ByVal tabName As String)
+        If _ignoreConfigSave Then Exit Sub
         SyncLock _syncObject
-            Dim cnt As Integer = 0
-            If ListTab IsNot Nothing AndAlso _
-               ListTab.TabPages IsNot Nothing AndAlso _
-               ListTab.TabPages.Count > 0 Then
-                If DeleteBefore Then SettingTab.DeleteConfigFile() '旧設定ファイル削除
-                For cnt = 0 To ListTab.TabPages.Count - 1
-                    Dim tabSetting As New SettingTab
-                    tabSetting.Tab = _statuses.Tabs(ListTab.TabPages(cnt).Text)
-                    tabSetting.Save()
-                Next
-            End If
+            Dim tabSetting As New SettingTab
+            tabSetting.Tab = _statuses.Tabs(tabName)
+            tabSetting.Save()
         End SyncLock
     End Sub
 
@@ -4257,12 +4263,12 @@ RETRY:
         End If
     End Sub
 
-    Private Sub TabRename()
+    Private Sub TabRename(ByVal tabName As String)
         'タブ名変更
-        If IsDefaultTab(ListTab.SelectedTab.Text) Then Exit Sub
+        If IsDefaultTab(tabName) Then Exit Sub
         Dim newTabText As String = Nothing
         Using inputName As New InputTabName()
-            inputName.TabName = ListTab.SelectedTab.Text
+            inputName.TabName = tabName
             inputName.ShowDialog()
             newTabText = inputName.TabName
         End Using
@@ -4283,21 +4289,24 @@ RETRY:
                     TabDialog.RemoveTab(ListTab.TabPages(i).Text)
                 End If
             Next
-            _statuses.RenameTab(ListTab.SelectedTab.Text, newTabText)
-            ListTab.SelectedTab.Text = newTabText   'タブ名変更反映
+            _statuses.RenameTab(tabName, newTabText)
+
             For i As Integer = 0 To ListTab.TabCount - 1
                 If Not IsDefaultTab(ListTab.TabPages(i).Text) Then
+                    If ListTab.TabPages(i).Text = tabName Then
+                        ListTab.TabPages(i).Text = newTabText
+                    End If
                     TabDialog.AddTab(ListTab.TabPages(i).Text)
                 End If
             Next
-            'SaveConfigsCommon()
-            'SaveConfigsTab(False)
+            SaveConfigsCommon()
+            SaveConfigsTab(newTabText)
             _rclickTabName = newTabText
         End If
     End Sub
 
     Private Sub Tabs_DoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListTab.MouseDoubleClick
-        TabRename()
+        TabRename(ListTab.SelectedTab.Text)
     End Sub
 
     Private Sub Tabs_MouseDown(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListTab.MouseDown
@@ -4373,7 +4382,7 @@ RETRY:
             ListTab.TabPages.Insert(i + 1, mTp)
         End If
         ListTab.ResumeLayout()
-        'SaveConfigsCommon()
+        modifySettingCommon = True
     End Sub
 
     Private Sub MakeReplyOrDirectStatus(Optional ByVal isAuto As Boolean = True, Optional ByVal isReply As Boolean = True, Optional ByVal isAll As Boolean = False)
@@ -4569,10 +4578,6 @@ RETRY:
         End If
     End Sub
 
-    Private Sub ContextMenuTabProperty_Closed(ByVal sender As Object, ByVal e As System.Windows.Forms.ToolStripDropDownClosedEventArgs) Handles ContextMenuTabProperty.Closed
-        'SaveConfigsTab(False)
-    End Sub
-
     Private Sub ContextMenuTabProperty_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuTabProperty.Opening
         '右クリックの場合はタブ名が設定済。アプリケーションキーの場合は現在のタブを対象とする
         If _rclickTabName = "" OrElse ContextMenuTabProperty.OwnerItem IsNot Nothing Then _rclickTabName = ListTab.SelectedTab.Text
@@ -4584,6 +4589,7 @@ RETRY:
 
         NotifyDispMenuItem.Checked = tb.Notify
 
+        soundfileListup = True
         SoundFileComboBox.Items.Clear()
         SoundFileComboBox.Items.Add("")
         Dim oDir As IO.DirectoryInfo = New IO.DirectoryInfo(My.Application.Info.DirectoryPath)
@@ -4593,7 +4599,7 @@ RETRY:
         Dim idx As Integer = SoundFileComboBox.Items.IndexOf(tb.SoundFile)
         If idx = -1 Then idx = 0
         SoundFileComboBox.SelectedIndex = idx
-
+        soundfileListup = False
         UreadManageMenuItem.Checked = tb.UnreadManage
         If _rclickTabName = DEFAULTTAB.RECENT OrElse _rclickTabName = DEFAULTTAB.DM OrElse _rclickTabName = DEFAULTTAB.FAV Then
             FilterEditMenuItem.Enabled = False
@@ -4630,6 +4636,7 @@ RETRY:
             _postCache = Nothing
             _curList.Refresh()
         End If
+        SaveConfigsTab(_rclickTabName)
         SetMainWindowTitle()
         SetStatusLabel()
         If Not SettingDialog.TabIconDisp Then ListTab.Refresh()
@@ -4640,13 +4647,15 @@ RETRY:
 
         Dim tb As TabClass = _statuses.Tabs(_rclickTabName)
         tb.Notify = NotifyDispMenuItem.Checked
+        SaveConfigsTab(_rclickTabName)
     End Sub
 
     Private Sub SoundFileComboBox_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SoundFileComboBox.SelectedIndexChanged
-        If _rclickTabName = "" Then Exit Sub
+        If soundfileListup OrElse _rclickTabName = "" Then Exit Sub
 
         Dim tb As TabClass = _statuses.Tabs(_rclickTabName)
         tb.SoundFile = DirectCast(SoundFileComboBox.SelectedItem, String)
+        SaveConfigsTab(_rclickTabName)
     End Sub
 
     Private Sub DeleteTabMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles DeleteTabMenuItem.Click
@@ -6025,7 +6034,8 @@ RETRY:
     End Sub
 
     Private Sub TabRenameMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TabRenameMenuItem.Click
-        TabRename()
+        If _rclickTabName = "" Then Exit Sub
+        TabRename(_rclickTabName)
     End Sub
 
     Private Sub UnuToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UnuToolStripMenuItem.Click
