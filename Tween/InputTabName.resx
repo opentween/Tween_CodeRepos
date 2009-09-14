@@ -190,7 +190,7 @@
     <value>146, 27</value>
   </data>
   <data name="TableLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
+    <value>2</value>
   </data>
   <data name="&gt;&gt;TableLayoutPanel1.Name" xml:space="preserve">
     <value>TableLayoutPanel1</value>
@@ -217,7 +217,7 @@
     <value>148, 12</value>
   </data>
   <data name="LabelDescription.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
+    <value>0</value>
   </data>
   <data name="LabelDescription.Text" xml:space="preserve">
     <value>タブの名前を入力してください。</value>
@@ -241,7 +241,7 @@
     <value>257, 19</value>
   </data>
   <data name="TextTabName.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
+    <value>1</value>
   </data>
   <data name="&gt;&gt;TextTabName.Name" xml:space="preserve">
     <value>TextTabName</value>

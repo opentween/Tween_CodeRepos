@@ -193,7 +193,7 @@
     <value>181, 44</value>
   </data>
   <data name="TableLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
+    <value>1</value>
   </data>
   <data name="&gt;&gt;TableLayoutPanel1.Name" xml:space="preserve">
     <value>TableLayoutPanel1</value>
@@ -238,7 +238,7 @@
     <value>326, 76</value>
   </data>
   <data name="Label1.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
+    <value>0</value>
   </data>
   <data name="Label1.Text" xml:space="preserve">
     <value>Label1</value>
