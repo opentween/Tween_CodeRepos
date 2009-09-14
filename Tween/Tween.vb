@@ -3571,14 +3571,6 @@ RETRY:
         OpenUriAsync("http://sourceforge.jp/projects/tween/wiki/FrontPage")
     End Sub
 
-    Private Sub OfficialMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OfficialMenuItem.Click
-        OpenUriAsync("http://d.hatena.ne.jp/Kiri_Feather/20071121")
-    End Sub
-
-    Private Sub DLPageMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DLPageMenuItem.Click
-        OpenUriAsync("http://tween.sourceforge.jp/index.html")
-    End Sub
-
     Private Sub ListTab_KeyDown(ByVal sender As System.Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles ListTab.KeyDown
         If e.Modifiers = Keys.None Then
             ' ModifierKeyが押されていない場合
