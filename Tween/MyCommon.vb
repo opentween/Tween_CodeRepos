@@ -82,7 +82,7 @@ Public Module MyCommon
 
     Public Enum HITRESULT
         None
-        Copy
+        'Copy
         CopyAndMark
         Move
     End Enum

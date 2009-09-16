@@ -122,7 +122,7 @@ Partial Class Setting
         Me.Label38 = New System.Windows.Forms.Label
         Me.UReadMng = New System.Windows.Forms.CheckBox
         Me.Label39 = New System.Windows.Forms.Label
-        Me.CheckBox6 = New System.Windows.Forms.CheckBox
+        Me.CheckReadOldPosts = New System.Windows.Forms.CheckBox
         Me.Label40 = New System.Windows.Forms.Label
         Me.CheckCloseToExit = New System.Windows.Forms.CheckBox
         Me.Label41 = New System.Windows.Forms.Label
@@ -802,11 +802,11 @@ Partial Class Setting
         resources.ApplyResources(Me.Label39, "Label39")
         Me.Label39.Name = "Label39"
         '
-        'CheckBox6
+        'CheckReadOldPosts
         '
-        resources.ApplyResources(Me.CheckBox6, "CheckBox6")
-        Me.CheckBox6.Name = "CheckBox6"
-        Me.CheckBox6.UseVisualStyleBackColor = True
+        resources.ApplyResources(Me.CheckReadOldPosts, "CheckReadOldPosts")
+        Me.CheckReadOldPosts.Name = "CheckReadOldPosts"
+        Me.CheckReadOldPosts.UseVisualStyleBackColor = True
         '
         'Label40
         '
@@ -1069,7 +1069,7 @@ Partial Class Setting
         Me.TabPage2.Controls.Add(Me.Label27)
         Me.TabPage2.Controls.Add(Me.Label39)
         Me.TabPage2.Controls.Add(Me.CheckPostCtrlEnter)
-        Me.TabPage2.Controls.Add(Me.CheckBox6)
+        Me.TabPage2.Controls.Add(Me.CheckReadOldPosts)
         Me.TabPage2.Controls.Add(Me.Label12)
         Me.TabPage2.Controls.Add(Me.StatusText)
         Me.TabPage2.Controls.Add(Me.CheckUseRecommendStatus)
@@ -1557,7 +1557,7 @@ Partial Class Setting
     Friend WithEvents Label38 As System.Windows.Forms.Label
     Friend WithEvents UReadMng As System.Windows.Forms.CheckBox
     Friend WithEvents Label39 As System.Windows.Forms.Label
-    Friend WithEvents CheckBox6 As System.Windows.Forms.CheckBox
+    Friend WithEvents CheckReadOldPosts As System.Windows.Forms.CheckBox
     Friend WithEvents Label40 As System.Windows.Forms.Label
     Friend WithEvents CheckCloseToExit As System.Windows.Forms.CheckBox
     Friend WithEvents Label41 As System.Windows.Forms.Label

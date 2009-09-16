@@ -215,33 +215,6 @@
   <data name="&gt;&gt;ListFilters.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
-  <data name="OptNone.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="OptNone.Location" type="System.Drawing.Point, System.Drawing">
-    <value>15, 62</value>
-  </data>
-  <data name="OptNone.Size" type="System.Drawing.Size, System.Drawing">
-    <value>73, 16</value>
-  </data>
-  <data name="OptNone.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="OptNone.Text" xml:space="preserve">
-    <value>何もしない</value>
-  </data>
-  <data name="&gt;&gt;OptNone.Name" xml:space="preserve">
-    <value>OptNone</value>
-  </data>
-  <data name="&gt;&gt;OptNone.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;OptNone.Parent" xml:space="preserve">
-    <value>GroupBox1</value>
-  </data>
-  <data name="&gt;&gt;OptNone.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
   <data name="OptMark.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -249,13 +222,13 @@
     <value>15, 40</value>
   </data>
   <data name="OptMark.Size" type="System.Drawing.Size, System.Drawing">
-    <value>119, 16</value>
+    <value>123, 16</value>
   </data>
   <data name="OptMark.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
   </data>
   <data name="OptMark.Text" xml:space="preserve">
-    <value>Recent発言にマーク</value>
+    <value>Recentからコピーする</value>
   </data>
   <data name="&gt;&gt;OptMark.Name" xml:space="preserve">
     <value>OptMark</value>
@@ -267,7 +240,7 @@
     <value>GroupBox1</value>
   </data>
   <data name="&gt;&gt;OptMark.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>0</value>
   </data>
   <data name="OptMove.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -294,13 +267,13 @@
     <value>GroupBox1</value>
   </data>
   <data name="&gt;&gt;OptMove.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>1</value>
   </data>
   <data name="GroupBox1.Location" type="System.Drawing.Point, System.Drawing">
     <value>343, 14</value>
   </data>
   <data name="GroupBox1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>151, 87</value>
+    <value>151, 71</value>
   </data>
   <data name="GroupBox1.TabIndex" type="System.Int32, mscorlib">
     <value>11</value>

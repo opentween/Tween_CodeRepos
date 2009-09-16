@@ -100,6 +100,7 @@ Public Class Setting
     Private _MyReadOwnPost As Boolean
     Private _MyGetFav As Boolean
     Private _MyMonoSpace As Boolean
+    Private _MyReadOldPosts As Boolean
 
     Private Sub Save_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Save.Click
         Try
@@ -231,6 +232,7 @@ Public Class Setting
             _MyReadOwnPost = chkReadOwnPost.Checked
             _MyGetFav = chkGetFav.Checked
             _MyMonoSpace = CheckMonospace.Checked
+            _MyReadOldPosts = CheckReadOldPosts.Checked
             Select Case ReplyIconStateCombo.SelectedIndex
                 Case 0
                     _MyReplyIconState = REPLY_ICONSTATE.None
@@ -413,7 +415,7 @@ Public Class Setting
         chkReadOwnPost.Checked = _MyReadOwnPost
         chkGetFav.Checked = _MyGetFav
         CheckMonospace.Checked = _MyMonoSpace
-
+        CheckReadOldPosts.Checked = _MyReadOldPosts
         Select Case _MyReplyIconState
             Case REPLY_ICONSTATE.None
                 ReplyIconStateCombo.SelectedIndex = 0
@@ -1405,6 +1407,15 @@ Public Class Setting
         End Get
         Set(ByVal value As Boolean)
             _MyMonoSpace = value
+        End Set
+    End Property
+
+    Public Property ReadOldPosts() As Boolean
+        Get
+            Return _MyReadOldPosts
+        End Get
+        Set(ByVal value As Boolean)
+            _MyReadOldPosts = value
         End Set
     End Property
 

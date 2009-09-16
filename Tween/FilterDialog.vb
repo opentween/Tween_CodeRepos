@@ -82,7 +82,8 @@ Public Class FilterDialog
         MSG2.Enabled = False
         CheckRegex.Checked = False
         CheckURL.Checked = False
-        OptNone.Checked = True
+        'OptNone.Checked = True
+        OptMark.Checked = True
         UID.Focus()
         _mode = EDITMODE.AddNew
         _directAdd = True
@@ -106,7 +107,8 @@ Public Class FilterDialog
         MSG2.Enabled = False
         CheckRegex.Checked = False
         CheckURL.Checked = False
-        OptNone.Checked = True
+        'OptNone.Checked = True
+        OptMark.Checked = True
         UID.Focus()
         _mode = EDITMODE.AddNew
     End Sub
@@ -192,12 +194,17 @@ Public Class FilterDialog
             End If
             CheckRegex.Checked = fc.UseRegex
             CheckURL.Checked = fc.SearchURL
-            If fc.moveFrom Then
+            'If fc.moveFrom Then
+            '    OptMove.Checked = True
+            'ElseIf fc.SetMark Then
+            '    OptMark.Checked = True
+            'Else
+            '    OptNone.Checked = True
+            'End If
+            If fc.MoveFrom Then
                 OptMove.Checked = True
-            ElseIf fc.SetMark Then
-                OptMark.Checked = True
             Else
-                OptNone.Checked = True
+                OptMark.Checked = True
             End If
         Else
             RadioAND.Checked = True
@@ -210,7 +217,8 @@ Public Class FilterDialog
             MSG2.Text = ""
             CheckRegex.Checked = False
             CheckURL.Checked = False
-            OptNone.Checked = True
+            'OptNone.Checked = True
+            OptMark.Checked = True
         End If
     End Sub
 
