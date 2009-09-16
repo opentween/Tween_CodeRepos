@@ -619,7 +619,10 @@ Public NotInheritable Class TabInformations
                     Dim rslt As HITRESULT = _tabs(tn).AddFiltered(post.Id, post.IsRead, post.Name, post.Data, post.OriginalData)
                     If rslt <> HITRESULT.None Then
                         If rslt = HITRESULT.CopyAndMark Then post.IsMark = True 'マークあり
-                        If rslt = HITRESULT.Move Then mv = True '移動
+                        If rslt = HITRESULT.Move Then
+                            mv = True '移動
+                            post.IsMark = False
+                        End If
                         If _tabs(tn).Notify Then add = True '通知あり
                         If Not _tabs(tn).SoundFile = "" AndAlso _soundFile = "" Then
                             _soundFile = _tabs(tn).SoundFile 'wavファイル（未設定の場合のみ）
@@ -710,6 +713,28 @@ Public NotInheritable Class TabInformations
         End SyncLock
     End Sub
 
+    Public Sub SetRead()
+        Dim tb As TabClass = _tabs(DEFAULTTAB.RECENT)
+        If tb.UnreadManage = False Then Exit Sub
+
+        For i As Integer = 0 To tb.AllCount - 1
+            Dim id As Long = tb.GetId(i)
+            If Not _statuses(id).IsDm AndAlso _
+               Not _statuses(id).IsReply AndAlso _
+               Not _statuses(id).IsRead AndAlso _
+               Not _statuses(id).IsMark Then
+                _statuses(id).IsRead = True
+                Me.SetNextUnreadId(id, tb)  '次の未読セット
+                For Each key As String In _tabs.Keys
+                    If _tabs(key).UnreadManage AndAlso _
+                       _tabs(key).Contains(id) Then
+                        _tabs(key).UnreadCount -= 1
+                        If _tabs(key).OldestUnreadId = id Then _tabs(key).OldestUnreadId = -1
+                    End If
+                Next
+            End If
+        Next
+    End Sub
 
     Public ReadOnly Property Item(ByVal ID As Long) As PostClass
         Get
@@ -807,6 +832,7 @@ Public NotInheritable Class TabInformations
                                 post.IsMark = True 'マークあり
                             Case HITRESULT.Move
                                 tbr.Remove(post.Id, post.IsRead)
+                                post.IsMark = False
                             Case HITRESULT.None
                                 If key = DEFAULTTAB.REPLY And post.IsReply Then _tabs(DEFAULTTAB.REPLY).Add(post.Id, post.IsRead, True)
                                 If post.IsFav Then _tabs(DEFAULTTAB.FAV).Add(post.Id, post.IsRead, True)
@@ -992,8 +1018,8 @@ Public NotInheritable Class TabClass
         For Each ft As FiltersClass In _filters
             Select Case ft.IsHit(Name, Body, OrgData)   'フィルタクラスでヒット判定
                 Case HITRESULT.None
-                Case HITRESULT.Copy
-                    If rslt <> HITRESULT.CopyAndMark Then rslt = HITRESULT.Copy
+                    'Case HITRESULT.Copy
+                    '    If rslt <> HITRESULT.CopyAndMark Then rslt = HITRESULT.Copy
                 Case HITRESULT.CopyAndMark
                     rslt = HITRESULT.CopyAndMark
                 Case HITRESULT.Move
@@ -1269,12 +1295,17 @@ Public NotInheritable Class FiltersClass
         If _searchUrl Then
             fs.Append(My.Resources.SetFiltersText8)
         End If
+        'If _moveFrom Then
+        '    fs.Append(My.Resources.SetFiltersText9)
+        'ElseIf _setMark Then
+        '    fs.Append(My.Resources.SetFiltersText10)
+        'Else
+        '    fs.Append(My.Resources.SetFiltersText11)
+        'End If
         If _moveFrom Then
             fs.Append(My.Resources.SetFiltersText9)
-        ElseIf _setMark Then
-            fs.Append(My.Resources.SetFiltersText10)
         Else
-            fs.Append(My.Resources.SetFiltersText11)
+            fs.Append(My.Resources.SetFiltersText10)
         End If
         fs.Append(")")
 
@@ -1396,9 +1427,13 @@ Public NotInheritable Class FiltersClass
             Next
         End If
         If bHit Then
-            If _setMark Then Return HITRESULT.CopyAndMark
-            If _moveFrom Then Return HITRESULT.Move
-            Return HITRESULT.Copy
+            'If _setMark Then Return HITRESULT.CopyAndMark
+            If _moveFrom Then
+                Return HITRESULT.Move
+            Else
+                Return HITRESULT.CopyAndMark
+            End If
+            'Return HITRESULT.Copy
         Else
             Return HITRESULT.None
         End If

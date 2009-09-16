@@ -30,7 +30,6 @@ Partial Class FilterDialog
         Me.ListFilters = New System.Windows.Forms.ListBox
         Me.EditFilterGroup = New System.Windows.Forms.GroupBox
         Me.GroupBox1 = New System.Windows.Forms.GroupBox
-        Me.OptNone = New System.Windows.Forms.RadioButton
         Me.OptMark = New System.Windows.Forms.RadioButton
         Me.OptMove = New System.Windows.Forms.RadioButton
         Me.CheckURL = New System.Windows.Forms.CheckBox
@@ -100,19 +99,11 @@ Partial Class FilterDialog
         '
         'GroupBox1
         '
-        Me.GroupBox1.Controls.Add(Me.OptNone)
         Me.GroupBox1.Controls.Add(Me.OptMark)
         Me.GroupBox1.Controls.Add(Me.OptMove)
         resources.ApplyResources(Me.GroupBox1, "GroupBox1")
         Me.GroupBox1.Name = "GroupBox1"
         Me.GroupBox1.TabStop = False
-        '
-        'OptNone
-        '
-        resources.ApplyResources(Me.OptNone, "OptNone")
-        Me.OptNone.Name = "OptNone"
-        Me.OptNone.TabStop = True
-        Me.OptNone.UseVisualStyleBackColor = True
         '
         'OptMark
         '
@@ -271,7 +262,6 @@ Partial Class FilterDialog
     Friend WithEvents CheckRegex As System.Windows.Forms.CheckBox
     Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
     Friend WithEvents OptMove As System.Windows.Forms.RadioButton
-    Friend WithEvents OptNone As System.Windows.Forms.RadioButton
     Friend WithEvents OptMark As System.Windows.Forms.RadioButton
 
 End Class

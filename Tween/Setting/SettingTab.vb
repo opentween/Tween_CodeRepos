@@ -5,7 +5,12 @@ Public Class SettingTab
 #Region "Settingクラス基本"
     Public Shared Function Load(ByVal tabName As String) As SettingTab
         Dim setting As SettingTab = LoadSettings(tabName)
-        setting.Tab.TabName = TabName
+        setting.Tab.TabName = tabName
+        For Each filter As FiltersClass In setting.Tab.Filters
+            If Not filter.MoveFrom AndAlso Not filter.SetMark Then
+                filter.SetMark = True
+            End If
+        Next
         Return setting
     End Function
 

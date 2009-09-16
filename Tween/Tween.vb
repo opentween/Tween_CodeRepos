@@ -563,6 +563,7 @@ Public Class TweenMain
         SettingDialog.ReplyIconState = _cfgCommon.ReplyIconState
         SettingDialog.ReadOwnPost = _cfgCommon.ReadOwnPost
         SettingDialog.GetFav = _cfgCommon.GetFav
+        SettingDialog.ReadOldPosts = _cfgCommon.ReadOldPosts
         SettingDialog.IsMonospace = _cfgCommon.IsMonospace
 
         If SettingDialog.IsMonospace Then
@@ -1572,6 +1573,10 @@ Public Class TweenMain
                     ret = Twitter.GetTimelineApi(read, args.type)
                 Else
                     ret = Twitter.GetTimeline(args.page, read, args.endPage, args.type, rslt.newDM)
+                End If
+                '新着時未読クリア
+                If ret = "" AndAlso args.type = WORKERTYPE.Timeline AndAlso SettingDialog.ReadOldPosts Then
+                    _statuses.SetRead()
                 End If
                 rslt.addCount = _statuses.DistributePosts()
             Case WORKERTYPE.DirectMessegeRcv    '送信分もまとめて取得
@@ -4112,6 +4117,7 @@ RETRY:
                    IdeographicSpaceToSpaceToolStripMenuItem.IsDisposed = False Then
                     _cfgCommon.WideSpaceConvert = Me.IdeographicSpaceToSpaceToolStripMenuItem.Checked
                 End If
+                _cfgCommon.ReadOldPosts = SettingDialog.ReadOldPosts
 
                 _cfgCommon.SortOrder = _statuses.SortOrder
                 Select Case _statuses.SortMode
@@ -4874,16 +4880,16 @@ RETRY:
                 mv = True
             End If
         End With
-        Dim mk As Boolean = False
-        If Not mv Then
-            'マークするか？
-            Dim _tmp As String = String.Format(My.Resources.IDRuleMenuItem_ClickText6, vbCrLf)
-            If MessageBox.Show(_tmp, My.Resources.IDRuleMenuItem_ClickText7, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
-                mk = True
-            Else
-                mk = False
-            End If
-        End If
+        'Dim mk As Boolean = False
+        'If Not mv Then
+        '    'マークするか？
+        '    Dim _tmp As String = String.Format(My.Resources.IDRuleMenuItem_ClickText6, vbCrLf)
+        '    If MessageBox.Show(_tmp, My.Resources.IDRuleMenuItem_ClickText7, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
+        '        mk = True
+        '    Else
+        '        mk = False
+        '    End If
+        'End If
         Dim ids As New List(Of String)
         For Each idx As Integer In _curList.SelectedIndices
             Dim post As PostClass = _statuses.Item(_curTab.Text, idx)
@@ -4893,7 +4899,7 @@ RETRY:
                 fc.NameFilter = post.Name
                 fc.SearchBoth = True
                 fc.MoveFrom = mv
-                fc.SetMark = mk
+                fc.SetMark = Not mv
                 fc.UseRegex = False
                 fc.SearchUrl = False
                 _statuses.Tabs(tabName).AddFilter(fc)
