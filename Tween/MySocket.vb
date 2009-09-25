@@ -168,9 +168,9 @@ Public NotInheritable Class MySocket
                     Case REQ_TYPE.ReqPOSTAPI
                         webReq.ContentType = "application/x-www-form-urlencoded"
                         webReq.Accept = "text/html, */*"
-                        webReq.Headers.Add("X-Twitter-Client", "Tween")
-                        webReq.Headers.Add("X-Twitter-Client-Version", _version)
-                        webReq.Headers.Add("X-Twitter-Client-URL", "http://www.asahi-net.or.jp/~ne5h-ykmz/tween.xml")
+                        'webReq.Headers.Add("X-Twitter-Client", "Tween")
+                        'webReq.Headers.Add("X-Twitter-Client-Version", _version)
+                        'webReq.Headers.Add("X-Twitter-Client-URL", "http://www.asahi-net.or.jp/~ne5h-ykmz/tween.xml")
                         webReq.Headers.Add(HttpRequestHeader.Authorization, _cre)
                 End Select
                 Dim st As Stream = webReq.GetRequestStream()
@@ -188,9 +188,9 @@ Public NotInheritable Class MySocket
             ElseIf reqType = REQ_TYPE.ReqGetAPI Then
                 webReq.ContentType = "application/x-www-form-urlencoded"
                 webReq.Accept = "text/html, */*"
-                webReq.Headers.Add("X-Twitter-Client", "Tween")
-                webReq.Headers.Add("X-Twitter-Client-Version", _version)
-                webReq.Headers.Add("X-Twitter-Client-URL", "http://www.asahi-net.or.jp/~ne5h-ykmz/tween.xml")
+                'webReq.Headers.Add("X-Twitter-Client", "Tween")
+                'webReq.Headers.Add("X-Twitter-Client-Version", _version)
+                'webReq.Headers.Add("X-Twitter-Client-URL", "http://www.asahi-net.or.jp/~ne5h-ykmz/tween.xml")
                 webReq.Headers.Add(HttpRequestHeader.Authorization, _cre)
             End If
 
