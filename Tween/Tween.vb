@@ -816,9 +816,9 @@ Public Class TweenMain
         JumpUnreadMenuItem.ShortcutKeyDisplayString = "Space"
         CopySTOTMenuItem.ShortcutKeyDisplayString = "Ctrl+C"
         CopyURLMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+C"
-        MenuItemSubSearch.ShortcutKeyDisplayString = "/"
-        ReadedStripMenuItem.ShortcutKeyDisplayString = "B"
-        UnreadStripMenuItem.ShortcutKeyDisplayString = "Shift+B"
+        'MenuItemSubSearch.ShortcutKeyDisplayString = "/"
+        'ReadedStripMenuItem.ShortcutKeyDisplayString = "B"
+        'UnreadStripMenuItem.ShortcutKeyDisplayString = "Shift+B"
 
         AddHandler My.Computer.Network.NetworkAvailabilityChanged, AddressOf Network_NetworkAvailabilityChanged
         If SettingDialog.MinimizeToTray = False OrElse Me.WindowState <> FormWindowState.Minimized Then
@@ -3648,15 +3648,20 @@ RETRY:
                 e.SuppressKeyPress = True
                 SendKeys.Send("^{PGUP}")
             End If
-            If e.KeyCode = Keys.OemQuestion Then
+            'If e.KeyCode = Keys.OemQuestion Then
+            '    e.Handled = True
+            '    e.SuppressKeyPress = True
+            '    MenuItemSubSearch_Click(Nothing, Nothing)   '/検索
+            'End If
+            If e.KeyCode = Keys.F Then
                 e.Handled = True
                 e.SuppressKeyPress = True
-                MenuItemSubSearch_Click(Nothing, Nothing)   '/検索
+                SendKeys.Send("{PGDN}")
             End If
             If e.KeyCode = Keys.B Then
                 e.Handled = True
                 e.SuppressKeyPress = True
-                ReadedStripMenuItem_Click(Nothing, Nothing)
+                SendKeys.Send("{PGUP}")
             End If
         End If
         _anchorFlag = False
@@ -3668,16 +3673,16 @@ RETRY:
             End If
             If e.KeyCode = Keys.N Then SendKeys.Send("^{PGDN}")
             If e.KeyCode = Keys.P Then SendKeys.Send("^{PGUP}")
-            If e.KeyCode = Keys.F Then
-                e.Handled = True
-                e.SuppressKeyPress = True
-                MovePageScroll(True)
-            End If
-            If e.KeyCode = Keys.B Then
-                e.Handled = True
-                e.SuppressKeyPress = True
-                MovePageScroll(False)
-            End If
+            'If e.KeyCode = Keys.F Then
+            '    e.Handled = True
+            '    e.SuppressKeyPress = True
+            '    MovePageScroll(True)
+            'End If
+            'If e.KeyCode = Keys.B Then
+            '    e.Handled = True
+            '    e.SuppressKeyPress = True
+            '    MovePageScroll(False)
+            'End If
         End If
         If Not e.Control AndAlso e.Alt AndAlso Not e.Shift Then
             ' ALTキーが押されている場合
@@ -3732,11 +3737,11 @@ RETRY:
                 e.SuppressKeyPress = True
                 GoFav(False)
             End If
-            If e.KeyCode = Keys.B Then
-                e.Handled = True
-                e.SuppressKeyPress = True
-                UnreadStripMenuItem_Click(Nothing, Nothing)
-            End If
+            'If e.KeyCode = Keys.B Then
+            '    e.Handled = True
+            '    e.SuppressKeyPress = True
+            '    UnreadStripMenuItem_Click(Nothing, Nothing)
+            'End If
         End If
         If Not e.Alt Then
             If e.KeyCode = Keys.J Then
@@ -4022,83 +4027,83 @@ RETRY:
         _curList.EnsureVisible(idx)
     End Sub
 
-    Private Sub MovePageScroll(ByVal down As Boolean)
-        Dim _item As ListViewItem
-        Dim idx As Integer
+    'Private Sub MovePageScroll(ByVal down As Boolean)
+    '    Dim _item As ListViewItem
+    '    Dim idx As Integer
 
-        If down Then
-            _item = _curList.GetItemAt(0, _curList.ClientSize.Height - 25)
-            If _item Is Nothing Then
-                If _curList.VirtualListSize > 0 Then
-                    SelectListItem(_curList, _curList.VirtualListSize - 1)
-                    _curList.EnsureVisible(_curList.VirtualListSize - 1)
-                End If
-                Exit Sub
-            End If
+    '    If down Then
+    '        _item = _curList.GetItemAt(0, _curList.ClientSize.Height - 25)
+    '        If _item Is Nothing Then
+    '            If _curList.VirtualListSize > 0 Then
+    '                SelectListItem(_curList, _curList.VirtualListSize - 1)
+    '                _curList.EnsureVisible(_curList.VirtualListSize - 1)
+    '            End If
+    '            Exit Sub
+    '        End If
 
-            idx = _item.Index
-            Dim idx2 As Integer = -1
-            If _curList.Focused Then
-                idx2 = _curList.FocusedItem.Index
-            End If
-            If idx2 >= idx Then
-                'スクロール
-                Dim idx3 As Integer = 0
-                _item = _curList.GetItemAt(0, 25)
-                If _item IsNot Nothing Then
-                    idx3 = _item.Index
-                End If
-                Dim rowCount As Integer = idx - idx3
-                Dim toIndex As Integer = 0
-                If idx2 + rowCount > _curList.VirtualListSize - 1 Then
-                    toIndex = _curList.VirtualListSize - 1
-                Else
-                    toIndex = idx2 + rowCount
-                End If
-                SelectListItem(_curList, toIndex)
-                _curList.EnsureVisible(toIndex)
-            Else
-                '最下行を選択
-                SelectListItem(_curList, idx)
-            End If
-        Else
-            _item = _curList.GetItemAt(0, 25)
-            If _item Is Nothing Then
-                If _curList.VirtualListSize > 0 Then
-                    SelectListItem(_curList, 0)
-                    _curList.EnsureVisible(0)
-                End If
-                Exit Sub
-            End If
+    '        idx = _item.Index
+    '        Dim idx2 As Integer = -1
+    '        If _curList.Focused Then
+    '            idx2 = _curList.FocusedItem.Index
+    '        End If
+    '        If idx2 >= idx Then
+    '            'スクロール
+    '            Dim idx3 As Integer = 0
+    '            _item = _curList.GetItemAt(0, 25)
+    '            If _item IsNot Nothing Then
+    '                idx3 = _item.Index
+    '            End If
+    '            Dim rowCount As Integer = idx - idx3
+    '            Dim toIndex As Integer = 0
+    '            If idx2 + rowCount > _curList.VirtualListSize - 1 Then
+    '                toIndex = _curList.VirtualListSize - 1
+    '            Else
+    '                toIndex = idx2 + rowCount
+    '            End If
+    '            SelectListItem(_curList, toIndex)
+    '            _curList.EnsureVisible(toIndex)
+    '        Else
+    '            '最下行を選択
+    '            SelectListItem(_curList, idx)
+    '        End If
+    '    Else
+    '        _item = _curList.GetItemAt(0, 25)
+    '        If _item Is Nothing Then
+    '            If _curList.VirtualListSize > 0 Then
+    '                SelectListItem(_curList, 0)
+    '                _curList.EnsureVisible(0)
+    '            End If
+    '            Exit Sub
+    '        End If
 
-            idx = _item.Index
-            Dim idx2 As Integer = -1
-            If _curList.Focused Then
-                idx2 = _curList.FocusedItem.Index
-            End If
-            If idx2 <= idx Then
-                'スクロール
-                Dim idx3 As Integer = 0
-                _item = _curList.GetItemAt(0, _curList.ClientSize.Height - 25)
-                If _item IsNot Nothing Then
-                    idx3 = _item.Index
-                End If
-                Dim rowCount As Integer = idx3 - idx
-                Dim toIndex As Integer = 0
-                If idx2 - rowCount < 0 Then
-                    toIndex = 0
-                Else
-                    toIndex = idx2 - rowCount
-                End If
-                SelectListItem(_curList, toIndex)
-                _curList.EnsureVisible(toIndex)
-            Else
-                '最上行を選択
-                SelectListItem(_curList, idx)
-            End If
-        End If
+    '        idx = _item.Index
+    '        Dim idx2 As Integer = -1
+    '        If _curList.Focused Then
+    '            idx2 = _curList.FocusedItem.Index
+    '        End If
+    '        If idx2 <= idx Then
+    '            'スクロール
+    '            Dim idx3 As Integer = 0
+    '            _item = _curList.GetItemAt(0, _curList.ClientSize.Height - 25)
+    '            If _item IsNot Nothing Then
+    '                idx3 = _item.Index
+    '            End If
+    '            Dim rowCount As Integer = idx3 - idx
+    '            Dim toIndex As Integer = 0
+    '            If idx2 - rowCount < 0 Then
+    '                toIndex = 0
+    '            Else
+    '                toIndex = idx2 - rowCount
+    '            End If
+    '            SelectListItem(_curList, toIndex)
+    '            _curList.EnsureVisible(toIndex)
+    '        Else
+    '            '最上行を選択
+    '            SelectListItem(_curList, idx)
+    '        End If
+    '    End If
 
-    End Sub
+    'End Sub
 
     Private Sub MyList_MouseClick(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs)
         _anchorFlag = False

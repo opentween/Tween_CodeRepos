@@ -136,6 +136,7 @@ Public Module Twitter
     Private Const _uidHeader As String = "session[username_or_email]="
     Private Const _pwdHeader As String = "session[password]="
     Private Const _pageQry As String = "?page="
+    Private Const _cursorQry As String = "?cursor="
     Private Const _statusHeader As String = "status="
     Private Const _statusUpdatePathAPI As String = "/statuses/update.xml"
     Private Const _linkToOld As String = "class=""section_links"" rel=""prev"""
@@ -1845,7 +1846,7 @@ Public Module Twitter
             If Not postStr.StartsWith("D ", StringComparison.OrdinalIgnoreCase) AndAlso _
                     Not postStr.StartsWith("DM ", StringComparison.OrdinalIgnoreCase) AndAlso _
                     IsPostRestricted(resMsg) Then
-                Return "Err:POST規制？"
+                Return "OK:Delaying?"
             End If
             resStatus = Outputz.Post(CreateSocket, postStr.Length)
             If resStatus.Length > 0 Then
@@ -1853,6 +1854,8 @@ Public Module Twitter
             Else
                 Return ""
             End If
+        ElseIf resStatus.StartsWith("Err: Forbidden") Then
+            Return "Err:Forbidden(Update Limits?)"
         Else
             If resStatus.StartsWith("Err: Unauthorized") Then
                 Twitter.AccountState = ACCOUNT_STATE.Invalid
@@ -2095,12 +2098,11 @@ Public Module Twitter
         Dim resStatus As String = ""
         Dim resMsg As String = ""
         Dim lineCount As Integer = 0
-        Dim page As Integer = 0
+        Dim page As Long = -1
 
         Do
             If _endingFlag Then Exit Do
-            page += 1
-            resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _GetFollowers + _pageQry + page.ToString, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+            resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _GetFollowers + _cursorQry + page.ToString, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
             If resStatus.StartsWith("OK") = False Then
                 _threadErr = True
                 Return resStatus
@@ -2118,6 +2120,10 @@ Public Module Twitter
                                 End If
                             End SyncLock
                             lineCount += 1
+                        ElseIf rd.IsStartElement("next_cursor") Then
+                            page = Long.Parse(rd.ReadElementString("next_cursor"))
+                            If page = 0 Then Exit Do
+                            Exit While
                         Else
                             rd.Read()
                         End If
@@ -3273,20 +3279,18 @@ Public Module Twitter
 
     Public Function GetFollowersApi() As String
         If _endingFlag Then Return ""
-        Dim page As Integer = 1
-        Dim curPage As Integer = 1
+        Dim page As Long = -1
 
         followerId.Clear()
 
         Do
-            curPage = page
             Dim ret As String = FollowerApi(page)
             If ret <> "" Then Return ret
-        Loop While curPage < page
+        Loop While page > 0
         Return ""
     End Function
 
-    Private Function FollowerApi(ByRef page As Integer) As String
+    Private Function FollowerApi(ByRef page As Long) As String
         If Twitter.AccountState <> ACCOUNT_STATE.Valid Then Return ""
 
         Dim retMsg As String = ""
@@ -3294,10 +3298,8 @@ Public Module Twitter
         Dim curCount As Integer = followerId.Count
 
         Const FOLLOWER_PATH As String = "/followers/ids.xml"
-        Dim pageQuery As String = ""
-        If page > 1 Then pageQuery = "?page=" + page.ToString
 
-        retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + FOLLOWER_PATH + pageQuery, resStatus, _ApiMethod), String)
+        retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + FOLLOWER_PATH + _cursorQry + page.ToString(), resStatus, _ApiMethod), String)
 
         If retMsg = "" Then
             If resStatus.StartsWith("Err: Unauthorized") Then
@@ -3317,17 +3319,15 @@ Public Module Twitter
             Return "Invalid XML!"
         End Try
 
-        For Each xentryNode As XmlNode In xdoc.DocumentElement.SelectNodes("./id")
-            Try
+        Try
+            For Each xentryNode As XmlNode In xdoc.DocumentElement.SelectNodes("/id_list/ids/id")
                 followerId.Add(Long.Parse(xentryNode.InnerText))
-            Catch ex As Exception
-                TraceOut(retMsg)
-                MessageBox.Show("不正なXMLです。再取得してください。(FollowerApi-Parse)")
-                Continue For
-            End Try
-        Next
-
-        If followerId.Count - curCount > 4900 Then page += 1
+            Next
+            page = Long.Parse(xdoc.DocumentElement.SelectSingleNode("/id_list/next_cursor").InnerText)
+        Catch ex As Exception
+            TraceOut(retMsg)
+            MessageBox.Show("不正なXMLです。再取得してください。(FollowerApi-Parse)")
+        End Try
 
         Return ""
 
