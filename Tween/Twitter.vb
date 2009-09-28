@@ -1718,6 +1718,8 @@ Public Module Twitter
                 End If
             End SyncLock
             TabInformations.GetInstance.AddPost(post)
+        Catch ex As ArgumentException
+            'タイミングによってはキー重複
         Finally
             img = Nothing
             bmp2 = Nothing
