@@ -220,6 +220,9 @@
   <data name="Label16.Text" xml:space="preserve">
     <value>Colorize One-way following</value>
   </data>
+  <data name="GroupBox1.Text" xml:space="preserve">
+    <value>Font &amp;&amp; Color</value>
+  </data>
   <data name="btnInputFont.Text" xml:space="preserve">
     <value>Font...</value>
   </data>
@@ -355,9 +358,6 @@
   <data name="Label61.Text" xml:space="preserve">
     <value>Font of tweet list</value>
   </data>
-  <data name="GroupBox1.Text" xml:space="preserve">
-    <value>Font &amp;&amp; Color</value>
-  </data>
   <data name="cmbNameBalloon.Items" xml:space="preserve">
     <value>None</value>
   </data>
@@ -442,12 +442,6 @@
   <data name="Label39.Text" xml:space="preserve">
     <value>Make Read when updated</value>
   </data>
-  <data name="CheckBox6.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 16</value>
-  </data>
-  <data name="CheckBox6.Text" xml:space="preserve">
-    <value>Enable</value>
-  </data>
   <data name="Label40.Size" type="System.Drawing.Size, System.Drawing">
     <value>136, 12</value>
   </data>
@@ -526,11 +520,14 @@
   <data name="Label47.Text" xml:space="preserve">
     <value>Apply after restarting</value>
   </data>
+  <data name="TabPage1.Text" xml:space="preserve">
+    <value>Basic</value>
+  </data>
   <data name="Label70.Size" type="System.Drawing.Size, System.Drawing">
-    <value>224, 12</value>
+    <value>176, 12</value>
   </data>
   <data name="Label70.Text" xml:space="preserve">
-    <value>Show message at startup if API is enabled</value>
+    <value>Show warning if API isn't enabled</value>
   </data>
   <data name="CheckStartupAPImodeNoWarning.Size" type="System.Drawing.Size, System.Drawing">
     <value>80, 16</value>
@@ -622,8 +619,8 @@
   <data name="CheckPeriodAdjust.Text" xml:space="preserve">
     <value>Enable Auto-Adjustment</value>
   </data>
-  <data name="TabPage1.Text" xml:space="preserve">
-    <value>Basic</value>
+  <data name="TabPage2.Text" xml:space="preserve">
+    <value>Behavior</value>
   </data>
   <data name="Label74.Location" type="System.Drawing.Point, System.Drawing">
     <value>11, 423</value>
@@ -719,8 +716,8 @@
   <data name="Button3.Text" xml:space="preserve">
     <value>Open...</value>
   </data>
-  <data name="TabPage2.Text" xml:space="preserve">
-    <value>Behavior</value>
+  <data name="TabPage3.Text" xml:space="preserve">
+    <value>View</value>
   </data>
   <data name="Label75.Size" type="System.Drawing.Size, System.Drawing">
     <value>150, 12</value>
@@ -788,11 +785,11 @@
   <data name="chkUnreadStyle.Text" xml:space="preserve">
     <value>Enable</value>
   </data>
-  <data name="TabPage3.Text" xml:space="preserve">
-    <value>View</value>
-  </data>
   <data name="TabPage4.Text" xml:space="preserve">
     <value>Fonts &amp; Colors</value>
+  </data>
+  <data name="TabPage5.Text" xml:space="preserve">
+    <value>Connection</value>
   </data>
   <data name="Label64.Size" type="System.Drawing.Size, System.Drawing">
     <value>371, 12</value>
@@ -805,6 +802,9 @@
   </data>
   <data name="Label63.Text" xml:space="preserve">
     <value>Connection timeout(sec)</value>
+  </data>
+  <data name="GroupBox2.Text" xml:space="preserve">
+    <value>Proxy Server</value>
   </data>
   <data name="Label55.Size" type="System.Drawing.Size, System.Drawing">
     <value>320, 12</value>
@@ -853,12 +853,6 @@
   </data>
   <data name="RadioProxyNone.Text" xml:space="preserve">
     <value>Don't Use</value>
-  </data>
-  <data name="GroupBox2.Text" xml:space="preserve">
-    <value>Proxy Server</value>
-  </data>
-  <data name="TabPage5.Text" xml:space="preserve">
-    <value>Connection</value>
   </data>
   <data name="Label60.Size" type="System.Drawing.Size, System.Drawing">
     <value>107, 12</value>

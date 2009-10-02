@@ -53,7 +53,6 @@ Partial Class TweenMain
         Me.ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator
         Me.SaveIconPictureToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.NameLabel = New System.Windows.Forms.Label
-        Me.PostBrowser = New System.Windows.Forms.WebBrowser
         Me.ContextMenuStrip4 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.ToolStripMenuItem2 = New System.Windows.Forms.ToolStripMenuItem
         Me.SearchItem2ToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
@@ -170,6 +169,8 @@ Partial Class TweenMain
         Me.TimerRefreshIcon = New System.Windows.Forms.Timer(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog
         Me.TimerReply = New System.Windows.Forms.Timer(Me.components)
+        Me.PostBrowser = New System.Windows.Forms.WebBrowser
+        Me.JmpStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripContainer1.BottomToolStripPanel.SuspendLayout()
         Me.ToolStripContainer1.ContentPanel.SuspendLayout()
         Me.ToolStripContainer1.TopToolStripPanel.SuspendLayout()
@@ -400,18 +401,6 @@ Partial Class TweenMain
         '
         resources.ApplyResources(Me.NameLabel, "NameLabel")
         Me.NameLabel.Name = "NameLabel"
-        '
-        'PostBrowser
-        '
-        Me.PostBrowser.AllowWebBrowserDrop = False
-        Me.TableLayoutPanel1.SetColumnSpan(Me.PostBrowser, 2)
-        Me.PostBrowser.ContextMenuStrip = Me.ContextMenuStrip4
-        resources.ApplyResources(Me.PostBrowser, "PostBrowser")
-        Me.PostBrowser.IsWebBrowserContextMenuEnabled = False
-        Me.PostBrowser.Name = "PostBrowser"
-        Me.PostBrowser.ScriptErrorsSuppressed = True
-        Me.PostBrowser.TabStop = False
-        Me.PostBrowser.Url = New System.Uri("about:blank", System.UriKind.Absolute)
         '
         'ContextMenuStrip4
         '
@@ -798,7 +787,7 @@ Partial Class TweenMain
         '
         'TinyUrlConvertToolStripMenuItem
         '
-        Me.TinyUrlConvertToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.UrlConvertAutoToolStripMenuItem, Me.UrlUndoToolStripMenuItem, Me.TinyURLToolStripMenuItem, Me.IsgdToolStripMenuItem, Me.TwurlnlToolStripMenuItem, Me.UnuToolStripMenuItem, Me.BitlyToolStripMenuItem})
+        Me.TinyUrlConvertToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.UrlConvertAutoToolStripMenuItem, Me.UrlUndoToolStripMenuItem, Me.TinyURLToolStripMenuItem, Me.IsgdToolStripMenuItem, Me.TwurlnlToolStripMenuItem, Me.UnuToolStripMenuItem, Me.BitlyToolStripMenuItem, Me.JmpStripMenuItem})
         Me.TinyUrlConvertToolStripMenuItem.Name = "TinyUrlConvertToolStripMenuItem"
         resources.ApplyResources(Me.TinyUrlConvertToolStripMenuItem, "TinyUrlConvertToolStripMenuItem")
         '
@@ -1025,6 +1014,23 @@ Partial Class TweenMain
         '
         Me.TimerReply.Interval = 600000
         '
+        'PostBrowser
+        '
+        Me.PostBrowser.AllowWebBrowserDrop = False
+        Me.TableLayoutPanel1.SetColumnSpan(Me.PostBrowser, 2)
+        Me.PostBrowser.ContextMenuStrip = Me.ContextMenuStrip4
+        resources.ApplyResources(Me.PostBrowser, "PostBrowser")
+        Me.PostBrowser.IsWebBrowserContextMenuEnabled = False
+        Me.PostBrowser.Name = "PostBrowser"
+        Me.PostBrowser.ScriptErrorsSuppressed = True
+        Me.PostBrowser.TabStop = False
+        Me.PostBrowser.Url = New System.Uri("about:blank", System.UriKind.Absolute)
+        '
+        'JmpStripMenuItem
+        '
+        Me.JmpStripMenuItem.Name = "JmpStripMenuItem"
+        resources.ApplyResources(Me.JmpStripMenuItem, "JmpStripMenuItem")
+        '
         'TweenMain
         '
         Me.AllowDrop = True
@@ -1208,5 +1214,6 @@ Partial Class TweenMain
     Friend WithEvents FollowContextMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents RemoveContextMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents FriendshipContextMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents JmpStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class

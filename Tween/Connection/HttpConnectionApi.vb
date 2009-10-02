@@ -34,7 +34,7 @@ Public Class HttpConnectionApi
                                                     requestUri, _
                                                     param, _
                                                     False)
-        'OAuth認証ヘッダを付加
+        'API用ヘッダを付加
         AppendApiInfo(webReq)
 
         Return GetResponse(webReq, content, headerInfo, False)
@@ -43,9 +43,6 @@ Public Class HttpConnectionApi
     Private Shared Sub AppendApiInfo(ByVal webRequest As HttpWebRequest)
         webRequest.ContentType = "application/x-www-form-urlencoded"
         webRequest.Accept = "text/html, */*"
-        webRequest.Headers.Add("X-Twitter-Client", "Tween")
-        webRequest.Headers.Add("X-Twitter-Client-Version", version)
-        webRequest.Headers.Add("X-Twitter-Client-URL", "http://www.asahi-net.or.jp/~ne5h-ykmz/tween.xml")
         webRequest.Headers.Add(HttpRequestHeader.Authorization, credential)
     End Sub
 

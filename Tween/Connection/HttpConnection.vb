@@ -134,7 +134,7 @@ Public Class HttpConnection
             If withCookie Then SaveCookie(webRes.Cookies)
             'リダイレクト応答の場合は、リダイレクト先を設定して終了
             GetHeaderInfo(webRes, headerInfo)
-            '応答のストリームをコピーして戻す
+            '応答のストリームをテキストに書き出して戻す
             If contentText Is Nothing Then Throw New ArgumentNullException("contentText")
             If webRes.ContentLength > 0 Then
                 Using sr As StreamReader = New StreamReader(webRes.GetResponseStream)
@@ -156,7 +156,7 @@ Public Class HttpConnection
             If withCookie Then SaveCookie(webRes.Cookies)
             'リダイレクト応答の場合は、リダイレクト先を設定して終了
             GetHeaderInfo(webRes, headerInfo)
-            '応答のストリームをコピーして戻す
+            '応答のストリームをBitmapにして戻す
             If webRes.ContentLength > 0 Then contentBitmap = New Bitmap(webRes.GetResponseStream)
             Return statusCode
         End Using

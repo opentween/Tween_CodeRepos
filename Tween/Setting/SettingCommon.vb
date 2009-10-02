@@ -63,7 +63,7 @@ Public Class SettingCommon
     Public OneWayLove As Boolean = True
     Public NameBalloon As NameBalloonEnum = NameBalloonEnum.NickName
     Public PostCtrlEnter As Boolean = False
-    Public UseApi As Boolean = False
+    Public UseApi As Boolean = True
     Public UsePostMethod As Boolean = False
     Public CountApi As Integer = 60
     Public CheckReply As Boolean = True

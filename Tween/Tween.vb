@@ -1510,42 +1510,15 @@ Public Class TweenMain
             '_endingFlag=False:フォームの×ボタン
             e.Cancel = True
             Me.Visible = False
+        Else
+            _ignoreConfigSave = True
+            _endingFlag = True
+            TimerTimeline.Enabled = False
+            TimerReply.Enabled = False
+            TimerDM.Enabled = False
+            TimerColorize.Enabled = False
+            TimerRefreshIcon.Enabled = False
         End If
-    End Sub
-
-    Private Sub TweenMain_FormClosed(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
-        If e.CloseReason = CloseReason.TaskManagerClosing Then Exit Sub '即終了
-        If _ignoreConfigSave Then Exit Sub
-        _ignoreConfigSave = True
-        TimerTimeline.Enabled = False
-        TimerReply.Enabled = False
-        TimerDM.Enabled = False
-        TimerColorize.Enabled = False
-        TimerRefreshIcon.Enabled = False
-
-        _endingFlag = True
-
-        'For i As Integer = 0 To _bw.Length - 1
-        '    If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then _bw(i).CancelAsync()
-        'Next
-        'If _bwFollower IsNot Nothing AndAlso _bwFollower.IsBusy Then _bwFollower.CancelAsync()
-
-        'Dim flg As Boolean = False
-        'Do
-        '    flg = True
-        '    For i As Integer = 0 To _bw.Length - 1
-        '        If _bw(i) IsNot Nothing AndAlso _bw(i).IsBusy Then
-        '            flg = False
-        '            Exit For
-        '        End If
-        '    Next
-        '    If _bwFollower IsNot Nothing AndAlso _bwFollower.IsBusy Then
-        '        flg = False
-        '    End If
-        '    Threading.Thread.Sleep(500)
-        '    Application.DoEvents()
-        'Loop Until flg = True
-
     End Sub
 
     Private Sub NotifyIcon1_BalloonTipClicked(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles NotifyIcon1.BalloonTipClicked
@@ -4295,7 +4268,7 @@ RETRY:
             _cfgLocal.ProxyPort = SettingDialog.ProxyPort
             _cfgLocal.ProxyUser = SettingDialog.ProxyUser
             _cfgLocal.ProxyPassword = SettingDialog.ProxyPassword
-
+            If _ignoreConfigSave Then Exit Sub
             _cfgLocal.Save()
         End SyncLock
     End Sub
@@ -4657,6 +4630,8 @@ RETRY:
         End If
         If blinkCnt > 10 Then
             blinkCnt = 0
+            '未保存の変更を保存
+            SaveConfigsAll(True)
         End If
 
         If busy Then
@@ -5928,7 +5903,6 @@ RETRY:
         End If
         If bw Is Nothing Then Exit Sub
 
-        SaveConfigsAll(True)
         bw.RunWorkerAsync(args)
     End Sub
 
@@ -5976,15 +5950,15 @@ RETRY:
                 CheckNewVersion(True)
             End If
 
-            ' APIモードで起動した場合に警告する
-            If Not SettingDialog.StartupAPImodeNoWarning AndAlso SettingDialog.UseAPI Then
-                If MessageBox.Show("現在APIモードです。APIモードではタイムライン取得に回数制限があり、制限回数を超えるとタイムライン取得が行えなくなります。この制限について理解していますか？Web取得モードではタイムライン取得にAPIを使用せず、API回数制限の影響を受けません。Web取得モードに切り替える場合は「OK」を押してください。", "警告", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) = Windows.Forms.DialogResult.OK Then
-                    SettingDialog.UseAPI = False
+            ' Webモードで起動した場合に警告する
+            If Not SettingDialog.StartupAPImodeNoWarning AndAlso Not SettingDialog.UseAPI Then
+                If MessageBox.Show("現在Webモードです。" + Environment.NewLine + " * Webモードの使用はTwitterの利用規約に違反する恐れがあります。" + Environment.NewLine + " * APIモードではタイムライン取得に回数制限があります。" + Environment.NewLine + "APIモードに切り替える場合は「OK」を押してください。", "警告", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) = Windows.Forms.DialogResult.OK Then
+                    SettingDialog.UseAPI = True
                     'SaveConfigsCommon()
-                    MessageBox.Show("APIモードをオフにし、Web取得モードへ切り替えました。")
+                    MessageBox.Show("APIモードへ切り替えました。")
                 Else
-                    MessageBox.Show("APIモードを維持することを選択しました。Web取得に戻す場合は設定の動作タブにある「API使用」のチェックを外すと戻すことができます。" + Environment.NewLine + Environment.NewLine + "※APIモードの制限を理解された方のみ、次回より警告を表示しないよう設定画面で変更してください※")
-                    MessageBox.Show("取得間隔に注意してください。タイムライン取得系APIはRecent,Reply,DMの合計で1時間に" + GetMaxCountApi.ToString() + "回までしか使えません。", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    MessageBox.Show("APIモードへ戻す場合は、設定の「動作」タブにある「API使用」にチェックを入れて下さい。")
+                    'MessageBox.Show("取得間隔に注意してください。タイムライン取得系APIはRecent,Reply,DMの合計で1時間に" + GetMaxCountApi.ToString() + "回までしか使えません。", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 End If
             End If
 
@@ -6151,6 +6125,10 @@ RETRY:
 
     Private Sub BitlyToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BitlyToolStripMenuItem.Click
         UrlConvert(UrlConverter.Bitly)
+    End Sub
+
+    Private Sub JmpToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles JmpStripMenuItem.Click
+        UrlConvert(UrlConverter.Jmp)
     End Sub
 
     Private Sub ApiInfoMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ApiInfoMenuItem.Click

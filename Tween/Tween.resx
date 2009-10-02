@@ -1272,6 +1272,12 @@
   <data name="BitlyToolStripMenuItem.Text" xml:space="preserve">
     <value>bit.ly</value>
   </data>
+  <data name="JmpStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>215, 22</value>
+  </data>
+  <data name="JmpStripMenuItem.Text" xml:space="preserve">
+    <value>j.mp</value>
+  </data>
   <data name="TinyUrlConvertToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>195, 22</value>
   </data>
@@ -2297,6 +2303,12 @@
   </data>
   <data name="&gt;&gt;TimerReply.Type" xml:space="preserve">
     <value>System.Windows.Forms.Timer, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;JmpStripMenuItem.Name" xml:space="preserve">
+    <value>JmpStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;JmpStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>TweenMain</value>
