@@ -584,11 +584,15 @@ Public Module Twitter
                     If ImgTag.IsMatch(post.Data) Then post.Data = ImgTag.Replace(post.Data, "<img>")
 
                     'Get Date
-#If 0 Then
+#If 1 Then
                     Try
                         pos1 = strPost.IndexOf(_parseDate, pos2, StringComparison.Ordinal)
-                        pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length, StringComparison.Ordinal)
-                        post.PDate = DateTime.ParseExact(strPost.Substring(pos1 + _parseDate.Length, pos2 - pos1 - _parseDate.Length), "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz", System.Globalization.DateTimeFormatInfo.InvariantInfo, Globalization.DateTimeStyles.None)
+                        If pos1 > -1 Then
+                            pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length, StringComparison.Ordinal)
+                            post.PDate = DateTime.ParseExact(strPost.Substring(pos1 + _parseDate.Length, pos2 - pos1 - _parseDate.Length), "ddd MMM dd HH':'mm':'ss zzzz yyyy", System.Globalization.DateTimeFormatInfo.InvariantInfo, Globalization.DateTimeStyles.None)
+                        Else
+                            post.PDate = Now()
+                        End If
                     Catch ex As Exception
                         _signed = False
                         TraceOut("TM-Date:" + strPost)
@@ -987,17 +991,21 @@ Public Module Twitter
                         Return "GetDirectMessage -> Err: Can't parse links"
                     End Try
 
-#If 0 Then
-                'Get Date
-                Try
-                    pos1 = strPost.IndexOf(_parseDate, pos2, StringComparison.Ordinal)
-                    pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length, StringComparison.Ordinal)
-                    post.PDate = DateTime.ParseExact(strPost.Substring(pos1 + _parseDate.Length, pos2 - pos1 - _parseDate.Length), "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz", System.Globalization.DateTimeFormatInfo.InvariantInfo, Globalization.DateTimeStyles.None)
-                Catch ex As Exception
-                    _signed = False
-                    TraceOut("DM-Date:" + strPost)
-                    Return "GetDirectMessage -> Err: Can't get date."
-                End Try
+#If 1 Then
+                    'Get Date
+                    Try
+                        pos1 = strPost.IndexOf(_parseDate, pos2, StringComparison.Ordinal)
+                        If pos1 > -1 Then
+                            pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length, StringComparison.Ordinal)
+                            post.PDate = DateTime.ParseExact(strPost.Substring(pos1 + _parseDate.Length, pos2 - pos1 - _parseDate.Length), "ddd MMM dd HH':'mm':'ss zzzz yyyy", System.Globalization.DateTimeFormatInfo.InvariantInfo, Globalization.DateTimeStyles.None)
+                        Else
+                            post.PDate = Now()
+                        End If
+                    Catch ex As Exception
+                        _signed = False
+                        TraceOut("DM-Date:" + strPost)
+                        Return "GetDirectMessage -> Err: Can't get date."
+                    End Try
 #Else
                     '取得できなくなったため暫定対応(2/26)
                     post.PDate = Now()
@@ -1289,11 +1297,15 @@ Public Module Twitter
                     If ImgTag.IsMatch(post.Data) Then post.Data = ImgTag.Replace(post.Data, "<img>")
 
                     'Get Date
-#If 0 Then
+#If 1 Then
                     Try
                         pos1 = strPost.IndexOf(_parseDate, pos2, StringComparison.Ordinal)
-                        pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length, StringComparison.Ordinal)
-                        post.PDate = DateTime.ParseExact(strPost.Substring(pos1 + _parseDate.Length, pos2 - pos1 - _parseDate.Length), "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz", System.Globalization.DateTimeFormatInfo.InvariantInfo, Globalization.DateTimeStyles.None)
+                        If pos1 > -1 Then
+                            pos2 = strPost.IndexOf(_parseDateTo, pos1 + _parseDate.Length, StringComparison.Ordinal)
+                            post.PDate = DateTime.ParseExact(strPost.Substring(pos1 + _parseDate.Length, pos2 - pos1 - _parseDate.Length), "ddd MMM dd HH':'mm':'ss zzzz yyyy", System.Globalization.DateTimeFormatInfo.InvariantInfo, Globalization.DateTimeStyles.None)
+                        Else
+                            post.PDate = Now()
+                        End If
                     Catch ex As Exception
                         _signed = False
                         TraceOut("TM-Date:" + strPost)
@@ -2743,7 +2755,7 @@ Public Module Twitter
                 If Not ret.StartsWith("http://u.nu") Then
                     Return "Can't convert"
                 End If
-            Case UrlConverter.Bitly
+            Case UrlConverter.Bitly, UrlConverter.Jmp
                 Const BitlyLogin As String = "tweenapi"
                 Const BitlyApiKey As String = "R_c5ee0e30bdfff88723c4457cc331886b"
                 Const BitlyApiVersion As String = "2.0.1"
@@ -2770,7 +2782,7 @@ Public Module Twitter
                 If Not ret.StartsWith("http://bit.ly") Then
                     Return "Can't convert"
                 End If
-                ret = ret.Replace("bit.ly", "j.mp")
+                If ConverterType = UrlConverter.Jmp Then ret = ret.Replace("bit.ly", "j.mp")
         End Select
         '変換結果から改行を除去
         Dim ch As Char() = {ControlChars.Cr, ControlChars.Lf}

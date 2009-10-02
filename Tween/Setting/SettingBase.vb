@@ -45,6 +45,15 @@
                         fs.Flush()
                         fs.Close()
                     End Using
+                    Dim fi As New IO.FileInfo(fileName)
+                    If fi.Length = 0 Then
+                        If cnt > 3 Then
+                            Throw New Exception
+                            Exit Sub
+                        End If
+                        Threading.Thread.Sleep(1000)
+                        err = True
+                    End If
                 End SyncLock
             Catch ex As Exception
                 '検証エラー or 書き込みエラー

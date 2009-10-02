@@ -73,6 +73,7 @@ Public Module MyCommon
         Twurl
         Unu
         Bitly
+        Jmp
     End Enum
 
     Public Enum OutputzUrlmode

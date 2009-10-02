@@ -3130,13 +3130,13 @@
     <value>14, 364</value>
   </data>
   <data name="Label70.Size" type="System.Drawing.Size, System.Drawing">
-    <value>135, 12</value>
+    <value>138, 12</value>
   </data>
   <data name="Label70.TabIndex" type="System.Int32, mscorlib">
     <value>35</value>
   </data>
   <data name="Label70.Text" xml:space="preserve">
-    <value>起動時APIモード使用警告</value>
+    <value>起動時Webモード使用警告</value>
   </data>
   <data name="&gt;&gt;Label70.Name" xml:space="preserve">
     <value>Label70</value>
@@ -3734,6 +3734,9 @@
   </data>
   <data name="ComboBoxAutoShortUrlFirst.Items4" xml:space="preserve">
     <value>bit.ly</value>
+  </data>
+  <data name="ComboBoxAutoShortUrlFirst.Items5" xml:space="preserve">
+    <value>j.mp</value>
   </data>
   <data name="ComboBoxAutoShortUrlFirst.Location" type="System.Drawing.Point, System.Drawing">
     <value>173, 254</value>
