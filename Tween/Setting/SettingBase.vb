@@ -16,11 +16,33 @@
         Catch ex As System.IO.FileNotFoundException
             Return New T()
         Catch ex As Exception
-            ex.Data.Add("FilePath", GetSettingFilePath(FileId))
-            Dim fi As New IO.FileInfo(GetSettingFilePath(FileId))
-            ex.Data.Add("FileSize", fi.Length.ToString())
-            ex.Data.Add("FileData", IO.File.ReadAllText(GetSettingFilePath(FileId)))
-            Throw
+            Dim backupFile As String = IO.Path.Combine( _
+                    IO.Path.Combine( _
+                        My.Application.Info.DirectoryPath, _
+                        "TweenBackup1st"), _
+                    GetType(T).Name + FileId + ".xml")
+            If IO.File.Exists(backupFile) Then
+                Try
+                    SyncLock lockObj
+                        Using fs As New IO.FileStream(backupFile, IO.FileMode.Open)
+                            fs.Position = 0
+                            Dim xs As New Xml.Serialization.XmlSerializer(GetType(T))
+                            Dim instance As T = DirectCast(xs.Deserialize(fs), T)
+                            fs.Close()
+                            MessageBox.Show("File: " + GetSettingFilePath(FileId) + Environment.NewLine + "Use old setting file, because application can't read this setting file.")
+                            Return instance
+                        End Using
+                    End SyncLock
+                Catch ex2 As Exception
+                End Try
+            End If
+            MessageBox.Show("File: " + GetSettingFilePath(FileId) + Environment.NewLine + "Use default setting, because application can't read this setting file.")
+            Return New T()
+            'ex.Data.Add("FilePath", GetSettingFilePath(FileId))
+            'Dim fi As New IO.FileInfo(GetSettingFilePath(FileId))
+            'ex.Data.Add("FileSize", fi.Length.ToString())
+            'ex.Data.Add("FileData", IO.File.ReadAllText(GetSettingFilePath(FileId)))
+            'Throw
         End Try
     End Function
 
