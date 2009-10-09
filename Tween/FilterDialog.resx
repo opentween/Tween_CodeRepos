@@ -119,7 +119,7 @@
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="ButtonClose.Location" type="System.Drawing.Point, System.Drawing">
-    <value>431, 445</value>
+    <value>568, 456</value>
   </data>
   <data name="ButtonClose.Size" type="System.Drawing.Size, System.Drawing">
     <value>75, 23</value>
@@ -141,13 +141,13 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;ButtonClose.ZOrder" xml:space="preserve">
-    <value>7</value>
+    <value>3</value>
   </data>
   <data name="ComboTabs.Location" type="System.Drawing.Point, System.Drawing">
-    <value>41, 6</value>
+    <value>12, 24</value>
   </data>
   <data name="ComboTabs.Size" type="System.Drawing.Size, System.Drawing">
-    <value>465, 20</value>
+    <value>133, 188</value>
   </data>
   <data name="ComboTabs.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -162,7 +162,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;ComboTabs.ZOrder" xml:space="preserve">
-    <value>0</value>
+    <value>1</value>
   </data>
   <data name="Label5.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -189,16 +189,16 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;Label5.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>2</value>
   </data>
   <data name="ListFilters.ItemHeight" type="System.Int32, mscorlib">
     <value>12</value>
   </data>
   <data name="ListFilters.Location" type="System.Drawing.Point, System.Drawing">
-    <value>14, 30</value>
+    <value>9, 19</value>
   </data>
   <data name="ListFilters.Size" type="System.Drawing.Size, System.Drawing">
-    <value>492, 232</value>
+    <value>477, 184</value>
   </data>
   <data name="ListFilters.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -210,10 +210,10 @@
     <value>System.Windows.Forms.ListBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;ListFilters.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>GroupBox2</value>
   </data>
   <data name="&gt;&gt;ListFilters.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>0</value>
   </data>
   <data name="OptMark.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -270,10 +270,10 @@
     <value>1</value>
   </data>
   <data name="GroupBox1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>343, 14</value>
+    <value>8, 119</value>
   </data>
   <data name="GroupBox1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>151, 71</value>
+    <value>302, 71</value>
   </data>
   <data name="GroupBox1.TabIndex" type="System.Int32, mscorlib">
     <value>11</value>
@@ -375,7 +375,7 @@
     <value>3</value>
   </data>
   <data name="ButtonCancel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>419, 115</value>
+    <value>396, 167</value>
   </data>
   <data name="ButtonCancel.Size" type="System.Drawing.Size, System.Drawing">
     <value>75, 23</value>
@@ -597,7 +597,7 @@
     <value>12</value>
   </data>
   <data name="ButtonOK.Location" type="System.Drawing.Point, System.Drawing">
-    <value>339, 115</value>
+    <value>316, 167</value>
   </data>
   <data name="ButtonOK.Size" type="System.Drawing.Size, System.Drawing">
     <value>75, 23</value>
@@ -621,10 +621,10 @@
     <value>13</value>
   </data>
   <data name="EditFilterGroup.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 295</value>
+    <value>9, 238</value>
   </data>
   <data name="EditFilterGroup.Size" type="System.Drawing.Size, System.Drawing">
-    <value>500, 144</value>
+    <value>477, 196</value>
   </data>
   <data name="EditFilterGroup.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
@@ -639,13 +639,13 @@
     <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;EditFilterGroup.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>GroupBox2</value>
   </data>
   <data name="&gt;&gt;EditFilterGroup.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>4</value>
   </data>
   <data name="ButtonNew.Location" type="System.Drawing.Point, System.Drawing">
-    <value>14, 266</value>
+    <value>9, 209</value>
   </data>
   <data name="ButtonNew.Size" type="System.Drawing.Size, System.Drawing">
     <value>75, 23</value>
@@ -663,13 +663,13 @@
     <value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;ButtonNew.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>GroupBox2</value>
   </data>
   <data name="&gt;&gt;ButtonNew.ZOrder" xml:space="preserve">
-    <value>4</value>
+    <value>3</value>
   </data>
   <data name="ButtonDelete.Location" type="System.Drawing.Point, System.Drawing">
-    <value>430, 266</value>
+    <value>411, 209</value>
   </data>
   <data name="ButtonDelete.Size" type="System.Drawing.Size, System.Drawing">
     <value>75, 23</value>
@@ -687,13 +687,13 @@
     <value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;ButtonDelete.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>GroupBox2</value>
   </data>
   <data name="&gt;&gt;ButtonDelete.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>2</value>
   </data>
   <data name="ButtonEdit.Location" type="System.Drawing.Point, System.Drawing">
-    <value>222, 266</value>
+    <value>210, 209</value>
   </data>
   <data name="ButtonEdit.Size" type="System.Drawing.Size, System.Drawing">
     <value>75, 23</value>
@@ -711,10 +711,34 @@
     <value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;ButtonEdit.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>GroupBox2</value>
   </data>
   <data name="&gt;&gt;ButtonEdit.ZOrder" xml:space="preserve">
-    <value>6</value>
+    <value>1</value>
+  </data>
+  <data name="GroupBox2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>151, 9</value>
+  </data>
+  <data name="GroupBox2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>492, 441</value>
+  </data>
+  <data name="GroupBox2.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="GroupBox2.Text" xml:space="preserve">
+    <value>GroupBox2</value>
+  </data>
+  <data name="&gt;&gt;GroupBox2.Name" xml:space="preserve">
+    <value>GroupBox2</value>
+  </data>
+  <data name="&gt;&gt;GroupBox2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;GroupBox2.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;GroupBox2.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -723,7 +747,7 @@
     <value>6, 12</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>518, 472</value>
+    <value>650, 491</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">

@@ -48,8 +48,10 @@ Partial Class FilterDialog
         Me.ButtonNew = New System.Windows.Forms.Button
         Me.ButtonDelete = New System.Windows.Forms.Button
         Me.ButtonEdit = New System.Windows.Forms.Button
+        Me.GroupBox2 = New System.Windows.Forms.GroupBox
         Me.EditFilterGroup.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
+        Me.GroupBox2.SuspendLayout()
         Me.SuspendLayout()
         '
         'ButtonClose
@@ -61,7 +63,7 @@ Partial Class FilterDialog
         '
         'ComboTabs
         '
-        Me.ComboTabs.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboTabs.DropDownStyle = System.Windows.Forms.ComboBoxStyle.Simple
         Me.ComboTabs.FormattingEnabled = True
         resources.ApplyResources(Me.ComboTabs, "ComboTabs")
         Me.ComboTabs.Name = "ComboTabs"
@@ -210,19 +212,26 @@ Partial Class FilterDialog
         Me.ButtonEdit.Name = "ButtonEdit"
         Me.ButtonEdit.UseVisualStyleBackColor = True
         '
+        'GroupBox2
+        '
+        Me.GroupBox2.Controls.Add(Me.ListFilters)
+        Me.GroupBox2.Controls.Add(Me.ButtonEdit)
+        Me.GroupBox2.Controls.Add(Me.ButtonDelete)
+        Me.GroupBox2.Controls.Add(Me.ButtonNew)
+        Me.GroupBox2.Controls.Add(Me.EditFilterGroup)
+        resources.ApplyResources(Me.GroupBox2, "GroupBox2")
+        Me.GroupBox2.Name = "GroupBox2"
+        Me.GroupBox2.TabStop = False
+        '
         'FilterDialog
         '
         resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.ButtonClose
         Me.ControlBox = False
+        Me.Controls.Add(Me.GroupBox2)
         Me.Controls.Add(Me.ComboTabs)
         Me.Controls.Add(Me.Label5)
-        Me.Controls.Add(Me.ListFilters)
-        Me.Controls.Add(Me.EditFilterGroup)
-        Me.Controls.Add(Me.ButtonNew)
-        Me.Controls.Add(Me.ButtonDelete)
-        Me.Controls.Add(Me.ButtonEdit)
         Me.Controls.Add(Me.ButtonClose)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.KeyPreview = True
@@ -235,6 +244,7 @@ Partial Class FilterDialog
         Me.EditFilterGroup.PerformLayout()
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()
+        Me.GroupBox2.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -263,5 +273,6 @@ Partial Class FilterDialog
     Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
     Friend WithEvents OptMove As System.Windows.Forms.RadioButton
     Friend WithEvents OptMark As System.Windows.Forms.RadioButton
+    Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
 
 End Class
