@@ -572,14 +572,15 @@ Public Class TweenMain
         SettingDialog.GetFav = _cfgCommon.GetFav
         SettingDialog.ReadOldPosts = _cfgCommon.ReadOldPosts
         SettingDialog.IsMonospace = _cfgCommon.IsMonospace
-
         If SettingDialog.IsMonospace Then
             detailHtmlFormat = detailHtmlFormatMono1 + _fntDetail.Name + detailHtmlFormatMono2 + _fntDetail.Size.ToString() + detailHtmlFormatMono3
         Else
             detailHtmlFormat = detailHtmlFormat1 + _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3
         End If
-
         Me.IdeographicSpaceToSpaceToolStripMenuItem.Checked = _cfgCommon.WideSpaceConvert
+
+        Dim statregex As New Regex("^0*")
+        SettingDialog.RecommendStatusText = " [TWNv" + statregex.Replace(My.Application.Info.Version.Major.ToString() + My.Application.Info.Version.Minor.ToString() + My.Application.Info.Version.Build.ToString() + My.Application.Info.Version.Revision.ToString(), "") + "]"
 
         '書式指定文字列エラーチェック
         Try
@@ -1470,8 +1471,7 @@ Public Class TweenMain
             args.status = StatusText.Text.Trim
         ElseIf SettingDialog.UseRecommendStatus() Then
             ' 推奨ステータスを使用する
-            Dim statregex As New Regex("^0*")
-            args.status = StatusText.Text.Trim() + " [TWNv" + statregex.Replace(My.Application.Info.Version.Major.ToString() + My.Application.Info.Version.Minor.ToString() + My.Application.Info.Version.Build.ToString() + My.Application.Info.Version.Revision.ToString(), "") + "]"
+            args.status = StatusText.Text.Trim() + SettingDialog.RecommendStatusText
         Else
             ' テキストボックスに入力されている文字列を使用する
             args.status = StatusText.Text.Trim() + " " + SettingDialog.Status.Trim()
@@ -2959,11 +2959,19 @@ Public Class TweenMain
                 End If
             End If
         End If
+        Me.StatusText_TextChanged(Nothing, Nothing)
     End Sub
 
     Private Sub StatusText_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusText.TextChanged
         '文字数カウント
         Dim pLen As Integer = 140 - StatusText.Text.Length
+        If Not My.Computer.Keyboard.ShiftKeyDown Then
+            If SettingDialog.UseRecommendStatus Then
+                pLen -= SettingDialog.RecommendStatusText.Length
+            Else
+                pLen -= SettingDialog.Status.Length + 1
+            End If
+        End If
         lblLen.Text = pLen.ToString()
         If pLen < 0 Then
             StatusText.ForeColor = Color.Red
@@ -4131,6 +4139,7 @@ RETRY:
                 StatusText.Focus()
             End If
         End If
+        Me.StatusText_TextChanged(Nothing, Nothing)
     End Sub
 
     Private Sub SaveConfigsAll(ByVal ifModified As Boolean)
@@ -6253,4 +6262,5 @@ RETRY:
     Private Sub IdeographicSpaceToSpaceToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles IdeographicSpaceToSpaceToolStripMenuItem.Click
         modifySettingCommon = True
     End Sub
+
 End Class

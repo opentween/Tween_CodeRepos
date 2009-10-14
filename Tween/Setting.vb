@@ -36,6 +36,7 @@ Public Class Setting
     Private _MyReaded As Boolean
     Private _MyIconSize As IconSizes
     Private _MyStatusText As String
+    Private _MyRecommendStatusText As String
     Private _MyUnreadManage As Boolean
     Private _MyPlaySound As Boolean
     Private _MyOneWayLove As Boolean
@@ -1099,6 +1100,15 @@ Public Class Setting
         End Set
     End Property
 
+    Public Property RecommendStatusText() As String
+        Get
+            Return _MyRecommendStatusText
+        End Get
+        Set(ByVal value As String)
+            _MyRecommendStatusText = value
+        End Set
+    End Property
+
     Public Property DispUsername() As Boolean
         Get
             Return _MyDispUsername
@@ -1568,7 +1578,7 @@ Public Class Setting
     End Property
 
     Private Sub Username_Validating(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles Username.Validating
-        If Username.Text.Trim = ""  Then
+        If Username.Text.Trim = "" Then
             MessageBox.Show(My.Resources.Save_ClickText1)
             e.Cancel = True
             Exit Sub
