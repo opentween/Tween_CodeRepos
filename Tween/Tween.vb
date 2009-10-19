@@ -736,7 +736,7 @@ Public Class TweenMain
         '状態表示部の初期化（画面右下）
         StatusLabel.Text = ""
         '文字カウンタ初期化
-        lblLen.Text = "140"
+        lblLen.Text = GetRestStatusCount(True, False).ToString()
 
         If SettingDialog.StartupKey Then
             Twitter.GetWedata()
@@ -1461,13 +1461,50 @@ Public Class TweenMain
         _history(_history.Count - 1) = StatusText.Text.Trim
 
         If SettingDialog.UrlConvertAuto Then UrlConvertAutoToolStripMenuItem_Click(Nothing, Nothing)
-
         Dim args As New GetWorkerArg()
         args.page = 0
         args.endPage = 0
         args.type = WORKERTYPE.PostMessage
         CheckReplyTo(StatusText.Text)
-        If (StatusText.Text.StartsWith("D ")) OrElse (My.Computer.Keyboard.ShiftKeyDown) Then
+
+        '整形によって増加する文字数を取得
+        Dim adjustCount As Integer = 0
+        Dim tmpStatus As String = StatusText.Text.Trim
+        If ToolStripMenuItemApiCommandEvasion.Checked Then
+            ' APIコマンド回避
+            Dim regex As New Regex("^[+\-\[\]\s\\.,*/(){}^~|='&%$#""<>?]*(get|g|fav|follow|f|on|off|stop|quit|leave|l|whois|w|nudge|n|stats|invite|track|untrack|tracks|tracking|\*)([+\-\[\]\s\\.,*/(){}^~|='&%$#""<>?]+|$)", RegexOptions.IgnoreCase)
+            If regex.IsMatch(tmpStatus) AndAlso tmpStatus.EndsWith(" .") = False Then adjustCount += 2
+        End If
+
+        If ToolStripMenuItemUrlMultibyteSplit.Checked Then
+            ' URLと全角文字の切り離し
+            Dim regex2 As New Regex("https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+")
+            adjustCount += regex2.Matches(tmpStatus).Count
+        End If
+
+        If IdeographicSpaceToSpaceToolStripMenuItem.Checked Then
+            ' 文中の全角スペースを半角スペース2個にする
+            For i As Integer = 0 To tmpStatus.Length - 1
+                If tmpStatus.Substring(i, 1) = "　" Then adjustCount += 1
+            Next
+        End If
+
+
+        Dim isCutOff As Boolean = False
+        Dim isRemoveFooter As Boolean = My.Computer.Keyboard.ShiftKeyDown
+        If GetRestStatusCount(True, False) - adjustCount < 0 Then
+            If MessageBox.Show("140文字を越えています。URL短縮、フッタ除去、末尾カットを行って投稿しますか？", "文字数制限オーバー", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) = Windows.Forms.DialogResult.OK Then
+                isCutOff = True
+                If Not SettingDialog.UrlConvertAuto Then UrlConvertAutoToolStripMenuItem_Click(Nothing, Nothing)
+                If GetRestStatusCount(False, Not isRemoveFooter) < 0 Then
+                    isRemoveFooter = True
+                End If
+            Else
+                Exit Sub
+            End If
+        End If
+
+        If (StatusText.Text.StartsWith("D ")) OrElse isRemoveFooter Then
             args.status = StatusText.Text.Trim
         ElseIf SettingDialog.UseRecommendStatus() Then
             ' 推奨ステータスを使用する
@@ -1494,6 +1531,8 @@ Public Class TweenMain
             ' 文中の全角スペースを半角スペース2個にする
             args.status = args.status.Replace("　", "  ")
         End If
+
+        If isCutOff AndAlso args.status.Length > 140 Then args.status = args.status.Substring(0, 140)
 
         RunAsync(args)
 
@@ -2964,14 +3003,7 @@ Public Class TweenMain
 
     Private Sub StatusText_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusText.TextChanged
         '文字数カウント
-        Dim pLen As Integer = 140 - StatusText.Text.Length
-        If Not My.Computer.Keyboard.ShiftKeyDown Then
-            If SettingDialog.UseRecommendStatus Then
-                pLen -= SettingDialog.RecommendStatusText.Length
-            Else
-                pLen -= SettingDialog.Status.Length + 1
-            End If
-        End If
+        Dim pLen As Integer = GetRestStatusCount(True, False)
         lblLen.Text = pLen.ToString()
         If pLen < 0 Then
             StatusText.ForeColor = Color.Red
@@ -2979,6 +3011,20 @@ Public Class TweenMain
             StatusText.ForeColor = _clInputFont
         End If
     End Sub
+
+    Private Function GetRestStatusCount(ByVal isAuto As Boolean, ByVal isAddFooter As Boolean) As Integer
+        '文字数カウント
+        Dim pLen As Integer = 140 - StatusText.Text.Length
+        If (isAuto AndAlso Not My.Computer.Keyboard.ShiftKeyDown) OrElse _
+           (Not isAuto AndAlso isAddFooter) Then
+            If SettingDialog.UseRecommendStatus Then
+                pLen -= SettingDialog.RecommendStatusText.Length
+            ElseIf SettingDialog.Status.Length > 0 Then
+                pLen -= SettingDialog.Status.Length + 1
+            End If
+        End If
+        Return pLen
+    End Function
 
     Private Sub MyList_CacheVirtualItems(ByVal sender As System.Object, ByVal e As System.Windows.Forms.CacheVirtualItemsEventArgs)
         If _itemCache IsNot Nothing AndAlso _
@@ -5448,7 +5494,7 @@ RETRY:
 
                 If result.Equals("Can't convert") Then
                     StatusLabel.Text = result.Insert(0, Converter_Type.ToString() + ":")
-                    Return False
+                    Continue For
                 End If
 
                 If Not result = "" Then
@@ -6063,8 +6109,9 @@ RETRY:
     Private Function CreateRetweet(ByVal status As String) As String
 
         ' Twitterにより省略されているURLを含むaタグをキャプチャしてリンク先URLへ置き換える
+        '展開しないように変更
         Dim rx As Regex = New Regex("<a target=""_self"" href=""(?<url>[^""]+)""[^>]*>(?<link>(https?|shttp|ftps?)://[^<]+)</a>")
-        status = rx.Replace(status, "${url}")
+        status = rx.Replace(status, "${link}")
 
         'その他のリンク(@IDなど)を置き換える
         rx = New Regex("<a target=""_self"" href=""(?<url>[^""]+)""[^>]*>(?<link>[^<]+)</a>")
