@@ -1492,11 +1492,15 @@ Public Class TweenMain
 
         Dim isCutOff As Boolean = False
         Dim isRemoveFooter As Boolean = My.Computer.Keyboard.ShiftKeyDown
-        If GetRestStatusCount(True, False) - adjustCount < 0 Then
-            If MessageBox.Show("140文字を越えています。URL短縮、フッタ除去、末尾カットを行って投稿しますか？", "文字数制限オーバー", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) = Windows.Forms.DialogResult.OK Then
+        If StatusText.Multiline AndAlso Not SettingDialog.PostCtrlEnter Then
+            '複数行でEnter投稿の場合、Ctrlも押されていたらフッタ付加しない
+            isRemoveFooter = My.Computer.Keyboard.CtrlKeyDown
+        End If
+        If GetRestStatusCount(False, Not isRemoveFooter) - adjustCount < 0 Then
+            If MessageBox.Show("140文字を越えています。URL短縮、フッタ除去、末尾カットを行って投稿しますか？", "文字数制限オーバー", MessageBoxButtons.OKCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) = Windows.Forms.DialogResult.OK Then
                 isCutOff = True
                 If Not SettingDialog.UrlConvertAuto Then UrlConvertAutoToolStripMenuItem_Click(Nothing, Nothing)
-                If GetRestStatusCount(False, Not isRemoveFooter) < 0 Then
+                If GetRestStatusCount(False, Not isRemoveFooter) - adjustCount < 0 Then
                     isRemoveFooter = True
                 End If
             Else
@@ -4942,9 +4946,8 @@ RETRY:
             (keyData And Keys.KeyCode) = Keys.Enter Then
             '改行
             If StatusText.Multiline AndAlso _
-               ((keyData And Keys.Shift) = Keys.Shift OrElse _
-               ((keyData And Keys.Control) = Keys.Control AndAlso Not SettingDialog.PostCtrlEnter) OrElse _
-               ((keyData And Keys.Shift) <> Keys.Shift AndAlso (keyData And Keys.Control) <> Keys.Control AndAlso SettingDialog.PostCtrlEnter)) Then
+               (keyData And Keys.Shift) = Keys.Shift AndAlso _
+               (keyData And Keys.Control) <> Keys.Control Then
                 Dim pos1 As Integer = StatusText.SelectionStart
                 If StatusText.SelectionLength > 0 Then
                     StatusText.Text = StatusText.Text.Remove(pos1, StatusText.SelectionLength)  '選択状態文字列削除
@@ -4954,8 +4957,14 @@ RETRY:
                 Return True
             End If
             '投稿
-            If ((keyData And Keys.Control) = Keys.Control AndAlso SettingDialog.PostCtrlEnter) OrElse _
-               ((keyData And Keys.Control) <> Keys.Control AndAlso Not SettingDialog.PostCtrlEnter) Then
+            If (Not StatusText.Multiline AndAlso _
+                    ((keyData And Keys.Control) = Keys.Control AndAlso SettingDialog.PostCtrlEnter) OrElse _
+                    ((keyData And Keys.Control) <> Keys.Control AndAlso Not SettingDialog.PostCtrlEnter)) OrElse _
+               (StatusText.Multiline AndAlso _
+                    (Not SettingDialog.PostCtrlEnter AndAlso _
+                        ((keyData And Keys.Control) <> Keys.Control AndAlso (keyData And Keys.Shift) <> Keys.Shift) OrElse _
+                        ((keyData And Keys.Control) = Keys.Control AndAlso (keyData And Keys.Shift) = Keys.Shift)) OrElse _
+                    (SettingDialog.PostCtrlEnter AndAlso (keyData And Keys.Control) = Keys.Control)) Then
                 PostButton_Click(Nothing, Nothing)
                 Return True
             End If
