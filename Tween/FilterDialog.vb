@@ -35,7 +35,7 @@ Public Class FilterDialog
     End Enum
 
     Private Sub SetFilters(ByVal tabName As String)
-        If ComboTabs.Items.Count = 0 Then Exit Sub
+        If ListTabs.Items.Count = 0 Then Exit Sub
 
         ListFilters.Items.Clear()
         ListFilters.Items.AddRange(_sts.Tabs(tabName).GetFilters())
@@ -43,7 +43,7 @@ Public Class FilterDialog
 
         If _directAdd Then Exit Sub
 
-        ComboTabs.Enabled = True
+        ListTabs.Enabled = True
         ListFilters.Enabled = True
         ListFilters.Focus()
         If ListFilters.SelectedIndex <> -1 Then
@@ -67,7 +67,7 @@ Public Class FilterDialog
         ButtonDelete.Enabled = False
         ButtonClose.Enabled = False
         EditFilterGroup.Enabled = True
-        ComboTabs.Enabled = False
+        ListTabs.Enabled = False
         ListFilters.Enabled = False
         RadioAND.Checked = True
         RadioPLUS.Checked = False
@@ -95,7 +95,7 @@ Public Class FilterDialog
         ButtonDelete.Enabled = False
         ButtonClose.Enabled = False
         EditFilterGroup.Enabled = True
-        ComboTabs.Enabled = False
+        ListTabs.Enabled = False
         ListFilters.Enabled = False
         RadioAND.Checked = True
         RadioPLUS.Checked = False
@@ -121,7 +121,7 @@ Public Class FilterDialog
         ButtonDelete.Enabled = False
         ButtonClose.Enabled = False
         EditFilterGroup.Enabled = True
-        ComboTabs.Enabled = False
+        ListTabs.Enabled = False
         ListFilters.Enabled = False
 
         ShowDetail()
@@ -137,12 +137,12 @@ Public Class FilterDialog
 
         Dim i As Integer = ListFilters.SelectedIndex
 
-        _sts.Tabs(ComboTabs.SelectedItem.ToString()).RemoveFilter(DirectCast(ListFilters.SelectedItem, FiltersClass))
+        _sts.Tabs(ListTabs.SelectedItem.ToString()).RemoveFilter(DirectCast(ListFilters.SelectedItem, FiltersClass))
         ListFilters.Items.RemoveAt(i)
     End Sub
 
     Private Sub ButtonCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonCancel.Click
-        ComboTabs.Enabled = True
+        ListTabs.Enabled = True
         ListFilters.Enabled = True
         ListFilters.Focus()
         If ListFilters.SelectedIndex <> -1 Then
@@ -303,14 +303,14 @@ Public Class FilterDialog
         ft.SearchUrl = CheckURL.Checked
 
         If _mode = EDITMODE.AddNew Then
-            If Not _sts.Tabs(ComboTabs.SelectedItem.ToString()).AddFilter(ft) Then
+            If Not _sts.Tabs(ListTabs.SelectedItem.ToString()).AddFilter(ft) Then
                 MessageBox.Show(My.Resources.ButtonOK_ClickText4, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Error)
             End If
         Else
-            _sts.Tabs(ComboTabs.SelectedItem.ToString()).EditFilter(DirectCast(ListFilters.SelectedItem, FiltersClass), ft)
+            _sts.Tabs(ListTabs.SelectedItem.ToString()).EditFilter(DirectCast(ListFilters.SelectedItem, FiltersClass), ft)
         End If
 
-        SetFilters(ComboTabs.SelectedItem.ToString)
+        SetFilters(ListTabs.SelectedItem.ToString)
         If _mode = EDITMODE.AddNew Then
             ListFilters.SelectedIndex = ListFilters.Items.Count - 1
         Else
@@ -330,10 +330,6 @@ Public Class FilterDialog
 
     Private Sub ButtonClose_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonClose.Click
         Me.Close()
-    End Sub
-
-    Private Sub ComboTabs_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ComboTabs.SelectedIndexChanged
-        SetFilters(ComboTabs.SelectedItem.ToString)
     End Sub
 
     Private Sub FilterDialog_FormClosed(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
@@ -372,22 +368,26 @@ Public Class FilterDialog
 
     Private Sub FilterDialog_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
         _sts = TabInformations.GetInstance()
-        ComboTabs.Items.Clear()
+        ListTabs.Items.Clear()
         For Each key As String In _sts.Tabs.Keys
             If key <> DEFAULTTAB.RECENT AndAlso key <> DEFAULTTAB.DM AndAlso key <> DEFAULTTAB.FAV Then
-                ComboTabs.Items.Add(key)
+                ListTabs.Items.Add(key)
             End If
         Next
         '選択タブ変更
-        If ComboTabs.Items.Count > 0 Then
+        If ListTabs.Items.Count > 0 Then
             If _cur.Length > 0 Then
-                For i As Integer = 0 To ComboTabs.Items.Count - 1
-                    If _cur = ComboTabs.Items(i).ToString() Then
-                        ComboTabs.SelectedIndex = i
+                For i As Integer = 0 To ListTabs.Items.Count - 1
+                    If _cur = ListTabs.Items(i).ToString() Then
+                        ListTabs.SelectedIndex = i
                         Exit For
                     End If
                 Next
             End If
         End If
+    End Sub
+
+    Private Sub ListTabs_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ListTabs.SelectedIndexChanged
+        SetFilters(ListTabs.SelectedItem.ToString)
     End Sub
 End Class

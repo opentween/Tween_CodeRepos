@@ -25,7 +25,6 @@ Partial Class FilterDialog
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FilterDialog))
         Me.ButtonClose = New System.Windows.Forms.Button
-        Me.ComboTabs = New System.Windows.Forms.ComboBox
         Me.Label5 = New System.Windows.Forms.Label
         Me.ListFilters = New System.Windows.Forms.ListBox
         Me.EditFilterGroup = New System.Windows.Forms.GroupBox
@@ -49,6 +48,7 @@ Partial Class FilterDialog
         Me.ButtonDelete = New System.Windows.Forms.Button
         Me.ButtonEdit = New System.Windows.Forms.Button
         Me.GroupBox2 = New System.Windows.Forms.GroupBox
+        Me.ListTabs = New System.Windows.Forms.ListBox
         Me.EditFilterGroup.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
@@ -60,13 +60,6 @@ Partial Class FilterDialog
         resources.ApplyResources(Me.ButtonClose, "ButtonClose")
         Me.ButtonClose.Name = "ButtonClose"
         Me.ButtonClose.UseVisualStyleBackColor = True
-        '
-        'ComboTabs
-        '
-        Me.ComboTabs.DropDownStyle = System.Windows.Forms.ComboBoxStyle.Simple
-        Me.ComboTabs.FormattingEnabled = True
-        resources.ApplyResources(Me.ComboTabs, "ComboTabs")
-        Me.ComboTabs.Name = "ComboTabs"
         '
         'Label5
         '
@@ -223,14 +216,20 @@ Partial Class FilterDialog
         Me.GroupBox2.Name = "GroupBox2"
         Me.GroupBox2.TabStop = False
         '
+        'ListTabs
+        '
+        Me.ListTabs.FormattingEnabled = True
+        resources.ApplyResources(Me.ListTabs, "ListTabs")
+        Me.ListTabs.Name = "ListTabs"
+        '
         'FilterDialog
         '
         resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.ButtonClose
         Me.ControlBox = False
+        Me.Controls.Add(Me.ListTabs)
         Me.Controls.Add(Me.GroupBox2)
-        Me.Controls.Add(Me.ComboTabs)
         Me.Controls.Add(Me.Label5)
         Me.Controls.Add(Me.ButtonClose)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
@@ -250,7 +249,6 @@ Partial Class FilterDialog
 
     End Sub
     Friend WithEvents ButtonClose As System.Windows.Forms.Button
-    Friend WithEvents ComboTabs As System.Windows.Forms.ComboBox
     Friend WithEvents Label5 As System.Windows.Forms.Label
     Friend WithEvents ListFilters As System.Windows.Forms.ListBox
     Friend WithEvents EditFilterGroup As System.Windows.Forms.GroupBox
@@ -274,5 +272,6 @@ Partial Class FilterDialog
     Friend WithEvents OptMove As System.Windows.Forms.RadioButton
     Friend WithEvents OptMark As System.Windows.Forms.RadioButton
     Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
+    Friend WithEvents ListTabs As System.Windows.Forms.ListBox
 
 End Class

@@ -22,6 +22,9 @@
 ' Boston, MA 02110-1301, USA.
 
 Option Strict On
+Imports System.Threading
+Imports System.Runtime.InteropServices
+Imports System.Diagnostics
 Namespace My
 
     ' 次のイベントは MyApplication に対して利用できます:
@@ -50,8 +53,20 @@ Namespace My
             Dim pt As String = Application.Info.DirectoryPath.Replace("\", "/") + "/" + Application.Info.ProductName
             mt = New System.Threading.Mutex(False, pt)
             Try
-                If mt.WaitOne(0, False) = False Then
-                    MessageBox.Show(My.Resources.StartupText1, My.Resources.StartupText2, MessageBoxButtons.OK, MessageBoxIcon.Information)
+                If Not mt.WaitOne(0, False) Then
+                    ' 実行中の同じアプリケーションのウィンドウ・ハンドルの取得
+                    Dim prevProcess As Process = GetPreviousProcess()
+                    If prevProcess IsNot Nothing AndAlso _
+                        IntPtr.op_Inequality(prevProcess.MainWindowHandle, IntPtr.Zero) Then
+                        ' 起動中のアプリケーションを最前面に表示
+                        WakeupWindow(prevProcess.MainWindowHandle)
+                    Else
+                        ' 警告を表示
+                        MessageBox.Show("prevProcess is nothing:" + (prevProcess Is Nothing).ToString)
+                        MessageBox.Show(My.Resources.StartupText1, My.Resources.StartupText2, MessageBoxButtons.OK, MessageBoxIcon.Information)
+                        'MessageBox.Show("すでに起動しています。2つ同時には起動できません。", "多重起動禁止")
+                    End If
+
                     e.Cancel = True
                     Exit Sub
                 End If
@@ -107,6 +122,58 @@ Namespace My
 
             End Try
         End Sub
+
+#Region "先行起動プロセスをアクティブにする"
+        ' 外部プロセスのウィンドウを起動する
+        Public Shared Sub WakeupWindow(ByVal hWnd As IntPtr)
+            ' メイン・ウィンドウが最小化されていれば元に戻す
+            If IsIconic(hWnd) Then
+                ShowWindowAsync(hWnd, SW_RESTORE)
+            End If
+
+            ' メイン・ウィンドウを最前面に表示する
+            SetForegroundWindow(hWnd)
+        End Sub
+
+        ' 外部プロセスのメイン・ウィンドウを起動するためのWin32 API
+        <DllImport("user32.dll")> _
+        Private Shared Function _
+            SetForegroundWindow(ByVal hWnd As IntPtr) As Boolean
+        End Function
+        <DllImport("user32.dll")> _
+        Private Shared Function _
+            ShowWindowAsync(ByVal hWnd As IntPtr, ByVal nCmdShow As Integer) As Boolean
+        End Function
+        <DllImport("user32.dll")> _
+        Private Shared Function _
+            IsIconic(ByVal hWnd As IntPtr) As Boolean
+        End Function
+        ' ShowWindowAsync関数のパラメータに渡す定義値
+        Private Const SW_RESTORE As Integer = 9 ' 画面を元の大きさに戻す
+
+        ' 実行中の同じアプリケーションのプロセスを取得する
+        Public Shared Function GetPreviousProcess() As Process
+            Dim curProcess As Process = Process.GetCurrentProcess()
+            Dim allProcesses() As Process = Process.GetProcessesByName(curProcess.ProcessName)
+
+            Dim checkProcess As Process
+            For Each checkProcess In allProcesses
+                ' 自分自身のプロセスIDは無視する
+                If checkProcess.Id <> curProcess.Id Then
+                    ' プロセスのフルパス名を比較して同じアプリケーションか検証
+                    If String.Compare( _
+                            checkProcess.MainModule.FileName, _
+                            curProcess.MainModule.FileName, True) = 0 Then
+                        ' 同じフルパス名のプロセスを取得
+                        Return checkProcess
+                    End If
+                End If
+            Next
+
+            ' 同じアプリケーションのプロセスが見つからない！  
+            Return Nothing
+        End Function
+#End Region
     End Class
 
 End Namespace
