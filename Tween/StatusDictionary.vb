@@ -1239,20 +1239,20 @@ End Class
 <Serializable()> _
 Public NotInheritable Class FiltersClass
     Implements System.IEquatable(Of FiltersClass)
-    Private _name As String
+    Private _name As String = ""
     Private _body As New List(Of String)
-    Private _searchBoth As Boolean
-    Private _searchUrl As Boolean
-    Private _caseSensitive As Boolean
-    Private _useRegex As Boolean
-    Private _exname As String
+    Private _searchBoth As Boolean = True
+    Private _searchUrl As Boolean = False
+    Private _caseSensitive As Boolean = False
+    Private _useRegex As Boolean = False
+    Private _exname As String = ""
     Private _exbody As New List(Of String)
-    Private _exsearchBoth As Boolean
-    Private _exsearchUrl As Boolean
-    Private _exuseRegex As Boolean
-    Private _excaseSensitive As Boolean
-    Private _moveFrom As Boolean
-    Private _setMark As Boolean
+    Private _exsearchBoth As Boolean = True
+    Private _exsearchUrl As Boolean = False
+    Private _exuseRegex As Boolean = False
+    Private _excaseSensitive As Boolean = False
+    Private _moveFrom As Boolean = False
+    Private _setMark As Boolean = True
 
     Public Sub New(ByVal NameFilter As String, _
         ByVal BodyFilter As List(Of String), _
