@@ -2607,7 +2607,7 @@ Public Class TweenMain
         End If
     End Sub
 
-    Private Function AddNewTab(ByVal tabName As String, ByVal startup As Boolean) As Boolean
+    Public Function AddNewTab(ByVal tabName As String, ByVal startup As Boolean) As Boolean
         '重複チェック
         For Each tb As TabPage In ListTab.TabPages
             If tb.Text = tabName Then Return False
@@ -2798,18 +2798,18 @@ Public Class TweenMain
         Return True
     End Function
 
-    Private Sub RemoveSpecifiedTab(ByVal TabName As String)
+    Public Function RemoveSpecifiedTab(ByVal TabName As String) As Boolean
         Dim idx As Integer = 0
         For idx = 0 To ListTab.TabPages.Count - 1
             If ListTab.TabPages(idx).Text = TabName Then Exit For
         Next
 
-        If IsDefaultTab(TabName) Then Exit Sub
+        If IsDefaultTab(TabName) Then Return False
 
         Dim tmp As String = String.Format(My.Resources.RemoveSpecifiedTabText1, Environment.NewLine)
         If MessageBox.Show(tmp, My.Resources.RemoveSpecifiedTabText2, _
                          MessageBoxButtons.OKCancel, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Cancel Then
-            Exit Sub
+            Return False
         End If
 
         SetListProperty()   '他のタブに列幅等を反映
@@ -2889,7 +2889,8 @@ Public Class TweenMain
                 lst.VirtualListSize = _statuses.Tabs(tp.Text).AllCount
             End If
         Next
-    End Sub
+        Return True
+    End Function
 
     Private Sub ListTab_Deselected(ByVal sender As Object, ByVal e As System.Windows.Forms.TabControlEventArgs) Handles ListTab.Deselected
         _itemCache = Nothing
@@ -4398,9 +4399,9 @@ RETRY:
         End If
     End Sub
 
-    Private Sub TabRename(ByVal tabName As String)
+    Public Function TabRename(ByRef tabName As String) As Boolean
         'タブ名変更
-        If IsDefaultTab(tabName) Then Exit Sub
+        If IsDefaultTab(tabName) Then Return False
         Dim newTabText As String = Nothing
         Using inputName As New InputTabName()
             inputName.TabName = tabName
@@ -4415,7 +4416,7 @@ RETRY:
                    newTabText <> ReplaceInvalidFilename(newTabText) Then
                     Dim tmp As String = String.Format(My.Resources.Tabs_DoubleClickText1, newTabText)
                     MessageBox.Show(tmp, My.Resources.Tabs_DoubleClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-                    Exit Sub
+                    Return False
                 End If
             Next
             'タブ名のリスト作り直し（デフォルトタブ以外は再作成）
@@ -4437,11 +4438,14 @@ RETRY:
             SaveConfigsCommon()
             SaveConfigsTab(newTabText)
             _rclickTabName = newTabText
+            tabName = newTabText
+            Return True
         End If
-    End Sub
+    End Function
 
     Private Sub Tabs_DoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListTab.MouseDoubleClick
-        TabRename(ListTab.SelectedTab.Text)
+        Dim tn As String = ListTab.SelectedTab.Text
+        TabRename(tn)
     End Sub
 
     Private Sub Tabs_MouseDown(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListTab.MouseDown

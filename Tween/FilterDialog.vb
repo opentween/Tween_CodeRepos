@@ -54,6 +54,13 @@ Public Class FilterDialog
         ButtonEdit.Enabled = True
         ButtonDelete.Enabled = True
         ButtonClose.Enabled = True
+
+        CheckManageRead.Checked = _sts.Tabs(tabName).UnreadManage
+        CheckNotifyNew.Checked = _sts.Tabs(tabName).Notify
+
+        Dim idx As Integer = ComboSound.Items.IndexOf(_sts.Tabs(tabName).SoundFile)
+        If idx = -1 Then idx = 0
+        ComboSound.SelectedIndex = idx
     End Sub
 
     Public Sub SetCurrent(ByVal TabName As String)
@@ -374,6 +381,14 @@ Public Class FilterDialog
                 ListTabs.Items.Add(key)
             End If
         Next
+
+        ComboSound.Items.Clear()
+        ComboSound.Items.Add("")
+        Dim oDir As IO.DirectoryInfo = New IO.DirectoryInfo(My.Application.Info.DirectoryPath)
+        For Each oFile As IO.FileInfo In oDir.GetFiles("*.wav")
+            ComboSound.Items.Add(oFile.Name)
+        Next
+
         '選択タブ変更
         If ListTabs.Items.Count > 0 Then
             If _cur.Length > 0 Then
@@ -388,7 +403,11 @@ Public Class FilterDialog
     End Sub
 
     Private Sub ListTabs_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ListTabs.SelectedIndexChanged
-        SetFilters(ListTabs.SelectedItem.ToString)
+        If ListTabs.SelectedIndex > -1 Then
+            SetFilters(ListTabs.SelectedItem.ToString)
+        Else
+            ListTabs.Items.Clear()
+        End If
     End Sub
 
     Private Sub ButtonAddTab_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonAddTab.Click
@@ -399,24 +418,44 @@ Public Class FilterDialog
             tabName = inputName.TabName
         End Using
         If tabName <> "" Then
-            Dim dup As Boolean = False
-            For i As Integer = 0 To ListTabs.Items.Count - 1
-                If tabName = ListTabs.Items(i).ToString Then
-                    dup = True
-                    Exit For
-                End If
-            Next
-            If dup Then
+            If Not DirectCast(Me.Owner, TweenMain).AddNewTab(tabName, False) Then
                 Dim tmp As String = String.Format(My.Resources.AddTabMenuItem_ClickText1, tabName)
                 MessageBox.Show(tmp, My.Resources.AddTabMenuItem_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 Exit Sub
+            Else
+                '成功
+                _sts.AddTab(tabName)
+                ListTabs.Items.Add(tabName)
             End If
-            '成功
-            _sts.AddTab(tabName)
         End If
     End Sub
 
     Private Sub ButtonDeleteTab_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonDeleteTab.Click
+        If ListTabs.SelectedIndex > -1 AndAlso ListTabs.SelectedItem.ToString <> "" Then
+            Dim tb As String = ListTabs.SelectedItem.ToString
+            Dim idx As Integer = ListTabs.SelectedIndex
+            If DirectCast(Me.Owner, TweenMain).RemoveSpecifiedTab(tb) Then
+                ListTabs.Items.RemoveAt(idx)
+                idx -= 1
+                If idx < 0 Then idx = 0
+                ListTabs.SelectedIndex = idx
+            End If
+        End If
+    End Sub
+
+    Private Sub ButtonRenameTab_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonRenameTab.Click
+        If ListTabs.SelectedIndex > -1 AndAlso ListTabs.SelectedItem.ToString <> "" Then
+            Dim tb As String = ListTabs.SelectedItem.ToString
+            Dim idx As Integer = ListTabs.SelectedIndex
+            If DirectCast(Me.Owner, TweenMain).TabRename(tb) Then
+                ListTabs.Items.RemoveAt(idx)
+                ListTabs.Items.Insert(idx, tb)
+                ListTabs.SelectedIndex = idx
+            End If
+        End If
+    End Sub
+
+    Private Sub CheckManageRead_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CheckManageRead.CheckedChanged
 
     End Sub
 End Class
