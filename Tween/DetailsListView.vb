@@ -28,14 +28,6 @@ Imports System.Windows.Forms
 Imports System.Diagnostics
 
 Namespace TweenCustomControl
-    Friend Class Win32Api
-        'Friend Declare Function SendMessage Lib "user32.dll" ( _
-        '    ByVal window As IntPtr, ByVal msg As Integer, _
-        '    ByVal itemIndex As Integer, ByRef bounds As Rect) As Integer
-        Friend Declare Function ValidateRect Lib "user32.dll" ( _
-            ByVal window As IntPtr, ByVal rect As IntPtr) As Boolean
-    End Class
-
 
     Public NotInheritable Class DetailsListView
         Inherits ListView

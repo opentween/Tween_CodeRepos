@@ -457,7 +457,7 @@
     <value>Make post mark</value>
   </data>
   <data name="SetFiltersText11" xml:space="preserve">
-    <value>Do nothing</value>
+    <value>Copy</value>
   </data>
   <data name="SetFiltersText2" xml:space="preserve">
     <value>[User: (All)] </value>
@@ -659,5 +659,11 @@
   </data>
   <data name="GetTimelineWorker_RunWorkerCompletedText20" xml:space="preserve">
     <value>Fav refreshed</value>
+  </data>
+  <data name="SetFiltersText12" xml:space="preserve">
+    <value>  /  Exclude  </value>
+  </data>
+  <data name="SetFiltersText13" xml:space="preserve">
+    <value>CaseSensitive</value>
   </data>
 </root>

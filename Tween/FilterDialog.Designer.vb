@@ -25,33 +25,62 @@ Partial Class FilterDialog
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FilterDialog))
         Me.ButtonClose = New System.Windows.Forms.Button
-        Me.Label5 = New System.Windows.Forms.Label
         Me.ListFilters = New System.Windows.Forms.ListBox
         Me.EditFilterGroup = New System.Windows.Forms.GroupBox
+        Me.Label11 = New System.Windows.Forms.Label
+        Me.GroupExclude = New System.Windows.Forms.GroupBox
+        Me.CheckExCaseSensitive = New System.Windows.Forms.CheckBox
+        Me.RadioExAnd = New System.Windows.Forms.RadioButton
+        Me.Label1 = New System.Windows.Forms.Label
+        Me.CheckExURL = New System.Windows.Forms.CheckBox
+        Me.RadioExPLUS = New System.Windows.Forms.RadioButton
+        Me.CheckExRegex = New System.Windows.Forms.CheckBox
+        Me.Label2 = New System.Windows.Forms.Label
+        Me.Label3 = New System.Windows.Forms.Label
+        Me.Label4 = New System.Windows.Forms.Label
+        Me.ExUID = New System.Windows.Forms.TextBox
+        Me.ExMSG1 = New System.Windows.Forms.TextBox
+        Me.ExMSG2 = New System.Windows.Forms.TextBox
+        Me.GroupMatch = New System.Windows.Forms.GroupBox
+        Me.CheckCaseSensitive = New System.Windows.Forms.CheckBox
+        Me.RadioAND = New System.Windows.Forms.RadioButton
+        Me.Label8 = New System.Windows.Forms.Label
+        Me.CheckURL = New System.Windows.Forms.CheckBox
+        Me.RadioPLUS = New System.Windows.Forms.RadioButton
+        Me.CheckRegex = New System.Windows.Forms.CheckBox
+        Me.Label9 = New System.Windows.Forms.Label
+        Me.Label7 = New System.Windows.Forms.Label
+        Me.Label6 = New System.Windows.Forms.Label
+        Me.UID = New System.Windows.Forms.TextBox
+        Me.MSG1 = New System.Windows.Forms.TextBox
+        Me.MSG2 = New System.Windows.Forms.TextBox
         Me.GroupBox1 = New System.Windows.Forms.GroupBox
+        Me.CheckMark = New System.Windows.Forms.CheckBox
         Me.OptMark = New System.Windows.Forms.RadioButton
         Me.OptMove = New System.Windows.Forms.RadioButton
-        Me.CheckURL = New System.Windows.Forms.CheckBox
-        Me.CheckRegex = New System.Windows.Forms.CheckBox
-        Me.RadioAND = New System.Windows.Forms.RadioButton
         Me.ButtonCancel = New System.Windows.Forms.Button
-        Me.UID = New System.Windows.Forms.TextBox
-        Me.MSG2 = New System.Windows.Forms.TextBox
-        Me.MSG1 = New System.Windows.Forms.TextBox
-        Me.Label6 = New System.Windows.Forms.Label
-        Me.Label7 = New System.Windows.Forms.Label
-        Me.Label9 = New System.Windows.Forms.Label
-        Me.RadioPLUS = New System.Windows.Forms.RadioButton
-        Me.Label8 = New System.Windows.Forms.Label
         Me.ButtonOK = New System.Windows.Forms.Button
         Me.ButtonNew = New System.Windows.Forms.Button
         Me.ButtonDelete = New System.Windows.Forms.Button
         Me.ButtonEdit = New System.Windows.Forms.Button
         Me.GroupBox2 = New System.Windows.Forms.GroupBox
         Me.ListTabs = New System.Windows.Forms.ListBox
+        Me.ButtonAddTab = New System.Windows.Forms.Button
+        Me.ButtonDeleteTab = New System.Windows.Forms.Button
+        Me.ButtonRenameTab = New System.Windows.Forms.Button
+        Me.CheckManageRead = New System.Windows.Forms.CheckBox
+        Me.CheckNotifyNew = New System.Windows.Forms.CheckBox
+        Me.ComboSound = New System.Windows.Forms.ComboBox
+        Me.Label10 = New System.Windows.Forms.Label
+        Me.ButtonUp = New System.Windows.Forms.Button
+        Me.ButtonDown = New System.Windows.Forms.Button
+        Me.GroupTab = New System.Windows.Forms.GroupBox
         Me.EditFilterGroup.SuspendLayout()
+        Me.GroupExclude.SuspendLayout()
+        Me.GroupMatch.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
+        Me.GroupTab.SuspendLayout()
         Me.SuspendLayout()
         '
         'ButtonClose
@@ -61,11 +90,6 @@ Partial Class FilterDialog
         Me.ButtonClose.Name = "ButtonClose"
         Me.ButtonClose.UseVisualStyleBackColor = True
         '
-        'Label5
-        '
-        resources.ApplyResources(Me.Label5, "Label5")
-        Me.Label5.Name = "Label5"
-        '
         'ListFilters
         '
         Me.ListFilters.FormattingEnabled = True
@@ -74,31 +98,205 @@ Partial Class FilterDialog
         '
         'EditFilterGroup
         '
+        Me.EditFilterGroup.Controls.Add(Me.Label11)
+        Me.EditFilterGroup.Controls.Add(Me.GroupExclude)
+        Me.EditFilterGroup.Controls.Add(Me.GroupMatch)
         Me.EditFilterGroup.Controls.Add(Me.GroupBox1)
-        Me.EditFilterGroup.Controls.Add(Me.CheckURL)
-        Me.EditFilterGroup.Controls.Add(Me.CheckRegex)
-        Me.EditFilterGroup.Controls.Add(Me.RadioAND)
         Me.EditFilterGroup.Controls.Add(Me.ButtonCancel)
-        Me.EditFilterGroup.Controls.Add(Me.UID)
-        Me.EditFilterGroup.Controls.Add(Me.MSG2)
-        Me.EditFilterGroup.Controls.Add(Me.MSG1)
-        Me.EditFilterGroup.Controls.Add(Me.Label6)
-        Me.EditFilterGroup.Controls.Add(Me.Label7)
-        Me.EditFilterGroup.Controls.Add(Me.Label9)
-        Me.EditFilterGroup.Controls.Add(Me.RadioPLUS)
-        Me.EditFilterGroup.Controls.Add(Me.Label8)
         Me.EditFilterGroup.Controls.Add(Me.ButtonOK)
         resources.ApplyResources(Me.EditFilterGroup, "EditFilterGroup")
         Me.EditFilterGroup.Name = "EditFilterGroup"
         Me.EditFilterGroup.TabStop = False
         '
+        'Label11
+        '
+        resources.ApplyResources(Me.Label11, "Label11")
+        Me.Label11.Name = "Label11"
+        '
+        'GroupExclude
+        '
+        Me.GroupExclude.Controls.Add(Me.CheckExCaseSensitive)
+        Me.GroupExclude.Controls.Add(Me.RadioExAnd)
+        Me.GroupExclude.Controls.Add(Me.Label1)
+        Me.GroupExclude.Controls.Add(Me.CheckExURL)
+        Me.GroupExclude.Controls.Add(Me.RadioExPLUS)
+        Me.GroupExclude.Controls.Add(Me.CheckExRegex)
+        Me.GroupExclude.Controls.Add(Me.Label2)
+        Me.GroupExclude.Controls.Add(Me.Label3)
+        Me.GroupExclude.Controls.Add(Me.Label4)
+        Me.GroupExclude.Controls.Add(Me.ExUID)
+        Me.GroupExclude.Controls.Add(Me.ExMSG1)
+        Me.GroupExclude.Controls.Add(Me.ExMSG2)
+        resources.ApplyResources(Me.GroupExclude, "GroupExclude")
+        Me.GroupExclude.Name = "GroupExclude"
+        Me.GroupExclude.TabStop = False
+        '
+        'CheckExCaseSensitive
+        '
+        resources.ApplyResources(Me.CheckExCaseSensitive, "CheckExCaseSensitive")
+        Me.CheckExCaseSensitive.Name = "CheckExCaseSensitive"
+        Me.CheckExCaseSensitive.UseVisualStyleBackColor = True
+        '
+        'RadioExAnd
+        '
+        resources.ApplyResources(Me.RadioExAnd, "RadioExAnd")
+        Me.RadioExAnd.Checked = True
+        Me.RadioExAnd.Name = "RadioExAnd"
+        Me.RadioExAnd.TabStop = True
+        Me.RadioExAnd.UseVisualStyleBackColor = True
+        '
+        'Label1
+        '
+        resources.ApplyResources(Me.Label1, "Label1")
+        Me.Label1.Name = "Label1"
+        '
+        'CheckExURL
+        '
+        resources.ApplyResources(Me.CheckExURL, "CheckExURL")
+        Me.CheckExURL.Name = "CheckExURL"
+        Me.CheckExURL.UseVisualStyleBackColor = True
+        '
+        'RadioExPLUS
+        '
+        resources.ApplyResources(Me.RadioExPLUS, "RadioExPLUS")
+        Me.RadioExPLUS.Name = "RadioExPLUS"
+        Me.RadioExPLUS.UseVisualStyleBackColor = True
+        '
+        'CheckExRegex
+        '
+        resources.ApplyResources(Me.CheckExRegex, "CheckExRegex")
+        Me.CheckExRegex.Name = "CheckExRegex"
+        Me.CheckExRegex.UseVisualStyleBackColor = True
+        '
+        'Label2
+        '
+        resources.ApplyResources(Me.Label2, "Label2")
+        Me.Label2.Name = "Label2"
+        '
+        'Label3
+        '
+        resources.ApplyResources(Me.Label3, "Label3")
+        Me.Label3.Name = "Label3"
+        '
+        'Label4
+        '
+        resources.ApplyResources(Me.Label4, "Label4")
+        Me.Label4.Name = "Label4"
+        '
+        'ExUID
+        '
+        resources.ApplyResources(Me.ExUID, "ExUID")
+        Me.ExUID.Name = "ExUID"
+        '
+        'ExMSG1
+        '
+        resources.ApplyResources(Me.ExMSG1, "ExMSG1")
+        Me.ExMSG1.Name = "ExMSG1"
+        '
+        'ExMSG2
+        '
+        resources.ApplyResources(Me.ExMSG2, "ExMSG2")
+        Me.ExMSG2.Name = "ExMSG2"
+        '
+        'GroupMatch
+        '
+        Me.GroupMatch.Controls.Add(Me.CheckCaseSensitive)
+        Me.GroupMatch.Controls.Add(Me.RadioAND)
+        Me.GroupMatch.Controls.Add(Me.Label8)
+        Me.GroupMatch.Controls.Add(Me.CheckURL)
+        Me.GroupMatch.Controls.Add(Me.RadioPLUS)
+        Me.GroupMatch.Controls.Add(Me.CheckRegex)
+        Me.GroupMatch.Controls.Add(Me.Label9)
+        Me.GroupMatch.Controls.Add(Me.Label7)
+        Me.GroupMatch.Controls.Add(Me.Label6)
+        Me.GroupMatch.Controls.Add(Me.UID)
+        Me.GroupMatch.Controls.Add(Me.MSG1)
+        Me.GroupMatch.Controls.Add(Me.MSG2)
+        resources.ApplyResources(Me.GroupMatch, "GroupMatch")
+        Me.GroupMatch.Name = "GroupMatch"
+        Me.GroupMatch.TabStop = False
+        '
+        'CheckCaseSensitive
+        '
+        resources.ApplyResources(Me.CheckCaseSensitive, "CheckCaseSensitive")
+        Me.CheckCaseSensitive.Name = "CheckCaseSensitive"
+        Me.CheckCaseSensitive.UseVisualStyleBackColor = True
+        '
+        'RadioAND
+        '
+        resources.ApplyResources(Me.RadioAND, "RadioAND")
+        Me.RadioAND.Checked = True
+        Me.RadioAND.Name = "RadioAND"
+        Me.RadioAND.TabStop = True
+        Me.RadioAND.UseVisualStyleBackColor = True
+        '
+        'Label8
+        '
+        resources.ApplyResources(Me.Label8, "Label8")
+        Me.Label8.Name = "Label8"
+        '
+        'CheckURL
+        '
+        resources.ApplyResources(Me.CheckURL, "CheckURL")
+        Me.CheckURL.Name = "CheckURL"
+        Me.CheckURL.UseVisualStyleBackColor = True
+        '
+        'RadioPLUS
+        '
+        resources.ApplyResources(Me.RadioPLUS, "RadioPLUS")
+        Me.RadioPLUS.Name = "RadioPLUS"
+        Me.RadioPLUS.UseVisualStyleBackColor = True
+        '
+        'CheckRegex
+        '
+        resources.ApplyResources(Me.CheckRegex, "CheckRegex")
+        Me.CheckRegex.Name = "CheckRegex"
+        Me.CheckRegex.UseVisualStyleBackColor = True
+        '
+        'Label9
+        '
+        resources.ApplyResources(Me.Label9, "Label9")
+        Me.Label9.Name = "Label9"
+        '
+        'Label7
+        '
+        resources.ApplyResources(Me.Label7, "Label7")
+        Me.Label7.Name = "Label7"
+        '
+        'Label6
+        '
+        resources.ApplyResources(Me.Label6, "Label6")
+        Me.Label6.Name = "Label6"
+        '
+        'UID
+        '
+        resources.ApplyResources(Me.UID, "UID")
+        Me.UID.Name = "UID"
+        '
+        'MSG1
+        '
+        resources.ApplyResources(Me.MSG1, "MSG1")
+        Me.MSG1.Name = "MSG1"
+        '
+        'MSG2
+        '
+        resources.ApplyResources(Me.MSG2, "MSG2")
+        Me.MSG2.Name = "MSG2"
+        '
         'GroupBox1
         '
+        Me.GroupBox1.Controls.Add(Me.CheckMark)
         Me.GroupBox1.Controls.Add(Me.OptMark)
         Me.GroupBox1.Controls.Add(Me.OptMove)
         resources.ApplyResources(Me.GroupBox1, "GroupBox1")
         Me.GroupBox1.Name = "GroupBox1"
         Me.GroupBox1.TabStop = False
+        '
+        'CheckMark
+        '
+        resources.ApplyResources(Me.CheckMark, "CheckMark")
+        Me.CheckMark.Name = "CheckMark"
+        Me.CheckMark.UseVisualStyleBackColor = True
         '
         'OptMark
         '
@@ -114,72 +312,11 @@ Partial Class FilterDialog
         Me.OptMove.TabStop = True
         Me.OptMove.UseVisualStyleBackColor = True
         '
-        'CheckURL
-        '
-        resources.ApplyResources(Me.CheckURL, "CheckURL")
-        Me.CheckURL.Name = "CheckURL"
-        Me.CheckURL.UseVisualStyleBackColor = True
-        '
-        'CheckRegex
-        '
-        resources.ApplyResources(Me.CheckRegex, "CheckRegex")
-        Me.CheckRegex.Name = "CheckRegex"
-        Me.CheckRegex.UseVisualStyleBackColor = True
-        '
-        'RadioAND
-        '
-        resources.ApplyResources(Me.RadioAND, "RadioAND")
-        Me.RadioAND.Checked = True
-        Me.RadioAND.Name = "RadioAND"
-        Me.RadioAND.TabStop = True
-        Me.RadioAND.UseVisualStyleBackColor = True
-        '
         'ButtonCancel
         '
         resources.ApplyResources(Me.ButtonCancel, "ButtonCancel")
         Me.ButtonCancel.Name = "ButtonCancel"
         Me.ButtonCancel.UseVisualStyleBackColor = True
-        '
-        'UID
-        '
-        resources.ApplyResources(Me.UID, "UID")
-        Me.UID.Name = "UID"
-        '
-        'MSG2
-        '
-        resources.ApplyResources(Me.MSG2, "MSG2")
-        Me.MSG2.Name = "MSG2"
-        '
-        'MSG1
-        '
-        resources.ApplyResources(Me.MSG1, "MSG1")
-        Me.MSG1.Name = "MSG1"
-        '
-        'Label6
-        '
-        resources.ApplyResources(Me.Label6, "Label6")
-        Me.Label6.Name = "Label6"
-        '
-        'Label7
-        '
-        resources.ApplyResources(Me.Label7, "Label7")
-        Me.Label7.Name = "Label7"
-        '
-        'Label9
-        '
-        resources.ApplyResources(Me.Label9, "Label9")
-        Me.Label9.Name = "Label9"
-        '
-        'RadioPLUS
-        '
-        resources.ApplyResources(Me.RadioPLUS, "RadioPLUS")
-        Me.RadioPLUS.Name = "RadioPLUS"
-        Me.RadioPLUS.UseVisualStyleBackColor = True
-        '
-        'Label8
-        '
-        resources.ApplyResources(Me.Label8, "Label8")
-        Me.Label8.Name = "Label8"
         '
         'ButtonOK
         '
@@ -222,15 +359,83 @@ Partial Class FilterDialog
         resources.ApplyResources(Me.ListTabs, "ListTabs")
         Me.ListTabs.Name = "ListTabs"
         '
+        'ButtonAddTab
+        '
+        resources.ApplyResources(Me.ButtonAddTab, "ButtonAddTab")
+        Me.ButtonAddTab.Name = "ButtonAddTab"
+        Me.ButtonAddTab.UseVisualStyleBackColor = True
+        '
+        'ButtonDeleteTab
+        '
+        resources.ApplyResources(Me.ButtonDeleteTab, "ButtonDeleteTab")
+        Me.ButtonDeleteTab.Name = "ButtonDeleteTab"
+        Me.ButtonDeleteTab.UseVisualStyleBackColor = True
+        '
+        'ButtonRenameTab
+        '
+        resources.ApplyResources(Me.ButtonRenameTab, "ButtonRenameTab")
+        Me.ButtonRenameTab.Name = "ButtonRenameTab"
+        Me.ButtonRenameTab.UseVisualStyleBackColor = True
+        '
+        'CheckManageRead
+        '
+        resources.ApplyResources(Me.CheckManageRead, "CheckManageRead")
+        Me.CheckManageRead.Name = "CheckManageRead"
+        Me.CheckManageRead.UseVisualStyleBackColor = True
+        '
+        'CheckNotifyNew
+        '
+        resources.ApplyResources(Me.CheckNotifyNew, "CheckNotifyNew")
+        Me.CheckNotifyNew.Name = "CheckNotifyNew"
+        Me.CheckNotifyNew.UseVisualStyleBackColor = True
+        '
+        'ComboSound
+        '
+        Me.ComboSound.FormattingEnabled = True
+        resources.ApplyResources(Me.ComboSound, "ComboSound")
+        Me.ComboSound.Name = "ComboSound"
+        '
+        'Label10
+        '
+        resources.ApplyResources(Me.Label10, "Label10")
+        Me.Label10.Name = "Label10"
+        '
+        'ButtonUp
+        '
+        resources.ApplyResources(Me.ButtonUp, "ButtonUp")
+        Me.ButtonUp.Name = "ButtonUp"
+        Me.ButtonUp.UseVisualStyleBackColor = True
+        '
+        'ButtonDown
+        '
+        resources.ApplyResources(Me.ButtonDown, "ButtonDown")
+        Me.ButtonDown.Name = "ButtonDown"
+        Me.ButtonDown.UseVisualStyleBackColor = True
+        '
+        'GroupTab
+        '
+        Me.GroupTab.Controls.Add(Me.ListTabs)
+        Me.GroupTab.Controls.Add(Me.ButtonDown)
+        Me.GroupTab.Controls.Add(Me.ButtonAddTab)
+        Me.GroupTab.Controls.Add(Me.ButtonUp)
+        Me.GroupTab.Controls.Add(Me.ButtonDeleteTab)
+        Me.GroupTab.Controls.Add(Me.Label10)
+        Me.GroupTab.Controls.Add(Me.ButtonRenameTab)
+        Me.GroupTab.Controls.Add(Me.ComboSound)
+        Me.GroupTab.Controls.Add(Me.CheckManageRead)
+        Me.GroupTab.Controls.Add(Me.CheckNotifyNew)
+        resources.ApplyResources(Me.GroupTab, "GroupTab")
+        Me.GroupTab.Name = "GroupTab"
+        Me.GroupTab.TabStop = False
+        '
         'FilterDialog
         '
         resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.ButtonClose
         Me.ControlBox = False
-        Me.Controls.Add(Me.ListTabs)
+        Me.Controls.Add(Me.GroupTab)
         Me.Controls.Add(Me.GroupBox2)
-        Me.Controls.Add(Me.Label5)
         Me.Controls.Add(Me.ButtonClose)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.KeyPreview = True
@@ -240,16 +445,19 @@ Partial Class FilterDialog
         Me.ShowInTaskbar = False
         Me.TopMost = True
         Me.EditFilterGroup.ResumeLayout(False)
-        Me.EditFilterGroup.PerformLayout()
+        Me.GroupExclude.ResumeLayout(False)
+        Me.GroupExclude.PerformLayout()
+        Me.GroupMatch.ResumeLayout(False)
+        Me.GroupMatch.PerformLayout()
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()
         Me.GroupBox2.ResumeLayout(False)
+        Me.GroupTab.ResumeLayout(False)
+        Me.GroupTab.PerformLayout()
         Me.ResumeLayout(False)
-        Me.PerformLayout()
 
     End Sub
     Friend WithEvents ButtonClose As System.Windows.Forms.Button
-    Friend WithEvents Label5 As System.Windows.Forms.Label
     Friend WithEvents ListFilters As System.Windows.Forms.ListBox
     Friend WithEvents EditFilterGroup As System.Windows.Forms.GroupBox
     Friend WithEvents RadioPLUS As System.Windows.Forms.RadioButton
@@ -273,5 +481,32 @@ Partial Class FilterDialog
     Friend WithEvents OptMark As System.Windows.Forms.RadioButton
     Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
     Friend WithEvents ListTabs As System.Windows.Forms.ListBox
+    Friend WithEvents GroupMatch As System.Windows.Forms.GroupBox
+    Friend WithEvents GroupExclude As System.Windows.Forms.GroupBox
+    Friend WithEvents RadioExAnd As System.Windows.Forms.RadioButton
+    Friend WithEvents Label1 As System.Windows.Forms.Label
+    Friend WithEvents CheckExURL As System.Windows.Forms.CheckBox
+    Friend WithEvents RadioExPLUS As System.Windows.Forms.RadioButton
+    Friend WithEvents CheckExRegex As System.Windows.Forms.CheckBox
+    Friend WithEvents Label2 As System.Windows.Forms.Label
+    Friend WithEvents Label3 As System.Windows.Forms.Label
+    Friend WithEvents Label4 As System.Windows.Forms.Label
+    Friend WithEvents ExUID As System.Windows.Forms.TextBox
+    Friend WithEvents ExMSG1 As System.Windows.Forms.TextBox
+    Friend WithEvents ExMSG2 As System.Windows.Forms.TextBox
+    Friend WithEvents CheckMark As System.Windows.Forms.CheckBox
+    Friend WithEvents ButtonAddTab As System.Windows.Forms.Button
+    Friend WithEvents ButtonDeleteTab As System.Windows.Forms.Button
+    Friend WithEvents ButtonRenameTab As System.Windows.Forms.Button
+    Friend WithEvents CheckManageRead As System.Windows.Forms.CheckBox
+    Friend WithEvents CheckNotifyNew As System.Windows.Forms.CheckBox
+    Friend WithEvents ComboSound As System.Windows.Forms.ComboBox
+    Friend WithEvents Label10 As System.Windows.Forms.Label
+    Friend WithEvents Label11 As System.Windows.Forms.Label
+    Friend WithEvents ButtonUp As System.Windows.Forms.Button
+    Friend WithEvents ButtonDown As System.Windows.Forms.Button
+    Friend WithEvents GroupTab As System.Windows.Forms.GroupBox
+    Friend WithEvents CheckExCaseSensitive As System.Windows.Forms.CheckBox
+    Friend WithEvents CheckCaseSensitive As System.Windows.Forms.CheckBox
 
 End Class

@@ -84,6 +84,7 @@
     <Compile Include="Connection\HttpConnectionApi.vb" />
     <Compile Include="Connection\HttpConnectionOAuth.vb" />
     <Compile Include="DetailsListView.vb">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="DialogAsShieldIcon.Designer.vb">
       <DependentUpon>DialogAsShieldIcon.vb</DependentUpon>
@@ -169,6 +170,7 @@
     </Compile>
     <Compile Include="Twitter.vb" />
     <Compile Include="WebBrowserController.vb" />
+    <Compile Include="Win32Api.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DialogAsShieldIcon.resx">

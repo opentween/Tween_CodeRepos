@@ -488,7 +488,7 @@
     <value>マークする</value>
   </data>
   <data name="SetFiltersText11" xml:space="preserve">
-    <value>何もせず</value>
+    <value>コピーする</value>
   </data>
   <data name="SetFiltersText2" xml:space="preserve">
     <value>[ユーザ･･･(全て)]  </value>
@@ -711,5 +711,11 @@
   </data>
   <data name="ReplyBlink" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\6g.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SetFiltersText12" xml:space="preserve">
+    <value>　／　除外　</value>
+  </data>
+  <data name="SetFiltersText13" xml:space="preserve">
+    <value>大/小区別</value>
   </data>
 </root>

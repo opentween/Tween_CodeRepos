@@ -187,18 +187,6 @@ Public Class TweenMain
 
     Private urlUndoBuffer As Generic.List(Of urlUndo) = Nothing
 
-    Friend Class Win32Api
-        '画面をブリンクするためのWin32API。起動時に10ページ読み取りごとに継続確認メッセージを表示する際の通知強調用
-        Friend Declare Function FlashWindow Lib "user32.dll" ( _
-            ByVal hwnd As Integer, ByVal bInvert As Integer) As Integer
-        Friend Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" ( _
-           ByVal hwnd As IntPtr, _
-           ByVal wMsg As Int32, _
-           ByVal wParam As Integer, _
-           ByVal lParam As Integer _
-         ) As Integer
-    End Class
-
     'Backgroundworkerの処理結果通知用引数構造体
     Private Structure GetWorkerResult
         Public retMsg As String                     '処理結果詳細メッセージ。エラー時に値がセットされる
