@@ -50,6 +50,7 @@ Public NotInheritable Class PostClass
     Private _IsDm As Boolean
     Private _statuses As Statuses = Statuses.None
     Private _Uid As Long
+    Private _FilterHit As Boolean
 
     <FlagsAttribute()> _
     Private Enum Statuses
@@ -79,7 +80,8 @@ Public NotInheritable Class PostClass
             ByVal IsMe As Boolean, _
             ByVal ImageIndex As Integer, _
             ByVal IsDm As Boolean, _
-            ByVal Uid As Long)
+            ByVal Uid As Long, _
+            ByVal FilterHit As Boolean)
         _Nick = Nickname
         _Data = Data
         _ImageUrl = ImageUrl
@@ -101,6 +103,7 @@ Public NotInheritable Class PostClass
         _ImageIndex = ImageIndex
         _IsDm = IsDm
         _Uid = Uid
+        _FilterHit = FilterHit
     End Sub
 
     Public Sub New()
@@ -292,6 +295,14 @@ Public NotInheritable Class PostClass
         End Get
         Set(ByVal value As Long)
             _Uid = value
+        End Set
+    End Property
+    Public Property FilterHit() As Boolean
+        Get
+            Return _FilterHit
+        End Get
+        Set(ByVal value As Boolean)
+            _FilterHit = value
         End Set
     End Property
 End Class
@@ -627,6 +638,9 @@ Public NotInheritable Class TabInformations
                         If Not _tabs(tn).SoundFile = "" AndAlso _soundFile = "" Then
                             _soundFile = _tabs(tn).SoundFile 'wavファイル（未設定の場合のみ）
                         End If
+                        post.FilterHit = True
+                    Else
+                        post.FilterHit = False
                     End If
                 Next
                 If Not mv Then  '移動されなかったらRecentに追加
@@ -722,7 +736,7 @@ Public NotInheritable Class TabInformations
             If Not _statuses(id).IsDm AndAlso _
                Not _statuses(id).IsReply AndAlso _
                Not _statuses(id).IsRead AndAlso _
-               Not _statuses(id).IsMark Then
+               Not _statuses(id).FilterHit Then
                 _statuses(id).IsRead = True
                 Me.SetNextUnreadId(id, tb)  '次の未読セット
                 For Each key As String In _tabs.Keys
@@ -830,12 +844,18 @@ Public NotInheritable Class TabInformations
                         Select Case rslt
                             Case HITRESULT.CopyAndMark
                                 post.IsMark = True 'マークあり
+                                post.FilterHit = True
                             Case HITRESULT.Move
                                 tbr.Remove(post.Id, post.IsRead)
                                 post.IsMark = False
+                                post.FilterHit = True
+                            Case HITRESULT.Copy
+                                post.IsMark = False
+                                post.FilterHit = True
                             Case HITRESULT.None
                                 If key = DEFAULTTAB.REPLY And post.IsReply Then _tabs(DEFAULTTAB.REPLY).Add(post.Id, post.IsRead, True)
                                 If post.IsFav Then _tabs(DEFAULTTAB.FAV).Add(post.Id, post.IsRead, True)
+                                post.FilterHit = False
                         End Select
                     Next
                     tb.AddSubmit()  '振分確定
@@ -1018,12 +1038,14 @@ Public NotInheritable Class TabClass
         For Each ft As FiltersClass In _filters
             Select Case ft.IsHit(Name, Body, OrgData)   'フィルタクラスでヒット判定
                 Case HITRESULT.None
-                    'Case HITRESULT.Copy
-                    '    If rslt <> HITRESULT.CopyAndMark Then rslt = HITRESULT.Copy
+                Case HITRESULT.Copy
+                    If rslt <> HITRESULT.CopyAndMark Then rslt = HITRESULT.Copy
                 Case HITRESULT.CopyAndMark
                     rslt = HITRESULT.CopyAndMark
                 Case HITRESULT.Move
                     rslt = HITRESULT.Move
+                Case HITRESULT.Exclude
+                    rslt = HITRESULT.None
                     Exit For
             End Select
         Next
@@ -1220,36 +1242,72 @@ Public NotInheritable Class FiltersClass
     Private _name As String
     Private _body As New List(Of String)
     Private _searchBoth As Boolean
+    Private _searchUrl As Boolean
+    Private _caseSensitive As Boolean
+    Private _useRegex As Boolean
+    Private _exname As String
+    Private _exbody As New List(Of String)
+    Private _exsearchBoth As Boolean
+    Private _exsearchUrl As Boolean
+    Private _exuseRegex As Boolean
+    Private _excaseSensitive As Boolean
     Private _moveFrom As Boolean
     Private _setMark As Boolean
-    Private _searchUrl As Boolean
-    Private _useRegex As Boolean
 
     Public Sub New(ByVal NameFilter As String, _
-            ByVal BodyFilter As List(Of String), _
-            ByVal SearchBoth As Boolean, _
-            ByVal MoveFrom As Boolean, _
-            ByVal SetMark As Boolean, _
-            ByVal SearchUrl As Boolean, _
-            ByVal UseRegex As Boolean, _
-            ByVal ParentTab As String)
+        ByVal BodyFilter As List(Of String), _
+        ByVal SearchBoth As Boolean, _
+        ByVal SearchUrl As Boolean, _
+        ByVal CaseSensitive As Boolean, _
+        ByVal UseRegex As Boolean, _
+        ByVal ParentTab As String, _
+        ByVal ExNameFilter As String, _
+        ByVal ExBodyFilter As List(Of String), _
+        ByVal ExSearchBoth As Boolean, _
+        ByVal ExSearchUrl As Boolean, _
+        ByVal ExUseRegex As Boolean, _
+        ByVal ExCaseSensitive As Boolean, _
+        ByVal MoveFrom As Boolean, _
+        ByVal SetMark As Boolean)
         _name = NameFilter
         _body = BodyFilter
         _searchBoth = SearchBoth
+        _searchUrl = SearchUrl
+        _caseSensitive = CaseSensitive
+        _useRegex = UseRegex
+        _exname = ExNameFilter
+        _exbody = ExBodyFilter
+        _exsearchBoth = ExSearchBoth
+        _exsearchUrl = ExSearchUrl
+        _exuseRegex = ExUseRegex
+        _excaseSensitive = ExCaseSensitive
         _moveFrom = MoveFrom
         _setMark = SetMark
-        _searchUrl = SearchUrl
-        _useRegex = UseRegex
+        '正規表現検証
         If _useRegex Then
-            For Each nm As String In _name
+            Try
+                Dim rgx As New Regex(_name)
+            Catch ex As Exception
+                Throw New Exception(My.Resources.ButtonOK_ClickText3 + ex.Message)
+                Exit Sub
+            End Try
+            For Each bs As String In _body
                 Try
-                    Dim rgx As New Regex(nm)
+                    Dim rgx As New Regex(bs)
                 Catch ex As Exception
                     Throw New Exception(My.Resources.ButtonOK_ClickText3 + ex.Message)
                     Exit Sub
                 End Try
             Next
-            For Each bs As String In _body
+        End If
+        If _exuseRegex Then
+            Try
+                Dim rgx As New Regex(_exname)
+            Catch ex As Exception
+                Throw New Exception(My.Resources.ButtonOK_ClickText3 + ex.Message)
+                Exit Sub
+            End Try
+            For Each bs As String In _exbody
                 Try
                     Dim rgx As New Regex(bs)
                 Catch ex As Exception
@@ -1295,6 +1353,9 @@ Public NotInheritable Class FiltersClass
         If _searchUrl Then
             fs.Append(My.Resources.SetFiltersText8)
         End If
+        If _caseSensitive Then
+            fs.Append(My.Resources.SetFiltersText13)
+        End If
         'If _moveFrom Then
         '    fs.Append(My.Resources.SetFiltersText9)
         'ElseIf _setMark Then
@@ -1302,11 +1363,51 @@ Public NotInheritable Class FiltersClass
         'Else
         '    fs.Append(My.Resources.SetFiltersText11)
         'End If
+        fs.Append(")")
+        '除外
+        fs.Append(My.Resources.SetFiltersText12)
+        If _exsearchBoth Then
+            If _exname <> "" Then
+                fs.AppendFormat(My.Resources.SetFiltersText1, _exname)
+            Else
+                fs.Append(My.Resources.SetFiltersText2)
+            End If
+        End If
+        If _exbody.Count > 0 Then
+            fs.Append(My.Resources.SetFiltersText3)
+            For Each bf As String In _exbody
+                fs.Append(bf)
+                fs.Append(" ")
+            Next
+            fs.Length -= 1
+            fs.Append(My.Resources.SetFiltersText4)
+        End If
+        fs.Append("(")
+        If _exsearchBoth Then
+            fs.Append(My.Resources.SetFiltersText5)
+        Else
+            fs.Append(My.Resources.SetFiltersText6)
+        End If
+        If _exuseRegex Then
+            fs.Append(My.Resources.SetFiltersText7)
+        End If
+        If _exsearchUrl Then
+            fs.Append(My.Resources.SetFiltersText8)
+        End If
+        If _excaseSensitive Then
+            fs.Append(My.Resources.SetFiltersText13)
+        End If
+        fs.Append(")")
+        fs.Append("(")
         If _moveFrom Then
             fs.Append(My.Resources.SetFiltersText9)
         Else
+            fs.Append(My.Resources.SetFiltersText11)
+        End If
+        If Not _moveFrom AndAlso _setMark Then
             fs.Append(My.Resources.SetFiltersText10)
         End If
+
         fs.Append(")")
 
         Return fs.ToString()
@@ -1318,6 +1419,15 @@ Public NotInheritable Class FiltersClass
         End Get
         Set(ByVal value As String)
             _name = value
+        End Set
+    End Property
+
+    Public Property ExNameFilter() As String
+        Get
+            Return _exname
+        End Get
+        Set(ByVal value As String)
+            _exname = value
         End Set
     End Property
 
@@ -1343,12 +1453,43 @@ Public NotInheritable Class FiltersClass
         End Set
     End Property
 
+    <Xml.Serialization.XmlIgnore()> _
+    Public Property ExBodyFilter() As List(Of String)
+        Get
+            Return _exbody
+        End Get
+        Set(ByVal value As List(Of String))
+            _exbody = value
+        End Set
+    End Property
+
+    Public Property ExBodyFilterArray() As String()
+        Get
+            Return _exbody.ToArray
+        End Get
+        Set(ByVal value As String())
+            _exbody = New List(Of String)
+            For Each filter As String In value
+                _exbody.Add(filter)
+            Next
+        End Set
+    End Property
+
     Public Property SearchBoth() As Boolean
         Get
             Return _searchBoth
         End Get
         Set(ByVal value As Boolean)
             _searchBoth = value
+        End Set
+    End Property
+
+    Public Property ExSearchBoth() As Boolean
+        Get
+            Return _exsearchBoth
+        End Get
+        Set(ByVal value As Boolean)
+            _exsearchBoth = value
         End Set
     End Property
 
@@ -1379,12 +1520,48 @@ Public NotInheritable Class FiltersClass
         End Set
     End Property
 
+    Public Property ExSearchUrl() As Boolean
+        Get
+            Return _exsearchUrl
+        End Get
+        Set(ByVal value As Boolean)
+            _exsearchUrl = value
+        End Set
+    End Property
+
+    Public Property CaseSensitive() As Boolean
+        Get
+            Return _caseSensitive
+        End Get
+        Set(ByVal value As Boolean)
+            _caseSensitive = value
+        End Set
+    End Property
+
+    Public Property ExCaseSensitive() As Boolean
+        Get
+            Return _excaseSensitive
+        End Get
+        Set(ByVal value As Boolean)
+            _excaseSensitive = value
+        End Set
+    End Property
+
     Public Property UseRegex() As Boolean
         Get
             Return _useRegex
         End Get
         Set(ByVal value As Boolean)
             _useRegex = value
+        End Set
+    End Property
+
+    Public Property ExUseRegex() As Boolean
+        Get
+            Return _exuseRegex
+        End Get
+        Set(ByVal value As Boolean)
+            _exuseRegex = value
         End Set
     End Property
 
@@ -1400,14 +1577,28 @@ Public NotInheritable Class FiltersClass
         Else
             tBody = Body
         End If
+        '検索オプション
+        Dim compOpt As System.StringComparison
+        Dim rgOpt As System.Text.RegularExpressions.RegexOptions
+        If _caseSensitive Then
+            compOpt = StringComparison.Ordinal
+            rgOpt = RegexOptions.None
+        Else
+            compOpt = StringComparison.OrdinalIgnoreCase
+            rgOpt = RegexOptions.IgnoreCase
+        End If
         If _searchBoth Then
-            If _name = "" OrElse Name.Equals(_name, StringComparison.OrdinalIgnoreCase) OrElse _
-                            (_useRegex AndAlso Regex.IsMatch(Name, _name, RegexOptions.IgnoreCase)) Then
+            If _name = "" OrElse Name.Equals(_name, compOpt) OrElse _
+                            (_useRegex AndAlso Regex.IsMatch(Name, _name, rgOpt)) Then
                 For Each fs As String In _body
                     If _useRegex Then
-                        If Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase) = False Then bHit = False
+                        If Regex.IsMatch(tBody, fs, rgOpt) = False Then bHit = False
                     Else
-                        If tBody.ToLower().Contains(fs.ToLower()) = False Then bHit = False
+                        If _caseSensitive Then
+                            If tBody.Contains(fs) = False Then bHit = False
+                        Else
+                            If tBody.ToLower().Contains(fs.ToLower()) = False Then bHit = False
+                        End If
                     End If
                     If Not bHit Then Exit For
                 Next
@@ -1417,23 +1608,82 @@ Public NotInheritable Class FiltersClass
         Else
             For Each fs As String In _body
                 If _useRegex Then
-                    If Not (Regex.IsMatch(Name, fs, RegexOptions.IgnoreCase) OrElse _
-                            Regex.IsMatch(tBody, fs, RegexOptions.IgnoreCase)) Then bHit = False
+                    If Not (Regex.IsMatch(Name, fs, rgOpt) OrElse _
+                            Regex.IsMatch(tBody, fs, rgOpt)) Then bHit = False
                 Else
-                    If Not (Name.ToLower().Contains(fs.ToLower()) OrElse _
-                            tBody.ToLower().Contains(fs.ToLower())) Then bHit = False
+                    If _caseSensitive Then
+                        If Not (Name.Contains(fs) OrElse _
+                                tBody.Contains(fs)) Then bHit = False
+                    Else
+                        If Not (Name.ToLower().Contains(fs.ToLower()) OrElse _
+                                tBody.ToLower().Contains(fs.ToLower())) Then bHit = False
+                    End If
                 End If
                 If Not bHit Then Exit For
             Next
         End If
         If bHit Then
-            'If _setMark Then Return HITRESULT.CopyAndMark
-            If _moveFrom Then
-                Return HITRESULT.Move
-            Else
-                Return HITRESULT.CopyAndMark
+            '除外判定
+            Dim exFlag As Boolean = False
+            If _name = "" AndAlso _body.Count = 0 Then
+                exFlag = True
             End If
-            'Return HITRESULT.Copy
+            If _excaseSensitive Then
+                compOpt = StringComparison.Ordinal
+                rgOpt = RegexOptions.None
+            Else
+                compOpt = StringComparison.OrdinalIgnoreCase
+                rgOpt = RegexOptions.IgnoreCase
+            End If
+            If _exsearchBoth Then
+                If _exname = "" OrElse Name.Equals(_exname, compOpt) OrElse _
+                                (_exuseRegex AndAlso Regex.IsMatch(Name, _exname, rgOpt)) Then
+                    For Each fs As String In _exbody
+                        If _exuseRegex Then
+                            If Regex.IsMatch(tBody, fs, rgOpt) Then bHit = False
+                        Else
+                            If _excaseSensitive Then
+                                If tBody.Contains(fs) Then bHit = False
+                            Else
+                                If tBody.ToLower().Contains(fs.ToLower()) Then bHit = False
+                            End If
+                        End If
+                        If Not bHit Then Exit For
+                    Next
+                End If
+            Else
+                For Each fs As String In _exbody
+                    If _useRegex Then
+                        If Regex.IsMatch(Name, fs, rgOpt) OrElse _
+                           Regex.IsMatch(tBody, fs, rgOpt) Then bHit = False
+                    Else
+                        If _excaseSensitive Then
+                            If Name.Contains(fs) OrElse _
+                               tBody.Contains(fs) Then bHit = False
+                        Else
+                            If Name.ToLower().Contains(fs.ToLower()) OrElse _
+                               tBody.ToLower().Contains(fs.ToLower()) Then bHit = False
+                        End If
+                    End If
+                    If Not bHit Then Exit For
+                Next
+            End If
+
+            If bHit Then
+                'If _setMark Then Return HITRESULT.CopyAndMark
+                If _moveFrom Then
+                    Return HITRESULT.Move
+                Else
+                    If _setMark Then
+                        Return HITRESULT.CopyAndMark
+                    End If
+                    Return HITRESULT.Copy
+                End If
+                'Return HITRESULT.Copy
+            Else
+                If exFlag Then Return HITRESULT.Exclude
+                Return HITRESULT.None
+            End If
         Else
             Return HITRESULT.None
         End If
@@ -1443,16 +1693,24 @@ Public NotInheritable Class FiltersClass
      Implements System.IEquatable(Of Tween.FiltersClass).Equals
 
         If Me.BodyFilter.Count <> other.BodyFilter.Count Then Return False
+        If Me.ExBodyFilter.Count <> other.ExBodyFilter.Count Then Return False
         For i As Integer = 0 To Me.BodyFilter.Count - 1
             If Me.BodyFilter(i) <> other.BodyFilter(i) Then Return False
         Next
+        For i As Integer = 0 To Me.ExBodyFilter.Count - 1
+            If Me.ExBodyFilter(i) <> other.ExBodyFilter(i) Then Return False
+        Next
 
         Return (Me.MoveFrom = other.MoveFrom) And _
+               (Me.SetMark = other.SetMark) And _
                (Me.NameFilter = other.NameFilter) And _
                (Me.SearchBoth = other.SearchBoth) And _
                (Me.SearchUrl = other.SearchUrl) And _
-               (Me.SetMark = other.SetMark) And _
-               (Me.UseRegex = other.UseRegex)
+               (Me.UseRegex = other.UseRegex) And _
+               (Me.ExNameFilter = other.ExNameFilter) And _
+               (Me.ExSearchBoth = other.ExSearchBoth) And _
+               (Me.ExSearchUrl = other.ExSearchUrl) And _
+               (Me.ExUseRegex = other.ExUseRegex)
     End Function
 
     Public Overrides Function Equals(ByVal obj As Object) As Boolean
@@ -1461,13 +1719,18 @@ Public NotInheritable Class FiltersClass
     End Function
 
     Public Overrides Function GetHashCode() As Integer
-        Return Me.BodyFilter.GetHashCode Xor _
-               Me.MoveFrom.GetHashCode Xor _
+        Return Me.MoveFrom.GetHashCode Xor _
+               Me.SetMark.GetHashCode Xor _
+               Me.BodyFilter.GetHashCode Xor _
                Me.NameFilter.GetHashCode Xor _
                Me.SearchBoth.GetHashCode Xor _
                Me.SearchUrl.GetHashCode Xor _
-               Me.SetMark.GetHashCode Xor _
-               Me.UseRegex.GetHashCode
+               Me.UseRegex.GetHashCode Xor _
+               Me.ExBodyFilter.GetHashCode Xor _
+               Me.ExNameFilter.GetHashCode Xor _
+               Me.ExSearchBoth.GetHashCode Xor _
+               Me.ExSearchUrl.GetHashCode Xor _
+               Me.ExUseRegex.GetHashCode
     End Function
 End Class
 

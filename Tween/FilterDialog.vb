@@ -390,4 +390,33 @@ Public Class FilterDialog
     Private Sub ListTabs_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ListTabs.SelectedIndexChanged
         SetFilters(ListTabs.SelectedItem.ToString)
     End Sub
+
+    Private Sub ButtonAddTab_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonAddTab.Click
+        Dim tabName As String = Nothing
+        Using inputName As New InputTabName()
+            inputName.TabName = "MyTab" + (ListTabs.Items.Count + 1).ToString
+            inputName.ShowDialog()
+            tabName = inputName.TabName
+        End Using
+        If tabName <> "" Then
+            Dim dup As Boolean = False
+            For i As Integer = 0 To ListTabs.Items.Count - 1
+                If tabName = ListTabs.Items(i).ToString Then
+                    dup = True
+                    Exit For
+                End If
+            Next
+            If dup Then
+                Dim tmp As String = String.Format(My.Resources.AddTabMenuItem_ClickText1, tabName)
+                MessageBox.Show(tmp, My.Resources.AddTabMenuItem_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                Exit Sub
+            End If
+            '成功
+            _sts.AddTab(tabName)
+        End If
+    End Sub
+
+    Private Sub ButtonDeleteTab_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonDeleteTab.Click
+
+    End Sub
 End Class
