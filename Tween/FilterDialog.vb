@@ -53,16 +53,29 @@ Public Class FilterDialog
         ListTabs.Enabled = True
         GroupTab.Enabled = True
         ListFilters.Enabled = True
-        ListFilters.Focus()
+        'ListFilters.Focus()
         If ListFilters.SelectedIndex <> -1 Then
             ShowDetail()
         End If
         EditFilterGroup.Enabled = False
-        ButtonNew.Enabled = True
-        ButtonEdit.Enabled = True
-        ButtonDelete.Enabled = True
+        Select Case tabName
+            Case DEFAULTTAB.RECENT, DEFAULTTAB.DM, DEFAULTTAB.FAV
+                ButtonNew.Enabled = False
+                ButtonEdit.Enabled = False
+                ButtonDelete.Enabled = False
+            Case Else
+                ButtonNew.Enabled = True
+                ButtonEdit.Enabled = True
+                ButtonDelete.Enabled = True
+        End Select
+        If IsDefaultTab(tabName) Then
+            ButtonRenameTab.Enabled = False
+            ButtonDeleteTab.Enabled = False
+        Else
+            ButtonRenameTab.Enabled = True
+            ButtonDeleteTab.Enabled = True
+        End If
         ButtonClose.Enabled = True
-
     End Sub
 
     Public Sub SetCurrent(ByVal TabName As String)

@@ -89,6 +89,7 @@ Public Class SettingCommon
     Public SortOrder As Integer = 1
     Public IsMonospace As Boolean = False
     Public ReadOldPosts As Boolean = False
+    Public UseSsl As Boolean = True
 
     <Xml.Serialization.XmlIgnore()> _
     Public OutputzKey As String = ""

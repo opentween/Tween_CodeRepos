@@ -120,8 +120,6 @@ Public Class TweenMain
     Private _history As New List(Of String)()   '発言履歴
     Private _hisIdx As Integer                  '発言履歴カレントインデックス
 
-    Private Const _replyHtml As String = "@<a target=""_self"" href=""https://twitter.com/"
-
     '発言投稿時のAPI引数（発言編集時に設定。手書きreplyでは設定されない）
     Private _reply_to_id As Long     ' リプライ先のステータスID 0の場合はリプライではない 注：複数あてのものはリプライではない
     Private _reply_to_name As String    ' リプライ先ステータスの書き込み者の名前
@@ -559,6 +557,7 @@ Public Class TweenMain
         SettingDialog.ReadOwnPost = _cfgCommon.ReadOwnPost
         SettingDialog.GetFav = _cfgCommon.GetFav
         SettingDialog.ReadOldPosts = _cfgCommon.ReadOldPosts
+        SettingDialog.UseSsl = _cfgCommon.UseSsl
         SettingDialog.IsMonospace = _cfgCommon.IsMonospace
         If SettingDialog.IsMonospace Then
             detailHtmlFormat = detailHtmlFormatMono1 + _fntDetail.Name + detailHtmlFormatMono2 + _fntDetail.Size.ToString() + detailHtmlFormatMono3
@@ -670,6 +669,7 @@ Public Class TweenMain
         Twitter.HubServer = SettingDialog.HubServer
         Twitter.RestrictFavCheck = SettingDialog.RestrictFavCheck
         Twitter.ReadOwnPost = SettingDialog.ReadOwnPost
+        Twitter.UseSsl = SettingDialog.UseSsl
         If IsNetworkAvailable() Then
             If SettingDialog.StartupFollowers Then
                 '_waitFollower = True
@@ -1485,7 +1485,7 @@ Public Class TweenMain
             isRemoveFooter = My.Computer.Keyboard.CtrlKeyDown
         End If
         If GetRestStatusCount(False, Not isRemoveFooter) - adjustCount < 0 Then
-            If MessageBox.Show("140文字を越えています。URL短縮、フッタ除去、末尾カットを行って投稿しますか？", "文字数制限オーバー", MessageBoxButtons.OKCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) = Windows.Forms.DialogResult.OK Then
+            If MessageBox.Show(My.Resources.PostLengthOverMessage1, My.Resources.PostLengthOverMessage2, MessageBoxButtons.OKCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) = Windows.Forms.DialogResult.OK Then
                 isCutOff = True
                 If Not SettingDialog.UrlConvertAuto Then UrlConvertAutoToolStripMenuItem_Click(Nothing, Nothing)
                 If GetRestStatusCount(False, Not isRemoveFooter) - adjustCount < 0 Then
@@ -2449,6 +2449,7 @@ Public Class TweenMain
                 Twitter.TinyUrlResolve = SettingDialog.TinyUrlResolve
                 Twitter.RestrictFavCheck = SettingDialog.RestrictFavCheck
                 Twitter.ReadOwnPost = SettingDialog.ReadOwnPost
+                Twitter.UseSsl = SettingDialog.UseSsl
 
                 Twitter.SelectedProxyType = SettingDialog.SelectedProxyType
                 Twitter.ProxyAddress = SettingDialog.ProxyAddress
@@ -3437,7 +3438,7 @@ RETRY:
         Try
             Process.Start(pinfo)
         Catch ex As Exception
-            MsgBox("TweenUp.exeの実行に失敗しました。")
+            MsgBox("Failed to execute TweenUp.exe.")
         End Try
     End Sub
 
@@ -3540,9 +3541,9 @@ RETRY:
 
         Dim dTxt As String = detailHtmlFormat + _curPost.OriginalData + detailHtmlFormat4
         If _curTab.Text = DEFAULTTAB.DM AndAlso _curPost.IsOwl Then
-            NameLabel.Text = "DirectMessage To "
+            NameLabel.Text = "DM TO -> "
         ElseIf _curTab.Text = DEFAULTTAB.DM Then
-            NameLabel.Text = "DirectMessage From "
+            NameLabel.Text = "DM FROM <- "
         Else
             NameLabel.Text = ""
         End If
@@ -4256,6 +4257,7 @@ RETRY:
                     _cfgCommon.WideSpaceConvert = Me.IdeographicSpaceToSpaceToolStripMenuItem.Checked
                 End If
                 _cfgCommon.ReadOldPosts = SettingDialog.ReadOldPosts
+                _cfgCommon.UseSsl = SettingDialog.UseSsl
 
                 _cfgCommon.SortOrder = _statuses.SortOrder
                 Select Case _statuses.SortMode
@@ -4755,7 +4757,7 @@ RETRY:
         soundfileListup = False
         UreadManageMenuItem.Checked = tb.UnreadManage
         If _rclickTabName = DEFAULTTAB.RECENT OrElse _rclickTabName = DEFAULTTAB.DM OrElse _rclickTabName = DEFAULTTAB.FAV Then
-            FilterEditMenuItem.Enabled = False
+            FilterEditMenuItem.Enabled = True
             DeleteTabMenuItem.Enabled = False
         ElseIf _rclickTabName = DEFAULTTAB.REPLY Then
             FilterEditMenuItem.Enabled = True
@@ -5174,9 +5176,7 @@ RETRY:
                 Me.TopMost = SettingDialog.AlwaysTop
             End If
             If String.IsNullOrEmpty(openUrlStr) Then Exit Sub
-            If openUrlStr.StartsWith("https://twitter.com/search?q=#") Then
-                openUrlStr = openUrlStr.Replace("https://twitter.com/search?q=#", "https://twitter.com/search?q=%23")
-            End If
+            openUrlStr = openUrlStr.Replace("://twitter.com/search?q=#", "://twitter.com/search?q=%23")
             OpenUriAsync(openUrlStr)
         End If
     End Sub
@@ -6026,12 +6026,12 @@ RETRY:
 
             ' Webモードで起動した場合に警告する
             If Not SettingDialog.StartupAPImodeNoWarning AndAlso Not SettingDialog.UseAPI Then
-                If MessageBox.Show("現在Webモードです。" + Environment.NewLine + " * Webモードの使用はTwitterの利用規約に違反する恐れがあります。" + Environment.NewLine + " * APIモードではタイムライン取得に回数制限があります。" + Environment.NewLine + "APIモードに切り替える場合は「OK」を押してください。", "警告", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) = Windows.Forms.DialogResult.OK Then
+                If MessageBox.Show(My.Resources.WebModeWarning1 + Environment.NewLine + My.Resources.WebModeWarning2 + Environment.NewLine + My.Resources.WebModeWarning3 + Environment.NewLine + My.Resources.WebModeWarning4, My.Resources.WebModeWarning5, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) = Windows.Forms.DialogResult.OK Then
                     SettingDialog.UseAPI = True
                     'SaveConfigsCommon()
-                    MessageBox.Show("APIモードへ切り替えました。")
+                    MessageBox.Show(My.Resources.WebModeWarning6)
                 Else
-                    MessageBox.Show("APIモードへ戻す場合は、設定の「動作」タブにある「API使用」にチェックを入れて下さい。")
+                    MessageBox.Show(My.Resources.WebModeWarning7)
                     'MessageBox.Show("取得間隔に注意してください。タイムライン取得系APIはRecent,Reply,DMの合計で1時間に" + GetMaxCountApi.ToString() + "回までしか使えません。", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 End If
             End If
@@ -6211,14 +6211,13 @@ RETRY:
         Dim tmp As String
 
         If GetInfoApi(info) Then
-            tmp = "1時間あたりの取得系API使用最大回数 " + info.MaxCount.ToString() + "回" + vbCrLf + _
-                "現在の取得系API使用回数 " + (info.MaxCount - info.RemainCount).ToString + "回" + vbCrLf + _
-                "あと " + info.RemainCount.ToString + " 回 取得系APIを使用できます" + vbCrLf + _
-                "使用回数のカウントは " + info.ResetTime.ToString() + "にリセットされます"
+            tmp = My.Resources.ApiInfo1 + info.MaxCount.ToString() + Environment.NewLine + _
+                My.Resources.ApiInfo2 + info.RemainCount.ToString + Environment.NewLine + _
+                My.Resources.ApiInfo3 + info.ResetTime.ToString()
         Else
-            tmp = "API情報の取得に失敗しました"
+            tmp = My.Resources.ApiInfo5
         End If
-        MessageBox.Show(tmp, "API使用回数情報", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        MessageBox.Show(tmp, My.Resources.ApiInfo4, MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 
     Private Sub FollowCommandMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FollowCommandMenuItem.Click
@@ -6230,15 +6229,15 @@ RETRY:
     Private Sub FollowCommand(ByVal id As String)
         Using inputName As New InputTabName()
             inputName.FormTitle = "Follow"
-            inputName.FormDescription = "followするidを入力して下さい。"
+            inputName.FormDescription = My.Resources.FRMessage1
             inputName.TabName = id
             If inputName.ShowDialog() = Windows.Forms.DialogResult.OK AndAlso _
                Not String.IsNullOrEmpty(inputName.TabName.Trim()) Then
                 Dim ret As String = Twitter.PostFollowCommand(inputName.TabName.Trim())
                 If Not String.IsNullOrEmpty(ret) Then
-                    MessageBox.Show("Follow失敗: " + ret)
+                    MessageBox.Show(My.Resources.FRMessage2 + ret)
                 Else
-                    MessageBox.Show("Followしました！")
+                    MessageBox.Show(My.Resources.FRMessage3)
                 End If
             End If
         End Using
@@ -6253,15 +6252,15 @@ RETRY:
     Private Sub RemoveCommand(ByVal id As String)
         Using inputName As New InputTabName()
             inputName.FormTitle = "Remove"
-            inputName.FormDescription = "removeするidを入力して下さい。"
+            inputName.FormDescription = My.Resources.FRMessage1
             inputName.TabName = id
             If inputName.ShowDialog() = Windows.Forms.DialogResult.OK AndAlso _
                Not String.IsNullOrEmpty(inputName.TabName.Trim()) Then
                 Dim ret As String = Twitter.PostRemoveCommand(inputName.TabName.Trim())
                 If Not String.IsNullOrEmpty(ret) Then
-                    MessageBox.Show("Remove失敗: " + ret)
+                    MessageBox.Show(My.Resources.FRMessage2 + ret)
                 Else
-                    MessageBox.Show("Removeしました")
+                    MessageBox.Show(My.Resources.FRMessage3)
                 End If
             End If
         End Using
@@ -6278,7 +6277,7 @@ RETRY:
     Private Sub ShowFriendship(ByVal id As String)
         Using inputName As New InputTabName()
             inputName.FormTitle = "Show Friendships"
-            inputName.FormDescription = "調べる相手のidを入力して下さい。"
+            inputName.FormDescription = My.Resources.FRMessage1
             inputName.TabName = id
             If inputName.ShowDialog() = Windows.Forms.DialogResult.OK AndAlso _
                Not String.IsNullOrEmpty(inputName.TabName.Trim()) Then

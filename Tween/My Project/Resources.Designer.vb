@@ -168,6 +168,51 @@ Namespace My.Resources
             End Get
         End Property
         
+        '''<summary>
+        '''  上限 :  に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property ApiInfo1() As String
+            Get
+                Return ResourceManager.GetString("ApiInfo1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  残数 :  に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property ApiInfo2() As String
+            Get
+                Return ResourceManager.GetString("ApiInfo2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  リセット日時 :  に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property ApiInfo3() As String
+            Get
+                Return ResourceManager.GetString("ApiInfo3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  API情報 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property ApiInfo4() As String
+            Get
+                Return ResourceManager.GetString("ApiInfo4", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''   * API情報の取得に失敗 * に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property ApiInfo5() As String
+            Get
+                Return ResourceManager.GetString("ApiInfo5", resourceCulture)
+            End Get
+        End Property
+        
         Friend ReadOnly Property At() As System.Drawing.Icon
             Get
                 Dim obj As Object = ResourceManager.GetObject("At", resourceCulture)
@@ -307,6 +352,9 @@ Namespace My.Resources
         '''<summary>
         '''  更新履歴
         '''
+        '''==== Ver 0.7.0.2(2009/10/27)
+        ''' * 振り分けルールに除外ルールの設定を追加
+        ''' * 振り分けルールマッチ時の追加動作で「マークする」を復活
         '''==== Ver 0.7.0.1(2009/10/20)
         ''' * RT時にURLを展開しないように変更
         ''' * 投稿が140文字を越える場合に、末尾切り落としても良いか確認＆切り落とし処理追加
@@ -317,10 +365,7 @@ Namespace My.Resources
         ''' * リストのページスクロールショートカット追加（PageUp/Down相当）：f/b
         ''' * カラム幅が保存されない問題を修正
         ''' * Webモードでプロテクト設定の人の判別が出来なくなってしまったWeb変更への追従
-        ''' * Webモードで発言日時が取れるようになったので対応
-        ''' * bit.lyとj.mpを明示的に分離
-        ''' * 動作モードのデフォルト値をWebモードからAPIモードへ変更
-        ''' * フィル [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        ''' * Webモー [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property ChangeLog() As String
             Get
@@ -640,6 +685,33 @@ Namespace My.Resources
         Friend ReadOnly Property Form1_LoadText1() As String
             Get
                 Return ResourceManager.GetString("Form1_LoadText1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  idを入力して下さい。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property FRMessage1() As String
+            Get
+                Return ResourceManager.GetString("FRMessage1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  失敗 :  に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property FRMessage2() As String
+            Get
+                Return ResourceManager.GetString("FRMessage2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  完了！ に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property FRMessage3() As String
+            Get
+                Return ResourceManager.GetString("FRMessage3", resourceCulture)
             End Get
         End Property
         
@@ -1007,6 +1079,24 @@ Namespace My.Resources
         Friend ReadOnly Property NextThreshold_ValidatingText2() As String
             Get
                 Return ResourceManager.GetString("NextThreshold_ValidatingText2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  140文字を越えています。URL短縮、フッタ除去、末尾カットを行って投稿しますか？ に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property PostLengthOverMessage1() As String
+            Get
+                Return ResourceManager.GetString("PostLengthOverMessage1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  文字数制限オーバー に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property PostLengthOverMessage2() As String
+            Get
+                Return ResourceManager.GetString("PostLengthOverMessage2", resourceCulture)
             End Get
         End Property
         
@@ -1848,6 +1938,69 @@ Namespace My.Resources
         Friend ReadOnly Property UpdateFollowersMenuItem1_ClickText3() As String
             Get
                 Return ResourceManager.GetString("UpdateFollowersMenuItem1_ClickText3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  現在Webモードです。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property WebModeWarning1() As String
+            Get
+                Return ResourceManager.GetString("WebModeWarning1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  * Webモードの使用はTwitterの利用規約に違反する恐れがあります。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property WebModeWarning2() As String
+            Get
+                Return ResourceManager.GetString("WebModeWarning2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  * APIモードではタイムライン取得に回数制限があります。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property WebModeWarning3() As String
+            Get
+                Return ResourceManager.GetString("WebModeWarning3", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  APIモードに切り替える場合は「OK」を押してください。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property WebModeWarning4() As String
+            Get
+                Return ResourceManager.GetString("WebModeWarning4", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  警告 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property WebModeWarning5() As String
+            Get
+                Return ResourceManager.GetString("WebModeWarning5", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  APIモードへ切り替えました。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property WebModeWarning6() As String
+            Get
+                Return ResourceManager.GetString("WebModeWarning6", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  APIモードへ戻す場合は、設定の「動作」タブにある「API使用」にチェックを入れて下さい。 に類似しているローカライズされた文字列を検索します。
+        '''</summary>
+        Friend ReadOnly Property WebModeWarning7() As String
+            Get
+                Return ResourceManager.GetString("WebModeWarning7", resourceCulture)
             End Get
         End Property
     End Module

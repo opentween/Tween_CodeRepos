@@ -102,6 +102,7 @@ Public Class Setting
     Private _MyGetFav As Boolean
     Private _MyMonoSpace As Boolean
     Private _MyReadOldPosts As Boolean
+    Private _MyUseSsl As Boolean
 
     Private Sub Save_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Save.Click
         Try
@@ -234,6 +235,7 @@ Public Class Setting
             _MyGetFav = chkGetFav.Checked
             _MyMonoSpace = CheckMonospace.Checked
             _MyReadOldPosts = CheckReadOldPosts.Checked
+            _MyUseSsl = CheckUseSsl.Checked
             Select Case ReplyIconStateCombo.SelectedIndex
                 Case 0
                     _MyReplyIconState = REPLY_ICONSTATE.None
@@ -417,6 +419,7 @@ Public Class Setting
         chkGetFav.Checked = _MyGetFav
         CheckMonospace.Checked = _MyMonoSpace
         CheckReadOldPosts.Checked = _MyReadOldPosts
+        CheckUseSsl.Checked = _MyUseSsl
         Select Case _MyReplyIconState
             Case REPLY_ICONSTATE.None
                 ReplyIconStateCombo.SelectedIndex = 0
@@ -1426,6 +1429,15 @@ Public Class Setting
         End Get
         Set(ByVal value As Boolean)
             _MyReadOldPosts = value
+        End Set
+    End Property
+
+    Public Property UseSsl() As Boolean
+        Get
+            Return _MyUseSsl
+        End Get
+        Set(ByVal value As Boolean)
+            _MyUseSsl = value
         End Set
     End Property
 

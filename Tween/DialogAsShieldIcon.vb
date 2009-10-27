@@ -50,13 +50,13 @@ Public Class DialogAsShieldIcon
         Select Case Buttons
             Case MessageBoxButtons.OKCancel
                 OK_Button.Text = "OK"
-                Cancel_Button.Text = "キャンセル"
+                Cancel_Button.Text = "Cancel"
             Case MessageBoxButtons.YesNo
-                OK_Button.Text = "はい"
-                Cancel_Button.Text = "いいえ"
+                OK_Button.Text = "Yes"
+                Cancel_Button.Text = "No"
             Case Else
                 OK_Button.Text = "OK"
-                Cancel_Button.Text = "キャンセル"
+                Cancel_Button.Text = "Cancel"
         End Select
         ' とりあえずアイコンは処理しない（互換性のためパラメータだけ指定できる）
 
