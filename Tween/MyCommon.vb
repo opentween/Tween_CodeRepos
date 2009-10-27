@@ -525,4 +525,15 @@ retry:
 
         Return name
     End Function
+
+    Public Enum TabUsageType
+        Home
+        Mentions
+        DirectMessage
+        Favorites
+        UserDefined
+        LocalQuery
+        Archive
+        PublicSearch
+    End Enum
 End Module

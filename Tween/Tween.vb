@@ -4505,22 +4505,34 @@ RETRY:
         Dim tp As TabPage = DirectCast(e.Data.GetData(GetType(TabPage)), TabPage)
         If tp.Text = tn Then Exit Sub
 
-        Dim mTp As TabPage = Nothing
+        ReOrderTab(tp.Text, tn, bef)
+    End Sub
+
+    Public Sub ReOrderTab(ByVal targetTabText As String, ByVal baseTabText As String, ByVal isBeforeBaseTab As Boolean)
+        Dim baseIndex As Integer = 0
+        For baseIndex = 0 To ListTab.TabPages.Count - 1
+            If ListTab.TabPages(baseIndex).Text = baseTabText Then Exit For
+        Next
+
         ListTab.SuspendLayout()
+
+        Dim mTp As TabPage = Nothing
         For j As Integer = 0 To ListTab.TabPages.Count - 1
-            If ListTab.TabPages(j).Text = tp.Text Then
+            If ListTab.TabPages(j).Text = targetTabText Then
                 mTp = ListTab.TabPages(j)
                 ListTab.TabPages.Remove(mTp)
-                If j < i Then i -= 1
+                If j < baseIndex Then baseIndex -= 1
                 Exit For
             End If
         Next
-        If bef Then
-            ListTab.TabPages.Insert(i, mTp)
+        If isBeforeBaseTab Then
+            ListTab.TabPages.Insert(baseIndex, mTp)
         Else
-            ListTab.TabPages.Insert(i + 1, mTp)
+            ListTab.TabPages.Insert(baseIndex + 1, mTp)
         End If
+
         ListTab.ResumeLayout()
+
         modifySettingCommon = True
     End Sub
 
@@ -4756,28 +4768,34 @@ RETRY:
 
     Private Sub UreadManageMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UreadManageMenuItem.Click
         If _rclickTabName = "" Then Exit Sub
-        Dim idx As Integer
 
+        ChangeTabUnreadManage(_rclickTabName, UreadManageMenuItem.Checked)
+
+        SaveConfigsTab(_rclickTabName)
+    End Sub
+
+    Public Sub ChangeTabUnreadManage(ByVal tabName As String, ByVal isManage As Boolean)
+
+        Dim idx As Integer
         For idx = 0 To ListTab.TabCount
-            If ListTab.TabPages(idx).Text = _rclickTabName Then Exit For
+            If ListTab.TabPages(idx).Text = tabName Then Exit For
         Next
 
-        _statuses.SetTabUnreadManage(_rclickTabName, UreadManageMenuItem.Checked)
-        If _statuses.Tabs(_rclickTabName).UnreadCount > 0 Then
-            If SettingDialog.TabIconDisp Then
+        _statuses.SetTabUnreadManage(tabName, isManage)
+        If SettingDialog.TabIconDisp Then
+            If _statuses.Tabs(tabName).UnreadCount > 0 Then
                 ListTab.TabPages(idx).ImageIndex = 0
-            End If
-        Else
-            If SettingDialog.TabIconDisp Then
+            Else
                 ListTab.TabPages(idx).ImageIndex = -1
             End If
         End If
-        If _curTab.Text = _rclickTabName Then
+
+        If _curTab.Text = tabName Then
             _itemCache = Nothing
             _postCache = Nothing
             _curList.Refresh()
         End If
-        SaveConfigsTab(_rclickTabName)
+
         SetMainWindowTitle()
         SetStatusLabel()
         If Not SettingDialog.TabIconDisp Then ListTab.Refresh()
@@ -4786,16 +4804,16 @@ RETRY:
     Private Sub NotifyDispMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles NotifyDispMenuItem.Click
         If _rclickTabName = "" Then Exit Sub
 
-        Dim tb As TabClass = _statuses.Tabs(_rclickTabName)
-        tb.Notify = NotifyDispMenuItem.Checked
+        _statuses.Tabs(_rclickTabName).Notify = NotifyDispMenuItem.Checked
+
         SaveConfigsTab(_rclickTabName)
     End Sub
 
     Private Sub SoundFileComboBox_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SoundFileComboBox.SelectedIndexChanged
         If soundfileListup OrElse _rclickTabName = "" Then Exit Sub
 
-        Dim tb As TabClass = _statuses.Tabs(_rclickTabName)
-        tb.SoundFile = DirectCast(SoundFileComboBox.SelectedItem, String)
+        _statuses.Tabs(_rclickTabName).SoundFile = DirectCast(SoundFileComboBox.SelectedItem, String)
+
         SaveConfigsTab(_rclickTabName)
     End Sub
 
