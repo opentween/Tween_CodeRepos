@@ -53,6 +53,8 @@ Public Module Twitter
     Private _statusesCount As Integer = 0
     Private _location As String = ""
     Private _bio As String = ""
+    Private _useSsl As Boolean = True
+    Private _protocol As String = "https://"
 
     'プロパティからアクセスされる共通情報
     Private _uid As String
@@ -176,6 +178,7 @@ Public Module Twitter
             Dim resStatus As String = ""
             Dim resMsg As String = ""
 
+            '設定によらずログイン処理はhttps固定
             resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + "/login", resStatus, MySocket.REQ_TYPE.ReqGET), String)
             If resMsg.Length = 0 Then
                 'Twitter.AccountState = ACCOUNT_STATE.Invalid
@@ -192,6 +195,7 @@ Public Module Twitter
 
             account = _authKeyHeader + authToken + "&" + _uidHeader + _uid + "&" + _pwdHeader + HttpUtility.UrlEncode(_pwd) + "&" + "remember_me=1"
 
+            'https固定
             resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _loginPath, resStatus, MySocket.REQ_TYPE.ReqPOST, account), String)
             If resStatus.StartsWith("OK") Then
                 'OK (username/passwordが合致しない)
@@ -307,48 +311,10 @@ Public Module Twitter
             End If
 
             If gType = WORKERTYPE.Timeline Then
-                retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _homePath + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
+                retMsg = DirectCast(CreateSocket.GetWebResponse(_protocol + _hubServer + _homePath + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
             Else
-                retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _replyPath + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
+                retMsg = DirectCast(CreateSocket.GetWebResponse(_protocol + _hubServer + _replyPath + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
             End If
-            'RETRY:
-            '            If gType = WORKERTYPE.Timeline Then
-            '                If redirectToTimeline = "" Then
-            '                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _homePath + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-            '                    If resStatus.StartsWith("Found") Then
-            '                        redirectToTimeline = resStatus.Substring(6)
-            '                        If redirectToTimeline.Contains("?") Then
-            '                            redirectToTimeline = redirectToTimeline.Remove(redirectToTimeline.IndexOf("?"))
-            '                        End If
-            '                        If redirectToTimeline.Contains("login") Then
-            '                            redirectToTimeline = ""
-            '                            _signed = False
-            '                            Return "GetTimeline -> redirect to login."
-            '                        End If
-            '                        GoTo RETRY
-            '                    End If
-            '                Else
-            '                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToTimeline + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-            '                End If
-            '            Else
-            '                If redirectToReply = "" Then
-            '                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _replyPath + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-            '                    If resStatus.StartsWith("Found") Then
-            '                        redirectToReply = resStatus.Substring(6)
-            '                        If redirectToReply.Contains("?") Then
-            '                            redirectToReply = redirectToReply.Remove(redirectToReply.IndexOf("?"))
-            '                        End If
-            '                        If redirectToReply.Contains("login") Then
-            '                            redirectToReply = ""
-            '                            _signed = False
-            '                            Return "GetTimeline -> redirect to login."
-            '                        End If
-            '                        GoTo RETRY
-            '                    End If
-            '                Else
-            '                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToReply + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-            '                End If
-            '            End If
 
             If retMsg.Length = 0 Then
                 _signed = False
@@ -499,7 +465,7 @@ Public Module Twitter
                     Try
                         pos1 = strPost.IndexOf(_parseImg, pos2, StringComparison.Ordinal)
                         pos2 = strPost.IndexOf(_parseImgTo, pos1 + _parseImg.Length, StringComparison.Ordinal)
-                        post.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length)).Replace("https://", "http://")
+                        post.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length))
                     Catch ex As Exception
                         _signed = False
                         TraceOut("TM-Img:" + strPost)
@@ -812,38 +778,10 @@ Public Module Twitter
             'リクエストメッセージを作成する
             Dim pageQuery As String = _pageQry + page.ToString
             If gType = WORKERTYPE.DirectMessegeRcv Then
-                retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathRcv + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
+                retMsg = DirectCast(CreateSocket.GetWebResponse(_protocol + _hubServer + _DMPathRcv + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
             Else
-                retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathSnt + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
+                retMsg = DirectCast(CreateSocket.GetWebResponse(_protocol + _hubServer + _DMPathSnt + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
             End If
-            'RETRY:
-            '            If gType = WORKERTYPE.DirectMessegeRcv Then
-            '                If redirectToDmRcv = "" Then
-            '                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathRcv + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-            '                    If resStatus.StartsWith("Found") Then
-            '                        redirectToDmRcv = resStatus.Substring(6)
-            '                        If redirectToDmRcv.Contains("?") Then
-            '                            redirectToDmRcv = redirectToDmRcv.Remove(redirectToDmRcv.IndexOf("?"))
-            '                        End If
-            '                        GoTo RETRY
-            '                    End If
-            '                Else
-            '                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToDmRcv + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-            '                End If
-            '            Else
-            '                If redirectToDmSnd = "" Then
-            '                    retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMPathSnt + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-            '                    If resStatus.StartsWith("Found") Then
-            '                        redirectToDmSnd = resStatus.Substring(6)
-            '                        If redirectToDmSnd.Contains("?") Then
-            '                            redirectToDmSnd = redirectToDmSnd.Remove(redirectToDmSnd.IndexOf("?"))
-            '                        End If
-            '                        GoTo RETRY
-            '                    End If
-            '                Else
-            '                    retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToDmSnd + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-            '                End If
-            '            End If
 
             If retMsg.Length = 0 Then
                 _signed = False
@@ -935,7 +873,7 @@ Public Module Twitter
                     Try
                         pos1 = strPost.IndexOf(_parseImg, pos2, StringComparison.Ordinal)
                         pos2 = strPost.IndexOf(_parseImgTo, pos1 + _parseImg.Length, StringComparison.Ordinal)
-                        post.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length)).Replace("https://", "http://")
+                        post.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length))
                     Catch ex As Exception
                         _signed = False
                         TraceOut("DM-Img:" + strPost)
@@ -1091,17 +1029,7 @@ Public Module Twitter
                 pageQuery = _pageQry + page.ToString
             End If
 
-            retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + FAV_PATH + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-            'RETRY:
-            '            If redirectToFav = "" Then
-            '                retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + FAV_PATH + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-            '                If resStatus.StartsWith("Found") Then
-            '                    redirectToFav = resStatus
-            '                    GoTo RETRY
-            '                End If
-            '            Else
-            '                retMsg = DirectCast(CreateSocket.GetWebResponse(redirectToFav + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
-            '            End If
+            retMsg = DirectCast(CreateSocket.GetWebResponse(_protocol + _hubServer + FAV_PATH + pageQuery, resStatus, MySocket.REQ_TYPE.ReqGetApp), String)
 
             If retMsg.Length = 0 Then
                 _signed = False
@@ -1212,7 +1140,7 @@ Public Module Twitter
                     Try
                         pos1 = strPost.IndexOf(_parseImg, pos2, StringComparison.Ordinal)
                         pos2 = strPost.IndexOf(_parseImgTo, pos1 + _parseImg.Length, StringComparison.Ordinal)
-                        post.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length)).Replace("https://", "http://")
+                        post.ImageUrl = HttpUtility.HtmlDecode(strPost.Substring(pos1 + _parseImg.Length, pos2 - pos1 - _parseImg.Length))
                     Catch ex As Exception
                         _signed = False
                         TraceOut("TM-Img:" + strPost)
@@ -1678,7 +1606,7 @@ Public Module Twitter
 
     Private Function AdjustHtml(ByVal orgData As String) As String
         Dim retStr As String = orgData
-        retStr = Regex.Replace(retStr, "<a [^>]*href=""/", "<a href=""https://twitter.com/")
+        retStr = Regex.Replace(retStr, "<a [^>]*href=""/", "<a href=""" + _protocol + "twitter.com/")
         retStr = retStr.Replace("<a href=", "<a target=""_self"" href=")
         retStr = retStr.Replace(vbLf, "<br>")
 
@@ -1837,7 +1765,7 @@ Public Module Twitter
         End If
 
         Dim resStatus As String = ""
-        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _statusUpdatePathAPI, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI, dataStr), String)
+        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse(_protocol + _hubServer + _statusUpdatePathAPI, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI, dataStr), String)
 
         If resStatus.StartsWith("OK") Then
             Dim xd As XmlDocument = New XmlDocument()
@@ -1887,7 +1815,7 @@ Public Module Twitter
 
         'データ部分の生成
         Dim resStatus As String = ""
-        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _StDestroyPath + id.ToString + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
+        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse(_protocol + _hubServer + _StDestroyPath + id.ToString + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
 
         If resMsg.StartsWith("<?xml") = False OrElse resStatus.StartsWith("OK") = False Then
             If resStatus.StartsWith("Err: Unauthorized") Then
@@ -1909,7 +1837,7 @@ Public Module Twitter
         'データ部分の生成
         Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim resStatus As String = ""
-        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _DMDestroyPath + id.ToString + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
+        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse(_protocol + _hubServer + _DMDestroyPath + id.ToString + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
 
         If resMsg.StartsWith("<?xml") = False OrElse resStatus.StartsWith("OK") = False Then
             If resStatus.StartsWith("Err: Unauthorized") Then
@@ -1932,7 +1860,7 @@ Public Module Twitter
         Const PATH_FOLLOW As String = "/friendships/create.xml?screen_name="
 
         Dim resStatus As String = ""
-        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + PATH_FOLLOW + id, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
+        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse(_protocol + _hubServer + PATH_FOLLOW + id, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
 
         If Not resStatus.StartsWith("OK") Then
             If resStatus.StartsWith("Err: Unauthorized") Then
@@ -1955,7 +1883,7 @@ Public Module Twitter
         Const PATH_REMOVE As String = "/friendships/destroy.xml?screen_name="
 
         Dim resStatus As String = ""
-        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + PATH_REMOVE + id, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
+        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse(_protocol + _hubServer + PATH_REMOVE + id, resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
 
         If Not resStatus.StartsWith("OK") Then
             If resStatus.StartsWith("Err: Unauthorized") Then
@@ -1979,7 +1907,7 @@ Public Module Twitter
         Const QUERY_TARGET As String = "&target_screen_name="
 
         Dim resStatus As String = ""
-        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + PATH_FRIENDSHIP + _uid + QUERY_TARGET + id, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse(_protocol + _hubServer + PATH_FRIENDSHIP + _uid + QUERY_TARGET + id, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
 
         If Not resStatus.StartsWith("OK") Then
             If resStatus.StartsWith("Err: Unauthorized") Then
@@ -1996,14 +1924,14 @@ Public Module Twitter
                 Dim isFollowing As Boolean = Boolean.Parse(xdoc.SelectSingleNode("/relationship/source/following").InnerText)
                 Dim isFollowed As Boolean = Boolean.Parse(xdoc.SelectSingleNode("/relationship/source/followed_by").InnerText)
                 If isFollowing Then
-                    result = "You are following " + id + "." + System.Environment.NewLine
+                    result = "Following " + id + "." + System.Environment.NewLine
                 Else
-                    result = "You aren't follwing them."
+                    result = "NOT follwing them." + System.Environment.NewLine
                 End If
                 If isFollowed Then
-                    result += "You are followed by " + id + "."
+                    result += "Followed by " + id + "."
                 Else
-                    result += "You aren't followed by " + id + "."
+                    result += "NOT followed by " + id + "."
                 End If
                 result = "Ok. The results are below..." + System.Environment.NewLine + result
             Catch ex As Exception
@@ -2039,7 +1967,7 @@ Public Module Twitter
         'データ部分の生成
         'Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim resStatus As String = ""
-        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _postFavAddPath + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
+        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse(_protocol + _hubServer + _postFavAddPath + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
 
         If resStatus.StartsWith("OK") = False Then
             If resStatus.StartsWith("Err: Unauthorized") Then
@@ -2054,7 +1982,7 @@ Public Module Twitter
 
         'http://twitter.com/statuses/show/id.xml APIを発行して本文を取得
 
-        resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _ShowStatus + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        resMsg = DirectCast(CreateSocket.GetWebResponse(_protocol + _hubServer + _ShowStatus + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
 
         Try
             Using rd As Xml.XmlTextReader = New Xml.XmlTextReader(New System.IO.StringReader(resMsg))
@@ -2088,7 +2016,7 @@ Public Module Twitter
         'データ部分の生成
         'Dim dataStr As String = _authKeyHeader + HttpUtility.UrlEncode(_authKey)
         Dim resStatus As String = ""
-        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _postFavRemovePath + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
+        Dim resMsg As String = DirectCast(CreateSocket.GetWebResponse(_protocol + _hubServer + _postFavRemovePath + id.ToString() + ".xml", resStatus, MySocket.REQ_TYPE.ReqPOSTAPI), String)
 
         If resStatus.StartsWith("OK") = False Then
             If resStatus.StartsWith("Err: Unauthorized") Then
@@ -2936,6 +2864,17 @@ Public Module Twitter
         End Get
     End Property
 
+    Public WriteOnly Property UseSsl() As Boolean
+        Set(ByVal value As Boolean)
+            _useSsl = value
+            If _useSsl Then
+                _protocol = "https://"
+            Else
+                _protocol = "http://"
+            End If
+        End Set
+    End Property
+
     Public Function GetTimelineApi(ByVal read As Boolean, _
                             ByVal gType As WORKERTYPE) As String
 
@@ -2952,9 +2891,9 @@ Public Module Twitter
         Const REPLY_PATH As String = "/statuses/mentions.xml"
 
         If gType = WORKERTYPE.Timeline Then
-            retMsg = DirectCast(sck.GetWebResponse("https://" + _hubServer + FRIEND_PATH + "?" + COUNT_QUERY + _countApi.ToString(), resStatus, _ApiMethod), String)
+            retMsg = DirectCast(sck.GetWebResponse(_protocol + _hubServer + FRIEND_PATH + "?" + COUNT_QUERY + _countApi.ToString(), resStatus, _ApiMethod), String)
         Else
-            retMsg = DirectCast(sck.GetWebResponse("https://" + _hubServer + REPLY_PATH + "?" + COUNT_QUERY + _countApi.ToString(), resStatus, _ApiMethod), String)
+            retMsg = DirectCast(sck.GetWebResponse(_protocol + _hubServer + REPLY_PATH + "?" + COUNT_QUERY + _countApi.ToString(), resStatus, _ApiMethod), String)
         End If
 
         If retMsg = "" Then
@@ -3076,9 +3015,9 @@ Public Module Twitter
         Const SENT_PATH As String = "/direct_messages/sent.xml"
 
         If gType = WORKERTYPE.DirectMessegeRcv Then
-            retMsg = DirectCast(sck.GetWebResponse("https://" + _hubServer + RECEIVE_PATH, resStatus, _ApiMethod), String)
+            retMsg = DirectCast(sck.GetWebResponse(_protocol + _hubServer + RECEIVE_PATH, resStatus, _ApiMethod), String)
         Else
-            retMsg = DirectCast(sck.GetWebResponse("https://" + _hubServer + SENT_PATH, resStatus, _ApiMethod), String)
+            retMsg = DirectCast(sck.GetWebResponse(_protocol + _hubServer + SENT_PATH, resStatus, _ApiMethod), String)
         End If
 
         If retMsg = "" Then
@@ -3190,7 +3129,7 @@ Public Module Twitter
         Const COUNT_QUERY As String = "count="
         Const FAV_PATH As String = "/favorites.xml"
 
-        retMsg = DirectCast(sck.GetWebResponse("https://" + _hubServer + FAV_PATH + "?" + COUNT_QUERY + _countApi.ToString(), resStatus, _ApiMethod), String)
+        retMsg = DirectCast(sck.GetWebResponse(_protocol + _hubServer + FAV_PATH + "?" + COUNT_QUERY + _countApi.ToString(), resStatus, _ApiMethod), String)
 
         If retMsg = "" Then
             If resStatus.StartsWith("Err: BadRequest") Then
@@ -3313,7 +3252,7 @@ Public Module Twitter
 
         Const FOLLOWER_PATH As String = "/followers/ids.xml"
 
-        retMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + FOLLOWER_PATH + _cursorQry + page.ToString(), resStatus, _ApiMethod), String)
+        retMsg = DirectCast(CreateSocket.GetWebResponse(_protocol + _hubServer + FOLLOWER_PATH + _cursorQry + page.ToString(), resStatus, _ApiMethod), String)
 
         If retMsg = "" Then
             If resStatus.StartsWith("Err: Unauthorized") Then
@@ -3329,7 +3268,7 @@ Public Module Twitter
             xdoc.LoadXml(retMsg)
         Catch ex As Exception
             TraceOut(retMsg)
-            MessageBox.Show("不正なXMLです。再取得してください。(FollowerApi-LoadXml)")
+            MessageBox.Show("The data was broken. Please retry later.(FollowerApi-LoadXml)")
             Return "Invalid XML!"
         End Try
 
@@ -3340,7 +3279,8 @@ Public Module Twitter
             page = Long.Parse(xdoc.DocumentElement.SelectSingleNode("/id_list/next_cursor").InnerText)
         Catch ex As Exception
             TraceOut(retMsg)
-            MessageBox.Show("不正なXMLです。再取得してください。(FollowerApi-Parse)")
+            MessageBox.Show("The data was broken. Please retry later.(FollowerApi-Parse)")
+            Return "Invalid XML!"
         End Try
 
         Return ""
@@ -3376,7 +3316,7 @@ Public Module Twitter
         Dim rgh As New Regex("(^|[] !""$%&'()*+,-.:;<=>?@[\^`{|}~])#([^] !""$%&'()*+,-.:;<=>?@[\^`{|}~\r\n]+)")
         Dim mh As Match = rgh.Match(retStr)
         If mh.Success AndAlso Not IsNumeric(mh.Result("$2")) Then
-            retStr = rgh.Replace(retStr, "$1<a href=""https://twitter.com/search?q=%23$2"">#$2</a>")
+            retStr = rgh.Replace(retStr, "$1<a href=""" + _protocol + "twitter.com/search?q=%23$2"">#$2</a>")
         End If
 
 
@@ -3394,7 +3334,7 @@ Public Module Twitter
         Dim _maxcnt As Integer = 0
         Dim resMsg As String = ""
         Dim resStatus As String = ""
-        resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _rateLimitStatus, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        resMsg = DirectCast(CreateSocket.GetWebResponse(_protocol + _hubServer + _rateLimitStatus, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
         Dim xdoc As New XmlDocument
         Try
             xdoc.LoadXml(resMsg)
@@ -3409,7 +3349,7 @@ Public Module Twitter
         Dim _remain As Integer = 0
         Dim resMsg As String = ""
         Dim resStatus As String = ""
-        resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _rateLimitStatus, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        resMsg = DirectCast(CreateSocket.GetWebResponse(_protocol + _hubServer + _rateLimitStatus, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
         Dim xdoc As New XmlDocument
         Try
             xdoc.LoadXml(resMsg)
@@ -3424,7 +3364,7 @@ Public Module Twitter
         Dim _tm As DateTime
         Dim resMsg As String = ""
         Dim resStatus As String = ""
-        resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _rateLimitStatus, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        resMsg = DirectCast(CreateSocket.GetWebResponse(_protocol + _hubServer + _rateLimitStatus, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
         Dim xdoc As New XmlDocument
         Try
             xdoc.LoadXml(resMsg)
@@ -3439,7 +3379,7 @@ Public Module Twitter
 
         Dim resMsg As String = ""
         Dim resStatus As String = ""
-        resMsg = DirectCast(CreateSocket.GetWebResponse("https://" + _hubServer + _rateLimitStatus, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
+        resMsg = DirectCast(CreateSocket.GetWebResponse(_protocol + _hubServer + _rateLimitStatus, resStatus, MySocket.REQ_TYPE.ReqGetAPI), String)
         Dim xdoc As New XmlDocument
         Try
             xdoc.LoadXml(resMsg)

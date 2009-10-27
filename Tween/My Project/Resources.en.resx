@@ -666,4 +666,55 @@
   <data name="SetFiltersText13" xml:space="preserve">
     <value>CaseSensitive/</value>
   </data>
+  <data name="ApiInfo1" xml:space="preserve">
+    <value>Upper bound : </value>
+  </data>
+  <data name="ApiInfo2" xml:space="preserve">
+    <value>Remain count : </value>
+  </data>
+  <data name="ApiInfo3" xml:space="preserve">
+    <value>Reset time : </value>
+  </data>
+  <data name="ApiInfo4" xml:space="preserve">
+    <value>API Information</value>
+  </data>
+  <data name="ApiInfo5" xml:space="preserve">
+    <value>* Failed to get API information. *</value>
+  </data>
+  <data name="FRMessage1" xml:space="preserve">
+    <value>Please input user ID.</value>
+  </data>
+  <data name="FRMessage2" xml:space="preserve">
+    <value>Failed : </value>
+  </data>
+  <data name="FRMessage3" xml:space="preserve">
+    <value>Done!</value>
+  </data>
+  <data name="PostLengthOverMessage1" xml:space="preserve">
+    <value>The length of tweet is over 140 characters. Do you want to cut down automatically and to do post?</value>
+  </data>
+  <data name="PostLengthOverMessage2" xml:space="preserve">
+    <value>Over the limit length of tweet</value>
+  </data>
+  <data name="WebModeWarning1" xml:space="preserve">
+    <value>The web mode (=don't use api mode) has been selected now.</value>
+  </data>
+  <data name="WebModeWarning2" xml:space="preserve">
+    <value>* The Web mode has the possibility of violating the TOS of Twitter.</value>
+  </data>
+  <data name="WebModeWarning3" xml:space="preserve">
+    <value>* API mode has the frequency limitation to get TL.</value>
+  </data>
+  <data name="WebModeWarning4" xml:space="preserve">
+    <value>Please select "OK" when switching to API mode.</value>
+  </data>
+  <data name="WebModeWarning5" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="WebModeWarning6" xml:space="preserve">
+    <value>It switched to API mode.</value>
+  </data>
+  <data name="WebModeWarning7" xml:space="preserve">
+    <value>Please put the check in "Use API" in "Operation" tab of the setting when you want to return it to API mode.</value>
+  </data>
 </root>

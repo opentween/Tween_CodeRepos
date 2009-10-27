@@ -718,4 +718,55 @@
   <data name="SetFiltersText13" xml:space="preserve">
     <value>大小区別/</value>
   </data>
+  <data name="ApiInfo1" xml:space="preserve">
+    <value>上限 : </value>
+  </data>
+  <data name="ApiInfo2" xml:space="preserve">
+    <value>残数 : </value>
+  </data>
+  <data name="ApiInfo3" xml:space="preserve">
+    <value>リセット日時 : </value>
+  </data>
+  <data name="ApiInfo4" xml:space="preserve">
+    <value>API情報</value>
+  </data>
+  <data name="ApiInfo5" xml:space="preserve">
+    <value> * API情報の取得に失敗 *</value>
+  </data>
+  <data name="FRMessage1" xml:space="preserve">
+    <value>idを入力して下さい。</value>
+  </data>
+  <data name="FRMessage2" xml:space="preserve">
+    <value>失敗 : </value>
+  </data>
+  <data name="FRMessage3" xml:space="preserve">
+    <value>完了！</value>
+  </data>
+  <data name="PostLengthOverMessage1" xml:space="preserve">
+    <value>140文字を越えています。URL短縮、フッタ除去、末尾カットを行って投稿しますか？</value>
+  </data>
+  <data name="PostLengthOverMessage2" xml:space="preserve">
+    <value>文字数制限オーバー</value>
+  </data>
+  <data name="WebModeWarning1" xml:space="preserve">
+    <value>現在Webモードです。</value>
+  </data>
+  <data name="WebModeWarning2" xml:space="preserve">
+    <value>* Webモードの使用はTwitterの利用規約に違反する恐れがあります。</value>
+  </data>
+  <data name="WebModeWarning3" xml:space="preserve">
+    <value>* APIモードではタイムライン取得に回数制限があります。</value>
+  </data>
+  <data name="WebModeWarning4" xml:space="preserve">
+    <value>APIモードに切り替える場合は「OK」を押してください。</value>
+  </data>
+  <data name="WebModeWarning5" xml:space="preserve">
+    <value>警告</value>
+  </data>
+  <data name="WebModeWarning6" xml:space="preserve">
+    <value>APIモードへ切り替えました。</value>
+  </data>
+  <data name="WebModeWarning7" xml:space="preserve">
+    <value>APIモードへ戻す場合は、設定の「動作」タブにある「API使用」にチェックを入れて下さい。</value>
+  </data>
 </root>
