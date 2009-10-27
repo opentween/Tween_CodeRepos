@@ -56,7 +56,7 @@ Partial Class FilterDialog
         Me.MSG2 = New System.Windows.Forms.TextBox
         Me.GroupBox1 = New System.Windows.Forms.GroupBox
         Me.CheckMark = New System.Windows.Forms.CheckBox
-        Me.OptMark = New System.Windows.Forms.RadioButton
+        Me.OptCopy = New System.Windows.Forms.RadioButton
         Me.OptMove = New System.Windows.Forms.RadioButton
         Me.ButtonCancel = New System.Windows.Forms.Button
         Me.ButtonOK = New System.Windows.Forms.Button
@@ -286,7 +286,7 @@ Partial Class FilterDialog
         'GroupBox1
         '
         Me.GroupBox1.Controls.Add(Me.CheckMark)
-        Me.GroupBox1.Controls.Add(Me.OptMark)
+        Me.GroupBox1.Controls.Add(Me.OptCopy)
         Me.GroupBox1.Controls.Add(Me.OptMove)
         resources.ApplyResources(Me.GroupBox1, "GroupBox1")
         Me.GroupBox1.Name = "GroupBox1"
@@ -298,12 +298,12 @@ Partial Class FilterDialog
         Me.CheckMark.Name = "CheckMark"
         Me.CheckMark.UseVisualStyleBackColor = True
         '
-        'OptMark
+        'OptCopy
         '
-        resources.ApplyResources(Me.OptMark, "OptMark")
-        Me.OptMark.Name = "OptMark"
-        Me.OptMark.TabStop = True
-        Me.OptMark.UseVisualStyleBackColor = True
+        resources.ApplyResources(Me.OptCopy, "OptCopy")
+        Me.OptCopy.Name = "OptCopy"
+        Me.OptCopy.TabStop = True
+        Me.OptCopy.UseVisualStyleBackColor = True
         '
         'OptMove
         '
@@ -478,7 +478,7 @@ Partial Class FilterDialog
     Friend WithEvents CheckRegex As System.Windows.Forms.CheckBox
     Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
     Friend WithEvents OptMove As System.Windows.Forms.RadioButton
-    Friend WithEvents OptMark As System.Windows.Forms.RadioButton
+    Friend WithEvents OptCopy As System.Windows.Forms.RadioButton
     Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
     Friend WithEvents ListTabs As System.Windows.Forms.ListBox
     Friend WithEvents GroupMatch As System.Windows.Forms.GroupBox

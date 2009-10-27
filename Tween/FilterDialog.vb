@@ -41,9 +41,17 @@ Public Class FilterDialog
         ListFilters.Items.AddRange(_sts.Tabs(tabName).GetFilters())
         If ListFilters.Items.Count > 0 Then ListFilters.SelectedIndex = 0
 
+        CheckManageRead.Checked = _sts.Tabs(tabName).UnreadManage
+        CheckNotifyNew.Checked = _sts.Tabs(tabName).Notify
+
+        Dim idx As Integer = ComboSound.Items.IndexOf(_sts.Tabs(tabName).SoundFile)
+        If idx = -1 Then idx = 0
+        ComboSound.SelectedIndex = idx
+
         If _directAdd Then Exit Sub
 
         ListTabs.Enabled = True
+        GroupTab.Enabled = True
         ListFilters.Enabled = True
         ListFilters.Focus()
         If ListFilters.SelectedIndex <> -1 Then
@@ -55,12 +63,6 @@ Public Class FilterDialog
         ButtonDelete.Enabled = True
         ButtonClose.Enabled = True
 
-        CheckManageRead.Checked = _sts.Tabs(tabName).UnreadManage
-        CheckNotifyNew.Checked = _sts.Tabs(tabName).Notify
-
-        Dim idx As Integer = ComboSound.Items.IndexOf(_sts.Tabs(tabName).SoundFile)
-        If idx = -1 Then idx = 0
-        ComboSound.SelectedIndex = idx
     End Sub
 
     Public Sub SetCurrent(ByVal TabName As String)
@@ -75,7 +77,9 @@ Public Class FilterDialog
         ButtonClose.Enabled = False
         EditFilterGroup.Enabled = True
         ListTabs.Enabled = False
+        GroupTab.Enabled = False
         ListFilters.Enabled = False
+
         RadioAND.Checked = True
         RadioPLUS.Checked = False
         UID.Text = id
@@ -89,8 +93,26 @@ Public Class FilterDialog
         MSG2.Enabled = False
         CheckRegex.Checked = False
         CheckURL.Checked = False
+        CheckCaseSensitive.Checked = False
+
+        RadioExAnd.Checked = True
+        RadioExPLUS.Checked = False
+        ExUID.Text = ""
+        ExUID.SelectAll()
+        ExMSG1.Text = ""
+        ExMSG1.SelectAll()
+        ExMSG2.Text = ""
+        ExMSG2.SelectAll()
+        ExUID.Enabled = True
+        ExMSG1.Enabled = True
+        ExMSG2.Enabled = False
+        CheckExRegex.Checked = False
+        CheckExURL.Checked = False
+        CheckExCaseSensitive.Checked = False
+
         'OptNone.Checked = True
-        OptMark.Checked = True
+        OptCopy.Checked = True
+        CheckMark.Checked = True
         UID.Focus()
         _mode = EDITMODE.AddNew
         _directAdd = True
@@ -103,7 +125,9 @@ Public Class FilterDialog
         ButtonClose.Enabled = False
         EditFilterGroup.Enabled = True
         ListTabs.Enabled = False
+        GroupTab.Enabled = False
         ListFilters.Enabled = False
+
         RadioAND.Checked = True
         RadioPLUS.Checked = False
         UID.Text = ""
@@ -114,8 +138,23 @@ Public Class FilterDialog
         MSG2.Enabled = False
         CheckRegex.Checked = False
         CheckURL.Checked = False
+        CheckCaseSensitive.Checked = False
+
+        RadioExAnd.Checked = True
+        RadioExPLUS.Checked = False
+        ExUID.Text = ""
+        ExMSG1.Text = ""
+        ExMSG2.Text = ""
+        ExUID.Enabled = True
+        ExMSG1.Enabled = True
+        ExMSG2.Enabled = False
+        CheckExRegex.Checked = False
+        CheckExURL.Checked = False
+        CheckExCaseSensitive.Checked = False
+
         'OptNone.Checked = True
-        OptMark.Checked = True
+        OptCopy.Checked = True
+        CheckMark.Checked = True
         UID.Focus()
         _mode = EDITMODE.AddNew
     End Sub
@@ -129,6 +168,7 @@ Public Class FilterDialog
         ButtonClose.Enabled = False
         EditFilterGroup.Enabled = True
         ListTabs.Enabled = False
+        GroupTab.Enabled = False
         ListFilters.Enabled = False
 
         ShowDetail()
@@ -150,6 +190,7 @@ Public Class FilterDialog
 
     Private Sub ButtonCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonCancel.Click
         ListTabs.Enabled = True
+        GroupTab.Enabled = True
         ListFilters.Enabled = True
         ListFilters.Focus()
         If ListFilters.SelectedIndex <> -1 Then
@@ -200,7 +241,43 @@ Public Class FilterDialog
                 MSG2.SelectAll()
             End If
             CheckRegex.Checked = fc.UseRegex
-            CheckURL.Checked = fc.SearchURL
+            CheckURL.Checked = fc.SearchUrl
+            CheckCaseSensitive.Checked = fc.CaseSensitive
+
+            If fc.ExSearchBoth Then
+                RadioExAnd.Checked = True
+                RadioExPLUS.Checked = False
+                ExUID.Enabled = True
+                ExMSG1.Enabled = True
+                ExMSG2.Enabled = False
+                ExUID.Text = fc.ExNameFilter
+                ExUID.SelectAll()
+                ExMSG1.Text = ""
+                ExMSG2.Text = ""
+                For Each bf As String In fc.ExBodyFilter
+                    ExMSG1.Text += bf + " "
+                Next
+                ExMSG1.Text = ExMSG1.Text.Trim
+                ExMSG1.SelectAll()
+            Else
+                RadioExPLUS.Checked = True
+                RadioExAnd.Checked = False
+                ExUID.Enabled = False
+                ExMSG1.Enabled = False
+                ExMSG2.Enabled = True
+                ExUID.Text = ""
+                ExMSG1.Text = ""
+                ExMSG2.Text = ""
+                For Each bf As String In fc.ExBodyFilter
+                    ExMSG2.Text += bf + " "
+                Next
+                ExMSG2.Text = ExMSG2.Text.Trim
+                ExMSG2.SelectAll()
+            End If
+            CheckExRegex.Checked = fc.ExUseRegex
+            CheckExURL.Checked = fc.ExSearchUrl
+            CheckExCaseSensitive.Checked = fc.ExCaseSensitive
+
             'If fc.moveFrom Then
             '    OptMove.Checked = True
             'ElseIf fc.SetMark Then
@@ -211,8 +288,9 @@ Public Class FilterDialog
             If fc.MoveFrom Then
                 OptMove.Checked = True
             Else
-                OptMark.Checked = True
+                OptCopy.Checked = True
             End If
+            CheckMark.Checked = fc.SetMark
         Else
             RadioAND.Checked = True
             RadioPLUS.Checked = False
@@ -224,8 +302,22 @@ Public Class FilterDialog
             MSG2.Text = ""
             CheckRegex.Checked = False
             CheckURL.Checked = False
-            'OptNone.Checked = True
-            OptMark.Checked = True
+            CheckCaseSensitive.Checked = False
+
+            RadioExAnd.Checked = True
+            RadioExPLUS.Checked = False
+            ExUID.Enabled = True
+            ExMSG1.Enabled = True
+            ExMSG2.Enabled = False
+            ExUID.Text = ""
+            ExMSG1.Text = ""
+            ExMSG2.Text = ""
+            CheckExRegex.Checked = False
+            CheckExURL.Checked = False
+            CheckExCaseSensitive.Checked = False
+
+            OptCopy.Checked = True
+            CheckMark.Checked = True
         End If
     End Sub
 
@@ -237,54 +329,26 @@ Public Class FilterDialog
     End Sub
 
     Private Sub ButtonOK_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonOK.Click
-        'チェック
-        If RadioAND.Checked Then
-            If Not CheckRegex.Checked Then MSG1.Text = MSG1.Text.Replace("　", " ").Trim()
-            UID.Text = UID.Text.Trim()
-            If UID.Text = "" AndAlso MSG1.Text = "" Then
-                MessageBox.Show(My.Resources.ButtonOK_ClickText1, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-                Exit Sub
-            End If
-            If CheckRegex.Checked Then
-                If UID.Text <> "" Then
-                    Try
-                        Dim rgx As New System.Text.RegularExpressions.Regex(UID.Text)
-                    Catch ex As Exception
-                        MessageBox.Show(My.Resources.ButtonOK_ClickText3 + ex.Message, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-                        Exit Sub
-                    End Try
-                End If
-                If MSG1.Text <> "" Then
-                    Try
-                        Dim rgx As New System.Text.RegularExpressions.Regex(MSG1.Text)
-                    Catch ex As Exception
-                        MessageBox.Show(My.Resources.ButtonOK_ClickText3 + ex.Message, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-                        Exit Sub
-                    End Try
-                End If
-            End If
-        Else
-            If Not CheckRegex.Checked Then MSG2.Text = MSG2.Text.Replace("　", " ").Trim()
-            If MSG2.Text.Trim = "" Then
-                MessageBox.Show(My.Resources.ButtonOK_ClickText1, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-                Exit Sub
-            End If
-            If CheckRegex.Checked And MSG2.Text <> "" Then
-                Try
-                    Dim rgx As New System.Text.RegularExpressions.Regex(MSG2.Text)
-                Catch ex As Exception
-                    MessageBox.Show(My.Resources.ButtonOK_ClickText3 + ex.Message, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-                    Exit Sub
-                End Try
-            End If
+        Dim isBlankMatch As Boolean = False
+        Dim isBlankExclude As Boolean = False
+
+        '入力チェック
+        If Not CheckMatchRule(isBlankMatch) OrElse _
+           Not CheckExcludeRule(isBlankExclude) Then
+            Exit Sub
         End If
+        If isBlankMatch AndAlso isBlankExclude Then
+            MessageBox.Show(My.Resources.ButtonOK_ClickText1, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            Exit Sub
+        End If
+
         Dim i As Integer = ListFilters.SelectedIndex
         Dim ft As FiltersClass
 
         ft = New FiltersClass()
 
         ft.MoveFrom = OptMove.Checked
-        ft.SetMark = OptMark.Checked
+        ft.SetMark = CheckMark.Checked
 
         Dim bdy As String = ""
         If RadioAND.Checked Then
@@ -308,6 +372,31 @@ Public Class FilterDialog
 
         ft.UseRegex = CheckRegex.Checked
         ft.SearchUrl = CheckURL.Checked
+        ft.CaseSensitive = CheckCaseSensitive.Checked
+
+        bdy = ""
+        If RadioExAnd.Checked Then
+            ft.ExNameFilter = ExUID.Text
+            ft.ExSearchBoth = True
+            bdy = ExMSG1.Text
+        Else
+            ft.ExNameFilter = ""
+            ft.ExSearchBoth = False
+            bdy = ExMSG2.Text
+        End If
+
+        If CheckExRegex.Checked Then
+            ft.ExBodyFilter.Add(bdy)
+        Else
+            Dim bf() As String = bdy.Trim.Split(Chr(32))
+            For Each bfs As String In bf
+                If bfs <> "" Then ft.ExBodyFilter.Add(bfs.Trim)
+            Next
+        End If
+
+        ft.ExUseRegex = CheckExRegex.Checked
+        ft.ExSearchUrl = CheckExURL.Checked
+        ft.ExCaseSensitive = CheckExCaseSensitive.Checked
 
         If _mode = EDITMODE.AddNew Then
             If Not _sts.Tabs(ListTabs.SelectedItem.ToString()).AddFilter(ft) Then
@@ -330,6 +419,96 @@ Public Class FilterDialog
             Me.Close()
         End If
     End Sub
+
+    Private Function CheckMatchRule(ByRef isBlank As Boolean) As Boolean
+        isBlank = False
+        If RadioAND.Checked Then
+            If Not CheckRegex.Checked Then MSG1.Text = MSG1.Text.Replace("　", " ").Trim()
+            UID.Text = UID.Text.Trim()
+            If UID.Text = "" AndAlso MSG1.Text = "" Then
+                isBlank = True
+                Return True
+            End If
+            If CheckRegex.Checked Then
+                If UID.Text <> "" Then
+                    Try
+                        Dim rgx As New System.Text.RegularExpressions.Regex(UID.Text)
+                    Catch ex As Exception
+                        MessageBox.Show(My.Resources.ButtonOK_ClickText3 + ex.Message, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                        Return False
+                    End Try
+                End If
+                If MSG1.Text <> "" Then
+                    Try
+                        Dim rgx As New System.Text.RegularExpressions.Regex(MSG1.Text)
+                    Catch ex As Exception
+                        MessageBox.Show(My.Resources.ButtonOK_ClickText3 + ex.Message, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                        Return False
+                    End Try
+                End If
+            End If
+        Else
+            If Not CheckRegex.Checked Then MSG2.Text = MSG2.Text.Replace("　", " ").Trim()
+            If MSG2.Text.Trim = "" Then
+                isBlank = True
+                Return True
+            End If
+            If CheckRegex.Checked AndAlso MSG2.Text <> "" Then
+                Try
+                    Dim rgx As New System.Text.RegularExpressions.Regex(MSG2.Text)
+                Catch ex As Exception
+                    MessageBox.Show(My.Resources.ButtonOK_ClickText3 + ex.Message, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                    Return False
+                End Try
+            End If
+        End If
+        Return True
+    End Function
+
+    Private Function CheckExcludeRule(ByRef isBlank As Boolean) As Boolean
+        isBlank = False
+        If RadioExAnd.Checked Then
+            If Not CheckExRegex.Checked Then ExMSG1.Text = ExMSG1.Text.Replace("　", " ").Trim()
+            ExUID.Text = ExUID.Text.Trim()
+            If ExUID.Text = "" AndAlso ExMSG1.Text = "" Then
+                isBlank = True
+                Return True
+            End If
+            If CheckExRegex.Checked Then
+                If ExUID.Text <> "" Then
+                    Try
+                        Dim rgx As New System.Text.RegularExpressions.Regex(ExUID.Text)
+                    Catch ex As Exception
+                        MessageBox.Show(My.Resources.ButtonOK_ClickText3 + ex.Message, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                        Return False
+                    End Try
+                End If
+                If ExMSG1.Text <> "" Then
+                    Try
+                        Dim rgx As New System.Text.RegularExpressions.Regex(ExMSG1.Text)
+                    Catch ex As Exception
+                        MessageBox.Show(My.Resources.ButtonOK_ClickText3 + ex.Message, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                        Return False
+                    End Try
+                End If
+            End If
+        Else
+            If Not CheckExRegex.Checked Then ExMSG2.Text = ExMSG2.Text.Replace("　", " ").Trim()
+            If ExMSG2.Text.Trim = "" Then
+                isBlank = True
+                Return True
+            End If
+            If CheckExRegex.Checked AndAlso ExMSG2.Text <> "" Then
+                Try
+                    Dim rgx As New System.Text.RegularExpressions.Regex(ExMSG2.Text)
+                Catch ex As Exception
+                    MessageBox.Show(My.Resources.ButtonOK_ClickText3 + ex.Message, My.Resources.ButtonOK_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                    Return False
+                End Try
+            End If
+        End If
+        Return True
+    End Function
 
     Private Sub ListFilters_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ListFilters.SelectedIndexChanged
         ShowDetail()
@@ -377,9 +556,10 @@ Public Class FilterDialog
         _sts = TabInformations.GetInstance()
         ListTabs.Items.Clear()
         For Each key As String In _sts.Tabs.Keys
-            If key <> DEFAULTTAB.RECENT AndAlso key <> DEFAULTTAB.DM AndAlso key <> DEFAULTTAB.FAV Then
-                ListTabs.Items.Add(key)
-            End If
+            ListTabs.Items.Add(key)
+            'If key <> DEFAULTTAB.RECENT AndAlso key <> DEFAULTTAB.DM AndAlso key <> DEFAULTTAB.FAV Then
+            '    ListTabs.Items.Add(key)
+            'End If
         Next
 
         ComboSound.Items.Clear()
@@ -406,7 +586,7 @@ Public Class FilterDialog
         If ListTabs.SelectedIndex > -1 Then
             SetFilters(ListTabs.SelectedItem.ToString)
         Else
-            ListTabs.Items.Clear()
+            ListFilters.Items.Clear()
         End If
     End Sub
 
@@ -456,6 +636,53 @@ Public Class FilterDialog
     End Sub
 
     Private Sub CheckManageRead_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CheckManageRead.CheckedChanged
+        If ListTabs.SelectedIndex > -1 AndAlso ListTabs.SelectedItem.ToString <> "" Then
+            DirectCast(Me.Owner, TweenMain).ChangeTabUnreadManage( _
+                ListTabs.SelectedItem.ToString, _
+                CheckManageRead.Checked)
+        End If
+    End Sub
 
+    Private Sub ButtonUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonUp.Click
+        If ListTabs.SelectedIndex > 0 AndAlso ListTabs.SelectedItem.ToString <> "" Then
+            DirectCast(Me.Owner, TweenMain).ReOrderTab( _
+                ListTabs.SelectedItem.ToString, _
+                ListTabs.Items(ListTabs.SelectedIndex - 1).ToString, _
+                True)
+        End If
+    End Sub
+
+    Private Sub ButtonDown_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonDown.Click
+        If ListTabs.SelectedIndex > -1 AndAlso ListTabs.SelectedIndex < ListTabs.Items.Count - 1 AndAlso ListTabs.SelectedItem.ToString <> "" Then
+            DirectCast(Me.Owner, TweenMain).ReOrderTab( _
+                ListTabs.SelectedItem.ToString, _
+                ListTabs.Items(ListTabs.SelectedIndex + 1).ToString, _
+                False)
+        End If
+    End Sub
+
+    Private Sub CheckNotifyNew_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CheckNotifyNew.CheckedChanged
+        If ListTabs.SelectedIndex > -1 AndAlso ListTabs.SelectedItem.ToString <> "" Then
+            _sts.Tabs(ListTabs.SelectedItem.ToString).Notify = CheckNotifyNew.Checked
+        End If
+    End Sub
+
+    Private Sub ComboSound_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ComboSound.SelectedIndexChanged
+        If ListTabs.SelectedIndex > -1 AndAlso ListTabs.SelectedItem.ToString <> "" Then
+            Dim filename As String = ""
+            If ComboSound.SelectedIndex > -1 Then filename = ComboSound.SelectedItem.ToString
+            _sts.Tabs(ListTabs.SelectedItem.ToString).SoundFile = filename
+        End If
+    End Sub
+
+    Private Sub RadioExAnd_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RadioExAnd.CheckedChanged
+        Dim flg As Boolean = RadioExAnd.Checked
+        ExUID.Enabled = flg
+        ExMSG1.Enabled = flg
+        ExMSG2.Enabled = Not flg
+    End Sub
+
+    Private Sub OptMove_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OptMove.CheckedChanged
+        CheckMark.Enabled = Not OptMove.Checked
     End Sub
 End Class

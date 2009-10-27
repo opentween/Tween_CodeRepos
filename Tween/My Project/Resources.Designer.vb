@@ -1287,7 +1287,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  コピーする に類似しているローカライズされた文字列を検索します。
+        '''  コピーする/ に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property SetFiltersText11() As String
             Get
@@ -1296,7 +1296,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  　／　除外　 に類似しているローカライズされた文字列を検索します。
+        '''   &lt;&lt;除外&gt;&gt;  に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property SetFiltersText12() As String
             Get
@@ -1305,7 +1305,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  大/小区別 に類似しているローカライズされた文字列を検索します。
+        '''  大小区別/ に類似しているローカライズされた文字列を検索します。
         '''</summary>
         Friend ReadOnly Property SetFiltersText13() As String
             Get

@@ -457,7 +457,7 @@
     <value>Make post mark</value>
   </data>
   <data name="SetFiltersText11" xml:space="preserve">
-    <value>Copy</value>
+    <value>Copy/</value>
   </data>
   <data name="SetFiltersText2" xml:space="preserve">
     <value>[User: (All)] </value>
@@ -661,9 +661,9 @@
     <value>Fav refreshed</value>
   </data>
   <data name="SetFiltersText12" xml:space="preserve">
-    <value>  /  Exclude  </value>
+    <value> &lt;&lt;Exclude&gt;&gt; </value>
   </data>
   <data name="SetFiltersText13" xml:space="preserve">
-    <value>CaseSensitive</value>
+    <value>CaseSensitive/</value>
   </data>
 </root>

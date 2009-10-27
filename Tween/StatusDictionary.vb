@@ -954,16 +954,17 @@ End Class
 
 <Serializable()> _
 Public NotInheritable Class TabClass
-    Private _unreadManage As Boolean
-    Private _notify As Boolean
-    Private _soundFile As String
+    Private _unreadManage As Boolean = False
+    Private _notify As Boolean = False
+    Private _soundFile As String = ""
     Private _filters As List(Of FiltersClass)
-    Private _oldestUnreadItem As Long     'ID
-    Private _unreadCount As Integer
+    Private _oldestUnreadItem As Long = -1     'ID
+    Private _unreadCount As Integer = 0
     Private _ids As List(Of Long)
-    Private _filterMod As Boolean
+    Private _filterMod As Boolean = False
     Private _tmpIds As List(Of TempolaryId)
-    Private _tabName As String
+    Private _tabName As String = ""
+    Private _tabType As TabUsageType = TabUsageType.UserDefined
     'Private rwLock As New System.Threading.ReaderWriterLock()   'フィルタ用
 
     Private Structure TempolaryId
@@ -983,6 +984,7 @@ Public NotInheritable Class TabClass
         _unreadManage = True
         _ids = New List(Of Long)
         _oldestUnreadItem = -1
+        _tabType = TabUsageType.UserDefined
     End Sub
 
     Public Sub New(ByVal TabName As String)
@@ -1164,12 +1166,19 @@ Public NotInheritable Class TabClass
 
     Public Sub EditFilter(ByVal original As FiltersClass, ByVal modified As FiltersClass)
         original.BodyFilter = modified.BodyFilter
-        original.MoveFrom = modified.MoveFrom
         original.NameFilter = modified.NameFilter
         original.SearchBoth = modified.SearchBoth
         original.SearchUrl = modified.SearchUrl
-        original.SetMark = modified.SetMark
         original.UseRegex = modified.UseRegex
+        original.CaseSensitive = modified.CaseSensitive
+        original.ExBodyFilter = modified.ExBodyFilter
+        original.ExNameFilter = modified.ExNameFilter
+        original.ExSearchBoth = modified.ExSearchBoth
+        original.ExSearchUrl = modified.ExSearchUrl
+        original.ExUseRegex = modified.ExUseRegex
+        original.ExCaseSensitive = modified.ExCaseSensitive
+        original.MoveFrom = modified.MoveFrom
+        original.SetMark = modified.SetMark
         _filterMod = True
     End Sub
 
@@ -1232,6 +1241,20 @@ Public NotInheritable Class TabClass
         End Get
         Set(ByVal value As String)
             _tabName = value
+
+            ''' TODO: 0.7.2.0リリース前に削除すること
+            Select Case value
+                Case DEFAULTTAB.RECENT
+                    _tabType = TabUsageType.Home
+                Case DEFAULTTAB.REPLY
+                    _tabType = TabUsageType.Mentions
+                Case DEFAULTTAB.DM
+                    _tabType = TabUsageType.DirectMessage
+                Case DEFAULTTAB.FAV
+                    _tabType = TabUsageType.Favorites
+                Case Else
+                    _tabType = TabUsageType.UserDefined
+            End Select
         End Set
     End Property
 End Class
@@ -1325,79 +1348,86 @@ Public NotInheritable Class FiltersClass
     'フィルタ一覧に表示する文言生成
     Private Function MakeSummary() As String
         Dim fs As New System.Text.StringBuilder()
-        If _searchBoth Then
-            If _name <> "" Then
-                fs.AppendFormat(My.Resources.SetFiltersText1, _name)
-            Else
-                fs.Append(My.Resources.SetFiltersText2)
+        If _name <> "" OrElse _body.Count > 0 Then
+            If _searchBoth Then
+                If _name <> "" Then
+                    fs.AppendFormat(My.Resources.SetFiltersText1, _name)
+                Else
+                    fs.Append(My.Resources.SetFiltersText2)
+                End If
             End If
-        End If
-        If _body.Count > 0 Then
-            fs.Append(My.Resources.SetFiltersText3)
-            For Each bf As String In _body
-                fs.Append(bf)
-                fs.Append(" ")
-            Next
-            fs.Length -= 1
-            fs.Append(My.Resources.SetFiltersText4)
-        End If
-        fs.Append("(")
-        If _searchBoth Then
-            fs.Append(My.Resources.SetFiltersText5)
-        Else
-            fs.Append(My.Resources.SetFiltersText6)
-        End If
-        If _useRegex Then
-            fs.Append(My.Resources.SetFiltersText7)
-        End If
-        If _searchUrl Then
-            fs.Append(My.Resources.SetFiltersText8)
-        End If
-        If _caseSensitive Then
-            fs.Append(My.Resources.SetFiltersText13)
-        End If
-        'If _moveFrom Then
-        '    fs.Append(My.Resources.SetFiltersText9)
-        'ElseIf _setMark Then
-        '    fs.Append(My.Resources.SetFiltersText10)
-        'Else
-        '    fs.Append(My.Resources.SetFiltersText11)
-        'End If
-        fs.Append(")")
-        '除外
-        fs.Append(My.Resources.SetFiltersText12)
-        If _exsearchBoth Then
-            If _exname <> "" Then
-                fs.AppendFormat(My.Resources.SetFiltersText1, _exname)
-            Else
-                fs.Append(My.Resources.SetFiltersText2)
+            If _body.Count > 0 Then
+                fs.Append(My.Resources.SetFiltersText3)
+                For Each bf As String In _body
+                    fs.Append(bf)
+                    fs.Append(" ")
+                Next
+                fs.Length -= 1
+                fs.Append(My.Resources.SetFiltersText4)
             End If
-        End If
-        If _exbody.Count > 0 Then
-            fs.Append(My.Resources.SetFiltersText3)
-            For Each bf As String In _exbody
-                fs.Append(bf)
-                fs.Append(" ")
-            Next
+            fs.Append("(")
+            If _searchBoth Then
+                fs.Append(My.Resources.SetFiltersText5)
+            Else
+                fs.Append(My.Resources.SetFiltersText6)
+            End If
+            If _useRegex Then
+                fs.Append(My.Resources.SetFiltersText7)
+            End If
+            If _searchUrl Then
+                fs.Append(My.Resources.SetFiltersText8)
+            End If
+            If _caseSensitive Then
+                fs.Append(My.Resources.SetFiltersText13)
+            End If
+            'If _moveFrom Then
+            '    fs.Append(My.Resources.SetFiltersText9)
+            'ElseIf _setMark Then
+            '    fs.Append(My.Resources.SetFiltersText10)
+            'Else
+            '    fs.Append(My.Resources.SetFiltersText11)
+            'End If
             fs.Length -= 1
-            fs.Append(My.Resources.SetFiltersText4)
+            fs.Append(")")
         End If
-        fs.Append("(")
-        If _exsearchBoth Then
-            fs.Append(My.Resources.SetFiltersText5)
-        Else
-            fs.Append(My.Resources.SetFiltersText6)
+        If _exname <> "" OrElse _exbody.Count > 0 Then
+            '除外
+            fs.Append(My.Resources.SetFiltersText12)
+            If _exsearchBoth Then
+                If _exname <> "" Then
+                    fs.AppendFormat(My.Resources.SetFiltersText1, _exname)
+                Else
+                    fs.Append(My.Resources.SetFiltersText2)
+                End If
+            End If
+            If _exbody.Count > 0 Then
+                fs.Append(My.Resources.SetFiltersText3)
+                For Each bf As String In _exbody
+                    fs.Append(bf)
+                    fs.Append(" ")
+                Next
+                fs.Length -= 1
+                fs.Append(My.Resources.SetFiltersText4)
+            End If
+            fs.Append("(")
+            If _exsearchBoth Then
+                fs.Append(My.Resources.SetFiltersText5)
+            Else
+                fs.Append(My.Resources.SetFiltersText6)
+            End If
+            If _exuseRegex Then
+                fs.Append(My.Resources.SetFiltersText7)
+            End If
+            If _exsearchUrl Then
+                fs.Append(My.Resources.SetFiltersText8)
+            End If
+            If _excaseSensitive Then
+                fs.Append(My.Resources.SetFiltersText13)
+            End If
+            fs.Length -= 1
+            fs.Append(")")
         End If
-        If _exuseRegex Then
-            fs.Append(My.Resources.SetFiltersText7)
-        End If
-        If _exsearchUrl Then
-            fs.Append(My.Resources.SetFiltersText8)
-        End If
-        If _excaseSensitive Then
-            fs.Append(My.Resources.SetFiltersText13)
-        End If
-        fs.Append(")")
+
         fs.Append("(")
         If _moveFrom Then
             fs.Append(My.Resources.SetFiltersText9)
@@ -1406,6 +1436,8 @@ Public NotInheritable Class FiltersClass
         End If
         If Not _moveFrom AndAlso _setMark Then
             fs.Append(My.Resources.SetFiltersText10)
+        ElseIf Not _moveFrom Then
+            fs.Length -= 1
         End If
 
         fs.Append(")")
@@ -1653,7 +1685,7 @@ Public NotInheritable Class FiltersClass
                 End If
             Else
                 For Each fs As String In _exbody
-                    If _useRegex Then
+                    If _exuseRegex Then
                         If Regex.IsMatch(Name, fs, rgOpt) OrElse _
                            Regex.IsMatch(tBody, fs, rgOpt) Then bHit = False
                     Else
