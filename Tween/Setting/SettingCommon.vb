@@ -133,4 +133,7 @@ Public Class SettingCommon
     Public WideSpaceConvert As Boolean = True
     Public ReadOwnPost As Boolean = False
     Public GetFav As Boolean = True
+    Public BilyUser As String = ""
+    Public BitlyPwd As String = ""
+
 End Class
