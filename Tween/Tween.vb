@@ -562,6 +562,8 @@ Public Class TweenMain
         SettingDialog.GetFav = _cfgCommon.GetFav
         SettingDialog.ReadOldPosts = _cfgCommon.ReadOldPosts
         SettingDialog.UseSsl = _cfgCommon.UseSsl
+        SettingDialog.BitlyUser = _cfgCommon.BilyUser
+        SettingDialog.BitlyPwd = _cfgCommon.BitlyPwd
         SettingDialog.IsMonospace = _cfgCommon.IsMonospace
         If SettingDialog.IsMonospace Then
             detailHtmlFormat = detailHtmlFormatMono1 + _fntDetail.Name + detailHtmlFormatMono2 + _fntDetail.Size.ToString() + detailHtmlFormatMono3
@@ -674,6 +676,8 @@ Public Class TweenMain
         Twitter.RestrictFavCheck = SettingDialog.RestrictFavCheck
         Twitter.ReadOwnPost = SettingDialog.ReadOwnPost
         Twitter.UseSsl = SettingDialog.UseSsl
+        Twitter.BitlyId = SettingDialog.BitlyUser
+        Twitter.BitlyKey = SettingDialog.BitlyPwd
         If IsNetworkAvailable() Then
             If SettingDialog.StartupFollowers Then
                 '_waitFollower = True
@@ -2454,6 +2458,8 @@ Public Class TweenMain
                 Twitter.RestrictFavCheck = SettingDialog.RestrictFavCheck
                 Twitter.ReadOwnPost = SettingDialog.ReadOwnPost
                 Twitter.UseSsl = SettingDialog.UseSsl
+                Twitter.BitlyId = SettingDialog.BitlyUser
+                Twitter.BitlyKey = SettingDialog.BitlyPwd
 
                 Twitter.SelectedProxyType = SettingDialog.SelectedProxyType
                 Twitter.ProxyAddress = SettingDialog.ProxyAddress
@@ -4289,6 +4295,8 @@ RETRY:
                 End If
                 _cfgCommon.ReadOldPosts = SettingDialog.ReadOldPosts
                 _cfgCommon.UseSsl = SettingDialog.UseSsl
+                _cfgCommon.BilyUser = SettingDialog.BitlyUser
+                _cfgCommon.BitlyPwd = SettingDialog.BitlyPwd
 
                 _cfgCommon.SortOrder = _statuses.SortOrder
                 Select Case _statuses.SortMode
@@ -5193,12 +5201,24 @@ RETRY:
             Dim openUrlStr As String = ""
 
             If PostBrowser.Document.Links.Count = 1 Then
-                Dim urlStr As String = IDNDecode(PostBrowser.Document.Links(0).GetAttribute("href"))
+                Dim urlStr As String = ""
+                Try
+                    urlStr = IDNDecode(PostBrowser.Document.Links(0).GetAttribute("href"))
+                Catch ex As ArgumentException
+                    '変なHTML？
+                    Exit Sub
+                End Try
                 If String.IsNullOrEmpty(urlStr) Then Exit Sub
                 openUrlStr = urlEncodeMultibyteChar(urlStr)
             Else
                 For Each linkElm As HtmlElement In PostBrowser.Document.Links
-                    Dim urlStr As String = IDNDecode(linkElm.GetAttribute("href"))
+                    Dim urlStr As String = ""
+                    Try
+                        IDNDecode(linkElm.GetAttribute("href"))
+                    Catch ex As ArgumentException
+                        '変なHTML？
+                        Exit Sub
+                    End Try
                     If String.IsNullOrEmpty(urlStr) Then Continue For
                     UrlDialog.AddUrl(urlEncodeMultibyteChar(urlStr))
                 Next

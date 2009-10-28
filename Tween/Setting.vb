@@ -103,6 +103,8 @@ Public Class Setting
     Private _MyMonoSpace As Boolean
     Private _MyReadOldPosts As Boolean
     Private _MyUseSsl As Boolean
+    Private _MyBitlyId As String
+    Private _MyBitlyPw As String
 
     Private Sub Save_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Save.Click
         Try
@@ -236,6 +238,8 @@ Public Class Setting
             _MyMonoSpace = CheckMonospace.Checked
             _MyReadOldPosts = CheckReadOldPosts.Checked
             _MyUseSsl = CheckUseSsl.Checked
+            _MyBitlyId = TextBitlyId.Text
+            _mybitlipw = TextBitlyPw.Text
             Select Case ReplyIconStateCombo.SelectedIndex
                 Case 0
                     _MyReplyIconState = REPLY_ICONSTATE.None
@@ -420,6 +424,8 @@ Public Class Setting
         CheckMonospace.Checked = _MyMonoSpace
         CheckReadOldPosts.Checked = _MyReadOldPosts
         CheckUseSsl.Checked = _MyUseSsl
+        TextBitlyId.Text = _MyBitlyId
+        TextBitlyPw.Text = _MyBitlyPw
         Select Case _MyReplyIconState
             Case REPLY_ICONSTATE.None
                 ReplyIconStateCombo.SelectedIndex = 0
@@ -1441,6 +1447,24 @@ Public Class Setting
         End Set
     End Property
 
+    Public Property BitlyUser() As String
+        Get
+            Return _MyBitlyId
+        End Get
+        Set(ByVal value As String)
+            _MyBitlyId = value
+        End Set
+    End Property
+
+    Public Property BitlyPwd() As String
+        Get
+            Return _MyBitlyPw
+        End Get
+        Set(ByVal value As String)
+            _MyBitlyPw = value
+        End Set
+    End Property
+
     Private Sub Button3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button3.Click
         Dim filedlg As New OpenFileDialog()
 
@@ -1611,5 +1635,15 @@ Public Class Setting
         End If
     End Sub
 
+    Private Sub ComboBoxAutoShortUrlFirst_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ComboBoxAutoShortUrlFirst.SelectedIndexChanged
+        If ComboBoxAutoShortUrlFirst.SelectedIndex = UrlConverter.Bitly OrElse _
+           ComboBoxAutoShortUrlFirst.SelectedIndex = UrlConverter.Jmp Then
+            TextBitlyId.Enabled = True
+            TextBitlyPw.Enabled = True
+        Else
+            TextBitlyId.Enabled = False
+            TextBitlyPw.Enabled = False
+        End If
+    End Sub
 End Class
 

@@ -55,6 +55,8 @@ Public Module Twitter
     Private _bio As String = ""
     Private _useSsl As Boolean = True
     Private _protocol As String = "https://"
+    Private _bitlyId As String = ""
+    Private _bitlyKey As String = ""
 
     'プロパティからアクセスされる共通情報
     Private _uid As String
@@ -2696,8 +2698,12 @@ Public Module Twitter
                     Return "Can't convert"
                 End If
             Case UrlConverter.Bitly, UrlConverter.Jmp
-                Const BitlyLogin As String = "tweenapi"
-                Const BitlyApiKey As String = "R_c5ee0e30bdfff88723c4457cc331886b"
+                Dim BitlyLogin As String = "tweenapi"
+                Dim BitlyApiKey As String = "R_c5ee0e30bdfff88723c4457cc331886b"
+                If _bitlyId <> "" Then
+                    BitlyLogin = _bitlyId
+                    BitlyApiKey = _bitlyKey
+                End If
                 Const BitlyApiVersion As String = "2.0.1"
                 If SrcUrl.StartsWith("http") Then
                     If "http://bit.ly/xxxx".Length > src.Length AndAlso Not src.Contains("?") AndAlso Not src.Contains("#") Then
@@ -2884,6 +2890,18 @@ Public Module Twitter
             Else
                 _protocol = "http://"
             End If
+        End Set
+    End Property
+
+    Public WriteOnly Property BitlyId() As String
+        Set(ByVal value As String)
+            _bitlyId = value
+        End Set
+    End Property
+
+    Public WriteOnly Property BitlyKey() As String
+        Set(ByVal value As String)
+            _bitlyKey = value
         End Set
     End Property
 
