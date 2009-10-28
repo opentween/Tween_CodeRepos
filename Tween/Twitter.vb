@@ -1437,6 +1437,9 @@ Public Module Twitter
         'Dim svc As String
         'Dim posl1 As Integer
         'Dim posl2 As Integer = 0
+        Static urlCache As New Specialized.StringDictionary()
+        If urlCache.Count > 200 Then urlCache.Clear() '定期的にリセット
+
         Dim rx As New Regex("<a href=""(?<svc>http://.+?/)(?<path>[^""]+)""", RegexOptions.IgnoreCase)
         Dim m As MatchCollection = rx.Matches(orgData)
         Dim urlList As New List(Of String)
@@ -1449,20 +1452,29 @@ Public Module Twitter
             End If
         Next
         For Each orgUrl As String In urlList
-            Try
-                'urlとして生成できない場合があるらしい
-                Dim urlstr As String = New Uri(urlEncodeMultibyteChar(orgUrl)).GetLeftPart(UriPartial.Path)
-                Dim Response As String = ""
-                Dim retUrlStr As String = ""
-                Dim tmpurlStr As String = urlstr
-                retUrlStr = urlEncodeMultibyteChar(DirectCast(CreateSocket.GetWebResponse(tmpurlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo, timeOut:=2000), String))
-                If retUrlStr.StartsWith("http") Then
-                    retUrlStr = retUrlStr.Replace("""", "%22")  'ダブルコーテーションがあるとURL終端と判断されるため、これだけ再エンコード
-                    orgData = orgData.Replace("<a href=""" + orgUrl + """", "<a href=""" + retUrlStr + """")
-                End If
-            Catch ex As Exception
-                'Through
-            End Try
+            If urlCache.ContainsKey(orgUrl) Then
+                Try
+                    orgData = orgData.Replace("<a href=""" + orgUrl + """", "<a href=""" + urlCache(orgUrl) + """")
+                Catch ex As Exception
+                    'Through
+                End Try
+            Else
+                Try
+                    'urlとして生成できない場合があるらしい
+                    Dim urlstr As String = New Uri(urlEncodeMultibyteChar(orgUrl)).GetLeftPart(UriPartial.Path)
+                    Dim Response As String = ""
+                    Dim retUrlStr As String = ""
+                    Dim tmpurlStr As String = urlstr
+                    retUrlStr = urlEncodeMultibyteChar(DirectCast(CreateSocket.GetWebResponse(tmpurlStr, Response, MySocket.REQ_TYPE.ReqGETForwardTo, timeOut:=5000), String))
+                    If retUrlStr.StartsWith("http") Then
+                        retUrlStr = retUrlStr.Replace("""", "%22")  'ダブルコーテーションがあるとURL終端と判断されるため、これだけ再エンコード
+                        orgData = orgData.Replace("<a href=""" + orgUrl + """", "<a href=""" + retUrlStr + """")
+                        urlCache.Add(orgUrl, retUrlStr)
+                    End If
+                Catch ex As Exception
+                    'Through
+                End Try
+            End If
         Next
 
         'For Each ma As Match In m

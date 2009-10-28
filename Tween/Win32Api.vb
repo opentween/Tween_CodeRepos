@@ -443,4 +443,25 @@ Module Win32Api
         ByVal hwnd As IntPtr, _
         ByVal rect As IntPtr) As Boolean
     End Function
+
+#Region "スクリーンセーバー起動中か判定"
+    <DllImport("user32", CharSet:=CharSet.Auto)> _
+    Private Function SystemParametersInfo( _
+                ByVal intAction As Integer, _
+                ByVal intParam As Integer, _
+                ByRef bParam As Boolean, _
+                ByVal intWinIniFlag As Integer) As Integer
+        ' returns non-zero value if function succeeds
+    End Function
+    'スクリーンセーバーが起動中かを取得する定数
+    Private Const SPI_GETSCREENSAVERRUNNING As Integer = &H61
+
+    Public Function IsScreenSaverRunning() As Boolean
+        Dim ret As Integer = 0
+        Dim isRunning As Boolean = False
+
+        ret = SystemParametersInfo(SPI_GETSCREENSAVERRUNNING, 0, isRunning, 0)
+        Return isRunning
+    End Function
+#End Region
 End Module
