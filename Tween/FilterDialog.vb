@@ -221,6 +221,8 @@ Public Class FilterDialog
 
     Private Sub ShowDetail()
 
+        If _directAdd Then Exit Sub
+
         If ListFilters.SelectedIndex > -1 Then
             Dim fc As FiltersClass = DirectCast(ListFilters.SelectedItem, FiltersClass)
             If fc.SearchBoth Then

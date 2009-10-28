@@ -35,6 +35,7 @@ Imports System.Web
 Imports System.Reflection
 Imports System.ComponentModel
 Imports System.Diagnostics
+Imports Microsoft.Win32
 
 Public Class TweenMain
 
@@ -75,6 +76,7 @@ Public Class TweenMain
     Private _cfgCommon As SettingCommon
     Private modifySettingLocal As Boolean = False
     Private modifySettingCommon As Boolean = False
+    Private modifySettingAtId As Boolean = False
 
     'サブ画面インスタンス
     Private SettingDialog As New Setting()       '設定画面インスタンス
@@ -84,6 +86,7 @@ Public Class TweenMain
     Private fDialog As New FilterDialog() 'フィルター編集画面
     Private UrlDialog As New OpenURL()
     Private dialogAsShieldicon As New DialogAsShieldIcon() ' シールドアイコン付きダイアログ
+    Private AtIdSupl As AtIdSupplement    '@id補助
 
     '表示フォント、色、アイコン
     Private _fntUnread As Font            '未読用フォント
@@ -171,7 +174,6 @@ Public Class TweenMain
     Private shield As New ShieldIcon
     Private SecurityManager As InternetSecurityManager
     '''''''''''''''''''''''''''''''''''''''''''''''''''''
-
 #If DEBUG Then
     Private _drawcount As Long = 0
     Private _drawtime As Long = 0
@@ -403,6 +405,8 @@ Public Class TweenMain
         ContextMenuStrip1.OwnerItem = Nothing
         ContextMenuStrip2.OwnerItem = Nothing
         ContextMenuTabProperty.OwnerItem = Nothing
+
+        AtIdSupl = New AtIdSupplement(SettingAtIdList.Load().AtIdList)
 
         SettingDialog.Owner = Me
         SearchDialog.Owner = Me
@@ -1226,12 +1230,12 @@ Public Class TweenMain
 
     Private Sub NotifyNewPosts(ByVal notifyPosts() As PostClass, ByVal soundFile As String, ByVal addCount As Integer)
         '新着通知
-        If NewPostPopMenuItem.Checked AndAlso _
+        If (NewPostPopMenuItem.Checked AndAlso _
                notifyPosts IsNot Nothing AndAlso notifyPosts.Length > 0 AndAlso _
                Not _initial AndAlso _
                ((SettingDialog.LimitBalloon AndAlso _
                  (Me.WindowState = FormWindowState.Minimized OrElse Not Me.Visible OrElse Form.ActiveForm Is Nothing)) _
-                OrElse Not SettingDialog.LimitBalloon) Then
+                OrElse Not SettingDialog.LimitBalloon)) AndAlso Not IsScreenSaverRunning() Then
             Dim sb As New StringBuilder
             Dim reply As Boolean = False
             Dim dm As Boolean = False
@@ -3004,6 +3008,7 @@ Public Class TweenMain
         Else
             StatusText.ForeColor = _clInputFont
         End If
+
     End Sub
 
     Private Function GetRestStatusCount(ByVal isAuto As Boolean, ByVal isAddFooter As Boolean) As Integer
@@ -4179,6 +4184,27 @@ RETRY:
                 StatusText.Focus()
             End If
         End If
+        If Not e.Control AndAlso Not e.Alt AndAlso Not e.Shift Then
+            If e.KeyCode = Keys.Oemtilde Then
+                '@マーク
+                AtIdSupl.ShowDialog()
+                If AtIdSupl.inputId <> "" Then
+                    Dim fHalf As String = ""
+                    Dim eHalf As String = ""
+                    Dim selStart As Integer = StatusText.SelectionStart
+                    If selStart > 1 Then
+                        fHalf = StatusText.Text.Substring(0, selStart - 1)
+                    End If
+                    If selStart < StatusText.Text.Length Then
+                        eHalf = StatusText.Text.Substring(selStart)
+                    End If
+                    StatusText.Text = fHalf + AtIdSupl.inputId + eHalf
+                    StatusText.SelectionStart = selStart + AtIdSupl.inputId.Length - 1
+                End If
+                e.Handled = True
+                e.SuppressKeyPress = True
+            End If
+        End If
         Me.StatusText_TextChanged(Nothing, Nothing)
     End Sub
 
@@ -4190,6 +4216,11 @@ RETRY:
         Else
             If modifySettingCommon Then SaveConfigsCommon()
             If modifySettingLocal Then SaveConfigsLocal()
+            If modifySettingAtId Then
+                modifySettingAtId = False
+                Dim cfgAtId As New SettingAtIdList(AtIdSupl.GetIdList)
+                cfgAtId.Save()
+            End If
         End If
     End Sub
 
@@ -4829,9 +4860,10 @@ RETRY:
     End Sub
 
     Private Sub FilterEditMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FilterEditMenuItem.Click
-        If _rclickTabName = "" OrElse _rclickTabName = DEFAULTTAB.RECENT OrElse _rclickTabName = DEFAULTTAB.DM _
-                OrElse _rclickTabName = DEFAULTTAB.FAV Then Exit Sub
+        'If _rclickTabName = "" OrElse _rclickTabName = DEFAULTTAB.RECENT OrElse _rclickTabName = DEFAULTTAB.DM _
+        '        OrElse _rclickTabName = DEFAULTTAB.FAV Then Exit Sub
 
+        If _rclickTabName = "" Then _rclickTabName = DEFAULTTAB.RECENT
         fDialog.SetCurrent(_rclickTabName)
         fDialog.ShowDialog()
         Me.TopMost = SettingDialog.AlwaysTop
@@ -5298,6 +5330,14 @@ RETRY:
         Dim id As New Regex("(^|[ -/:-@[-^`{-~])@[a-zA-Z0-9_]+")
         Dim m As MatchCollection
 
+        m = id.Matches(StatusText)
+
+        Dim bCnt As Integer = AtIdSupl.IdCount
+        For Each mid As Match In m
+            AtIdSupl.AddId(mid.ToString)
+        Next
+        If bCnt <> AtIdSupl.IdCount Then modifySettingAtId = True
+
         ' リプライ先ステータスIDの指定がない場合は指定しない
         If _reply_to_id = 0 Then Exit Sub
 
@@ -5306,8 +5346,6 @@ RETRY:
             _reply_to_id = 0
             Exit Sub
         End If
-
-        m = id.Matches(StatusText)
 
         ' 通常Reply
         ' 次の条件を満たす場合に in_reply_to_status_id 指定
