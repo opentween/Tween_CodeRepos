@@ -156,6 +156,10 @@ Partial Class Setting
         Me.CheckStartupVersion = New System.Windows.Forms.CheckBox
         Me.CheckPeriodAdjust = New System.Windows.Forms.CheckBox
         Me.TabPage2 = New System.Windows.Forms.TabPage
+        Me.TextBitlyPw = New System.Windows.Forms.TextBox
+        Me.Label77 = New System.Windows.Forms.Label
+        Me.TextBitlyId = New System.Windows.Forms.TextBox
+        Me.Label76 = New System.Windows.Forms.Label
         Me.Label74 = New System.Windows.Forms.Label
         Me.chkGetFav = New System.Windows.Forms.CheckBox
         Me.ComboBoxAutoShortUrlFirst = New System.Windows.Forms.ComboBox
@@ -173,6 +177,8 @@ Partial Class Setting
         Me.Label50 = New System.Windows.Forms.Label
         Me.Button3 = New System.Windows.Forms.Button
         Me.TabPage3 = New System.Windows.Forms.TabPage
+        Me.Label78 = New System.Windows.Forms.Label
+        Me.CheckShowGrid = New System.Windows.Forms.CheckBox
         Me.Label75 = New System.Windows.Forms.Label
         Me.CheckMonospace = New System.Windows.Forms.CheckBox
         Me.Label73 = New System.Windows.Forms.Label
@@ -212,10 +218,6 @@ Partial Class Setting
         Me.Label59 = New System.Windows.Forms.Label
         Me.TextBoxOutputzKey = New System.Windows.Forms.TextBox
         Me.CheckOutputz = New System.Windows.Forms.CheckBox
-        Me.Label76 = New System.Windows.Forms.Label
-        Me.TextBitlyId = New System.Windows.Forms.TextBox
-        Me.Label77 = New System.Windows.Forms.Label
-        Me.TextBitlyPw = New System.Windows.Forms.TextBox
         Me.GroupBox1.SuspendLayout()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
@@ -1086,6 +1088,27 @@ Partial Class Setting
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.UseVisualStyleBackColor = True
         '
+        'TextBitlyPw
+        '
+        resources.ApplyResources(Me.TextBitlyPw, "TextBitlyPw")
+        Me.TextBitlyPw.Name = "TextBitlyPw"
+        Me.TextBitlyPw.UseSystemPasswordChar = True
+        '
+        'Label77
+        '
+        resources.ApplyResources(Me.Label77, "Label77")
+        Me.Label77.Name = "Label77"
+        '
+        'TextBitlyId
+        '
+        resources.ApplyResources(Me.TextBitlyId, "TextBitlyId")
+        Me.TextBitlyId.Name = "TextBitlyId"
+        '
+        'Label76
+        '
+        resources.ApplyResources(Me.Label76, "Label76")
+        Me.Label76.Name = "Label76"
+        '
         'Label74
         '
         resources.ApplyResources(Me.Label74, "Label74")
@@ -1179,6 +1202,8 @@ Partial Class Setting
         '
         'TabPage3
         '
+        Me.TabPage3.Controls.Add(Me.Label78)
+        Me.TabPage3.Controls.Add(Me.CheckShowGrid)
         Me.TabPage3.Controls.Add(Me.Label75)
         Me.TabPage3.Controls.Add(Me.CheckMonospace)
         Me.TabPage3.Controls.Add(Me.Label73)
@@ -1212,6 +1237,17 @@ Partial Class Setting
         resources.ApplyResources(Me.TabPage3, "TabPage3")
         Me.TabPage3.Name = "TabPage3"
         Me.TabPage3.UseVisualStyleBackColor = True
+        '
+        'Label78
+        '
+        resources.ApplyResources(Me.Label78, "Label78")
+        Me.Label78.Name = "Label78"
+        '
+        'CheckShowGrid
+        '
+        resources.ApplyResources(Me.CheckShowGrid, "CheckShowGrid")
+        Me.CheckShowGrid.Name = "CheckShowGrid"
+        Me.CheckShowGrid.UseVisualStyleBackColor = True
         '
         'Label75
         '
@@ -1457,27 +1493,6 @@ Partial Class Setting
         Me.CheckOutputz.Name = "CheckOutputz"
         Me.CheckOutputz.UseVisualStyleBackColor = True
         '
-        'Label76
-        '
-        resources.ApplyResources(Me.Label76, "Label76")
-        Me.Label76.Name = "Label76"
-        '
-        'TextBitlyId
-        '
-        resources.ApplyResources(Me.TextBitlyId, "TextBitlyId")
-        Me.TextBitlyId.Name = "TextBitlyId"
-        '
-        'Label77
-        '
-        resources.ApplyResources(Me.Label77, "Label77")
-        Me.Label77.Name = "Label77"
-        '
-        'TextBitlyPw
-        '
-        resources.ApplyResources(Me.TextBitlyPw, "TextBitlyPw")
-        Me.TextBitlyPw.Name = "TextBitlyPw"
-        Me.TextBitlyPw.UseSystemPasswordChar = True
-        '
         'Setting
         '
         Me.AcceptButton = Me.Save
@@ -1703,4 +1718,6 @@ Partial Class Setting
     Friend WithEvents TextBitlyPw As System.Windows.Forms.TextBox
     Friend WithEvents Label77 As System.Windows.Forms.Label
     Friend WithEvents TextBitlyId As System.Windows.Forms.TextBox
+    Friend WithEvents Label78 As System.Windows.Forms.Label
+    Friend WithEvents CheckShowGrid As System.Windows.Forms.CheckBox
 End Class

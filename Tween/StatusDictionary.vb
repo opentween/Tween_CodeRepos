@@ -1659,6 +1659,7 @@ Public NotInheritable Class FiltersClass
             Dim exFlag As Boolean = False
             If _name = "" AndAlso _body.Count = 0 Then
                 exFlag = True
+                bHit = False
             End If
             If _excaseSensitive Then
                 compOpt = StringComparison.Ordinal
