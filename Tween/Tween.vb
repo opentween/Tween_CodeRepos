@@ -3027,13 +3027,13 @@ Public Class TweenMain
                 Dim eHalf As String = ""
                 Dim selStart As Integer = StatusText.SelectionStart
                 If selStart > 1 Then
-                    fHalf = StatusText.Text.Substring(0, selStart - 1)
+                    fHalf = StatusText.Text.Substring(0, selStart)
                 End If
                 If selStart < StatusText.Text.Length Then
                     eHalf = StatusText.Text.Substring(selStart)
                 End If
                 StatusText.Text = fHalf + AtIdSupl.inputId + eHalf
-                StatusText.SelectionStart = selStart + AtIdSupl.inputId.Length - 1
+                StatusText.SelectionStart = selStart + AtIdSupl.inputId.Length
             Else
                 ''入力なし＆Backspaceで戻ったら、入力欄の＠も消す
                 'If AtIdSupl.isBack Then
