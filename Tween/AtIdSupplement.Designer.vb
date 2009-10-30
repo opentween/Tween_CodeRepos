@@ -53,7 +53,7 @@ Partial Class AtIdSupplement
         '
         Me.TextId.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend
         Me.TextId.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource
-        Me.TextId.Dock = System.Windows.Forms.DockStyle.Top
+        Me.TextId.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TextId.Location = New System.Drawing.Point(0, 0)
         Me.TextId.Name = "TextId"
         Me.TextId.Size = New System.Drawing.Size(162, 19)
@@ -65,13 +65,13 @@ Partial Class AtIdSupplement
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.ButtonCancel
-        Me.ClientSize = New System.Drawing.Size(162, 20)
-        Me.ControlBox = False
+        Me.ClientSize = New System.Drawing.Size(162, 19)
         Me.Controls.Add(Me.TextId)
         Me.Controls.Add(Me.ButtonCancel)
         Me.Controls.Add(Me.ButtonOK)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
         Me.Name = "AtIdSupplement"
+        Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.ResumeLayout(False)
         Me.PerformLayout()

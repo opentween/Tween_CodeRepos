@@ -660,19 +660,29 @@ Public Class FilterDialog
 
     Private Sub ButtonUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonUp.Click
         If ListTabs.SelectedIndex > 0 AndAlso ListTabs.SelectedItem.ToString <> "" Then
+            Dim selName As String = ListTabs.SelectedItem.ToString
+            Dim tgtName As String = ListTabs.Items(ListTabs.SelectedIndex - 1).ToString
             DirectCast(Me.Owner, TweenMain).ReOrderTab( _
-                ListTabs.SelectedItem.ToString, _
-                ListTabs.Items(ListTabs.SelectedIndex - 1).ToString, _
+                selName, _
+                tgtName, _
                 True)
+            Dim idx As Integer = ListTabs.SelectedIndex
+            ListTabs.Items.RemoveAt(idx - 1)
+            ListTabs.Items.Insert(idx, tgtName)
         End If
     End Sub
 
     Private Sub ButtonDown_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonDown.Click
         If ListTabs.SelectedIndex > -1 AndAlso ListTabs.SelectedIndex < ListTabs.Items.Count - 1 AndAlso ListTabs.SelectedItem.ToString <> "" Then
+            Dim selName As String = ListTabs.SelectedItem.ToString
+            Dim tgtName As String = ListTabs.Items(ListTabs.SelectedIndex + 1).ToString
             DirectCast(Me.Owner, TweenMain).ReOrderTab( _
-                ListTabs.SelectedItem.ToString, _
-                ListTabs.Items(ListTabs.SelectedIndex + 1).ToString, _
+                selName, _
+                tgtName, _
                 False)
+            Dim idx As Integer = ListTabs.SelectedIndex
+            ListTabs.Items.RemoveAt(idx + 1)
+            ListTabs.Items.Insert(idx, tgtName)
         End If
     End Sub
 

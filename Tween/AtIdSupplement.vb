@@ -59,6 +59,10 @@
         End If
     End Sub
 
+    Private Sub AtIdSupplement_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        Me.Height = Me.TextId.Height + SystemInformation.ToolWindowCaptionHeight + Me.TextId.Margin.Top
+    End Sub
+
     Private Sub AtIdSupplement_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
         TextId.Text = "@"
         TextId.SelectionStart = 1
