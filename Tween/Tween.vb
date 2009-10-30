@@ -691,6 +691,19 @@ Public Class TweenMain
         _mySize = Me.ClientSize                     'サイズ保持（最小化・最大化されたまま終了した場合の対応用）
         Me.DesktopLocation = _cfgLocal.FormLocation
         _myLoc = Me.DesktopLocation                        '位置保持（最小化・最大化されたまま終了した場合の対応用）
+        'タイトルバー領域
+        Dim tbarRect As New Rectangle(Me.Location, New Size(_mySize.Width, SystemInformation.CaptionHeight))
+        Dim outOfScreen As Boolean = True
+        For Each scr As Screen In Screen.AllScreens
+            If Not Rectangle.Intersect(tbarRect, scr.Bounds).IsEmpty Then
+                outOfScreen = False
+                Exit For
+            End If
+        Next
+        If outOfScreen Then
+            Me.DesktopLocation = New Point(0, 0)
+            _myLoc = Me.DesktopLocation
+        End If
         Me.TopMost = SettingDialog.AlwaysTop
         _mySpDis = _cfgLocal.SplitterDistance
         _mySpDis2 = _cfgLocal.StatusTextHeight
@@ -3005,6 +3018,44 @@ Public Class TweenMain
         End If
     End Sub
 
+    Private Sub StatusText_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles StatusText.KeyPress
+        If e.KeyChar = "@" Then
+            '@マーク
+            AtIdSupl.ShowDialog()
+            If AtIdSupl.inputId <> "" Then
+                Dim fHalf As String = ""
+                Dim eHalf As String = ""
+                Dim selStart As Integer = StatusText.SelectionStart
+                If selStart > 1 Then
+                    fHalf = StatusText.Text.Substring(0, selStart - 1)
+                End If
+                If selStart < StatusText.Text.Length Then
+                    eHalf = StatusText.Text.Substring(selStart)
+                End If
+                StatusText.Text = fHalf + AtIdSupl.inputId + eHalf
+                StatusText.SelectionStart = selStart + AtIdSupl.inputId.Length - 1
+            Else
+                ''入力なし＆Backspaceで戻ったら、入力欄の＠も消す
+                'If AtIdSupl.isBack Then
+                '    Dim fHalf As String = ""
+                '    Dim eHalf As String = ""
+                '    Dim selStart As Integer = StatusText.SelectionStart
+                '    If selStart > 1 Then
+                '        fHalf = StatusText.Text.Substring(0, selStart - 1)
+                '    End If
+                '    If selStart < StatusText.Text.Length Then
+                '        eHalf = StatusText.Text.Substring(selStart)
+                '    End If
+                '    StatusText.Text = fHalf + eHalf
+                '    If selStart > 0 Then
+                '        StatusText.SelectionStart = selStart - 1
+                '    End If
+                'End If
+            End If
+            e.Handled = True
+        End If
+    End Sub
+
     Private Sub StatusText_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles StatusText.KeyUp
         'スペースキーで未読ジャンプ
         If Not e.Alt AndAlso Not e.Control AndAlso Not e.Shift Then
@@ -4208,44 +4259,44 @@ RETRY:
                 StatusText.Focus()
             End If
         End If
-        If Not e.Control AndAlso Not e.Alt AndAlso Not e.Shift Then
-            If e.KeyCode = Keys.Oemtilde Then
-                '@マーク
-                AtIdSupl.ShowDialog()
-                If AtIdSupl.inputId <> "" Then
-                    Dim fHalf As String = ""
-                    Dim eHalf As String = ""
-                    Dim selStart As Integer = StatusText.SelectionStart
-                    If selStart > 1 Then
-                        fHalf = StatusText.Text.Substring(0, selStart - 1)
-                    End If
-                    If selStart < StatusText.Text.Length Then
-                        eHalf = StatusText.Text.Substring(selStart)
-                    End If
-                    StatusText.Text = fHalf + AtIdSupl.inputId + eHalf
-                    StatusText.SelectionStart = selStart + AtIdSupl.inputId.Length - 1
-                Else
-                    '入力なし＆Backspaceで戻ったら、入力欄の＠も消す
-                    If AtIdSupl.isBack Then
-                        Dim fHalf As String = ""
-                        Dim eHalf As String = ""
-                        Dim selStart As Integer = StatusText.SelectionStart
-                        If selStart > 1 Then
-                            fHalf = StatusText.Text.Substring(0, selStart - 1)
-                        End If
-                        If selStart < StatusText.Text.Length Then
-                            eHalf = StatusText.Text.Substring(selStart)
-                        End If
-                        StatusText.Text = fHalf + eHalf
-                        If selStart > 0 Then
-                            StatusText.SelectionStart = selStart - 1
-                        End If
-                    End If
-                End If
-                e.Handled = True
-                e.SuppressKeyPress = True
-            End If
-        End If
+        'If Not e.Control AndAlso Not e.Alt AndAlso Not e.Shift Then
+        '    If e.KeyCode = Keys.Oemtilde Then
+        '        '@マーク
+        '        AtIdSupl.ShowDialog()
+        '        If AtIdSupl.inputId <> "" Then
+        '            Dim fHalf As String = ""
+        '            Dim eHalf As String = ""
+        '            Dim selStart As Integer = StatusText.SelectionStart
+        '            If selStart > 1 Then
+        '                fHalf = StatusText.Text.Substring(0, selStart - 1)
+        '            End If
+        '            If selStart < StatusText.Text.Length Then
+        '                eHalf = StatusText.Text.Substring(selStart)
+        '            End If
+        '            StatusText.Text = fHalf + AtIdSupl.inputId + eHalf
+        '            StatusText.SelectionStart = selStart + AtIdSupl.inputId.Length - 1
+        '        Else
+        '            '入力なし＆Backspaceで戻ったら、入力欄の＠も消す
+        '            If AtIdSupl.isBack Then
+        '                Dim fHalf As String = ""
+        '                Dim eHalf As String = ""
+        '                Dim selStart As Integer = StatusText.SelectionStart
+        '                If selStart > 1 Then
+        '                    fHalf = StatusText.Text.Substring(0, selStart - 1)
+        '                End If
+        '                If selStart < StatusText.Text.Length Then
+        '                    eHalf = StatusText.Text.Substring(selStart)
+        '                End If
+        '                StatusText.Text = fHalf + eHalf
+        '                If selStart > 0 Then
+        '                    StatusText.SelectionStart = selStart - 1
+        '                End If
+        '            End If
+        '        End If
+        '        e.Handled = True
+        '        e.SuppressKeyPress = True
+        '    End If
+        'End If
         Me.StatusText_TextChanged(Nothing, Nothing)
     End Sub
 

@@ -620,7 +620,7 @@
     <value>Basic</value>
   </data>
   <data name="Label74.Location" type="System.Drawing.Point, System.Drawing">
-    <value>11, 423</value>
+    <value>11, 442</value>
   </data>
   <data name="Label74.Size" type="System.Drawing.Size, System.Drawing">
     <value>106, 12</value>
@@ -629,7 +629,7 @@
     <value>Get favs in Starting</value>
   </data>
   <data name="chkGetFav.Location" type="System.Drawing.Point, System.Drawing">
-    <value>173, 422</value>
+    <value>173, 441</value>
   </data>
   <data name="chkGetFav.Size" type="System.Drawing.Size, System.Drawing">
     <value>58, 16</value>
@@ -679,9 +679,19 @@
   <data name="Label58.Text" xml:space="preserve">
     <value>Always on Top</value>
   </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Label57.AutoSize" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Label57.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
+  </data>
+  <data name="Label57.Location" type="System.Drawing.Point, System.Drawing">
+    <value>11, 413</value>
+  </data>
+  <data name="Label57.Size" type="System.Drawing.Size, System.Drawing">
+    <value>382, 28</value>
   </data>
   <data name="Label57.Text" xml:space="preserve">
     <value>Refetch tweets and verify whether marked favorites. This option causes traffic incleasement.</value>

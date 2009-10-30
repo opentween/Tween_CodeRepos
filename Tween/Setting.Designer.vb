@@ -371,7 +371,8 @@ Partial Class Setting
         '
         'Label15
         '
-        Me.Label15.ForeColor = System.Drawing.SystemColors.ActiveCaption
+        Me.Label15.BackColor = System.Drawing.SystemColors.ActiveCaption
+        Me.Label15.ForeColor = System.Drawing.SystemColors.ActiveCaptionText
         resources.ApplyResources(Me.Label15, "Label15")
         Me.Label15.Name = "Label15"
         '
@@ -879,8 +880,9 @@ Partial Class Setting
         '
         'Label47
         '
-        Me.Label47.ForeColor = System.Drawing.SystemColors.ActiveCaption
         resources.ApplyResources(Me.Label47, "Label47")
+        Me.Label47.BackColor = System.Drawing.SystemColors.ActiveCaption
+        Me.Label47.ForeColor = System.Drawing.SystemColors.ActiveCaptionText
         Me.Label47.Name = "Label47"
         '
         'TabControl1
@@ -1168,8 +1170,9 @@ Partial Class Setting
         '
         'Label57
         '
-        Me.Label57.ForeColor = System.Drawing.SystemColors.ActiveCaption
         resources.ApplyResources(Me.Label57, "Label57")
+        Me.Label57.BackColor = System.Drawing.SystemColors.ActiveCaption
+        Me.Label57.ForeColor = System.Drawing.SystemColors.ActiveCaptionText
         Me.Label57.Name = "Label57"
         '
         'Label56
@@ -1354,7 +1357,8 @@ Partial Class Setting
         'Label64
         '
         resources.ApplyResources(Me.Label64, "Label64")
-        Me.Label64.ForeColor = System.Drawing.SystemColors.ActiveCaption
+        Me.Label64.BackColor = System.Drawing.SystemColors.ActiveCaption
+        Me.Label64.ForeColor = System.Drawing.SystemColors.ActiveCaptionText
         Me.Label64.Name = "Label64"
         '
         'ConnectionTimeOut
@@ -1388,7 +1392,8 @@ Partial Class Setting
         'Label55
         '
         resources.ApplyResources(Me.Label55, "Label55")
-        Me.Label55.ForeColor = System.Drawing.SystemColors.ActiveCaption
+        Me.Label55.BackColor = System.Drawing.SystemColors.ActiveCaption
+        Me.Label55.ForeColor = System.Drawing.SystemColors.ActiveCaptionText
         Me.Label55.Name = "Label55"
         '
         'TextProxyPassword
@@ -1506,6 +1511,7 @@ Partial Class Setting
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "Setting"
+        Me.ShowInTaskbar = False
         Me.TopMost = True
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()
