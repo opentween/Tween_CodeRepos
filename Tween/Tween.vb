@@ -564,6 +564,7 @@ Public Class TweenMain
         SettingDialog.UseSsl = _cfgCommon.UseSsl
         SettingDialog.BitlyUser = _cfgCommon.BilyUser
         SettingDialog.BitlyPwd = _cfgCommon.BitlyPwd
+        SettingDialog.ShowGrid = _cfgCommon.ShowGrid
         SettingDialog.IsMonospace = _cfgCommon.IsMonospace
         If SettingDialog.IsMonospace Then
             detailHtmlFormat = detailHtmlFormatMono1 + _fntDetail.Name + detailHtmlFormatMono2 + _fntDetail.Size.ToString() + detailHtmlFormatMono3
@@ -2502,6 +2503,17 @@ Public Class TweenMain
                     Throw
                 End Try
 
+                Try
+                    For Each mytab As TabPage In ListTab.TabPages
+                        Dim lst As DetailsListView = DirectCast(mytab.Controls(0), DetailsListView)
+                        lst.GridLines = SettingDialog.ShowGrid
+                    Next
+                Catch ex As Exception
+                    ex.Data("Instance") = "ListTab(ShowGrid)"
+                    ex.Data("IsTerminatePermission") = False
+                    Throw
+                End Try
+
                 PlaySoundMenuItem.Checked = SettingDialog.PlaySound
                 _fntUnread = SettingDialog.FontUnread
                 _clUnread = SettingDialog.ColorUnread
@@ -2694,6 +2706,8 @@ Public Class TweenMain
         _listCustom.OwnerDraw = True
         _listCustom.VirtualMode = True
         _listCustom.Font = _fntReaded
+
+        _listCustom.GridLines = SettingDialog.ShowGrid
 
         AddHandler _listCustom.SelectedIndexChanged, AddressOf MyList_SelectedIndexChanged
         AddHandler _listCustom.MouseDoubleClick, AddressOf MyList_MouseDoubleClick
@@ -3014,7 +3028,10 @@ Public Class TweenMain
         Else
             StatusText.ForeColor = _clInputFont
         End If
-
+        If StatusText.Text = "" Then
+            _reply_to_id = 0
+            _reply_to_name = Nothing
+        End If
     End Sub
 
     Private Function GetRestStatusCount(ByVal isAuto As Boolean, ByVal isAddFooter As Boolean) As Integer
@@ -3089,6 +3106,7 @@ Public Class TweenMain
         Dim mk As String = ""
         If Post.IsMark Then mk += "♪"
         If Post.IsProtect Then mk += "Ю"
+        If Post.InReplyToId > 0 Then mk += "⇒"
         Dim sitem() As String = {"", Post.Nickname, Post.Data, Post.PDate.ToString(SettingDialog.DateTimeFormat), Post.Name, "", mk, Post.Source}
         Dim itm As ListViewItem = New ListViewItem(sitem, Post.ImageIndex)
         Dim read As Boolean = Post.IsRead
@@ -4206,6 +4224,23 @@ RETRY:
                     End If
                     StatusText.Text = fHalf + AtIdSupl.inputId + eHalf
                     StatusText.SelectionStart = selStart + AtIdSupl.inputId.Length - 1
+                Else
+                    '入力なし＆Backspaceで戻ったら、入力欄の＠も消す
+                    If AtIdSupl.isBack Then
+                        Dim fHalf As String = ""
+                        Dim eHalf As String = ""
+                        Dim selStart As Integer = StatusText.SelectionStart
+                        If selStart > 1 Then
+                            fHalf = StatusText.Text.Substring(0, selStart - 1)
+                        End If
+                        If selStart < StatusText.Text.Length Then
+                            eHalf = StatusText.Text.Substring(selStart)
+                        End If
+                        StatusText.Text = fHalf + eHalf
+                        If selStart > 0 Then
+                            StatusText.SelectionStart = selStart - 1
+                        End If
+                    End If
                 End If
                 e.Handled = True
                 e.SuppressKeyPress = True
@@ -4297,6 +4332,7 @@ RETRY:
                 _cfgCommon.UseSsl = SettingDialog.UseSsl
                 _cfgCommon.BilyUser = SettingDialog.BitlyUser
                 _cfgCommon.BitlyPwd = SettingDialog.BitlyPwd
+                _cfgCommon.ShowGrid = SettingDialog.ShowGrid
 
                 _cfgCommon.SortOrder = _statuses.SortOrder
                 Select Case _statuses.SortMode
@@ -4601,14 +4637,27 @@ RETRY:
                     Exit Sub
                 End If
                 If StatusText.Text = "" Then
+                    '空の場合
+
                     ' ステータステキストが入力されていない場合先頭に@ユーザー名を追加する
                     StatusText.Text = "@" + _curPost.Name + " "
                     _reply_to_id = _curPost.Id
                     _reply_to_name = _curPost.Name
                 Else
+                    '何か入力済の場合
+
                     If isAuto Then
-                        If StatusText.Text.Contains("@" + _curPost.Name + " ") Then Exit Sub
+                        '1件選んでEnter or DoubleClick
+                        If StatusText.Text.Contains("@" + _curPost.Name + " ") Then
+                            If _reply_to_id > 0 AndAlso _reply_to_name = _curPost.Name Then
+                                '返信先書き換え
+                                _reply_to_id = _curPost.Id
+                                _reply_to_name = _curPost.Name
+                            End If
+                            Exit Sub
+                        End If
                         If Not StatusText.Text.StartsWith("@") Then
+                            '文頭＠以外
                             If StatusText.Text.StartsWith(". ") Then
                                 ' 複数リプライ
                                 StatusText.Text = StatusText.Text.Insert(2, "@" + _curPost.Name + " ")
@@ -4621,6 +4670,7 @@ RETRY:
                                 _reply_to_name = _curPost.Name
                             End If
                         Else
+                            '文頭＠
                             ' 複数リプライ
                             StatusText.Text = ". @" + _curPost.Name + " " + StatusText.Text
                             'StatusText.Text = "@" + _curPost.Name + " " + StatusText.Text
@@ -4628,20 +4678,29 @@ RETRY:
                             _reply_to_name = Nothing
                         End If
                     Else
+                        '1件選んでCtrl-Rの場合（返信先操作せず）
                         Dim sidx As Integer = StatusText.SelectionStart
-                        If StatusText.Text.StartsWith("@") Then
-                            '複数リプライ
-                            StatusText.Text = ". " + StatusText.Text.Insert(sidx, " @" + _curPost.Name + " ")
-                            sidx += 5 + _curPost.Name.Length
-                        Else
-                            ' 複数リプライ
-                            StatusText.Text = StatusText.Text.Insert(sidx, " @" + _curPost.Name + " ")
-                            sidx += 3 + _curPost.Name.Length
+                        Dim id As String = "@" + _curPost.Name + " "
+                        If sidx > 0 Then
+                            If StatusText.Text.Substring(sidx - 1, 1) <> " " Then
+                                id = " " + id
+                            End If
                         End If
+                        StatusText.Text = StatusText.Text.Insert(sidx, id)
+                        sidx += id.Length
+                        'If StatusText.Text.StartsWith("@") Then
+                        '    '複数リプライ
+                        '    StatusText.Text = ". " + StatusText.Text.Insert(sidx, " @" + _curPost.Name + " ")
+                        '    sidx += 5 + _curPost.Name.Length
+                        'Else
+                        '    ' 複数リプライ
+                        '    StatusText.Text = StatusText.Text.Insert(sidx, " @" + _curPost.Name + " ")
+                        '    sidx += 3 + _curPost.Name.Length
+                        'End If
                         StatusText.SelectionStart = sidx
                         StatusText.Focus()
-                        _reply_to_id = 0
-                        _reply_to_name = Nothing
+                        '_reply_to_id = 0
+                        '_reply_to_name = Nothing
                         Exit Sub
                     End If
                 End If
@@ -4649,10 +4708,16 @@ RETRY:
                 ' 複数リプライ
                 If Not isAuto AndAlso Not isReply Then Exit Sub
 
+                'C-S-rか、複数の宛先を選択中にEnter/DoubleClick/C-r/C-S-r
+
                 If isAuto Then
+                    'Enter or DoubleClick
+
                     Dim sTxt As String = StatusText.Text
                     If Not sTxt.StartsWith(". ") Then
                         sTxt = ". " + sTxt
+                        _reply_to_id = 0
+                        _reply_to_name = Nothing
                     End If
                     For cnt As Integer = 0 To _curList.SelectedIndices.Count - 1
                         Dim post As PostClass = _statuses.Item(_curTab.Text, _curList.SelectedIndices(cnt))
@@ -4663,43 +4728,89 @@ RETRY:
                     Next
                     StatusText.Text = sTxt
                 Else
-                    Dim ids As String = ""
-                    Dim sidx As Integer = StatusText.SelectionStart
-                    For cnt As Integer = 0 To _curList.SelectedIndices.Count - 1
-                        Dim post As PostClass = _statuses.Item(_curTab.Text, _curList.SelectedIndices(cnt))
+                    'C-S-r or C-r
+                    If _curList.SelectedIndices.Count > 1 Then
+                        '複数ポスト選択
+
+                        Dim ids As String = ""
+                        Dim sidx As Integer = StatusText.SelectionStart
+                        For cnt As Integer = 0 To _curList.SelectedIndices.Count - 1
+                            Dim post As PostClass = _statuses.Item(_curTab.Text, _curList.SelectedIndices(cnt))
+                            If Not ids.Contains("@" + post.Name + " ") AndAlso _
+                               Not post.Name.Equals(_username, StringComparison.CurrentCultureIgnoreCase) Then
+                                ids += "@" + post.Name + " "
+                            End If
+                            If isAll Then
+                                For Each nm As String In post.ReplyToList
+                                    If Not ids.Contains("@" + nm + " ") AndAlso _
+                                       Not nm.Equals(_username, StringComparison.CurrentCultureIgnoreCase) Then
+                                        ids += "@" + nm + " "
+                                    End If
+                                Next
+                            End If
+                        Next
+                        If ids.Length = 0 Then Exit Sub
+                        If Not StatusText.Text.StartsWith(". ") Then
+                            StatusText.Text = ". " + StatusText.Text
+                            sidx += 2
+                            _reply_to_id = 0
+                            _reply_to_name = Nothing
+                        End If
+                        If sidx > 0 Then
+                            If StatusText.Text.Substring(sidx - 1, 1) <> " " Then
+                                ids = " " + ids
+                            End If
+                        End If
+                        StatusText.Text = StatusText.Text.Insert(sidx, ids)
+                        sidx += ids.Length
+                        'If StatusText.Text.StartsWith("@") Then
+                        '    StatusText.Text = ". " + StatusText.Text.Insert(sidx, ids)
+                        '    sidx += 2 + ids.Length
+                        'Else
+                        '    StatusText.Text = StatusText.Text.Insert(sidx, ids)
+                        '    sidx += 1 + ids.Length
+                        'End If
+                        StatusText.SelectionStart = sidx
+                        StatusText.Focus()
+                        Exit Sub
+                    Else
+                        '1件のみ選択のC-S-r（返信元付加する可能性あり）
+
+                        Dim ids As String = ""
+                        Dim sidx As Integer = StatusText.SelectionStart
+                        Dim post As PostClass = _curPost
                         If Not ids.Contains("@" + post.Name + " ") AndAlso _
                            Not post.Name.Equals(_username, StringComparison.CurrentCultureIgnoreCase) Then
                             ids += "@" + post.Name + " "
                         End If
-                        If isAll Then
-                            For Each nm As String In post.ReplyToList
-                                If Not ids.Contains("@" + nm + " ") AndAlso _
-                                   Not nm.Equals(_username, StringComparison.CurrentCultureIgnoreCase) Then
-                                    ids += "@" + nm + " "
-                                End If
-                            Next
+                        For Each nm As String In post.ReplyToList
+                            If Not ids.Contains("@" + nm + " ") AndAlso _
+                               Not nm.Equals(_username, StringComparison.CurrentCultureIgnoreCase) Then
+                                ids += "@" + nm + " "
+                            End If
+                        Next
+                        If ids.Length = 0 Then Exit Sub
+                        If StatusText.Text = "" Then
+                            '未入力の場合のみ返信先付加
+                            StatusText.Text = ids
+                            StatusText.SelectionStart = ids.Length
+                            StatusText.Focus()
+                            _reply_to_id = post.Id
+                            _reply_to_name = post.Name
+                            Exit Sub
                         End If
-                    Next
-                    If ids.Length = 0 Then Exit Sub
-                    If Not StatusText.Text.StartsWith(". ") Then
-                        StatusText.Text = ". " + StatusText.Text
-                        sidx += 2
-                    End If
-                    If sidx > 0 Then
-                        If StatusText.Text.Substring(sidx - 1, 1) <> " " Then
-                            ids = " " + ids
+
+                        If sidx > 0 Then
+                            If StatusText.Text.Substring(sidx - 1, 1) <> " " Then
+                                ids = " " + ids
+                            End If
                         End If
-                    End If
-                    If StatusText.Text.StartsWith("@") Then
-                        StatusText.Text = ". " + StatusText.Text.Insert(sidx, ids)
-                        sidx += 2 + ids.Length
-                    Else
                         StatusText.Text = StatusText.Text.Insert(sidx, ids)
-                        sidx += 1 + ids.Length
+                        sidx += ids.Length
+                        StatusText.SelectionStart = sidx
+                        StatusText.Focus()
+                        Exit Sub
                     End If
-                    StatusText.SelectionStart = sidx
-                    StatusText.Focus()
-                    Exit Sub
                 End If
             End If
             StatusText.SelectionStart = StatusText.Text.Length
@@ -5214,7 +5325,7 @@ RETRY:
                 For Each linkElm As HtmlElement In PostBrowser.Document.Links
                     Dim urlStr As String = ""
                     Try
-                        IDNDecode(linkElm.GetAttribute("href"))
+                        urlStr = IDNDecode(linkElm.GetAttribute("href"))
                     Catch ex As ArgumentException
                         '変なHTML？
                         Exit Sub
@@ -5373,9 +5484,16 @@ RETRY:
         ' 2. リプライ先ステータスIDが設定されている(リストをダブルクリックで返信している)
         ' 3. 文中に含まれた@idがリプライ先のポスト者のIDと一致する
 
-        If m IsNot Nothing AndAlso m.Count = 1 AndAlso m.Item(0).Value = "@" + _reply_to_name AndAlso Not StatusText.StartsWith(". ") Then
-            Exit Sub
+        If m IsNot Nothing AndAlso Not StatusText.StartsWith(". ") Then
+            For Each mid As Match In m
+                If mid.ToString = "@" + _reply_to_name Then
+                    Exit Sub
+                End If
+            Next
         End If
+        'If m IsNot Nothing AndAlso m.Count = 1 AndAlso m.Item(0).Value = "@" + _reply_to_name AndAlso Not StatusText.StartsWith(". ") Then
+        '    Exit Sub
+        'End If
 
         _reply_to_id = 0
         _reply_to_name = Nothing

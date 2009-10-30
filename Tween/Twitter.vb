@@ -2712,11 +2712,12 @@ Public Module Twitter
                         Exit Select
                     End If
                     Try
-                        ret = DirectCast(CreateSocket.GetWebResponse( _
-                            "http://api.bit.ly/shorten?version=" + BitlyApiVersion + _
+                        Dim req As String = "http://api.bit.ly/shorten?version=" + BitlyApiVersion + _
                             "&login=" + BitlyLogin + _
                             "&apiKey=" + BitlyApiKey + _
-                            "&longUrl=" + SrcUrl, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
+                            "&longUrl=" + SrcUrl
+                        If BitlyLogin <> "tweenapi" Then req += "&history=1"
+                        ret = DirectCast(CreateSocket.GetWebResponse(req, resStatus, MySocket.REQ_TYPE.ReqPOSTEncode), String)
                         Dim rx As Regex = New Regex("""shortUrl"": ""(?<ShortUrl>.*?)""")
                         If rx.Match(ret).Success Then
                             ret = rx.Match(ret).Groups("ShortUrl").Value

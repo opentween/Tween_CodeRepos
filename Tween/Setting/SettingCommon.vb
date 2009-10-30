@@ -135,5 +135,5 @@ Public Class SettingCommon
     Public GetFav As Boolean = True
     Public BilyUser As String = ""
     Public BitlyPwd As String = ""
-
+    Public ShowGrid As Boolean = False
 End Class

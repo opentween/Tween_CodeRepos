@@ -105,6 +105,7 @@ Public Class Setting
     Private _MyUseSsl As Boolean
     Private _MyBitlyId As String
     Private _MyBitlyPw As String
+    Private _MyShowGrid As Boolean
 
     Private Sub Save_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Save.Click
         Try
@@ -239,7 +240,8 @@ Public Class Setting
             _MyReadOldPosts = CheckReadOldPosts.Checked
             _MyUseSsl = CheckUseSsl.Checked
             _MyBitlyId = TextBitlyId.Text
-            _mybitlipw = TextBitlyPw.Text
+            _MyBitlyPw = TextBitlyPw.Text
+            _MyShowGrid = CheckShowGrid.Checked
             Select Case ReplyIconStateCombo.SelectedIndex
                 Case 0
                     _MyReplyIconState = REPLY_ICONSTATE.None
@@ -426,6 +428,7 @@ Public Class Setting
         CheckUseSsl.Checked = _MyUseSsl
         TextBitlyId.Text = _MyBitlyId
         TextBitlyPw.Text = _MyBitlyPw
+        CheckShowGrid.Checked = _MyShowGrid
         Select Case _MyReplyIconState
             Case REPLY_ICONSTATE.None
                 ReplyIconStateCombo.SelectedIndex = 0
@@ -1462,6 +1465,15 @@ Public Class Setting
         End Get
         Set(ByVal value As String)
             _MyBitlyPw = value
+        End Set
+    End Property
+
+    Public Property ShowGrid() As Boolean
+        Get
+            Return _MyShowGrid
+        End Get
+        Set(ByVal value As Boolean)
+            _MyShowGrid = value
         End Set
     End Property
 
