@@ -6555,4 +6555,10 @@ RETRY:
         modifySettingCommon = True
     End Sub
 
+    Private Sub UserPicture_Paint(ByVal sender As System.Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles UserPicture.Paint
+        If e.Graphics.InterpolationMode <> Drawing2D.InterpolationMode.HighQualityBicubic Then
+            e.Graphics.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
+            UserPicture.GetType().GetMethod("OnPaint", BindingFlags.NonPublic Or BindingFlags.Instance).Invoke(UserPicture, New Object() {e})
+        End If
+    End Sub
 End Class
