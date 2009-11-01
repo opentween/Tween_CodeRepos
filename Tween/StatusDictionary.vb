@@ -1657,65 +1657,81 @@ Public NotInheritable Class FiltersClass
         If bHit Then
             '除外判定
             Dim exFlag As Boolean = False
-            If _name = "" AndAlso _body.Count = 0 Then
-                exFlag = True
-                bHit = False
-            End If
-            If _excaseSensitive Then
-                compOpt = StringComparison.Ordinal
-                rgOpt = RegexOptions.None
-            Else
-                compOpt = StringComparison.OrdinalIgnoreCase
-                rgOpt = RegexOptions.IgnoreCase
-            End If
-            If _exsearchBoth Then
-                If _exname = "" OrElse Name.Equals(_exname, compOpt) OrElse _
-                                (_exuseRegex AndAlso Regex.IsMatch(Name, _exname, rgOpt)) Then
+            'If _name = "" AndAlso _body.Count = 0 Then
+            '    exFlag = True
+            '    'bHit = False
+            'End If
+            If _exname <> "" OrElse _exbody.Count > 0 Then
+                If _excaseSensitive Then
+                    compOpt = StringComparison.Ordinal
+                    rgOpt = RegexOptions.None
+                Else
+                    compOpt = StringComparison.OrdinalIgnoreCase
+                    rgOpt = RegexOptions.IgnoreCase
+                End If
+                If _exsearchBoth Then
+                    If _exname = "" OrElse Name.Equals(_exname, compOpt) OrElse _
+                                    (_exuseRegex AndAlso Regex.IsMatch(Name, _exname, rgOpt)) Then
+                        If _exbody.Count > 0 Then
+                            For Each fs As String In _exbody
+                                If _exuseRegex Then
+                                    If Regex.IsMatch(tBody, fs, rgOpt) Then exFlag = True
+                                Else
+                                    If _excaseSensitive Then
+                                        If tBody.Contains(fs) Then exFlag = True
+                                    Else
+                                        If tBody.ToLower().Contains(fs.ToLower()) Then exFlag = True
+                                    End If
+                                End If
+                                If exFlag Then Exit For
+                            Next
+                        Else
+                            exFlag = True
+                        End If
+                    End If
+                Else
                     For Each fs As String In _exbody
                         If _exuseRegex Then
-                            If Regex.IsMatch(tBody, fs, rgOpt) Then bHit = False
+                            If Regex.IsMatch(Name, fs, rgOpt) OrElse _
+                               Regex.IsMatch(tBody, fs, rgOpt) Then exFlag = True
                         Else
                             If _excaseSensitive Then
-                                If tBody.Contains(fs) Then bHit = False
+                                If Name.Contains(fs) OrElse _
+                                   tBody.Contains(fs) Then exFlag = True
                             Else
-                                If tBody.ToLower().Contains(fs.ToLower()) Then bHit = False
+                                If Name.ToLower().Contains(fs.ToLower()) OrElse _
+                                   tBody.ToLower().Contains(fs.ToLower()) Then exFlag = True
                             End If
                         End If
-                        If Not bHit Then Exit For
+                        If exFlag Then Exit For
                     Next
                 End If
-            Else
-                For Each fs As String In _exbody
-                    If _exuseRegex Then
-                        If Regex.IsMatch(Name, fs, rgOpt) OrElse _
-                           Regex.IsMatch(tBody, fs, rgOpt) Then bHit = False
-                    Else
-                        If _excaseSensitive Then
-                            If Name.Contains(fs) OrElse _
-                               tBody.Contains(fs) Then bHit = False
-                        Else
-                            If Name.ToLower().Contains(fs.ToLower()) OrElse _
-                               tBody.ToLower().Contains(fs.ToLower()) Then bHit = False
-                        End If
-                    End If
-                    If Not bHit Then Exit For
-                Next
             End If
 
+            If _name = "" AndAlso _body.Count = 0 Then
+                bHit = False
+            End If
             If bHit Then
-                'If _setMark Then Return HITRESULT.CopyAndMark
-                If _moveFrom Then
-                    Return HITRESULT.Move
-                Else
-                    If _setMark Then
-                        Return HITRESULT.CopyAndMark
+                If Not exFlag Then
+                    'If _setMark Then Return HITRESULT.CopyAndMark
+                    If _moveFrom Then
+                        Return HITRESULT.Move
+                    Else
+                        If _setMark Then
+                            Return HITRESULT.CopyAndMark
+                        End If
+                        Return HITRESULT.Copy
                     End If
-                    Return HITRESULT.Copy
+                    'Return HITRESULT.Copy
+                Else
+                    Return HITRESULT.Exclude
                 End If
-                'Return HITRESULT.Copy
             Else
-                If exFlag Then Return HITRESULT.Exclude
-                Return HITRESULT.None
+                If exFlag Then
+                    Return HITRESULT.Exclude
+                Else
+                    Return HITRESULT.None
+                End If
             End If
         Else
             Return HITRESULT.None

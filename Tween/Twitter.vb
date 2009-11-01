@@ -325,10 +325,16 @@ Public Module Twitter
 
             ' tr 要素の class 属性を消去
             Do
-                Dim idx As Integer = retMsg.IndexOf(_removeClass, StringComparison.Ordinal)
-                If idx = -1 Then Exit Do
-                Dim idx2 As Integer = retMsg.IndexOf("""", idx + _removeClass.Length, StringComparison.Ordinal) - idx + 1 - 3
-                If idx2 > 0 Then retMsg = retMsg.Remove(idx + 3, idx2)
+                Try
+                    Dim idx As Integer = retMsg.IndexOf(_removeClass, StringComparison.Ordinal)
+                    If idx = -1 Then Exit Do
+                    Dim idx2 As Integer = retMsg.IndexOf("""", idx + _removeClass.Length, StringComparison.Ordinal) - idx + 1 - 3
+                    If idx2 > 0 Then retMsg = retMsg.Remove(idx + 3, idx2)
+                Catch ex As Exception
+                    _signed = False
+                    TraceOut("TM-Remove: " + retMsg)
+                    Return "GetTimeline -> Err: Can't parse data."
+                End Try
             Loop
 
             If _endingFlag Then Return ""
@@ -792,10 +798,16 @@ Public Module Twitter
 
             ' tr 要素の class 属性を消去
             Do
-                Dim idx As Integer = retMsg.IndexOf(_removeClass, StringComparison.Ordinal)
-                If idx = -1 Then Exit Do
-                Dim idx2 As Integer = retMsg.IndexOf("""", idx + _removeClass.Length, StringComparison.Ordinal) - idx + 1 - 3
-                If idx2 > 0 Then retMsg = retMsg.Remove(idx + 3, idx2)
+                Try
+                    Dim idx As Integer = retMsg.IndexOf(_removeClass, StringComparison.Ordinal)
+                    If idx = -1 Then Exit Do
+                    Dim idx2 As Integer = retMsg.IndexOf("""", idx + _removeClass.Length, StringComparison.Ordinal) - idx + 1 - 3
+                    If idx2 > 0 Then retMsg = retMsg.Remove(idx + 3, idx2)
+                Catch ex As Exception
+                    _signed = False
+                    TraceOut("DM-Remove: " + retMsg)
+                    Return "GetDm -> Err: Can't parse data."
+                End Try
             Loop
 
             If _endingFlag Then Return ""
@@ -1040,10 +1052,16 @@ Public Module Twitter
 
             ' tr 要素の class 属性を消去
             Do
-                Dim idx As Integer = retMsg.IndexOf(_removeClass, StringComparison.Ordinal)
-                If idx = -1 Then Exit Do
-                Dim idx2 As Integer = retMsg.IndexOf("""", idx + _removeClass.Length, StringComparison.Ordinal) - idx + 1 - 3
-                If idx2 > 0 Then retMsg = retMsg.Remove(idx + 3, idx2)
+                Try
+                    Dim idx As Integer = retMsg.IndexOf(_removeClass, StringComparison.Ordinal)
+                    If idx = -1 Then Exit Do
+                    Dim idx2 As Integer = retMsg.IndexOf("""", idx + _removeClass.Length, StringComparison.Ordinal) - idx + 1 - 3
+                    If idx2 > 0 Then retMsg = retMsg.Remove(idx + 3, idx2)
+                Catch ex As Exception
+                    _signed = False
+                    TraceOut("GetFav-Remove: " + retMsg)
+                    Return "GetFav -> Err: Can't parse data."
+                End Try
             Loop
 
             If _endingFlag Then Return ""
@@ -1440,7 +1458,7 @@ Public Module Twitter
         'Dim posl1 As Integer
         'Dim posl2 As Integer = 0
         Static urlCache As New Specialized.StringDictionary()
-        If urlCache.Count > 200 Then urlCache.Clear() '定期的にリセット
+        If urlCache.Count > 500 Then urlCache.Clear() '定期的にリセット
 
         Dim rx As New Regex("<a href=""(?<svc>http://.+?/)(?<path>[^""]+)""", RegexOptions.IgnoreCase)
         Dim m As MatchCollection = rx.Matches(orgData)
