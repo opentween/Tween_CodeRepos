@@ -3022,6 +3022,7 @@ Public Class TweenMain
         If e.KeyChar = "@" Then
             '@マーク
             AtIdSupl.ShowDialog()
+            Me.TopMost = SettingDialog.AlwaysTop
             If AtIdSupl.inputId <> "" Then
                 Dim fHalf As String = ""
                 Dim eHalf As String = ""
