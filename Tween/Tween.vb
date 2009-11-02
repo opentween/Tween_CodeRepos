@@ -5250,16 +5250,16 @@ RETRY:
                 mv = True
             End If
         End With
-        'Dim mk As Boolean = False
-        'If Not mv Then
-        '    'マークするか？
-        '    Dim _tmp As String = String.Format(My.Resources.IDRuleMenuItem_ClickText6, vbCrLf)
-        '    If MessageBox.Show(_tmp, My.Resources.IDRuleMenuItem_ClickText7, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
-        '        mk = True
-        '    Else
-        '        mk = False
-        '    End If
-        'End If
+        Dim mk As Boolean = False
+        If Not mv Then
+            'マークするか？
+            Dim _tmp As String = String.Format(My.Resources.IDRuleMenuItem_ClickText6, vbCrLf)
+            If MessageBox.Show(_tmp, My.Resources.IDRuleMenuItem_ClickText7, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
+                mk = True
+            Else
+                mk = False
+            End If
+        End If
         Dim ids As New List(Of String)
         For Each idx As Integer In _curList.SelectedIndices
             Dim post As PostClass = _statuses.Item(_curTab.Text, idx)
@@ -5269,7 +5269,7 @@ RETRY:
                 fc.NameFilter = post.Name
                 fc.SearchBoth = True
                 fc.MoveFrom = mv
-                fc.SetMark = Not mv
+                fc.SetMark = mk
                 fc.UseRegex = False
                 fc.SearchUrl = False
                 _statuses.Tabs(tabName).AddFilter(fc)
