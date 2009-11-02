@@ -73,6 +73,7 @@ Partial Class AtIdSupplement
         Me.Name = "AtIdSupplement"
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
+        Me.TopMost = True
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
