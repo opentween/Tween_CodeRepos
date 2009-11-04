@@ -388,16 +388,6 @@ retry:
         values(idx_to) = moved_value
     End Sub
 
-    ' デフォルトタブの判定処理
-    Public Function IsDefaultTab(ByVal tabName As String) As Boolean
-        If tabName = DEFAULTTAB.RECENT OrElse tabName = DEFAULTTAB.REPLY _
-                OrElse tabName = DEFAULTTAB.DM OrElse tabName = DEFAULTTAB.FAV Then
-            Return True
-        Else
-            Return False
-        End If
-    End Function
-
     Public Function EncryptString(ByVal str As String) As String
         If String.IsNullOrEmpty(str) Then Return ""
 
@@ -527,13 +517,14 @@ retry:
     End Function
 
     Public Enum TabUsageType
+        Undefined
         Home
         Mentions
         DirectMessage
         Favorites
         UserDefined
         LocalQuery
-        Archive
+        Profile
         PublicSearch
     End Enum
 End Module

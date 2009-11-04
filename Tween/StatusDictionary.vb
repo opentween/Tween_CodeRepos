@@ -58,6 +58,7 @@ Public NotInheritable Class PostClass
         Protect = 1
         Mark = 2
         Read = 4
+        Reply = 8
     End Enum
 
     Public Sub New(ByVal Nickname As String, _
@@ -340,8 +341,8 @@ Public NotInheritable Class TabInformations
         Return _instance    'singleton
     End Function
 
-    Public Sub AddTab(ByVal TabName As String)
-        _tabs.Add(TabName, New TabClass(TabName))
+    Public Sub AddTab(ByVal TabName As String, ByVal TabType As TabUsageType)
+        _tabs.Add(TabName, New TabClass(TabName, TabType))
     End Sub
 
     Public Sub AddTab(ByVal TabName As String, ByVal Tab As TabClass)
@@ -351,19 +352,21 @@ Public NotInheritable Class TabInformations
     Public Sub RemoveTab(ByVal TabName As String)
         SyncLock LockObj
             If IsDefaultTab(TabName) Then Exit Sub '念のため
+            Dim homeTab As TabClass = GetTabByType(TabUsageType.Home)
+            Dim dmName As String = GetTabByType(TabUsageType.DirectMessage).TabName
 
             For idx As Integer = 0 To _tabs(TabName).AllCount - 1
                 Dim exist As Boolean = False
                 Dim Id As Long = _tabs(TabName).GetId(idx)
                 For Each key As String In _tabs.Keys
-                    If Not key = TabName AndAlso Not key = DEFAULTTAB.DM Then
+                    If Not key = TabName AndAlso key <> dmName Then
                         If _tabs(key).Contains(Id) Then
                             exist = True
                             Exit For
                         End If
                     End If
                 Next
-                If Not exist Then _tabs(DEFAULTTAB.RECENT).Add(Id, _statuses(Id).IsRead, False)
+                If Not exist Then homeTab.Add(Id, _statuses(Id).IsRead, False)
             Next
 
             _tabs.Remove(TabName)
@@ -621,6 +624,10 @@ Public NotInheritable Class TabInformations
         '各タブのフィルターと照合。合致したらタブにID追加
         '通知メッセージ用に、表示必要な発言リストと再生サウンドを返す
         'notifyPosts = New List(Of PostClass)
+        Dim homeTab As TabClass = GetTabByType(TabUsageType.Home)
+        Dim replyTab As TabClass = GetTabByType(TabUsageType.Mentions)
+        Dim dmTab As TabClass = GetTabByType(TabUsageType.DirectMessage)
+        Dim favTab As TabClass = GetTabByType(TabUsageType.Favorites)
         For Each id As Long In _addedIds
             Dim post As PostClass = _statuses(id)
             If Not post.IsDm Then
@@ -644,31 +651,31 @@ Public NotInheritable Class TabInformations
                     End If
                 Next
                 If Not mv Then  '移動されなかったらRecentに追加
-                    _tabs(DEFAULTTAB.RECENT).Add(post.Id, post.IsRead, True)
-                    If Not _tabs(DEFAULTTAB.RECENT).SoundFile = "" AndAlso _soundFile = "" Then _soundFile = _tabs(DEFAULTTAB.RECENT).SoundFile
-                    If _tabs(DEFAULTTAB.RECENT).Notify Then add = True
+                    homeTab.Add(post.Id, post.IsRead, True)
+                    If Not homeTab.SoundFile = "" AndAlso _soundFile = "" Then _soundFile = homeTab.SoundFile
+                    If homeTab.Notify Then add = True
                 End If
                 If post.IsReply Then    'ReplyだったらReplyタブに追加
-                    _tabs(DEFAULTTAB.REPLY).Add(post.Id, post.IsRead, True)
-                    If Not _tabs(DEFAULTTAB.REPLY).SoundFile = "" Then _soundFile = _tabs(DEFAULTTAB.REPLY).SoundFile
-                    If _tabs(DEFAULTTAB.REPLY).Notify Then add = True
+                    replyTab.Add(post.Id, post.IsRead, True)
+                    If Not replyTab.SoundFile = "" Then _soundFile = replyTab.SoundFile
+                    If replyTab.Notify Then add = True
                 End If
                 If post.IsFav Then    'Fav済み発言だったらFavoritesタブに追加
-                    If _tabs(DEFAULTTAB.FAV).Contains(post.Id) Then
+                    If favTab.Contains(post.Id) Then
                         '取得済みなら非通知
                         _soundFile = ""
                         add = False
                     Else
-                        _tabs(DEFAULTTAB.FAV).Add(post.Id, post.IsRead, True)
-                        If Not _tabs(DEFAULTTAB.FAV).SoundFile = "" Then _soundFile = _tabs(DEFAULTTAB.FAV).SoundFile
-                        If _tabs(DEFAULTTAB.FAV).Notify Then add = True
+                        favTab.Add(post.Id, post.IsRead, True)
+                        If Not favTab.SoundFile = "" Then _soundFile = favTab.SoundFile
+                        If favTab.Notify Then add = True
                     End If
                 End If
                 If add Then _notifyPosts.Add(post)
             Else
-                _tabs(DEFAULTTAB.DM).Add(post.Id, post.IsRead, True)
-                If _tabs(DEFAULTTAB.DM).Notify Then _notifyPosts.Add(post)
-                _soundFile = _tabs(DEFAULTTAB.DM).SoundFile
+                dmTab.Add(post.Id, post.IsRead, True)
+                If dmTab.Notify Then _notifyPosts.Add(post)
+                _soundFile = dmTab.SoundFile
             End If
         Next
     End Sub
@@ -728,7 +735,7 @@ Public NotInheritable Class TabInformations
     End Sub
 
     Public Sub SetRead()
-        Dim tb As TabClass = _tabs(DEFAULTTAB.RECENT)
+        Dim tb As TabClass = GetTabByType(TabUsageType.Home)
         If tb.UnreadManage = False Then Exit Sub
 
         For i As Integer = 0 To tb.AllCount - 1
@@ -828,7 +835,8 @@ Public NotInheritable Class TabInformations
 
     Public Sub FilterAll()
         SyncLock LockObj
-            Dim tbr As TabClass = _tabs(DEFAULTTAB.RECENT)
+            Dim tbr As TabClass = GetTabByType(TabUsageType.Home)
+            Dim replyTab As TabClass = GetTabByType(TabUsageType.Mentions)
             For Each key As String In _tabs.Keys
                 Dim tb As TabClass = _tabs(key)
                 If tb.FilterModified Then
@@ -853,8 +861,8 @@ Public NotInheritable Class TabInformations
                                 post.IsMark = False
                                 post.FilterHit = True
                             Case HITRESULT.None
-                                If key = DEFAULTTAB.REPLY And post.IsReply Then _tabs(DEFAULTTAB.REPLY).Add(post.Id, post.IsRead, True)
-                                If post.IsFav Then _tabs(DEFAULTTAB.FAV).Add(post.Id, post.IsRead, True)
+                                If key = replyTab.TabName AndAlso post.IsReply Then replyTab.Add(post.Id, post.IsRead, True)
+                                If post.IsFav Then GetTabByType(TabUsageType.Favorites).Add(post.Id, post.IsRead, True)
                                 post.FilterHit = False
                         End Select
                     Next
@@ -950,6 +958,30 @@ Public NotInheritable Class TabInformations
             Next
         End SyncLock
     End Sub
+
+    Public Function GetTabByType(ByVal tabType As TabUsageType) As TabClass
+        'Home,Mentions,DM,Favは1つに制限する
+        'その他のタイプを指定されたら、最初に合致したものを返す
+        '合致しなければNothingを返す
+        For Each tb As TabClass In _tabs.Values
+            If tb.TabType = tabType Then Return tb
+        Next
+        Return Nothing
+    End Function
+
+    ' デフォルトタブの判定処理
+    Public Function IsDefaultTab(ByVal tabName As String) As Boolean
+        If tabName IsNot Nothing AndAlso _
+           _tabs.ContainsKey(tabName) AndAlso _
+           _tabs(tabName).TabType = TabUsageType.Home OrElse _
+           _tabs(tabName).TabType = TabUsageType.Mentions OrElse _
+           _tabs(tabName).TabType = TabUsageType.DirectMessage OrElse _
+           _tabs(tabName).TabType = TabUsageType.Favorites Then
+            Return True
+        Else
+            Return False
+        End If
+    End Function
 End Class
 
 <Serializable()> _
@@ -964,7 +996,7 @@ Public NotInheritable Class TabClass
     Private _filterMod As Boolean = False
     Private _tmpIds As List(Of TempolaryId)
     Private _tabName As String = ""
-    Private _tabType As TabUsageType = TabUsageType.UserDefined
+    Private _tabType As TabUsageType = TabUsageType.Undefined
     'Private rwLock As New System.Threading.ReaderWriterLock()   'フィルタ用
 
     Private Structure TempolaryId
@@ -984,10 +1016,10 @@ Public NotInheritable Class TabClass
         _unreadManage = True
         _ids = New List(Of Long)
         _oldestUnreadItem = -1
-        _tabType = TabUsageType.UserDefined
+        _tabType = TabUsageType.Undefined
     End Sub
 
-    Public Sub New(ByVal TabName As String)
+    Public Sub New(ByVal TabName As String, ByVal TabType As TabUsageType)
         Me.TabName = TabName
         _filters = New List(Of FiltersClass)
         _notify = True
@@ -995,6 +1027,7 @@ Public NotInheritable Class TabClass
         _unreadManage = True
         _ids = New List(Of Long)
         _oldestUnreadItem = -1
+        _tabType = TabType
     End Sub
 
     Public Sub Sort(ByVal Sorter As IdComparerClass)
@@ -1241,20 +1274,15 @@ Public NotInheritable Class TabClass
         End Get
         Set(ByVal value As String)
             _tabName = value
+        End Set
+    End Property
 
-            ''' TODO: 0.7.2.0リリース前に削除すること
-            Select Case value
-                Case DEFAULTTAB.RECENT
-                    _tabType = TabUsageType.Home
-                Case DEFAULTTAB.REPLY
-                    _tabType = TabUsageType.Mentions
-                Case DEFAULTTAB.DM
-                    _tabType = TabUsageType.DirectMessage
-                Case DEFAULTTAB.FAV
-                    _tabType = TabUsageType.Favorites
-                Case Else
-                    _tabType = TabUsageType.UserDefined
-            End Select
+    Public Property TabType() As TabUsageType
+        Get
+            Return _tabType
+        End Get
+        Set(ByVal value As TabUsageType)
+            _tabType = value
         End Set
     End Property
 End Class

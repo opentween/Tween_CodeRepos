@@ -406,8 +406,6 @@ Public Class TweenMain
         ContextMenuStrip2.OwnerItem = Nothing
         ContextMenuTabProperty.OwnerItem = Nothing
 
-        AtIdSupl = New AtIdSupplement(SettingAtIdList.Load().AtIdList)
-
         SettingDialog.Owner = Me
         SearchDialog.Owner = Me
         fDialog.Owner = Me
@@ -565,6 +563,11 @@ Public Class TweenMain
         SettingDialog.BitlyUser = _cfgCommon.BilyUser
         SettingDialog.BitlyPwd = _cfgCommon.BitlyPwd
         SettingDialog.ShowGrid = _cfgCommon.ShowGrid
+        SettingDialog.UseAtIdSupplement = _cfgCommon.UseAtIdSupplement
+        If SettingDialog.UseAtIdSupplement Then
+            AtIdSupl = New AtIdSupplement(SettingAtIdList.Load().AtIdList)
+        End If
+
         SettingDialog.IsMonospace = _cfgCommon.IsMonospace
         If SettingDialog.IsMonospace Then
             detailHtmlFormat = detailHtmlFormatMono1 + _fntDetail.Name + detailHtmlFormatMono2 + _fntDetail.Size.ToString() + detailHtmlFormatMono3
@@ -816,11 +819,38 @@ Public Class TweenMain
 
         '<<<<<<<<タブ関連>>>>>>>
         'デフォルトタブの存在チェック、ない場合には追加
-        If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.RECENT) Then _statuses.Tabs.Add(DEFAULTTAB.RECENT, New TabClass(DEFAULTTAB.RECENT))
-        If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.REPLY) Then _statuses.Tabs.Add(DEFAULTTAB.REPLY, New TabClass(DEFAULTTAB.REPLY))
-        If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.DM) Then _statuses.Tabs.Add(DEFAULTTAB.DM, New TabClass(DEFAULTTAB.DM))
-        If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.FAV) Then _statuses.Tabs.Add(DEFAULTTAB.FAV, New TabClass(DEFAULTTAB.FAV))
+        If _statuses.GetTabByType(TabUsageType.Home) Is Nothing Then
+            If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.RECENT) Then
+                _statuses.AddTab(DEFAULTTAB.RECENT, TabUsageType.Home)
+            Else
+                _statuses.Tabs(DEFAULTTAB.RECENT).TabType = TabUsageType.Home
+            End If
+        End If
+        If _statuses.GetTabByType(TabUsageType.Mentions) Is Nothing Then
+            If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.REPLY) Then
+                _statuses.AddTab(DEFAULTTAB.REPLY, TabUsageType.Mentions)
+            Else
+                _statuses.Tabs(DEFAULTTAB.REPLY).TabType = TabUsageType.Mentions
+            End If
+        End If
+        If _statuses.GetTabByType(TabUsageType.DirectMessage) Is Nothing Then
+            If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.DM) Then
+                _statuses.AddTab(DEFAULTTAB.DM, TabUsageType.DirectMessage)
+            Else
+                _statuses.Tabs(DEFAULTTAB.DM).TabType = TabUsageType.DirectMessage
+            End If
+        End If
+        If _statuses.GetTabByType(TabUsageType.Favorites) Is Nothing Then
+            If Not _statuses.Tabs.ContainsKey(DEFAULTTAB.FAV) Then
+                _statuses.AddTab(DEFAULTTAB.FAV, TabUsageType.Favorites)
+            Else
+                _statuses.Tabs(DEFAULTTAB.FAV).TabType = TabUsageType.Favorites
+            End If
+        End If
         For Each tn As String In _statuses.Tabs.Keys
+            If _statuses.Tabs(tn).TabType = TabUsageType.Undefined Then
+                _statuses.Tabs(tn).TabType = TabUsageType.UserDefined
+            End If
             If Not AddNewTab(tn, True) Then Throw New Exception("タブ作成エラー")
         Next
 
@@ -900,10 +930,10 @@ Public Class TweenMain
                 End If
             Next
         Else
-            _statuses.Tabs.Add(DEFAULTTAB.RECENT, New TabClass(DEFAULTTAB.RECENT))
-            _statuses.Tabs.Add(DEFAULTTAB.REPLY, New TabClass(DEFAULTTAB.REPLY))
-            _statuses.Tabs.Add(DEFAULTTAB.DM, New TabClass(DEFAULTTAB.DM))
-            _statuses.Tabs.Add(DEFAULTTAB.FAV, New TabClass(DEFAULTTAB.FAV))
+            _statuses.AddTab(DEFAULTTAB.RECENT, TabUsageType.Home)
+            _statuses.AddTab(DEFAULTTAB.REPLY, TabUsageType.Mentions)
+            _statuses.AddTab(DEFAULTTAB.DM, TabUsageType.DirectMessage)
+            _statuses.AddTab(DEFAULTTAB.FAV, TabUsageType.Favorites)
         End If
         If needToSave Then
             _cfgCommon.TabList.Clear()
@@ -1636,7 +1666,7 @@ Public Class TweenMain
                             args.sIds.Add(post.Id)
                             post.IsFav = True    'リスト再描画必要
                             _favTimestamps.Add(Now)
-                            _statuses.Tabs.Item(DEFAULTTAB.FAV).Add(post.Id, post.IsRead, False)
+                            _statuses.GetTabByType(TabUsageType.Favorites).Add(post.Id, post.IsRead, False)
                         End If
                     End If
                 Next
@@ -1906,18 +1936,19 @@ Public Class TweenMain
 
         If rslt.type = WORKERTYPE.FavRemove Then
             DispSelectedPost()          ' 詳細画面書き直し
+            Dim favTabName As String = _statuses.GetTabByType(TabUsageType.Favorites).TabName
             For Each i As Long In rslt.sIds
-                _statuses.RemovePost(DEFAULTTAB.FAV, i)
+                _statuses.RemovePost(favTabName, i)
             Next
-            If _curTab.Text.Equals(DEFAULTTAB.FAV) Then
+            If _curTab.Text.Equals(favTabName) Then
                 _itemCache = Nothing    'キャッシュ破棄
                 _postCache = Nothing
                 _curPost = Nothing
                 _curItemIndex = -1
             End If
             For Each tp As TabPage In ListTab.TabPages
-                If tp.Text = DEFAULTTAB.FAV Then
-                    DirectCast(tp.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(DEFAULTTAB.FAV).AllCount
+                If tp.Text = favTabName Then
+                    DirectCast(tp.Controls(0), DetailsListView).VirtualListSize = _statuses.Tabs(favTabName).AllCount
                     Exit For
                 End If
             Next
@@ -1969,7 +2000,7 @@ Public Class TweenMain
                 _waitDm = False
             Case WORKERTYPE.FavAdd, WORKERTYPE.BlackFavAdd, WORKERTYPE.FavRemove
                 _curList.BeginUpdate()
-                If rslt.type = WORKERTYPE.FavRemove AndAlso _curTab.Text.Equals(DEFAULTTAB.FAV) Then
+                If rslt.type = WORKERTYPE.FavRemove AndAlso _statuses.Tabs(_curTab.Text).TabType = TabUsageType.Favorites Then
                     '色変えは不要
                 Else
                     For i As Integer = 0 To rslt.sIds.Count - 1
@@ -2084,7 +2115,7 @@ Public Class TweenMain
     End Sub
 
     Private Sub FavAddToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FavAddToolStripMenuItem.Click
-        If _curTab.Text = DEFAULTTAB.DM OrElse _curList.SelectedIndices.Count = 0 Then Exit Sub
+        If _statuses.Tabs(_curTab.Text).TabType = TabUsageType.DirectMessage OrElse _curList.SelectedIndices.Count = 0 Then Exit Sub
 
         '複数fav確認msg
         If _curList.SelectedIndices.Count > 1 Then
@@ -2112,7 +2143,7 @@ Public Class TweenMain
     End Sub
 
     Private Sub FavRemoveToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FavRemoveToolStripMenuItem.Click
-        If _curTab.Text = DEFAULTTAB.DM OrElse _curList.SelectedIndices.Count = 0 Then Exit Sub
+        If _statuses.Tabs(_curTab.Text).TabType = TabUsageType.DirectMessage OrElse _curList.SelectedIndices.Count = 0 Then Exit Sub
 
         If _curList.SelectedIndices.Count > 1 Then
             If MessageBox.Show(My.Resources.FavRemoveToolStripMenuItem_ClickText1, My.Resources.FavRemoveToolStripMenuItem_ClickText2, _
@@ -2226,7 +2257,7 @@ Public Class TweenMain
     End Sub
 
     Private Sub ContextMenuStrip2_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles ContextMenuStrip2.Opening
-        If ListTab.SelectedTab.Text = DEFAULTTAB.DM Then
+        If _statuses.Tabs(ListTab.SelectedTab.Text).TabType = TabUsageType.DirectMessage Then
             FavAddToolStripMenuItem.Enabled = False
             FavRemoveToolStripMenuItem.Enabled = False
             StatusOpenMenuItem.Enabled = False
@@ -2259,7 +2290,8 @@ Public Class TweenMain
     End Sub
 
     Private Sub DeleteStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DeleteStripMenuItem.Click
-        If _curTab.Text <> DEFAULTTAB.DM Then
+        If _curTab Is Nothing OrElse _curList Is Nothing Then Exit Sub
+        If _statuses.Tabs(_curTab.Text).TabType <> TabUsageType.DirectMessage Then
             Dim myPost As Boolean = False
             For Each idx As Integer In _curList.SelectedIndices
                 If GetCurTabPost(idx).IsMe Then
@@ -2291,7 +2323,7 @@ Public Class TweenMain
             Dim rslt As Boolean = True
             For Each Id As Long In _statuses.GetId(_curTab.Text, _curList.SelectedIndices)
                 Dim rtn As String = ""
-                If _curTab.Text = DEFAULTTAB.DM Then
+                If _statuses.Tabs(_curTab.Text).TabType = TabUsageType.DirectMessage Then
                     rtn = Twitter.RemoveDirectMessage(Id)
                 Else
                     If _statuses.Item(Id).IsMe Then
@@ -2396,13 +2428,17 @@ Public Class TweenMain
 
     Private Sub DoRefresh()
         If _curTab IsNot Nothing Then
-            Select Case _curTab.Text
-                Case DEFAULTTAB.REPLY
+            Select Case _statuses.Tabs(_curTab.Text).TabType
+                Case TabUsageType.Mentions
                     GetTimeline(WORKERTYPE.Reply, 1, 0)
-                Case DEFAULTTAB.DM
+                Case TabUsageType.DirectMessage
                     GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
-                Case DEFAULTTAB.FAV
+                Case TabUsageType.Favorites
                     GetTimeline(WORKERTYPE.Favorites, 1, 0)
+                Case TabUsageType.Profile
+                    '' TODO
+                Case TabUsageType.PublicSearch
+                    '' TODO
                 Case Else
                     GetTimeline(WORKERTYPE.Timeline, 1, 0)
             End Select
@@ -2609,6 +2645,12 @@ Public Class TweenMain
                     ex.Data("IsTerminatePermission") = False
                     Throw
                 End Try
+                If SettingDialog.UseAtIdSupplement AndAlso AtIdSupl Is Nothing Then
+                    AtIdSupl = New AtIdSupplement(SettingAtIdList.Load().AtIdList)
+                End If
+                If Not SettingDialog.UseAtIdSupplement AndAlso AtIdSupl IsNot Nothing Then
+                    AtIdSupl = Nothing
+                End If
                 SetMainWindowTitle()
                 SetNotifyIconText()
 
@@ -2765,7 +2807,7 @@ Public Class TweenMain
         _colHd8.Width = 50
         'End If
 
-        If Not IsDefaultTab(tabName) Then
+        If _statuses.Tabs(tabName).TabType = TabUsageType.Mentions OrElse Not _statuses.IsDefaultTab(tabName) Then
             TabDialog.AddTab(tabName)
         End If
 
@@ -2842,7 +2884,7 @@ Public Class TweenMain
             If ListTab.TabPages(idx).Text = TabName Then Exit For
         Next
 
-        If IsDefaultTab(TabName) Then Return False
+        If _statuses.IsDefaultTab(TabName) Then Return False
 
         Dim tmp As String = String.Format(My.Resources.RemoveSpecifiedTabText1, Environment.NewLine)
         If MessageBox.Show(tmp, My.Resources.RemoveSpecifiedTabText2, _
@@ -3019,6 +3061,7 @@ Public Class TweenMain
     End Sub
 
     Private Sub StatusText_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles StatusText.KeyPress
+        If Not SettingDialog.UseAtIdSupplement OrElse AtIdSupl Is Nothing Then Exit Sub
         If e.KeyChar = "@" Then
             '@マーク
             AtIdSupl.ShowDialog()
@@ -3493,7 +3536,7 @@ RETRY:
     End Sub
 
     Private Sub StatusOpenMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StatusOpenMenuItem.Click
-        If _curList.SelectedIndices.Count > 0 AndAlso _curTab.Text <> DEFAULTTAB.DM Then
+        If _curList.SelectedIndices.Count > 0 AndAlso _statuses.Tabs(_curTab.Text).TabType <> TabUsageType.DirectMessage Then
             Dim post As PostClass = _statuses.Item(_curTab.Text, _curList.SelectedIndices(0))
             OpenUriAsync("http://twitter.com/" + post.Name + "/statuses/" + post.Id.ToString)
         End If
@@ -3621,9 +3664,9 @@ RETRY:
         If _curList.SelectedIndices.Count = 0 OrElse _curPost Is Nothing Then Exit Sub
 
         Dim dTxt As String = detailHtmlFormat + _curPost.OriginalData + detailHtmlFormat4
-        If _curTab.Text = DEFAULTTAB.DM AndAlso _curPost.IsOwl Then
+        If _statuses.Tabs(_curTab.Text).TabType = TabUsageType.DirectMessage AndAlso _curPost.IsOwl Then
             NameLabel.Text = "DM TO -> "
-        ElseIf _curTab.Text = DEFAULTTAB.DM Then
+        ElseIf _statuses.Tabs(_curTab.Text).TabType = TabUsageType.DirectMessage Then
             NameLabel.Text = "DM FROM <- "
         Else
             NameLabel.Text = ""
@@ -3639,7 +3682,7 @@ RETRY:
 
         NameLabel.ForeColor = System.Drawing.SystemColors.ControlText
         DateTimeLabel.Text = _curPost.PDate.ToString()
-        If _curPost.IsOwl AndAlso (SettingDialog.OneWayLove OrElse _curTab.Text = DEFAULTTAB.DM) Then NameLabel.ForeColor = _clOWL
+        If _curPost.IsOwl AndAlso (SettingDialog.OneWayLove OrElse _statuses.Tabs(_curTab.Text).TabType = TabUsageType.DirectMessage) Then NameLabel.ForeColor = _clOWL
         If _curPost.IsFav Then NameLabel.ForeColor = _clFav
 
         If DumpPostClassToolStripMenuItem.Checked Then
@@ -3941,7 +3984,7 @@ RETRY:
         Dim stp As Integer = 1
         Dim targetId As Long = 0
 
-        If _curTab.Text = DEFAULTTAB.DM Then Exit Sub ' Directタブは対象外（見つかるはずがない）
+        If _statuses.Tabs(_curTab.Text).TabType = TabUsageType.DirectMessage Then Exit Sub ' Directタブは対象外（見つかるはずがない）
         If _curList.SelectedIndices.Count = 0 Then Exit Sub '未選択も処理しない
 
         targetId = GetCurTabPost(_curList.SelectedIndices(0)).Id
@@ -3968,7 +4011,7 @@ RETRY:
 
         Dim found As Boolean = False
         For tabidx As Integer = fIdx To toIdx Step stp
-            If ListTab.TabPages(tabidx).Text = DEFAULTTAB.DM Then Continue For ' Directタブは対象外
+            If _statuses.Tabs(ListTab.TabPages(tabidx).Text).TabType = TabUsageType.DirectMessage Then Continue For ' Directタブは対象外
             '_itemCache = Nothing
             '_postCache = Nothing
             For idx As Integer = 0 To DirectCast(ListTab.TabPages(tabidx).Controls(0), DetailsListView).VirtualListSize - 1
@@ -4260,44 +4303,6 @@ RETRY:
                 StatusText.Focus()
             End If
         End If
-        'If Not e.Control AndAlso Not e.Alt AndAlso Not e.Shift Then
-        '    If e.KeyCode = Keys.Oemtilde Then
-        '        '@マーク
-        '        AtIdSupl.ShowDialog()
-        '        If AtIdSupl.inputId <> "" Then
-        '            Dim fHalf As String = ""
-        '            Dim eHalf As String = ""
-        '            Dim selStart As Integer = StatusText.SelectionStart
-        '            If selStart > 1 Then
-        '                fHalf = StatusText.Text.Substring(0, selStart - 1)
-        '            End If
-        '            If selStart < StatusText.Text.Length Then
-        '                eHalf = StatusText.Text.Substring(selStart)
-        '            End If
-        '            StatusText.Text = fHalf + AtIdSupl.inputId + eHalf
-        '            StatusText.SelectionStart = selStart + AtIdSupl.inputId.Length - 1
-        '        Else
-        '            '入力なし＆Backspaceで戻ったら、入力欄の＠も消す
-        '            If AtIdSupl.isBack Then
-        '                Dim fHalf As String = ""
-        '                Dim eHalf As String = ""
-        '                Dim selStart As Integer = StatusText.SelectionStart
-        '                If selStart > 1 Then
-        '                    fHalf = StatusText.Text.Substring(0, selStart - 1)
-        '                End If
-        '                If selStart < StatusText.Text.Length Then
-        '                    eHalf = StatusText.Text.Substring(selStart)
-        '                End If
-        '                StatusText.Text = fHalf + eHalf
-        '                If selStart > 0 Then
-        '                    StatusText.SelectionStart = selStart - 1
-        '                End If
-        '            End If
-        '        End If
-        '        e.Handled = True
-        '        e.SuppressKeyPress = True
-        '    End If
-        'End If
         Me.StatusText_TextChanged(Nothing, Nothing)
     End Sub
 
@@ -4309,7 +4314,7 @@ RETRY:
         Else
             If modifySettingCommon Then SaveConfigsCommon()
             If modifySettingLocal Then SaveConfigsLocal()
-            If modifySettingAtId Then
+            If modifySettingAtId AndAlso SettingDialog.UseAtIdSupplement AndAlso AtIdSupl IsNot Nothing Then
                 modifySettingAtId = False
                 Dim cfgAtId As New SettingAtIdList(AtIdSupl.GetIdList)
                 cfgAtId.Save()
@@ -4385,6 +4390,7 @@ RETRY:
                 _cfgCommon.BilyUser = SettingDialog.BitlyUser
                 _cfgCommon.BitlyPwd = SettingDialog.BitlyPwd
                 _cfgCommon.ShowGrid = SettingDialog.ShowGrid
+                _cfgCommon.UseAtIdSupplement = SettingDialog.UseAtIdSupplement
 
                 _cfgCommon.SortOrder = _statuses.SortOrder
                 Select Case _statuses.SortMode
@@ -4530,7 +4536,7 @@ RETRY:
 
     Public Function TabRename(ByRef tabName As String) As Boolean
         'タブ名変更
-        If IsDefaultTab(tabName) Then Return False
+        'If _statuses.IsDefaultTab(tabName) Then Return False
         Dim newTabText As String = Nothing
         Using inputName As New InputTabName()
             inputName.TabName = tabName
@@ -4550,14 +4556,14 @@ RETRY:
             Next
             'タブ名のリスト作り直し（デフォルトタブ以外は再作成）
             For i As Integer = 0 To ListTab.TabCount - 1
-                If Not IsDefaultTab(ListTab.TabPages(i).Text) Then
+                If _statuses.Tabs(ListTab.TabPages(i).Text).TabType = TabUsageType.Mentions OrElse Not _statuses.IsDefaultTab(ListTab.TabPages(i).Text) Then
                     TabDialog.RemoveTab(ListTab.TabPages(i).Text)
                 End If
             Next
             _statuses.RenameTab(tabName, newTabText)
 
             For i As Integer = 0 To ListTab.TabCount - 1
-                If Not IsDefaultTab(ListTab.TabPages(i).Text) Then
+                If _statuses.Tabs(ListTab.TabPages(i).Text).TabType = TabUsageType.Mentions OrElse Not _statuses.IsDefaultTab(ListTab.TabPages(i).Text) Then
                     If ListTab.TabPages(i).Text = tabName Then
                         ListTab.TabPages(i).Text = newTabText
                     End If
@@ -4679,7 +4685,7 @@ RETRY:
             ' アイテムが1件以上選択されている
             If _curList.SelectedIndices.Count = 1 AndAlso Not isAll AndAlso _curPost IsNot Nothing Then
                 ' 単独ユーザー宛リプライまたはDM
-                If (ListTab.SelectedTab.Text = DEFAULTTAB.DM AndAlso isAuto) OrElse (Not isAuto AndAlso Not isReply) Then
+                If (_statuses.Tabs(ListTab.SelectedTab.Text).TabType = TabUsageType.DirectMessage AndAlso isAuto) OrElse (Not isAuto AndAlso Not isReply) Then
                     ' ダイレクトメッセージ
                     StatusText.Text = "D " + _curPost.Name + " " + StatusText.Text
                     StatusText.SelectionStart = StatusText.Text.Length
@@ -4908,7 +4914,7 @@ RETRY:
             Exit Sub
         End If
 
-        If SettingDialog.ReplyIconState <> REPLY_ICONSTATE.None AndAlso _statuses.Tabs(DEFAULTTAB.REPLY).UnreadCount > 0 Then
+        If SettingDialog.ReplyIconState <> REPLY_ICONSTATE.None AndAlso _statuses.GetTabByType(TabUsageType.Mentions).UnreadCount > 0 Then
             If blinkCnt > 0 Then Exit Sub
             blink = Not blink
             If blink OrElse SettingDialog.ReplyIconState = REPLY_ICONSTATE.StaticIcon Then
@@ -4958,10 +4964,10 @@ RETRY:
         SoundFileComboBox.SelectedIndex = idx
         soundfileListup = False
         UreadManageMenuItem.Checked = tb.UnreadManage
-        If _rclickTabName = DEFAULTTAB.RECENT OrElse _rclickTabName = DEFAULTTAB.DM OrElse _rclickTabName = DEFAULTTAB.FAV Then
+        If _statuses.Tabs(_rclickTabName).TabType <> TabUsageType.Mentions AndAlso _statuses.IsDefaultTab(_rclickTabName) Then
             FilterEditMenuItem.Enabled = True
             DeleteTabMenuItem.Enabled = False
-        ElseIf _rclickTabName = DEFAULTTAB.REPLY Then
+        ElseIf _statuses.Tabs(_rclickTabName).TabType = TabUsageType.Mentions Then
             FilterEditMenuItem.Enabled = True
             DeleteTabMenuItem.Enabled = False
         Else
@@ -5034,7 +5040,7 @@ RETRY:
         'If _rclickTabName = "" OrElse _rclickTabName = DEFAULTTAB.RECENT OrElse _rclickTabName = DEFAULTTAB.DM _
         '        OrElse _rclickTabName = DEFAULTTAB.FAV Then Exit Sub
 
-        If _rclickTabName = "" Then _rclickTabName = DEFAULTTAB.RECENT
+        If _rclickTabName = "" Then _rclickTabName = _statuses.GetTabByType(TabUsageType.Home).TabName
         fDialog.SetCurrent(_rclickTabName)
         fDialog.ShowDialog()
         Me.TopMost = SettingDialog.AlwaysTop
@@ -5079,7 +5085,7 @@ RETRY:
                 MessageBox.Show(tmp, My.Resources.AddTabMenuItem_ClickText2, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             Else
                 '成功
-                _statuses.AddTab(tabName)
+                _statuses.AddTab(tabName, TabUsageType.UserDefined)
                 SaveConfigsCommon()
                 SaveConfigsTab(False)
             End If
@@ -5113,7 +5119,7 @@ RETRY:
                             Dim tmp As String = String.Format(My.Resources.TabMenuItem_ClickText2, tabName)
                             MessageBox.Show(tmp, My.Resources.TabMenuItem_ClickText3, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                         Else
-                            _statuses.AddTab(tabName)
+                            _statuses.AddTab(tabName, TabUsageType.UserDefined)
                             Exit Do
                         End If
                     End If
@@ -5232,7 +5238,7 @@ RETRY:
                         Dim tmp As String = String.Format(My.Resources.IDRuleMenuItem_ClickText2, tabName)
                         MessageBox.Show(tmp, My.Resources.IDRuleMenuItem_ClickText3, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                     Else
-                        _statuses.AddTab(tabName)
+                        _statuses.AddTab(tabName, TabUsageType.UserDefined)
                         Exit Do
                     End If
                 End If
@@ -5451,11 +5457,11 @@ RETRY:
                     ttl.Append(_history(_history.Count - 2).Replace(vbCrLf, ""))
                 End If
             Case DispTitleEnum.UnreadRepCount
-                ttl.AppendFormat(My.Resources.SetMainWindowTitleText1, _statuses.Tabs(DEFAULTTAB.REPLY).UnreadCount + _statuses.Tabs(DEFAULTTAB.DM).UnreadCount)
+                ttl.AppendFormat(My.Resources.SetMainWindowTitleText1, _statuses.GetTabByType(TabUsageType.Mentions).UnreadCount + _statuses.GetTabByType(TabUsageType.DirectMessage).UnreadCount)
             Case DispTitleEnum.UnreadAllCount
                 ttl.AppendFormat(My.Resources.SetMainWindowTitleText2, ur)
             Case DispTitleEnum.UnreadAllRepCount
-                ttl.AppendFormat(My.Resources.SetMainWindowTitleText3, ur, _statuses.Tabs(DEFAULTTAB.REPLY).UnreadCount + _statuses.Tabs(DEFAULTTAB.DM).UnreadCount)
+                ttl.AppendFormat(My.Resources.SetMainWindowTitleText3, ur, _statuses.GetTabByType(TabUsageType.Mentions).UnreadCount + _statuses.GetTabByType(TabUsageType.DirectMessage).UnreadCount)
             Case DispTitleEnum.UnreadCountAllCount
                 ttl.AppendFormat(My.Resources.SetMainWindowTitleText4, ur, al)
         End Select
@@ -5471,7 +5477,7 @@ RETRY:
         'ステータス欄にカウント表示
         'タブ未読数/タブ発言数 全未読数/総発言数 (未読＠＋未読DM数)
         If _statuses Is Nothing Then Exit Sub
-        Dim urat As Integer = _statuses.Tabs(DEFAULTTAB.REPLY).UnreadCount + _statuses.Tabs(DEFAULTTAB.DM).UnreadCount
+        Dim urat As Integer = _statuses.GetTabByType(TabUsageType.Mentions).UnreadCount + _statuses.GetTabByType(TabUsageType.DirectMessage).UnreadCount
         Dim ur As Integer = 0
         Dim al As Integer = 0
         Dim tur As Integer = 0
@@ -5515,11 +5521,13 @@ RETRY:
 
         m = id.Matches(StatusText)
 
-        Dim bCnt As Integer = AtIdSupl.IdCount
-        For Each mid As Match In m
-            AtIdSupl.AddId(mid.ToString)
-        Next
-        If bCnt <> AtIdSupl.IdCount Then modifySettingAtId = True
+        If AtIdSupl IsNot Nothing Then
+            Dim bCnt As Integer = AtIdSupl.IdCount
+            For Each mid As Match In m
+                AtIdSupl.AddId(mid.ToString)
+            Next
+            If bCnt <> AtIdSupl.IdCount Then modifySettingAtId = True
+        End If
 
         ' リプライ先ステータスIDの指定がない場合は指定しない
         If _reply_to_id = 0 Then Exit Sub
@@ -6059,7 +6067,7 @@ RETRY:
         Dim cnt As Integer = 0
         'Dim MyList As DetailsListView = DirectCast(ListTab.SelectedTab.Controls(0), DetailsListView)
 
-        If _curTab.Text = DEFAULTTAB.DM OrElse _curList.SelectedIndices.Count = 0 Then Exit Sub
+        If _statuses.GetTabByType(TabUsageType.DirectMessage).TabName = _curTab.Text OrElse _curList.SelectedIndices.Count = 0 Then Exit Sub
 
         If _curList.SelectedIndices.Count > 1 Then
             If MessageBox.Show(My.Resources.BlackFavAddToolStripMenuItem_ClickText1, My.Resources.BlackFavAddToolStripMenuItem_ClickText2, _

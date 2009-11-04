@@ -220,6 +220,9 @@
   <data name="Label16.Text" xml:space="preserve">
     <value>Colorize One-way following</value>
   </data>
+  <data name="GroupBox1.Text" xml:space="preserve">
+    <value>Font &amp;&amp; Color</value>
+  </data>
   <data name="btnInputFont.Text" xml:space="preserve">
     <value>Font...</value>
   </data>
@@ -355,9 +358,6 @@
   <data name="Label61.Text" xml:space="preserve">
     <value>Font of tweet list</value>
   </data>
-  <data name="GroupBox1.Text" xml:space="preserve">
-    <value>Font &amp;&amp; Color</value>
-  </data>
   <data name="cmbNameBalloon.Items" xml:space="preserve">
     <value>None</value>
   </data>
@@ -378,18 +378,6 @@
   </data>
   <data name="CheckUseRecommendStatus.Text" xml:space="preserve">
     <value>Use Recommended [TWNvNNN]</value>
-  </data>
-  <data name="CheckSortOrderLock.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 16</value>
-  </data>
-  <data name="CheckSortOrderLock.Text" xml:space="preserve">
-    <value>Enable</value>
-  </data>
-  <data name="Label21.Size" type="System.Drawing.Size, System.Drawing">
-    <value>101, 12</value>
-  </data>
-  <data name="Label21.Text" xml:space="preserve">
-    <value>Lock Sorting Order</value>
   </data>
   <data name="Label23.Size" type="System.Drawing.Size, System.Drawing">
     <value>105, 12</value>
@@ -517,8 +505,133 @@
   <data name="ComboDispTitle.Items6" xml:space="preserve">
     <value>unread items/all items</value>
   </data>
+  <data name="Label47.Size" type="System.Drawing.Size, System.Drawing">
+    <value>115, 12</value>
+  </data>
   <data name="Label47.Text" xml:space="preserve">
     <value>Apply after restarting</value>
+  </data>
+  <data name="TabPage1.Text" xml:space="preserve">
+    <value>Basic</value>
+  </data>
+  <data name="Label79.Location" type="System.Drawing.Point, System.Drawing">
+    <value>11, 426</value>
+  </data>
+  <data name="Label79.Size" type="System.Drawing.Size, System.Drawing">
+    <value>139, 12</value>
+  </data>
+  <data name="Label79.Text" xml:space="preserve">
+    <value>Use Input @ID supplement</value>
+  </data>
+  <data name="CheckBox1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>173, 425</value>
+  </data>
+  <data name="CheckBox1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 16</value>
+  </data>
+  <data name="CheckBox1.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="Label74.Location" type="System.Drawing.Point, System.Drawing">
+    <value>11, 404</value>
+  </data>
+  <data name="Label74.Size" type="System.Drawing.Size, System.Drawing">
+    <value>106, 12</value>
+  </data>
+  <data name="Label74.Text" xml:space="preserve">
+    <value>Get favs in Starting</value>
+  </data>
+  <data name="chkGetFav.Location" type="System.Drawing.Point, System.Drawing">
+    <value>173, 403</value>
+  </data>
+  <data name="chkGetFav.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 16</value>
+  </data>
+  <data name="chkGetFav.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="Label71.Size" type="System.Drawing.Size, System.Drawing">
+    <value>149, 12</value>
+  </data>
+  <data name="Label71.Text" xml:space="preserve">
+    <value>Primary URLshorten service</value>
+  </data>
+  <data name="CheckProtectNotInclude.Size" type="System.Drawing.Size, System.Drawing">
+    <value>160, 16</value>
+  </data>
+  <data name="CheckProtectNotInclude.Text" xml:space="preserve">
+    <value>Execlude protected tweets</value>
+  </data>
+  <data name="Label42.Size" type="System.Drawing.Size, System.Drawing">
+    <value>144, 12</value>
+  </data>
+  <data name="Label42.Text" xml:space="preserve">
+    <value>Clipboard copy or ReTweet</value>
+  </data>
+  <data name="CheckAutoConvertUrl.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 16</value>
+  </data>
+  <data name="CheckAutoConvertUrl.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="Label29.Size" type="System.Drawing.Size, System.Drawing">
+    <value>103, 12</value>
+  </data>
+  <data name="Label29.Text" xml:space="preserve">
+    <value>Auto shorten URLs</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Label57.AutoSize" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Label57.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="Label57.Size" type="System.Drawing.Size, System.Drawing">
+    <value>382, 28</value>
+  </data>
+  <data name="Label57.Text" xml:space="preserve">
+    <value>Refetch tweets and verify whether marked favorites. This option causes traffic incleasement.</value>
+  </data>
+  <data name="Label56.Size" type="System.Drawing.Size, System.Drawing">
+    <value>138, 12</value>
+  </data>
+  <data name="Label56.Text" xml:space="preserve">
+    <value>Marking Favorites Strictly</value>
+  </data>
+  <data name="CheckFavRestrict.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 16</value>
+  </data>
+  <data name="CheckFavRestrict.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="CheckTinyURL.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 16</value>
+  </data>
+  <data name="CheckTinyURL.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="Label50.Size" type="System.Drawing.Size, System.Drawing">
+    <value>136, 12</value>
+  </data>
+  <data name="Label50.Text" xml:space="preserve">
+    <value>Resolve Shortening URLs</value>
+  </data>
+  <data name="Button3.Text" xml:space="preserve">
+    <value>Open...</value>
+  </data>
+  <data name="TabPage2.Text" xml:space="preserve">
+    <value>Behavior</value>
+  </data>
+  <data name="TabPage3.Text" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="TabPage4.Text" xml:space="preserve">
+    <value>Fonts &amp; Colors</value>
+  </data>
+  <data name="TabPage5.Text" xml:space="preserve">
+    <value>Connection</value>
   </data>
   <data name="Label70.Size" type="System.Drawing.Size, System.Drawing">
     <value>176, 12</value>
@@ -616,57 +729,6 @@
   <data name="CheckPeriodAdjust.Text" xml:space="preserve">
     <value>Enable Auto-Adjustment</value>
   </data>
-  <data name="TabPage1.Text" xml:space="preserve">
-    <value>Basic</value>
-  </data>
-  <data name="Label74.Location" type="System.Drawing.Point, System.Drawing">
-    <value>11, 442</value>
-  </data>
-  <data name="Label74.Size" type="System.Drawing.Size, System.Drawing">
-    <value>106, 12</value>
-  </data>
-  <data name="Label74.Text" xml:space="preserve">
-    <value>Get favs in Starting</value>
-  </data>
-  <data name="chkGetFav.Location" type="System.Drawing.Point, System.Drawing">
-    <value>173, 441</value>
-  </data>
-  <data name="chkGetFav.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 16</value>
-  </data>
-  <data name="chkGetFav.Text" xml:space="preserve">
-    <value>Enable</value>
-  </data>
-  <data name="Label71.Size" type="System.Drawing.Size, System.Drawing">
-    <value>149, 12</value>
-  </data>
-  <data name="Label71.Text" xml:space="preserve">
-    <value>Primary URLshorten service</value>
-  </data>
-  <data name="CheckProtectNotInclude.Size" type="System.Drawing.Size, System.Drawing">
-    <value>160, 16</value>
-  </data>
-  <data name="CheckProtectNotInclude.Text" xml:space="preserve">
-    <value>Execlude protected tweets</value>
-  </data>
-  <data name="Label42.Size" type="System.Drawing.Size, System.Drawing">
-    <value>144, 12</value>
-  </data>
-  <data name="Label42.Text" xml:space="preserve">
-    <value>Clipboard copy or ReTweet</value>
-  </data>
-  <data name="CheckAutoConvertUrl.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 16</value>
-  </data>
-  <data name="CheckAutoConvertUrl.Text" xml:space="preserve">
-    <value>Enable</value>
-  </data>
-  <data name="Label29.Size" type="System.Drawing.Size, System.Drawing">
-    <value>103, 12</value>
-  </data>
-  <data name="Label29.Text" xml:space="preserve">
-    <value>Auto shorten URLs</value>
-  </data>
   <data name="CheckAlwaysTop.Size" type="System.Drawing.Size, System.Drawing">
     <value>58, 16</value>
   </data>
@@ -679,52 +741,17 @@
   <data name="Label58.Text" xml:space="preserve">
     <value>Always on Top</value>
   </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Label57.AutoSize" type="System.Boolean, mscorlib">
-    <value>False</value>
+  <data name="Label21.Size" type="System.Drawing.Size, System.Drawing">
+    <value>101, 12</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Label57.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
+  <data name="Label21.Text" xml:space="preserve">
+    <value>Lock Sorting Order</value>
   </data>
-  <data name="Label57.Location" type="System.Drawing.Point, System.Drawing">
-    <value>11, 413</value>
-  </data>
-  <data name="Label57.Size" type="System.Drawing.Size, System.Drawing">
-    <value>382, 28</value>
-  </data>
-  <data name="Label57.Text" xml:space="preserve">
-    <value>Refetch tweets and verify whether marked favorites. This option causes traffic incleasement.</value>
-  </data>
-  <data name="Label56.Size" type="System.Drawing.Size, System.Drawing">
-    <value>138, 12</value>
-  </data>
-  <data name="Label56.Text" xml:space="preserve">
-    <value>Marking Favorites Strictly</value>
-  </data>
-  <data name="CheckFavRestrict.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="CheckSortOrderLock.Size" type="System.Drawing.Size, System.Drawing">
     <value>58, 16</value>
   </data>
-  <data name="CheckFavRestrict.Text" xml:space="preserve">
+  <data name="CheckSortOrderLock.Text" xml:space="preserve">
     <value>Enable</value>
-  </data>
-  <data name="CheckTinyURL.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 16</value>
-  </data>
-  <data name="CheckTinyURL.Text" xml:space="preserve">
-    <value>Enable</value>
-  </data>
-  <data name="Label50.Size" type="System.Drawing.Size, System.Drawing">
-    <value>136, 12</value>
-  </data>
-  <data name="Label50.Text" xml:space="preserve">
-    <value>Resolve Shortening URLs</value>
-  </data>
-  <data name="Button3.Text" xml:space="preserve">
-    <value>Open...</value>
-  </data>
-  <data name="TabPage2.Text" xml:space="preserve">
-    <value>Behavior</value>
   </data>
   <data name="Label78.Size" type="System.Drawing.Size, System.Drawing">
     <value>57, 12</value>
@@ -804,12 +831,6 @@
   <data name="chkUnreadStyle.Text" xml:space="preserve">
     <value>Enable</value>
   </data>
-  <data name="TabPage3.Text" xml:space="preserve">
-    <value>View</value>
-  </data>
-  <data name="TabPage4.Text" xml:space="preserve">
-    <value>Fonts &amp; Colors</value>
-  </data>
   <data name="CheckUseSsl.Size" type="System.Drawing.Size, System.Drawing">
     <value>130, 16</value>
   </data>
@@ -827,6 +848,9 @@
   </data>
   <data name="Label63.Text" xml:space="preserve">
     <value>Connection timeout(sec)</value>
+  </data>
+  <data name="GroupBox2.Text" xml:space="preserve">
+    <value>Proxy Server</value>
   </data>
   <data name="Label55.Size" type="System.Drawing.Size, System.Drawing">
     <value>320, 12</value>
@@ -875,12 +899,6 @@
   </data>
   <data name="RadioProxyNone.Text" xml:space="preserve">
     <value>Don't Use</value>
-  </data>
-  <data name="GroupBox2.Text" xml:space="preserve">
-    <value>Proxy Server</value>
-  </data>
-  <data name="TabPage5.Text" xml:space="preserve">
-    <value>Connection</value>
   </data>
   <data name="Label60.Size" type="System.Drawing.Size, System.Drawing">
     <value>107, 12</value>

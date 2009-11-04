@@ -136,4 +136,5 @@ Public Class SettingCommon
     Public BilyUser As String = ""
     Public BitlyPwd As String = ""
     Public ShowGrid As Boolean = False
+    Public UseAtIdSupplement As Boolean = True
 End Class

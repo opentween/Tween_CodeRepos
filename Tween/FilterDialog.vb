@@ -68,11 +68,12 @@ Public Class FilterDialog
                 ButtonEdit.Enabled = True
                 ButtonDelete.Enabled = True
         End Select
-        If IsDefaultTab(tabName) Then
-            ButtonRenameTab.Enabled = False
+        ButtonRenameTab.Enabled = True
+        If TabInformations.GetInstance.IsDefaultTab(tabName) Then
+            'ButtonRenameTab.Enabled = False
             ButtonDeleteTab.Enabled = False
         Else
-            ButtonRenameTab.Enabled = True
+            'ButtonRenameTab.Enabled = True
             ButtonDeleteTab.Enabled = True
         End If
         ButtonClose.Enabled = True
@@ -619,7 +620,7 @@ Public Class FilterDialog
                 Exit Sub
             Else
                 '成功
-                _sts.AddTab(tabName)
+                _sts.AddTab(tabName, TabUsageType.UserDefined)
                 ListTabs.Items.Add(tabName)
             End If
         End If

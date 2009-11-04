@@ -106,6 +106,7 @@ Public Class Setting
     Private _MyBitlyId As String
     Private _MyBitlyPw As String
     Private _MyShowGrid As Boolean
+    Private _MyUseAtIdSupplement As Boolean
 
     Private Sub Save_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Save.Click
         Try
@@ -242,6 +243,7 @@ Public Class Setting
             _MyBitlyId = TextBitlyId.Text
             _MyBitlyPw = TextBitlyPw.Text
             _MyShowGrid = CheckShowGrid.Checked
+            _MyUseAtIdSupplement = CheckAtIdSupple.Checked
             Select Case ReplyIconStateCombo.SelectedIndex
                 Case 0
                     _MyReplyIconState = REPLY_ICONSTATE.None
@@ -429,6 +431,7 @@ Public Class Setting
         TextBitlyId.Text = _MyBitlyId
         TextBitlyPw.Text = _MyBitlyPw
         CheckShowGrid.Checked = _MyShowGrid
+        CheckAtIdSupple.Checked = _MyUseAtIdSupplement
         Select Case _MyReplyIconState
             Case REPLY_ICONSTATE.None
                 ReplyIconStateCombo.SelectedIndex = 0
@@ -1474,6 +1477,15 @@ Public Class Setting
         End Get
         Set(ByVal value As Boolean)
             _MyShowGrid = value
+        End Set
+    End Property
+
+    Public Property UseAtIdSupplement() As Boolean
+        Get
+            Return _MyUseAtIdSupplement
+        End Get
+        Set(ByVal value As Boolean)
+            _MyUseAtIdSupplement = value
         End Set
     End Property
 

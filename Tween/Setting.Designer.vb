@@ -104,8 +104,6 @@ Partial Class Setting
         Me.cmbNameBalloon = New System.Windows.Forms.ComboBox
         Me.Label10 = New System.Windows.Forms.Label
         Me.CheckUseRecommendStatus = New System.Windows.Forms.CheckBox
-        Me.CheckSortOrderLock = New System.Windows.Forms.CheckBox
-        Me.Label21 = New System.Windows.Forms.Label
         Me.CmbDateTimeFormat = New System.Windows.Forms.ComboBox
         Me.Label23 = New System.Windows.Forms.Label
         Me.CheckBox3 = New System.Windows.Forms.CheckBox
@@ -156,6 +154,8 @@ Partial Class Setting
         Me.CheckStartupVersion = New System.Windows.Forms.CheckBox
         Me.CheckPeriodAdjust = New System.Windows.Forms.CheckBox
         Me.TabPage2 = New System.Windows.Forms.TabPage
+        Me.Label79 = New System.Windows.Forms.Label
+        Me.CheckAtIdSupple = New System.Windows.Forms.CheckBox
         Me.TextBitlyPw = New System.Windows.Forms.TextBox
         Me.Label77 = New System.Windows.Forms.Label
         Me.TextBitlyId = New System.Windows.Forms.TextBox
@@ -168,8 +168,6 @@ Partial Class Setting
         Me.Label42 = New System.Windows.Forms.Label
         Me.CheckAutoConvertUrl = New System.Windows.Forms.CheckBox
         Me.Label29 = New System.Windows.Forms.Label
-        Me.CheckAlwaysTop = New System.Windows.Forms.CheckBox
-        Me.Label58 = New System.Windows.Forms.Label
         Me.Label57 = New System.Windows.Forms.Label
         Me.Label56 = New System.Windows.Forms.Label
         Me.CheckFavRestrict = New System.Windows.Forms.CheckBox
@@ -177,6 +175,10 @@ Partial Class Setting
         Me.Label50 = New System.Windows.Forms.Label
         Me.Button3 = New System.Windows.Forms.Button
         Me.TabPage3 = New System.Windows.Forms.TabPage
+        Me.CheckAlwaysTop = New System.Windows.Forms.CheckBox
+        Me.Label58 = New System.Windows.Forms.Label
+        Me.Label21 = New System.Windows.Forms.Label
+        Me.CheckSortOrderLock = New System.Windows.Forms.CheckBox
         Me.Label78 = New System.Windows.Forms.Label
         Me.CheckShowGrid = New System.Windows.Forms.CheckBox
         Me.Label75 = New System.Windows.Forms.Label
@@ -712,17 +714,6 @@ Partial Class Setting
         Me.CheckUseRecommendStatus.Name = "CheckUseRecommendStatus"
         Me.CheckUseRecommendStatus.UseVisualStyleBackColor = True
         '
-        'CheckSortOrderLock
-        '
-        resources.ApplyResources(Me.CheckSortOrderLock, "CheckSortOrderLock")
-        Me.CheckSortOrderLock.Name = "CheckSortOrderLock"
-        Me.CheckSortOrderLock.UseVisualStyleBackColor = True
-        '
-        'Label21
-        '
-        resources.ApplyResources(Me.Label21, "Label21")
-        Me.Label21.Name = "Label21"
-        '
         'CmbDateTimeFormat
         '
         resources.ApplyResources(Me.CmbDateTimeFormat, "CmbDateTimeFormat")
@@ -1046,6 +1037,8 @@ Partial Class Setting
         '
         'TabPage2
         '
+        Me.TabPage2.Controls.Add(Me.Label79)
+        Me.TabPage2.Controls.Add(Me.CheckAtIdSupple)
         Me.TabPage2.Controls.Add(Me.TextBitlyPw)
         Me.TabPage2.Controls.Add(Me.Label77)
         Me.TabPage2.Controls.Add(Me.TextBitlyId)
@@ -1058,8 +1051,6 @@ Partial Class Setting
         Me.TabPage2.Controls.Add(Me.Label42)
         Me.TabPage2.Controls.Add(Me.CheckAutoConvertUrl)
         Me.TabPage2.Controls.Add(Me.Label29)
-        Me.TabPage2.Controls.Add(Me.CheckAlwaysTop)
-        Me.TabPage2.Controls.Add(Me.Label58)
         Me.TabPage2.Controls.Add(Me.Label57)
         Me.TabPage2.Controls.Add(Me.Label56)
         Me.TabPage2.Controls.Add(Me.CheckFavRestrict)
@@ -1069,8 +1060,6 @@ Partial Class Setting
         Me.TabPage2.Controls.Add(Me.PlaySnd)
         Me.TabPage2.Controls.Add(Me.Label14)
         Me.TabPage2.Controls.Add(Me.Label15)
-        Me.TabPage2.Controls.Add(Me.Label21)
-        Me.TabPage2.Controls.Add(Me.CheckSortOrderLock)
         Me.TabPage2.Controls.Add(Me.Label38)
         Me.TabPage2.Controls.Add(Me.BrowserPathText)
         Me.TabPage2.Controls.Add(Me.UReadMng)
@@ -1089,6 +1078,17 @@ Partial Class Setting
         resources.ApplyResources(Me.TabPage2, "TabPage2")
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.UseVisualStyleBackColor = True
+        '
+        'Label79
+        '
+        resources.ApplyResources(Me.Label79, "Label79")
+        Me.Label79.Name = "Label79"
+        '
+        'CheckAtIdSupple
+        '
+        resources.ApplyResources(Me.CheckAtIdSupple, "CheckAtIdSupple")
+        Me.CheckAtIdSupple.Name = "CheckAtIdSupple"
+        Me.CheckAtIdSupple.UseVisualStyleBackColor = True
         '
         'TextBitlyPw
         '
@@ -1157,17 +1157,6 @@ Partial Class Setting
         resources.ApplyResources(Me.Label29, "Label29")
         Me.Label29.Name = "Label29"
         '
-        'CheckAlwaysTop
-        '
-        resources.ApplyResources(Me.CheckAlwaysTop, "CheckAlwaysTop")
-        Me.CheckAlwaysTop.Name = "CheckAlwaysTop"
-        Me.CheckAlwaysTop.UseVisualStyleBackColor = True
-        '
-        'Label58
-        '
-        resources.ApplyResources(Me.Label58, "Label58")
-        Me.Label58.Name = "Label58"
-        '
         'Label57
         '
         resources.ApplyResources(Me.Label57, "Label57")
@@ -1205,6 +1194,10 @@ Partial Class Setting
         '
         'TabPage3
         '
+        Me.TabPage3.Controls.Add(Me.CheckAlwaysTop)
+        Me.TabPage3.Controls.Add(Me.Label58)
+        Me.TabPage3.Controls.Add(Me.Label21)
+        Me.TabPage3.Controls.Add(Me.CheckSortOrderLock)
         Me.TabPage3.Controls.Add(Me.Label78)
         Me.TabPage3.Controls.Add(Me.CheckShowGrid)
         Me.TabPage3.Controls.Add(Me.Label75)
@@ -1240,6 +1233,28 @@ Partial Class Setting
         resources.ApplyResources(Me.TabPage3, "TabPage3")
         Me.TabPage3.Name = "TabPage3"
         Me.TabPage3.UseVisualStyleBackColor = True
+        '
+        'CheckAlwaysTop
+        '
+        resources.ApplyResources(Me.CheckAlwaysTop, "CheckAlwaysTop")
+        Me.CheckAlwaysTop.Name = "CheckAlwaysTop"
+        Me.CheckAlwaysTop.UseVisualStyleBackColor = True
+        '
+        'Label58
+        '
+        resources.ApplyResources(Me.Label58, "Label58")
+        Me.Label58.Name = "Label58"
+        '
+        'Label21
+        '
+        resources.ApplyResources(Me.Label21, "Label21")
+        Me.Label21.Name = "Label21"
+        '
+        'CheckSortOrderLock
+        '
+        resources.ApplyResources(Me.CheckSortOrderLock, "CheckSortOrderLock")
+        Me.CheckSortOrderLock.Name = "CheckSortOrderLock"
+        Me.CheckSortOrderLock.UseVisualStyleBackColor = True
         '
         'Label78
         '
@@ -1594,8 +1609,6 @@ Partial Class Setting
     Friend WithEvents Label18 As System.Windows.Forms.Label
     Friend WithEvents Label19 As System.Windows.Forms.Label
     Friend WithEvents CheckUseRecommendStatus As System.Windows.Forms.CheckBox
-    Friend WithEvents CheckSortOrderLock As System.Windows.Forms.CheckBox
-    Friend WithEvents Label21 As System.Windows.Forms.Label
     Friend WithEvents CmbDateTimeFormat As System.Windows.Forms.ComboBox
     Friend WithEvents Label23 As System.Windows.Forms.Label
     Friend WithEvents CheckBox3 As System.Windows.Forms.CheckBox
@@ -1663,8 +1676,6 @@ Partial Class Setting
     Friend WithEvents Label56 As System.Windows.Forms.Label
     Friend WithEvents CheckFavRestrict As System.Windows.Forms.CheckBox
     Friend WithEvents Label57 As System.Windows.Forms.Label
-    Friend WithEvents CheckAlwaysTop As System.Windows.Forms.CheckBox
-    Friend WithEvents Label58 As System.Windows.Forms.Label
     Friend WithEvents CheckAutoConvertUrl As System.Windows.Forms.CheckBox
     Friend WithEvents Label29 As System.Windows.Forms.Label
     Friend WithEvents TabPage6 As System.Windows.Forms.TabPage
@@ -1726,4 +1737,10 @@ Partial Class Setting
     Friend WithEvents TextBitlyId As System.Windows.Forms.TextBox
     Friend WithEvents Label78 As System.Windows.Forms.Label
     Friend WithEvents CheckShowGrid As System.Windows.Forms.CheckBox
+    Friend WithEvents Label21 As System.Windows.Forms.Label
+    Friend WithEvents CheckSortOrderLock As System.Windows.Forms.CheckBox
+    Friend WithEvents Label79 As System.Windows.Forms.Label
+    Friend WithEvents CheckAtIdSupple As System.Windows.Forms.CheckBox
+    Friend WithEvents CheckAlwaysTop As System.Windows.Forms.CheckBox
+    Friend WithEvents Label58 As System.Windows.Forms.Label
 End Class
