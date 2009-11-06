@@ -78,7 +78,7 @@ Public Class SettingLocal
     End Property
 
     <Xml.Serialization.XmlIgnore()> _
-    Public ColorRead As Color = Color.FromKnownColor(System.Drawing.KnownColor.Gray)
+    Public ColorRead As Color = System.Drawing.SystemColors.ControlText
     Public Property ColorReadStr() As String
         Get
             Return _cc.ConvertToString(ColorRead)
