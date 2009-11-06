@@ -59,12 +59,14 @@ Public Class TweenMain
     Private ReadOnly _syncObject As New Object()    'ロック用
     Private Const detailHtmlFormatMono1 As String = "<html><head><style type=""text/css""><!-- pre {font-family: """
     Private Const detailHtmlFormatMono2 As String = """, sans-serif; font-size: "
-    Private Const detailHtmlFormatMono3 As String = "pt; word-wrap: break-word;} --></style></head><body style=""margin:0px""><pre>"
-    Private Const detailHtmlFormatMono4 As String = "</pre></body></html>"
+    Private Const detailHtmlFormatMono3 As String = "pt; word-wrap: break-word;} --></style></head><body style=""margin:0px; background-color:"
+    Private Const detailHtmlFormatMono4 As String = ";""><pre>"
+    Private Const detailHtmlFormatMono5 As String = "</pre></body></html>"
     Private Const detailHtmlFormat1 As String = "<html><head><style type=""text/css""><!-- p {font-family: """
     Private Const detailHtmlFormat2 As String = """, sans-serif; font-size: "
-    Private Const detailHtmlFormat3 As String = "pt;} --></style></head><body style=""margin:0px""><p>"
-    Private Const detailHtmlFormat4 As String = "</p></body></html>"
+    Private Const detailHtmlFormat3 As String = "pt;} --></style></head><body style=""margin:0px; background-color:"
+    Private Const detailHtmlFormat4 As String = ";""><p>"
+    Private Const detailHtmlFormat5 As String = "</p></body></html>"
     Private detailHtmlFormat As String
     Private _myStatusError As Boolean = False
     Private _myStatusOnline As Boolean = False
@@ -96,12 +98,16 @@ Public Class TweenMain
     Private _clFav As Color               'Fav用文字色
     Private _clOWL As Color               '片思い用文字色
     Private _fntDetail As Font            '発言詳細部用フォント
+    Private _clDetail As Color              '発言詳細部用色
+    Private _clDetailLink As Color          '発言詳細部用リンク文字色
+    Private _clDetailBackcolor As Color     '発言詳細部用背景色
     Private _clSelf As Color              '自分の発言用背景色
     Private _clAtSelf As Color            '自分宛返信用背景色
     Private _clTarget As Color            '選択発言者の他の発言用背景色
     Private _clAtTarget As Color          '選択発言中の返信先用背景色
     Private _clAtFromTarget As Color      '選択発言者への返信発言用背景色
     Private _clAtTo As Color              '選択発言の唯一＠先
+    Private _clListBackcolor As Color       'リスト部通常発言背景色
     Private _clInputBackcolor As Color      '入力欄背景色
     Private _clInputFont As Color           '入力欄文字色
     Private _fntInputFont As Font           '入力欄フォント
@@ -147,7 +153,7 @@ Public Class TweenMain
     Private _brsBackColorAtFromTarget As SolidBrush
     Private _brsBackColorAtTo As SolidBrush
     Private _brsBackColorNone As SolidBrush
-    Private _brsDeactiveSelection As New SolidBrush(Color.FromKnownColor(KnownColor.ButtonFace))
+    Private _brsDeactiveSelection As New SolidBrush(Color.FromKnownColor(KnownColor.ButtonFace)) 'Listにフォーカスないときの選択行の背景色
     Private sf As New StringFormat()
     Private sfTab As New StringFormat()
     'Private _columnIdx As Integer   'ListviewのDisplayIndex退避用（DrawItemで使用）
@@ -436,12 +442,15 @@ Public Class TweenMain
         _clFav = _cfgLocal.ColorFav
         _clOWL = _cfgLocal.ColorOWL
         _fntDetail = _cfgLocal.FontDetail
+        _clDetail = _cfgLocal.ColorDetail
+        _clDetailLink = _cfgLocal.ColorDetailLink
         _clSelf = _cfgLocal.ColorSelf
         _clAtSelf = _cfgLocal.ColorAtSelf
         _clTarget = _cfgLocal.ColorTarget
         _clAtTarget = _cfgLocal.ColorAtTarget
         _clAtFromTarget = _cfgLocal.ColorAtFromTarget
         _clAtTo = _cfgLocal.ColorAtTo
+        _clListBackcolor = _cfgLocal.ColorListBackcolor
         _clInputBackcolor = _cfgLocal.ColorInputBackcolor
         _clInputFont = _cfgLocal.ColorInputFont
         _fntInputFont = _cfgLocal.FontInputFont
@@ -456,7 +465,8 @@ Public Class TweenMain
         _brsBackColorAtYou = New SolidBrush(_clAtTarget)
         _brsBackColorAtFromTarget = New SolidBrush(_clAtFromTarget)
         _brsBackColorAtTo = New SolidBrush(_clAtTo)
-        _brsBackColorNone = New SolidBrush(Color.FromKnownColor(KnownColor.Window))
+        '_brsBackColorNone = New SolidBrush(Color.FromKnownColor(KnownColor.Window))
+        _brsBackColorNone = New SolidBrush(_clListBackcolor)
 
         ' StringFormatオブジェクトへの事前設定
         sf.Alignment = StringAlignment.Near
@@ -501,12 +511,15 @@ Public Class TweenMain
         SettingDialog.ColorFav = _clFav
         SettingDialog.ColorOWL = _clOWL
         SettingDialog.FontDetail = _fntDetail
+        SettingDialog.ColorDetail = _clDetail
+        SettingDialog.ColorDetailLink = _clDetailLink
         SettingDialog.ColorSelf = _clSelf
         SettingDialog.ColorAtSelf = _clAtSelf
         SettingDialog.ColorTarget = _clTarget
         SettingDialog.ColorAtTarget = _clAtTarget
         SettingDialog.ColorAtFromTarget = _clAtFromTarget
         SettingDialog.ColorAtTo = _clAtTo
+        SettingDialog.ColorListBackcolor = _clListBackcolor
         SettingDialog.ColorInputBackcolor = _clInputBackcolor
         SettingDialog.ColorInputFont = _clInputFont
         SettingDialog.FontInputFont = _fntInputFont
@@ -625,12 +638,15 @@ Public Class TweenMain
             _clFav = SettingDialog.ColorFav
             _clOWL = SettingDialog.ColorOWL
             _fntDetail = SettingDialog.FontDetail
+            _clDetail = SettingDialog.ColorDetail
+            _clDetailLink = SettingDialog.ColorDetailLink
             _clSelf = SettingDialog.ColorSelf
             _clAtSelf = SettingDialog.ColorAtSelf
             _clTarget = SettingDialog.ColorTarget
             _clAtTarget = SettingDialog.ColorAtTarget
             _clAtFromTarget = SettingDialog.ColorAtFromTarget
             _clAtTo = SettingDialog.ColorAtTo
+            _clListBackcolor = SettingDialog.ColorListBackcolor
             _clInputBackcolor = SettingDialog.ColorInputBackcolor
             _clInputFont = SettingDialog.ColorInputFont
             _fntInputFont = SettingDialog.FontInputFont
@@ -648,12 +664,15 @@ Public Class TweenMain
             _brsBackColorAtYou.Dispose()
             _brsBackColorAtFromTarget.Dispose()
             _brsBackColorAtTo.Dispose()
+            _brsBackColorNone.Dispose()
             _brsBackColorMine = New SolidBrush(_clSelf)
             _brsBackColorAt = New SolidBrush(_clAtSelf)
             _brsBackColorYou = New SolidBrush(_clTarget)
             _brsBackColorAtYou = New SolidBrush(_clAtTarget)
             _brsBackColorAtFromTarget = New SolidBrush(_clAtFromTarget)
             _brsBackColorAtTo = New SolidBrush(_clAtTo)
+            _brsBackColorNone = New SolidBrush(_clListBackcolor)
+
             If SettingDialog.IsMonospace Then
                 detailHtmlFormat = detailHtmlFormatMono1 + _fntDetail.Name + detailHtmlFormatMono2 + _fntDetail.Size.ToString() + detailHtmlFormatMono3
             Else
@@ -2571,12 +2590,15 @@ Public Class TweenMain
                 _clFav = SettingDialog.ColorFav
                 _clOWL = SettingDialog.ColorOWL
                 _fntDetail = SettingDialog.FontDetail
+                _clDetail = SettingDialog.ColorDetail
+                _clDetailLink = SettingDialog.ColorDetailLink
                 _clSelf = SettingDialog.ColorSelf
                 _clAtSelf = SettingDialog.ColorAtSelf
                 _clTarget = SettingDialog.ColorTarget
                 _clAtTarget = SettingDialog.ColorAtTarget
                 _clAtFromTarget = SettingDialog.ColorAtFromTarget
                 _clAtTo = SettingDialog.ColorAtTo
+                _clListBackcolor = SettingDialog.ColorListBackcolor
                 _clInputBackcolor = SettingDialog.ColorInputBackcolor
                 _clInputFont = SettingDialog.ColorInputFont
                 _fntInputFont = SettingDialog.FontInputFont
@@ -2602,12 +2624,14 @@ Public Class TweenMain
                 _brsBackColorAtYou.Dispose()
                 _brsBackColorAtFromTarget.Dispose()
                 _brsBackColorAtTo.Dispose()
+                _brsBackColorNone.Dispose()
                 _brsBackColorMine = New SolidBrush(_clSelf)
                 _brsBackColorAt = New SolidBrush(_clAtSelf)
                 _brsBackColorYou = New SolidBrush(_clTarget)
                 _brsBackColorAtYou = New SolidBrush(_clAtTarget)
                 _brsBackColorAtFromTarget = New SolidBrush(_clAtFromTarget)
                 _brsBackColorAtTo = New SolidBrush(_clAtTo)
+                _brsBackColorNone = New SolidBrush(_clListBackcolor)
                 Try
                     If SettingDialog.IsMonospace Then
                         detailHtmlFormat = detailHtmlFormatMono1 + _fntDetail.Name + detailHtmlFormatMono2 + _fntDetail.Size.ToString() + detailHtmlFormatMono3
