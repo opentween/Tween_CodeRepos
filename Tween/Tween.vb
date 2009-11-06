@@ -58,16 +58,17 @@ Public Class TweenMain
     Private _rclickTabName As String      '右クリックしたタブの名前（Tabコントロール機能不足対応）
     Private ReadOnly _syncObject As New Object()    'ロック用
     Private Const detailHtmlFormatMono1 As String = "<html><head><style type=""text/css""><!-- pre {font-family: """
-    Private Const detailHtmlFormatMono2 As String = """, sans-serif; font-size: "
-    Private Const detailHtmlFormatMono3 As String = "pt; word-wrap: break-word;} --></style></head><body style=""margin:0px; background-color:"
-    Private Const detailHtmlFormatMono4 As String = ";""><pre>"
-    Private Const detailHtmlFormatMono5 As String = "</pre></body></html>"
-    Private Const detailHtmlFormat1 As String = "<html><head><style type=""text/css""><!-- p {font-family: """
     Private Const detailHtmlFormat2 As String = """, sans-serif; font-size: "
-    Private Const detailHtmlFormat3 As String = "pt;} --></style></head><body style=""margin:0px; background-color:"
-    Private Const detailHtmlFormat4 As String = ";""><p>"
-    Private Const detailHtmlFormat5 As String = "</p></body></html>"
-    Private detailHtmlFormat As String
+    Private Const detailHtmlFormat3 As String = "pt; word-wrap: break-word; color:rgb("
+    Private Const detailHtmlFormat4 As String = ");} a:link, a:visited, a:active, a:hover {color:rgb("
+    Private Const detailHtmlFormat5 As String = "); } --></style></head><body style=""margin:0px; background-color:rgb("
+    Private Const detailHtmlFormatMono6 As String = ");""><pre>"
+    Private Const detailHtmlFormatMono7 As String = "</pre></body></html>"
+    Private Const detailHtmlFormat1 As String = "<html><head><style type=""text/css""><!-- p {font-family: """
+    Private Const detailHtmlFormat6 As String = ");""><p>"
+    Private Const detailHtmlFormat7 As String = "</p></body></html>"
+    Private detailHtmlFormatHeader As String
+    Private detailHtmlFormatFooter As String
     Private _myStatusError As Boolean = False
     Private _myStatusOnline As Boolean = False
     Private soundfileListup As Boolean = False
@@ -444,6 +445,7 @@ Public Class TweenMain
         _fntDetail = _cfgLocal.FontDetail
         _clDetail = _cfgLocal.ColorDetail
         _clDetailLink = _cfgLocal.ColorDetailLink
+        _clDetailBackcolor = _cfgLocal.ColorDetailBackcolor
         _clSelf = _cfgLocal.ColorSelf
         _clAtSelf = _cfgLocal.ColorAtSelf
         _clTarget = _cfgLocal.ColorTarget
@@ -513,6 +515,7 @@ Public Class TweenMain
         SettingDialog.FontDetail = _fntDetail
         SettingDialog.ColorDetail = _clDetail
         SettingDialog.ColorDetailLink = _clDetailLink
+        SettingDialog.ColorDetailBackcolor = _clDetailBackcolor
         SettingDialog.ColorSelf = _clSelf
         SettingDialog.ColorAtSelf = _clAtSelf
         SettingDialog.ColorTarget = _clTarget
@@ -583,9 +586,17 @@ Public Class TweenMain
 
         SettingDialog.IsMonospace = _cfgCommon.IsMonospace
         If SettingDialog.IsMonospace Then
-            detailHtmlFormat = detailHtmlFormatMono1 + _fntDetail.Name + detailHtmlFormatMono2 + _fntDetail.Size.ToString() + detailHtmlFormatMono3
+            detailHtmlFormatHeader = detailHtmlFormatMono1
+            detailHtmlFormatFooter = detailHtmlFormatMono7
         Else
-            detailHtmlFormat = detailHtmlFormat1 + _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3
+            detailHtmlFormatHeader = detailHtmlFormat1
+            detailHtmlFormatFooter = detailHtmlFormat7
+        End If
+        detailHtmlFormatHeader += _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3 + _clDetail.R.ToString + "," + _clDetail.G.ToString + "," + _clDetail.B.ToString + detailHtmlFormat4 + _clDetailLink.R.ToString + "," + _clDetailLink.G.ToString + "," + _clDetailLink.B.ToString + detailHtmlFormat5 + _clDetailBackcolor.R.ToString + "," + _clDetailBackcolor.G.ToString + "," + _clDetailBackcolor.B.ToString
+        If SettingDialog.IsMonospace Then
+            detailHtmlFormatHeader += detailHtmlFormatMono6
+        Else
+            detailHtmlFormatHeader += detailHtmlFormat6
         End If
         Me.IdeographicSpaceToSpaceToolStripMenuItem.Checked = _cfgCommon.WideSpaceConvert
 
@@ -640,6 +651,7 @@ Public Class TweenMain
             _fntDetail = SettingDialog.FontDetail
             _clDetail = SettingDialog.ColorDetail
             _clDetailLink = SettingDialog.ColorDetailLink
+            _clDetailBackcolor = SettingDialog.ColorDetailBackcolor
             _clSelf = SettingDialog.ColorSelf
             _clAtSelf = SettingDialog.ColorAtSelf
             _clTarget = SettingDialog.ColorTarget
@@ -674,9 +686,17 @@ Public Class TweenMain
             _brsBackColorNone = New SolidBrush(_clListBackcolor)
 
             If SettingDialog.IsMonospace Then
-                detailHtmlFormat = detailHtmlFormatMono1 + _fntDetail.Name + detailHtmlFormatMono2 + _fntDetail.Size.ToString() + detailHtmlFormatMono3
+                detailHtmlFormatHeader = detailHtmlFormatMono1
+                detailHtmlFormatFooter = detailHtmlFormatMono7
             Else
-                detailHtmlFormat = detailHtmlFormat1 + _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3
+                detailHtmlFormatHeader = detailHtmlFormat1
+                detailHtmlFormatFooter = detailHtmlFormat7
+            End If
+            detailHtmlFormatHeader += _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3 + _clDetail.R.ToString + "," + _clDetail.G.ToString + "," + _clDetail.B.ToString + detailHtmlFormat4 + _clDetailLink.R.ToString + "," + _clDetailLink.G.ToString + "," + _clDetailLink.B.ToString + detailHtmlFormat5 + _clDetailBackcolor.R.ToString + "," + _clDetailBackcolor.G.ToString + "," + _clDetailBackcolor.B.ToString
+            If SettingDialog.IsMonospace Then
+                detailHtmlFormatHeader += detailHtmlFormatMono6
+            Else
+                detailHtmlFormatHeader += detailHtmlFormat6
             End If
             '他の設定項目は、随時設定画面で保持している値を読み出して使用
         End If
@@ -1506,7 +1526,8 @@ Public Class TweenMain
             cl = _clAtTarget
         Else
             'その他
-            cl = System.Drawing.SystemColors.Window
+            'cl = System.Drawing.SystemColors.Window
+            cl = _clListBackcolor
         End If
         Return cl
     End Function
@@ -2454,9 +2475,9 @@ Public Class TweenMain
                     GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
                 Case TabUsageType.Favorites
                     GetTimeline(WORKERTYPE.Favorites, 1, 0)
-                Case TabUsageType.Profile
+                    'Case TabUsageType.Profile
                     '' TODO
-                Case TabUsageType.PublicSearch
+                    'Case TabUsageType.PublicSearch
                     '' TODO
                 Case Else
                     GetTimeline(WORKERTYPE.Timeline, 1, 0)
@@ -2592,6 +2613,7 @@ Public Class TweenMain
                 _fntDetail = SettingDialog.FontDetail
                 _clDetail = SettingDialog.ColorDetail
                 _clDetailLink = SettingDialog.ColorDetailLink
+                _clDetailBackcolor = SettingDialog.ColorDetailBackcolor
                 _clSelf = SettingDialog.ColorSelf
                 _clAtSelf = SettingDialog.ColorAtSelf
                 _clTarget = SettingDialog.ColorTarget
@@ -2634,9 +2656,17 @@ Public Class TweenMain
                 _brsBackColorNone = New SolidBrush(_clListBackcolor)
                 Try
                     If SettingDialog.IsMonospace Then
-                        detailHtmlFormat = detailHtmlFormatMono1 + _fntDetail.Name + detailHtmlFormatMono2 + _fntDetail.Size.ToString() + detailHtmlFormatMono3
+                        detailHtmlFormatHeader = detailHtmlFormatMono1
+                        detailHtmlFormatFooter = detailHtmlFormatMono7
                     Else
-                        detailHtmlFormat = detailHtmlFormat1 + _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3
+                        detailHtmlFormatHeader = detailHtmlFormat1
+                        detailHtmlFormatFooter = detailHtmlFormat7
+                    End If
+                    detailHtmlFormatHeader += _fntDetail.Name + detailHtmlFormat2 + _fntDetail.Size.ToString() + detailHtmlFormat3 + _clDetail.R.ToString + "," + _clDetail.G.ToString + "," + _clDetail.B.ToString + detailHtmlFormat4 + _clDetailLink.R.ToString + "," + _clDetailLink.G.ToString + "," + _clDetailLink.B.ToString + detailHtmlFormat5 + _clDetailBackcolor.R.ToString + "," + _clDetailBackcolor.G.ToString + "," + _clDetailBackcolor.B.ToString
+                    If SettingDialog.IsMonospace Then
+                        detailHtmlFormatHeader += detailHtmlFormatMono6
+                    Else
+                        detailHtmlFormatHeader += detailHtmlFormat6
                     End If
                 Catch ex As Exception
                     ex.Data("Instance") = "Font"
@@ -2662,6 +2692,7 @@ Public Class TweenMain
                         End If
                         If tb.Controls IsNot Nothing AndAlso tb.Controls.Count > 0 Then
                             DirectCast(tb.Controls(0), DetailsListView).Font = _fntReaded
+                            DirectCast(tb.Controls(0), DetailsListView).BackColor = _clListBackcolor
                         End If
                     Next
                 Catch ex As Exception
@@ -2785,6 +2816,7 @@ Public Class TweenMain
         _listCustom.OwnerDraw = True
         _listCustom.VirtualMode = True
         _listCustom.Font = _fntReaded
+        _listCustom.BackColor = _clListBackcolor
 
         _listCustom.GridLines = SettingDialog.ShowGrid
 
@@ -3687,7 +3719,7 @@ RETRY:
 
         If _curList.SelectedIndices.Count = 0 OrElse _curPost Is Nothing Then Exit Sub
 
-        Dim dTxt As String = detailHtmlFormat + _curPost.OriginalData + detailHtmlFormat4
+        Dim dTxt As String = detailHtmlFormatHeader + _curPost.OriginalData + detailHtmlFormatFooter
         If _statuses.Tabs(_curTab.Text).TabType = TabUsageType.DirectMessage AndAlso _curPost.IsOwl Then
             NameLabel.Text = "DM TO -> "
         ElseIf _statuses.Tabs(_curTab.Text).TabType = TabUsageType.DirectMessage Then
@@ -3742,7 +3774,7 @@ RETRY:
             sb.Append("-----End PostClass Dump<br>")
 
             PostBrowser.Visible = False
-            PostBrowser.DocumentText = detailHtmlFormat + sb.ToString + detailHtmlFormat4
+            PostBrowser.DocumentText = detailHtmlFormatHeader + sb.ToString + detailHtmlFormatFooter
             PostBrowser.Visible = True
         ElseIf PostBrowser.DocumentText <> dTxt Then
             PostBrowser.Visible = False
@@ -4456,6 +4488,9 @@ RETRY:
             _cfgLocal.FontRead = _fntReaded
             _cfgLocal.ColorRead = _clReaded
             _cfgLocal.FontDetail = _fntDetail
+            _cfgLocal.ColorDetail = _clDetail
+            _cfgLocal.ColorDetailBackcolor = _clDetailBackcolor
+            _cfgLocal.ColorDetailLink = _clDetailLink
             _cfgLocal.ColorFav = _clFav
             _cfgLocal.ColorOWL = _clOWL
             _cfgLocal.ColorSelf = _clSelf
@@ -4464,6 +4499,7 @@ RETRY:
             _cfgLocal.ColorAtTarget = _clAtTarget
             _cfgLocal.ColorAtFromTarget = _clAtFromTarget
             _cfgLocal.ColorAtTo = _clAtTo
+            _cfgLocal.ColorListBackcolor = _clListBackcolor
             _cfgLocal.ColorInputBackcolor = _clInputBackcolor
             _cfgLocal.ColorInputFont = _clInputFont
             _cfgLocal.FontInputFont = _fntInputFont
