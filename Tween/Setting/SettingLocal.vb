@@ -221,6 +221,50 @@ Public Class SettingLocal
     End Property
 
     <Xml.Serialization.XmlIgnore()> _
+    Public ColorListBackcolor As Color = Color.FromKnownColor(System.Drawing.KnownColor.Window)
+    Public Property ColorListBackcolorStr() As String
+        Get
+            Return _cc.ConvertToString(ColorListBackcolor)
+        End Get
+        Set(ByVal value As String)
+            ColorListBackcolor = DirectCast(_cc.ConvertFromString(value), Color)
+        End Set
+    End Property
+
+    <Xml.Serialization.XmlIgnore()> _
+    Public ColorDetailBackcolor As Color = Color.FromKnownColor(System.Drawing.KnownColor.Window)
+    Public Property ColorDetailBackcolorStr() As String
+        Get
+            Return _cc.ConvertToString(ColorDetailBackcolor)
+        End Get
+        Set(ByVal value As String)
+            ColorDetailBackcolor = DirectCast(_cc.ConvertFromString(value), Color)
+        End Set
+    End Property
+
+    <Xml.Serialization.XmlIgnore()> _
+    Public ColorDetail As Color = Color.FromKnownColor(System.Drawing.KnownColor.ControlText)
+    Public Property ColorDetailStr() As String
+        Get
+            Return _cc.ConvertToString(ColorDetail)
+        End Get
+        Set(ByVal value As String)
+            ColorDetail = DirectCast(_cc.ConvertFromString(value), Color)
+        End Set
+    End Property
+
+    <Xml.Serialization.XmlIgnore()> _
+    Public ColorDetailLink As Color = Color.FromKnownColor(System.Drawing.KnownColor.Blue)
+    Public Property ColorDetailLinkStr() As String
+        Get
+            Return _cc.ConvertToString(ColorDetailLink)
+        End Get
+        Set(ByVal value As String)
+            ColorDetailLink = DirectCast(_cc.ConvertFromString(value), Color)
+        End Set
+    End Property
+
+    <Xml.Serialization.XmlIgnore()> _
     Public ProxyPassword As String = ""
     Public Property EncryptProxyPassword() As String
         Get

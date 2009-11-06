@@ -56,6 +56,10 @@ Public Class Setting
     Private _clInputBackcolor As Color
     Private _clInputFont As Color
     Private _fntInputFont As Font
+    Private _clListBackcolor As Color
+    Private _clDetailBackcolor As Color
+    Private _clDetail As Color
+    Private _clDetailLink As Color
     Private _MyNameBalloon As NameBalloonEnum
     Private _MyPostCtrlEnter As Boolean
     Private _useAPI As Boolean
@@ -156,6 +160,10 @@ Public Class Setting
             _clAtTo = lblAtTo.BackColor
             _clInputBackcolor = lblInputBackcolor.BackColor
             _clInputFont = lblInputFont.ForeColor
+            _clListBackcolor = lblListBackcolor.BackColor
+            _clDetailBackcolor = lblDetailBackcolor.BackColor
+            _clDetail = lblDetail.ForeColor
+            _clDetailLink = lblDetailLink.ForeColor
             _fntInputFont = lblInputFont.Font
             Select Case cmbNameBalloon.SelectedIndex
                 Case 0
@@ -322,6 +330,10 @@ Public Class Setting
         lblInputBackcolor.BackColor = _clInputBackcolor
         lblInputFont.ForeColor = _clInputFont
         lblInputFont.Font = _fntInputFont
+        lblListBackcolor.BackColor = _clListBackcolor
+        lblDetailBackcolor.BackColor = _clDetailBackcolor
+        lblDetail.ForeColor = _clDetail
+        lblDetailLink.ForeColor = _clDetailLink
 
         Select Case _MyNameBalloon
             Case NameBalloonEnum.None
@@ -624,7 +636,7 @@ Public Class Setting
             Case "btnDetail"
                 FontDialog1.Font = lblDetail.Font
                 FontDialog1.ShowEffects = False
-                FontDialog1.ShowColor = False
+                'FontDialog1.ShowColor = False
             Case "btnListFont"
                 FontDialog1.Color = lblListFont.ForeColor
                 FontDialog1.Font = lblListFont.Font
@@ -650,6 +662,7 @@ Public Class Setting
                 '    lblReaded.ForeColor = FontDialog1.Color
                 '    lblReaded.Font = FontDialog1.Font
             Case "btnDetail"
+                lblDetail.ForeColor = FontDialog1.Color
                 lblDetail.Font = FontDialog1.Font
             Case "btnListFont"
                 lblListFont.ForeColor = FontDialog1.Color
@@ -661,7 +674,7 @@ Public Class Setting
 
     End Sub
 
-    Private Sub btnColor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSelf.Click, btnAtSelf.Click, btnTarget.Click, btnAtTarget.Click, btnAtFromTarget.Click, btnFav.Click, btnOWL.Click, btnInputBackcolor.Click, btnAtTo.Click
+    Private Sub btnColor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSelf.Click, btnAtSelf.Click, btnTarget.Click, btnAtTarget.Click, btnAtFromTarget.Click, btnFav.Click, btnOWL.Click, btnInputBackcolor.Click, btnAtTo.Click, btnListBack.Click, btnDetailBack.Click, btnDetailLink.Click
         Dim Btn As Button = CType(sender, Button)
         Dim rtn As DialogResult
 
@@ -693,6 +706,12 @@ Public Class Setting
                 ColorDialog1.Color = lblInputBackcolor.BackColor
             Case "btnAtTo"
                 ColorDialog1.Color = lblAtTo.BackColor
+            Case "btnListBack"
+                ColorDialog1.Color = lblListBackcolor.BackColor
+            Case "btnDetailBack"
+                ColorDialog1.Color = lblDetailBackcolor.BackColor
+            Case "btnDetailLink"
+                ColorDialog1.Color = lblDetailLink.ForeColor
         End Select
 
         rtn = ColorDialog1.ShowDialog
@@ -722,6 +741,12 @@ Public Class Setting
                 lblInputBackcolor.BackColor = ColorDialog1.Color
             Case "btnAtTo"
                 lblAtTo.BackColor = ColorDialog1.Color
+            Case "btnListBack"
+                lblListBackcolor.BackColor = ColorDialog1.Color
+            Case "btnDetailBack"
+                lblDetailBackcolor.BackColor = ColorDialog1.Color
+            Case "btnDetailLink"
+                lblDetailLink.ForeColor = ColorDialog1.Color
         End Select
     End Sub
 
@@ -962,6 +987,24 @@ Public Class Setting
         End Set
     End Property
 
+    Public Property ColorDetail() As Color
+        Get
+            Return _clDetail
+        End Get
+        Set(ByVal value As Color)
+            _clDetail = value
+        End Set
+    End Property
+
+    Public Property ColorDetailLink() As Color
+        Get
+            Return _clDetailLink
+        End Get
+        Set(ByVal value As Color)
+            _clDetailLink = value
+        End Set
+    End Property
+
     Public Property ColorSelf() As Color
         Get
             Return _clSelf
@@ -1040,6 +1083,24 @@ Public Class Setting
         End Get
         Set(ByVal value As Font)
             _fntInputFont = value
+        End Set
+    End Property
+
+    Public Property ColorListBackcolor() As Color
+        Get
+            Return _clListBackcolor
+        End Get
+        Set(ByVal value As Color)
+            _clListBackcolor = value
+        End Set
+    End Property
+
+    Public Property ColorDetailBackcolor() As Color
+        Get
+            Return _clDetailBackcolor
+        End Get
+        Set(ByVal value As Color)
+            _clDetailBackcolor = value
         End Set
     End Property
 
