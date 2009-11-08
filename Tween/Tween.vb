@@ -6425,8 +6425,21 @@ RETRY:
 
         ' Twitterにより省略されているURLを含むaタグをキャプチャしてリンク先URLへ置き換える
         '展開しないように変更
+        '展開するか判定
+        Dim isUrl As Boolean = False
         Dim rx As Regex = New Regex("<a target=""_self"" href=""(?<url>[^""]+)""[^>]*>(?<link>(https?|shttp|ftps?)://[^<]+)</a>")
-        status = rx.Replace(status, "${link}")
+        Dim ms As MatchCollection = rx.Matches(status)
+        For Each m As Match In ms
+            If m.Result("${link}").EndsWith("...") Then
+                isUrl = True
+                Exit For
+            End If
+        Next
+        If isUrl Then
+            status = rx.Replace(status, "${url}")
+        Else
+            status = rx.Replace(status, "${link}")
+        End If
 
         'その他のリンク(@IDなど)を置き換える
         rx = New Regex("<a target=""_self"" href=""(?<url>[^""]+)""[^>]*>(?<link>[^<]+)</a>")
