@@ -422,7 +422,7 @@ Public Class TweenMain
         _history.Add("")
         _hisIdx = 0
         _reply_to_id = 0
-        _reply_to_name = Nothing
+        _reply_to_name = ""
 
         '<<<<<<<<<設定関連>>>>>>>>>
         '設定コンバージョン
@@ -1755,7 +1755,7 @@ Public Class TweenMain
                     If ret = "" OrElse ret.StartsWith("Outputz:") Then Exit For
                 Next
                 _reply_to_id = 0
-                _reply_to_name = Nothing
+                _reply_to_name = ""
                 bw.ReportProgress(300)
             Case WORKERTYPE.Follower
                 bw.ReportProgress(50, My.Resources.UpdateFollowersMenuItem1_ClickText1)
@@ -2316,8 +2316,10 @@ Public Class TweenMain
         End If
         If _curPost Is Nothing OrElse _curPost.IsDm Then
             ReTweetStripMenuItem.Enabled = False
+            ReTweetOriginalStripMenuItem.Enabled = False
         Else
             ReTweetStripMenuItem.Enabled = True
+            ReTweetOriginalStripMenuItem.Enabled = True
         End If
     End Sub
 
@@ -3181,7 +3183,7 @@ Public Class TweenMain
         End If
         If StatusText.Text = "" Then
             _reply_to_id = 0
-            _reply_to_name = Nothing
+            _reply_to_name = ""
         End If
     End Sub
 
@@ -4735,6 +4737,9 @@ RETRY:
         'isAuto:True=先頭に挿入、False=カーソル位置に挿入
         'isReply:True=@,False=DM
         If Not StatusText.Enabled Then Exit Sub
+        If _curList Is Nothing Then Exit Sub
+        If _curTab Is Nothing Then Exit Sub
+        If _curPost Is Nothing Then Exit Sub
 
         ' 複数あてリプライはReplyではなく通常ポスト
         '↑仕様変更で全部リプライ扱いでＯＫ（先頭ドット付加しない）
@@ -4751,7 +4756,7 @@ RETRY:
                     StatusText.SelectionStart = StatusText.Text.Length
                     StatusText.Focus()
                     _reply_to_id = 0
-                    _reply_to_name = Nothing
+                    _reply_to_name = ""
                     Exit Sub
                 End If
                 If StatusText.Text = "" Then
@@ -4780,7 +4785,7 @@ RETRY:
                                 ' 複数リプライ
                                 StatusText.Text = StatusText.Text.Insert(2, "@" + _curPost.Name + " ")
                                 _reply_to_id = 0
-                                _reply_to_name = Nothing
+                                _reply_to_name = ""
                             Else
                                 ' 単独リプライ
                                 StatusText.Text = "@" + _curPost.Name + " " + StatusText.Text
@@ -4793,7 +4798,7 @@ RETRY:
                             StatusText.Text = ". @" + _curPost.Name + " " + StatusText.Text
                             'StatusText.Text = "@" + _curPost.Name + " " + StatusText.Text
                             _reply_to_id = 0
-                            _reply_to_name = Nothing
+                            _reply_to_name = ""
                         End If
                     Else
                         '1件選んでCtrl-Rの場合（返信先操作せず）
@@ -4835,7 +4840,7 @@ RETRY:
                     If Not sTxt.StartsWith(". ") Then
                         sTxt = ". " + sTxt
                         _reply_to_id = 0
-                        _reply_to_name = Nothing
+                        _reply_to_name = ""
                     End If
                     For cnt As Integer = 0 To _curList.SelectedIndices.Count - 1
                         Dim post As PostClass = _statuses.Item(_curTab.Text, _curList.SelectedIndices(cnt))
@@ -4872,7 +4877,7 @@ RETRY:
                             StatusText.Text = ". " + StatusText.Text
                             sidx += 2
                             _reply_to_id = 0
-                            _reply_to_name = Nothing
+                            _reply_to_name = ""
                         End If
                         If sidx > 0 Then
                             If StatusText.Text.Substring(sidx - 1, 1) <> " " Then
@@ -5593,7 +5598,7 @@ RETRY:
         If _reply_to_id = 0 Then Exit Sub
 
         ' リプライ先ユーザー名がない場合も指定しない
-        If _reply_to_name Is Nothing Then
+        If _reply_to_name = "" Then
             _reply_to_id = 0
             Exit Sub
         End If
@@ -5616,7 +5621,7 @@ RETRY:
         'End If
 
         _reply_to_id = 0
-        _reply_to_name = Nothing
+        _reply_to_name = ""
 
     End Sub
 
@@ -6442,9 +6447,11 @@ RETRY:
         End If
 
         'その他のリンク(@IDなど)を置き換える
+        rx = New Regex("@<a target=""_self"" href=""https?://twitter.com/(?<url>[^""]+)""[^>]*>(?<link>[^<]+)</a>")
+        status = rx.Replace(status, "@${url}")
+        'ハッシュタグ
         rx = New Regex("<a target=""_self"" href=""(?<url>[^""]+)""[^>]*>(?<link>[^<]+)</a>")
         status = rx.Replace(status, "${link}")
-
         '<br>タグ除去
         If StatusText.Multiline Then
             status = Regex.Replace(status, "(\r\n|\n|\r)?<br>", vbCrLf, RegexOptions.IgnoreCase Or RegexOptions.Multiline)
@@ -6453,7 +6460,7 @@ RETRY:
         End If
 
         _reply_to_id = 0
-        _reply_to_name = Nothing
+        _reply_to_name = ""
 
         Return status
     End Function

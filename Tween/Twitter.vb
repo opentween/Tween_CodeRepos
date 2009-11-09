@@ -3352,7 +3352,7 @@ Public Module Twitter
         '絶対パス表現のUriをリンクに置換
         retStr = rgUrl.Replace(Text, "<a href=""$&"">$&</a>")
         '@返信を抽出し、@先リスト作成
-        Dim rg As New Regex("(^|[ -/:-@[-^`{-~])@([a-zA-Z0-9_]{1,20})")
+        Dim rg As New Regex("(^|[ -/:-@[-^`{-~])@([a-zA-Z0-9_/]{1,41})")
         Dim m As Match = rg.Match(retStr)
         While m.Success
             AtList.Add(m.Result("$2").ToLower)
