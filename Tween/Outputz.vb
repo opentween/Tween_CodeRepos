@@ -75,7 +75,7 @@ Public Module Outputz
         Dim output As String = "http://outputz.com/api/post"
         Dim data As String = String.Format("key={0}&uri={1}&size={2}", myApikeyEncoded, myOuturlEncoded, length)
 
-        obj.GetWebResponse(output, resStatus, MySocket.REQ_TYPE.ReqPOST, data, userAgent:="Tween/" + My.Application.Info.Version.ToString())
+        obj.GetWebResponse(output, resStatus, MySocket.REQ_TYPE.ReqPOST, data, userAgent:="Tween/" + fileVersion)
 
         If resStatus.StartsWith("OK") Then
             Return ""

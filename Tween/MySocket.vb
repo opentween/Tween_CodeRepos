@@ -28,7 +28,6 @@ Imports System.IO.Compression
 
 Public NotInheritable Class MySocket
     Private _enc As Encoding
-    Private Shared _version As String = My.Application.Info.Version.ToString
     Private _cre As String
     Private _proxy As System.Net.WebProxy
     Private _proxyType As ProxyType

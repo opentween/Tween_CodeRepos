@@ -36,7 +36,7 @@ Public NotInheritable Class TweenAboutBox
         ' TODO: [プロジェクト] メニューの下にある [プロジェクト プロパティ] ダイアログの [アプリケーション] ペインで、アプリケーションのアセンブリ情報を 
         '    カスタマイズします。
         Me.LabelProductName.Text = My.Application.Info.ProductName
-        Me.LabelVersion.Text = String.Format(My.Resources.TweenAboutBox_LoadText2, My.Application.Info.Version.ToString)
+        Me.LabelVersion.Text = String.Format(My.Resources.TweenAboutBox_LoadText2, fileVersion + "(" + My.Application.Info.Version.ToString + ")")
         Me.LabelCopyright.Text = My.Application.Info.Copyright
         Me.LabelCompanyName.Text = My.Application.Info.CompanyName
         Me.TextBoxDescription.Text = My.Application.Info.Description

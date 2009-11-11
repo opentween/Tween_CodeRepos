@@ -172,7 +172,7 @@ Public Module MyCommon
                 writer.WriteLine(My.Resources.TraceOutText3)
                 writer.WriteLine(My.Resources.TraceOutText4, Environment.OSVersion.VersionString)
                 writer.WriteLine(My.Resources.TraceOutText5, Environment.Version.ToString())
-                writer.WriteLine(My.Resources.TraceOutText6, My.Application.Info.Version.ToString())
+                writer.WriteLine(My.Resources.TraceOutText6, fileVersion)
                 writer.WriteLine(Message)
                 writer.WriteLine()
             End Using
@@ -267,7 +267,7 @@ Public Module MyCommon
                 writer.WriteLine(My.Resources.UnhandledExceptionText4)
                 writer.WriteLine(My.Resources.UnhandledExceptionText5, Environment.OSVersion.VersionString)
                 writer.WriteLine(My.Resources.UnhandledExceptionText6, Environment.Version.ToString())
-                writer.WriteLine(My.Resources.UnhandledExceptionText7, My.Application.Info.Version.ToString())
+                writer.WriteLine(My.Resources.UnhandledExceptionText7, fileVersion)
 
                 Dim buffer As String = Nothing
                 writer.Write(ExceptionOut(ex, buffer, IsTerminatePermission))
@@ -527,4 +527,6 @@ retry:
         Profile
         PublicSearch
     End Enum
+
+    Public fileVersion As String
 End Module

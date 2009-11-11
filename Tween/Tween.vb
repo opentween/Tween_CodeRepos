@@ -399,6 +399,10 @@ Public Class TweenMain
         If Not My.Application.CommandLineArgs.Count = 0 AndAlso My.Application.CommandLineArgs.Contains("/d") Then TraceFlag = True
         Me.StatusStrip1.Items.Add(StatusLabel)
 
+        fileVersion = _
+            System.Diagnostics.FileVersionInfo.GetVersionInfo( _
+            System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion
+
         LoadIcons() ' アイコン読み込み
 
         '発言保持クラス
@@ -601,7 +605,7 @@ Public Class TweenMain
         Me.IdeographicSpaceToSpaceToolStripMenuItem.Checked = _cfgCommon.WideSpaceConvert
 
         Dim statregex As New Regex("^0*")
-        SettingDialog.RecommendStatusText = " [TWNv" + statregex.Replace(My.Application.Info.Version.Major.ToString() + My.Application.Info.Version.Minor.ToString() + My.Application.Info.Version.Build.ToString() + My.Application.Info.Version.Revision.ToString(), "") + "]"
+        SettingDialog.RecommendStatusText = " [TWNv" + statregex.Replace(fileVersion.Replace(".", ""), "") + "]"
 
         '書式指定文字列エラーチェック
         Try
@@ -1122,9 +1126,9 @@ Public Class TweenMain
             RefreshStripMenuItem.Enabled = True
             _myStatusOnline = True
             If Not _initial Then
-                If SettingDialog.DMPeriodInt > 0 Then TimerDM.Enabled = True
-                If SettingDialog.TimelinePeriodInt > 0 Then TimerTimeline.Enabled = True
-                If SettingDialog.ReplyPeriodInt > 0 Then TimerReply.Enabled = True
+                'If SettingDialog.DMPeriodInt > 0 Then TimerDM.Enabled = True
+                'If SettingDialog.TimelinePeriodInt > 0 Then TimerTimeline.Enabled = True
+                'If SettingDialog.ReplyPeriodInt > 0 Then TimerReply.Enabled = True
             Else
                 GetTimeline(WORKERTYPE.DirectMessegeRcv, 1, 0)
             End If
@@ -1937,12 +1941,12 @@ Public Class TweenMain
 
         IsNetworkAvailable()
 
-        If _myStatusOnline Then
-            'タイマー再始動
-            If SettingDialog.TimelinePeriodInt > 0 AndAlso Not TimerTimeline.Enabled Then TimerTimeline.Enabled = True
-            If SettingDialog.DMPeriodInt > 0 AndAlso Not TimerDM.Enabled Then TimerDM.Enabled = True
-            If SettingDialog.ReplyPeriodInt > 0 AndAlso Not TimerReply.Enabled Then TimerReply.Enabled = True
-        End If
+        'If _myStatusOnline Then
+        '    'タイマー再始動
+        '    If SettingDialog.TimelinePeriodInt > 0 AndAlso Not TimerTimeline.Enabled Then TimerTimeline.Enabled = True
+        '    If SettingDialog.DMPeriodInt > 0 AndAlso Not TimerDM.Enabled Then TimerDM.Enabled = True
+        '    If SettingDialog.ReplyPeriodInt > 0 AndAlso Not TimerReply.Enabled Then TimerReply.Enabled = True
+        'End If
 
         If e.Error IsNot Nothing Then
             _myStatusError = True
@@ -2094,20 +2098,20 @@ Public Class TweenMain
         If SettingDialog.UseAPI Then
             Select Case WkType
                 Case WORKERTYPE.Timeline
-                    TimerTimeline.Enabled = False
+                    'TimerTimeline.Enabled = False
                 Case WORKERTYPE.Reply
-                    TimerReply.Enabled = False
+                    'TimerReply.Enabled = False
                 Case WORKERTYPE.DirectMessegeRcv, WORKERTYPE.DirectMessegeSnt
-                    TimerDM.Enabled = False
+                    'TimerDM.Enabled = False
             End Select
         Else
             Select Case WkType
                 Case WORKERTYPE.Timeline
-                    TimerTimeline.Enabled = False
+                    'TimerTimeline.Enabled = False
                 Case WORKERTYPE.Reply
-                    TimerReply.Enabled = False
+                    'TimerReply.Enabled = False
                 Case WORKERTYPE.DirectMessegeRcv, WORKERTYPE.DirectMessegeSnt
-                    TimerDM.Enabled = False
+                    'TimerDM.Enabled = False
             End Select
         End If
         '非同期実行引数設定
@@ -3638,7 +3642,7 @@ RETRY:
         End Try
         If retMsg.Length > 0 Then
             strVer = retMsg.Substring(0, 4)
-            If strVer.CompareTo(My.Application.Info.Version.ToString.Replace(".", "")) > 0 Then
+            If strVer.CompareTo(fileVersion.Replace(".", "")) > 0 Then
                 Dim tmp As String = String.Format(My.Resources.CheckNewVersionText3, strVer)
                 If dialogAsShieldicon.Show(tmp, My.Resources.CheckNewVersionText1, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
                     retMsg = Twitter.GetTweenBinary(strVer)
@@ -3684,7 +3688,7 @@ RETRY:
                         End If
                     End If
                 ElseIf Not startup Then
-                    MessageBox.Show(My.Resources.CheckNewVersionText7 + My.Application.Info.Version.ToString.Replace(".", "") + My.Resources.CheckNewVersionText8 + strVer, My.Resources.CheckNewVersionText2, MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    MessageBox.Show(My.Resources.CheckNewVersionText7 + fileVersion.Replace(".", "") + My.Resources.CheckNewVersionText8 + strVer, My.Resources.CheckNewVersionText2, MessageBoxButtons.OK, MessageBoxIcon.Information)
                 End If
             End If
         Else
@@ -5502,7 +5506,7 @@ RETRY:
         Dim ttl As New StringBuilder(256)
         Dim ur As Integer = 0
         Dim al As Integer = 0
-        Static myVer As String = My.Application.Info.Version.ToString()
+        Static myVer As String = fileVersion
         If SettingDialog.DispLatestPost <> DispTitleEnum.None AndAlso _
            SettingDialog.DispLatestPost <> DispTitleEnum.Post AndAlso _
            SettingDialog.DispLatestPost <> DispTitleEnum.Ver Then
@@ -6347,6 +6351,9 @@ RETRY:
             RefreshStripMenuItem.Enabled = False
         End If
         _initial = False
+        TimerTimeline.Enabled = True
+        TimerReply.Enabled = True
+        TimerDM.Enabled = True
     End Sub
 
     Private Sub doGetFollowersMenu(ByVal CacheInvalidate As Boolean)
