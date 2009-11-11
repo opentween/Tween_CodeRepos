@@ -7,7 +7,6 @@ Public Class HttpConnectionApi
     Private Shared userName As String = ""
     Private Shared password As String = ""
     Private Shared credential As String = ""
-    Private Shared version As String = My.Application.Info.Version.ToString
 
     Protected Function AuthorizeAccount() As Boolean
         Dim authUri As Uri = New Uri("http://twitter.com/account/verify_credentials.xml")
