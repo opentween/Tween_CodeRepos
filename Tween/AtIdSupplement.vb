@@ -76,7 +76,7 @@
         'TextId.SelectionStart = 1
         TextId.Text = ""
         TextId.Focus()
-        My.Application.DoEvents()
+        My.Application.DoEvents()   '苦し紛れ（ドロップダウンしないので）
         SendKeys.Send(startChar)
     End Sub
 
