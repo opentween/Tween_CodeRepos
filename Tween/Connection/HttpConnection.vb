@@ -287,7 +287,7 @@ Public Class HttpConnection
     Private Shared timeout As Integer = 20000
 
     '''<summary>
-    '''通信タイムアウト時間（ms）。10〜120秒の範囲で指定。範囲外は20秒とする
+    '''通信タイムアウト時間（ms）。10～120秒の範囲で指定。範囲外は20秒とする
     '''</summary>
     Protected Shared Property DefaultTimeout() As Integer
         Get
